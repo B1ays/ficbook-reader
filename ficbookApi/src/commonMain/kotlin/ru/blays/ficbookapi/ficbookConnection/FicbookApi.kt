@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.internal.closeQuietly
+import okio.use
 import org.jsoup.Jsoup
 import ru.blays.ficbookapi.HEADER_COOKIE_SET
 import ru.blays.ficbookapi.SETTING_HREF
@@ -36,8 +37,8 @@ open class FicbookApi: IFicbookApi {
         }
     }
 
-    override suspend fun setCookie(cookies: List<CookieModel>) {
-        this.cookies = cookies
+    override suspend fun setCookie(cookies: List<CookieModel>) = coroutineScope {
+        this@FicbookApi.cookies = cookies
         _isAuthorized.value = checkAuthorization()
     }
 
@@ -95,17 +96,23 @@ open class FicbookApi: IFicbookApi {
         val request = buildFicbookRequest(cookies) {
             url(url)
         }
-        val response = makeRequest(request)
-        val body = response?.body?.string()
-        val document = body?.let { Jsoup.parse(it) }
+        val response = makeRequest(request) {
+            followRedirects(false)
+        }
+        println("Current cookies: ${cookies.joinToString { "${it.name} | ${it.value}" }}")
+        response?.use { resp ->
+            val code = resp.code
+            val body = resp.body?.string()
+            val document = body?.let { Jsoup.parse(it) }
 
-        val userParser = UserParser()
+            val userParser = UserParser()
 
-        val userModel = document?.let { userParser.parse(it) }
-        _user.value = userModel
+            val userModel = document?.let { userParser.parse(it) }
+            _user.value = userModel
 
-        response?.closeQuietly()
-        return@coroutineScope response?.code == 200
+            return@coroutineScope code == 200
+        }
+        return@coroutineScope false
     }
 
 

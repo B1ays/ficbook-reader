@@ -25,6 +25,8 @@ expect fun LandscapeContent(component: MainReaderComponent)
 @Composable
 expect fun PortraitContent(component: MainReaderComponent)
 
+infix fun Int.percentageOf(value: Int): Int = ((this*100F)/value.toFloat()).toInt()
+
 
 /*@OptIn(ExperimentalFoundationApi::class)
 @Composable

@@ -10,20 +10,20 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleC
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import org.koin.core.context.startKoin
 import ru.blays.ficbookReader.components.root.RootContent
-import ru.blays.ficbookReader.shared.data.di.ficbookApiModule
-import ru.blays.ficbookReader.shared.data.di.realmModule
+import ru.blays.ficbookReader.shared.di.ficbookApiModule
+import ru.blays.ficbookReader.shared.di.realmModule
+import ru.blays.ficbookReader.shared.di.repositoryModule
 import ru.blays.ficbookReader.shared.ui.RootComponent.DefaultRootComponent
 import ru.blays.ficbookReader.theme.AppTheme
-import ru.blays.preferences.DI.preferencesModule
 
 @OptIn(ExperimentalDecomposeApi::class)
 fun main() {
 
     startKoin {
         modules(
-            preferencesModule,
             realmModule,
-            ficbookApiModule
+            ficbookApiModule,
+            repositoryModule
         )
     }
 
@@ -51,7 +51,7 @@ fun main() {
             state = windowState,
             title = "Ficbook reader"
         ) {
-            AppTheme {
+            AppTheme(root.themeComponent) {
                 RootContent(root)
             }
         }

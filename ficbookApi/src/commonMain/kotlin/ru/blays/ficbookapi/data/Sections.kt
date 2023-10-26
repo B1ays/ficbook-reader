@@ -35,8 +35,8 @@ data class SectionWithQuery(
     val queryParameters: List<Pair<String, String>>
 ): java.io.Serializable {
     constructor(
-        name: String,
-        queryParameters: List<Pair<String, String>>,
+        name: String = "",
+        queryParameters: List<Pair<String, String>> = emptyList(),
         vararg paths: String
     ): this(
         name = name,
@@ -45,85 +45,119 @@ data class SectionWithQuery(
     )
 }
 
-interface SectionsCategory {
-    val all: Array<Section>
-
-    fun get(name: String): Section?
-}
-
-object PopularSections: SectionsCategory {
-    val _allPopular = Section("Все", "popular-fanfics")
-    val _gen = Section("Джен", "popular-fanfics", "gen")
-    val _het = Section("Гет", "popular-fanfics", "het")
-    val _slash = Section("Слэш", "popular-fanfics", "slash-fics-3712917")
-    val _femslash = Section("Фемслэш", "popular-fanfics", "femslash-fanfics-9374932")
-    val _mixed = Section("Смешанный", "popular-fanfics", "mixed")
-    val _other = Section("Другой", "popular-fanfics", "other")
-    
-    override val all: Array<Section> = arrayOf(
-        _allPopular,
-        _gen,
-        _het,
-        _slash,
-        _femslash,
-        _mixed,
-        _other
-    )
-
-    override fun get(name: String): Section? {
-        return all.firstOrNull { it.name == name }
+data class PopularSections(
+    val allPopular: SectionWithQuery,
+    val gen: SectionWithQuery,
+    val het: SectionWithQuery,
+    val slash: SectionWithQuery,
+    val femslash: SectionWithQuery,
+    val mixed: SectionWithQuery,
+    val other: SectionWithQuery
+) {
+    companion object {
+        fun default(): PopularSections = PopularSections(
+            allPopular = SectionWithQuery(
+                "Все", emptyList(), "popular-fanfics-376846"
+            ),
+            gen = SectionWithQuery(
+                "Джен", emptyList(), "popular-fanfics-376846", "gen"
+            ),
+            het = SectionWithQuery(
+                "Гет", emptyList(), "popular-fanfics-376846", "het"
+            ),
+            slash = SectionWithQuery(
+                "Слэш", emptyList(), "popular-fanfics-376846", "slash-fics-783456238"
+            ),
+            femslash = SectionWithQuery(
+                "Фемслэш", emptyList(), "popular-fanfics-376846", "femslash-fanfics-54353433"
+            ),
+            mixed = SectionWithQuery(
+                "Смешанный", emptyList(), "popular-fanfics-376846", "mixed"
+            ),
+            other= SectionWithQuery(
+                "Другой", emptyList(), "popular-fanfics-376846", "other"
+            )
+        )
     }
 }
 
-object CategoriesSections: SectionsCategory {
-    val _allFandoms = Section("Все", "fanfiction")
-    val _animeAndManga = Section("Аниме и манга", "fanfiction", "anime_and_manga")
-    val _books = Section("Книги", "fanfiction", "books")
-    val _cartoons = Section("Мультфильмы", "fanfiction", "cartoons")
-    val _games = Section("Игры", "fanfiction", "games")
-    val _movies = Section("Фильмы и сериалы", "fanfiction", "movies_and_tv_series")
-    val _other = Section("Другое", "fanfiction", "other")
-    val _rpf = Section("Известные люди", "fanfiction", "rpf")
-    val _originals = Section("Ориджиналы", "fanfiction", "no_fandom", "originals")
-    val _comics = Section("Комиксы", "fanfiction", "comics")
-    val _musicals = Section("Мюзиклы", "fanfiction", "musicals")
-
-    override val all: Array<Section> = arrayOf(
-        _allFandoms,
-        _animeAndManga,
-        _books,
-        _cartoons,
-        _games,
-        _movies,
-        _other,
-        _rpf,
-        _originals,
-        _comics,
-        _musicals
-    )
-
-    override fun get(name: String): Section? {
-        return all.firstOrNull { it.name == name }
+data class CategoriesSections(
+    val allFandoms: SectionWithQuery,
+    val animeAndManga: SectionWithQuery,
+    val books: SectionWithQuery,
+    val cartoons: SectionWithQuery,
+    val games: SectionWithQuery,
+    val movies: SectionWithQuery,
+    val other: SectionWithQuery,
+    val rpf: SectionWithQuery,
+    val originals: SectionWithQuery,
+    val comics: SectionWithQuery,
+    val musicals: SectionWithQuery
+) {
+    companion object {
+        fun default(): CategoriesSections = CategoriesSections(
+            allFandoms = SectionWithQuery(
+                "Все", emptyList(), "fanfiction"
+            ),
+            animeAndManga = SectionWithQuery(
+                "Аниме и манга", emptyList(), "fanfiction", "anime_and_manga"
+            ),
+            books = SectionWithQuery(
+                "Книги", emptyList(), "fanfiction", "books"
+            ),
+            cartoons = SectionWithQuery(
+                "Мультфильмы", emptyList(), "fanfiction", "cartoons"
+            ),
+            games = SectionWithQuery(
+                "Игры", emptyList(), "fanfiction", "games"
+            ),
+            movies = SectionWithQuery(
+                "Фильмы и сериалы", emptyList(), "fanfiction", "movies_and_tv_series"
+            ),
+            other = SectionWithQuery(
+                "Другое", emptyList(), "fanfiction", "other"
+            ),
+            rpf = SectionWithQuery(
+                "Известные люди", emptyList(), "fanfiction", "rpf"
+            ),
+            originals = SectionWithQuery(
+                "Оригинальные", emptyList(), "fanfiction", "originals"
+            ),
+            comics = SectionWithQuery(
+                "Комиксы", emptyList(), "fanfiction", "comics"
+            ),
+            musicals = SectionWithQuery(
+                "Мюзиклы", emptyList(), "fanfiction", "musicals"
+            )
+        )
     }
 }
 
-object UserSections: SectionsCategory {
-    val _favourites = Section("Подписки на авторов","home", "favourites")
-    val _liked = Section("Понравившиеся","home", "liked_fanfics")
-    val _readed = Section("Прочитанные","home", "readedList")
-    val _follow = Section("Подписки","home", "followList")
-    val _visited = Section("Просмотренные","home", "visitedList")
-    
-    override val all: Array<Section> = arrayOf(
-        _favourites,
-        _liked,
-        _readed,
-        _follow,
-        _visited
-    )
-
-    override fun get(name: String): Section? {
-        return all.firstOrNull { it.name == name }
+data class UserSections(
+    val favourites: SectionWithQuery,
+    val liked: SectionWithQuery,
+    val readed: SectionWithQuery ,
+    val follow: SectionWithQuery,
+    val visited: SectionWithQuery
+) {
+    companion object {
+        fun default(): UserSections = UserSections(
+            favourites = SectionWithQuery(
+                "Подписки на авторов", emptyList(), "home", "favourites"
+            ),
+            liked = SectionWithQuery(
+                "Понравившиеся", emptyList(), "home", "liked_fanfics"
+            ),
+            readed = SectionWithQuery(
+                "Прочитанные", emptyList(), "home", "readedList"
+            ),
+            follow = SectionWithQuery(
+                "Подписки", emptyList(), "home", "followList"
+            ),
+            visited = SectionWithQuery(
+                "Просмотренные", emptyList(), "home", "visitedList"
+            )
+        )
     }
 }
 

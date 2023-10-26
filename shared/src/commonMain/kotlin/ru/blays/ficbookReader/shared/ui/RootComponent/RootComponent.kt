@@ -9,11 +9,14 @@ import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficP
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.SettingsMainComponent
+import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 
 interface RootComponent {
 
     val childStack: Value<ChildStack<*, Child>>
+
+    val themeComponent: ThemeComponent
 
     @Serializable
     sealed class Config {

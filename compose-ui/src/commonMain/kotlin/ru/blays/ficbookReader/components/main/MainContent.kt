@@ -29,8 +29,8 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.platformUtils.WindowSize
-import ru.blays.ficbookReader.shared.data.dto.Section
-import ru.blays.ficbookReader.shared.data.sections.UserSections
+import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
+import ru.blays.ficbookReader.shared.data.sections.userSections
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
@@ -163,7 +163,6 @@ private fun PagerContent(
 ) {
     HorizontalPager(
         modifier = Modifier
-            .padding(vertical = 3.dp)
             .fillMaxWidth(),
         state = pagerState,
         userScrollEnabled = false
@@ -191,6 +190,7 @@ private fun DrawerLandscape(
     modifier: Modifier = Modifier,
     component: MainScreenComponent
 ) {
+    val state by component.state.subscribeAsState()
     val scrollState = rememberScrollState()
     ModalDrawerSheet(
         modifier = modifier
@@ -201,6 +201,13 @@ private fun DrawerLandscape(
             verticalAlignment = Alignment.CenterVertically
         ) {
             UserIconButton(component)
+            state.user?.name?.let { userName ->
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(
+                    text = userName,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
             Spacer(modifier = Modifier.width(5.dp))
             CustomIconButton(
                 onClick = {
@@ -249,13 +256,11 @@ private fun DrawerContent(
 ) {
     val state by component.state.subscribeAsState()
     val isAuthorized = remember(state) { state.authorized }
-    val userSections = UserSections
+    val userSections = userSections
 
-    fun navigateToSection(section: Section) {
+    fun navigateToSection(section: SectionWithQuery) {
         component.onOutput(
-            MainScreenComponent.Output.OpenFanficsList(
-                section
-            )
+            MainScreenComponent.Output.OpenFanficsList(section)
         )
     }
 
@@ -486,7 +491,7 @@ private fun SearchInfoBar(
 fun UserIconButton(
     component: MainScreenComponent
 ) {
-    val state  by component.state.subscribeAsState()
+    val state by component.state.subscribeAsState()
     var isMenuExpanded by remember { mutableStateOf(false) }
     IconButton(
         onClick = {

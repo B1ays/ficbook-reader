@@ -53,5 +53,4 @@ dependencies {
     // Project
     implementation(projects.shared)
     implementation(projects.composeUi)
-    implementation(projects.preferences)
 }

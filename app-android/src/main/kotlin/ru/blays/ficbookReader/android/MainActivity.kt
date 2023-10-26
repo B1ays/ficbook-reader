@@ -18,7 +18,7 @@ class MainActivity: ComponentActivity() {
         val root = DefaultRootComponent(componentContext = defaultComponentContext())
 
         setContent {
-            AppTheme {
+            AppTheme(root.themeComponent) {
                 RootContent(component = root)
             }
         }

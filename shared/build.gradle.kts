@@ -43,19 +43,24 @@ kotlin {
                 // Realm
                 implementation(libs.realm.library.base)
 
+                // Multiplatform Settings
+                implementation(libs.multiplatform.settings)
+                implementation(libs.multiplatform.settings.serialization)
+                implementation(libs.multiplatform.settings.coroutines)
+
                 // Ficbook api
                 implementation(projects.ficbookApi)
             }
         }
         val jvmMain by getting {
             dependencies {
-                // ObjectBox Desktop
+
             }
         }
         val androidMain by getting {
             dependencies {
+                // koin
                 implementation(libs.koin.android)
-                //implementation(libs.koin.androidx)
             }
         }
     }

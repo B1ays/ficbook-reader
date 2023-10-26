@@ -21,7 +21,6 @@ include(":compose-ui")
 include(":app-android")
 include(":app-desktop")
 include(":ficbookApi")
-include("preferences")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

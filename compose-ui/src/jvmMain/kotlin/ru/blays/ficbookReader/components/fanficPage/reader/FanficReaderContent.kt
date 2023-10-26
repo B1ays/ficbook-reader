@@ -36,7 +36,6 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
 import io.github.skeptick.libres.compose.painterResource
 import kotlinx.coroutines.launch
-import ru.blays.ficbookReader.platformUtils.FullscreenContainer
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbookReader.theme.ReaderTheme
@@ -174,65 +173,57 @@ fun ReaderContentDesktop(
 
     val pagerState: MutableState<PagerState?> = remember { mutableStateOf(null) }
 
-    FullscreenContainer(
-        enabled = settings.fullscreenMode
-    ) {
-        if(text.isNotEmpty()) {
-            BoxWithConstraints(
-                modifier = modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(DefaultPadding.CardDefaultPadding)
-            ) {
-                if (twoPanel) {
-                    //println("Used two panel reader")
-                    val density = LocalDensity.current
-                    val config = remember(style, constraints.maxHeight, constraints.maxWidth) {
-                        TextSplitterConfig.TwoPanelConfig(
-                            style = style,
-                            constraints = constraints,
-                            spaceBetweenPanel = with(density) { 50.dp.roundToPx() }
-                        )
-                    }
-                    println("""
-                        Current max height: ${config.constraints.maxHeight}
-                        Current max width: ${config.constraints.maxWidth}
-                        """.trimIndent()
-                    )
-                    val pages = rememberTwoPanelTextPages(
-                        text = text,
-                        config = config
-                    )
-                    pagerState.value = rememberPagerState {
-                        pages.size
-                    }
-                    TwoPanelPager(
-                        pagerState = pagerState.value!!,
-                        pages = pages,
-                        config = config,
-                        onCenterZoneClick = onCenterZoneClick
-                    )
-                } else {
-                    //println("Used single panel reader")
-                    val pages = rememberTextPages(
-                        text = text,
-                        config = TextSplitterConfig.SinglePanelConfig(
-                            style = style,
-                            constraints = constraints
-                        )
-                    )
-                    pagerState.value = rememberPagerState {
-                        pages.size
-                    }
-                    SinglePanelPager(
-                        pagerState = pagerState.value!!,
-                        pages = pages,
-                        config = TextSplitterConfig.SinglePanelConfig(
-                            style = style,
-                            constraints = constraints
-                        ),
-                        onCenterZoneClick = onCenterZoneClick
+    if(text.isNotEmpty()) {
+        BoxWithConstraints(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.background)
+                .padding(DefaultPadding.CardDefaultPadding)
+        ) {
+            if (twoPanel) {
+                val density = LocalDensity.current
+                val config = remember(style, constraints.maxHeight, constraints.maxWidth) {
+                    TextSplitterConfig.TwoPanelConfig(
+                        style = style,
+                        constraints = constraints,
+                        spaceBetweenPanel = with(density) { 50.dp.roundToPx() }
                     )
                 }
+                val pages = rememberTwoPanelTextPages(
+                    text = text,
+                    config = config
+                )
+                pagerState.value = rememberPagerState {
+                    pages.size
+                }
+                TwoPanelPager(
+                    pagerState = pagerState.value!!,
+                    pages = pages,
+                    config = config,
+                    onCenterZoneClick = onCenterZoneClick
+                )
+            } else {
+                val config = remember(style, constraints.maxHeight, constraints.maxWidth) {
+                    TextSplitterConfig.SinglePanelConfig(
+                        style = style,
+                        constraints = constraints
+                    )
+                }
+                val pages = rememberTextPages(
+                    text = text,
+                    config = config
+                )
+                pagerState.value = rememberPagerState {
+                    pages.size
+                }
+                SinglePanelPager(
+                    pagerState = pagerState.value!!,
+                    pages = pages,
+                    config = TextSplitterConfig.SinglePanelConfig(
+                        style = style,
+                        constraints = constraints
+                    ),
+                    onCenterZoneClick = onCenterZoneClick
+                )
             }
         }
     }
@@ -373,6 +364,8 @@ private fun BottomControlLandscape(
 ) {
     val hasPreviousPage = pagerState.canScrollBackward
     val hasNextPage = pagerState.canScrollForward
+    val hasNextChapter = readerState.chapterIndex < readerState.chaptersCount-1
+    val hasPreviousChapter = readerState.chapterIndex > 0
 
     val scope = rememberCoroutineScope()
 
@@ -385,7 +378,7 @@ private fun BottomControlLandscape(
             contentAlignment = Alignment.Center
         ) {
             NextChapterButton(
-                visible = !hasPreviousPage,
+                visible = !hasPreviousPage && hasPreviousChapter,
                 icon = Icons.Rounded.ArrowBack,
                 contentDescription = "Кнопка предыдущая глава",
                 onClick = openPreviousChapter
@@ -425,7 +418,7 @@ private fun BottomControlLandscape(
             contentAlignment = Alignment.Center
         ) {
             NextChapterButton(
-                visible = !hasNextPage,
+                visible = !hasNextPage && hasNextChapter,
                 icon = Icons.Rounded.ArrowForward,
                 contentDescription = "Кнопка следующая глава",
                 onClick = openNextChapter

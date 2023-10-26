@@ -34,6 +34,8 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import kotlinx.coroutines.launch
+import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.data.dto.FanficPageModelStable
@@ -215,6 +217,8 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
     )
     val scrollBehavior = rememberToolbarScrollBehavior()
 
+    val scope = rememberCoroutineScope()
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -239,6 +243,11 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                             }
                         )
                         Spacer(modifier = Modifier.height(24.dp))
+                        BackHandler(true) {
+                            scope.launch {
+                                bottomSheetScaffoldState.bottomSheetState.hide()
+                            }
+                        }
                     }
                     BottomSheetContentOpened(
                         fanficPage = fanfic,

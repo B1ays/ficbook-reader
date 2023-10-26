@@ -20,7 +20,8 @@ class DefaultFanficPageComponent(
         source = navigation,
         initialConfiguration = FanficPageComponent.Config.Info(fanficHref),
         serializer = FanficPageComponent.Config.serializer(),
-        childFactory = ::childFactory
+        childFactory = ::childFactory,
+        handleBackButton = true
     )
 
     private fun childFactory(configuration: FanficPageComponent.Config, childContext: ComponentContext): FanficPageComponent.Child {
@@ -72,7 +73,6 @@ class DefaultFanficPageComponent(
             is FanficPageInfoComponent.Output.OpenLastOrFirstChapter -> {
                 val chapters = output.chapters
                 val lastReadedChapterIndex = chapters.indexOfLast { it.readed }
-                val first = chapters
                 if(lastReadedChapterIndex != -1) {
                     navigation.push(
                         FanficPageComponent.Config.Reader(

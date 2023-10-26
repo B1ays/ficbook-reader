@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -91,8 +92,7 @@ private fun LandscapeContent(
             }
             Spacer(modifier = Modifier.height(3.dp))
             Text(
-                modifier = Modifier
-                    .padding(DefaultPadding.CardDefaultPaddingSmall),
+                modifier = Modifier.padding(horizontal = 4.dp),
                 text = fanfic.description
             )
         }
@@ -139,8 +139,7 @@ private fun PortraitContent(
                 FanficHeader(fanfic)
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
-                    modifier = Modifier
-                        .padding(DefaultPadding.CardDefaultPaddingSmall),
+                    modifier = Modifier.padding(horizontal = 4.dp),
                     text = fanfic.description
                 )
             }
@@ -356,6 +355,19 @@ fun FanficHeader(
                 fanfic.tags.forEach { tag ->
                     FanficTagChip(tag = tag)
                 }
+            }
+            Spacer(modifier = Modifier.requiredHeight(6.dp))
+            Row {
+                Text(
+                    text = "Обновлено: ",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Text(
+                    text = fanfic.updateDate,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }

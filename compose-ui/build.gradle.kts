@@ -52,9 +52,6 @@ kotlin {
 
                 // Ktor
                 implementation(libs.ktor.ktor.client.okhttp)
-
-                // Project
-                implementation(projects.preferences)
             }
         }
 
@@ -67,8 +64,10 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.androidx.core)
+                implementation(libs.androidx.activity.activityCompose)
 
                 implementation(libs.compose.color.picker.android)
+
             }
         }
 

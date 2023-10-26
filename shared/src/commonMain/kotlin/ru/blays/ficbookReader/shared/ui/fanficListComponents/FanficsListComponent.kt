@@ -14,6 +14,7 @@ interface FanficsListComponent {
     sealed class Intent {
         data object Refresh: Intent()
         data object LoadNextPage: Intent()
+        data class SetAsFeed(val section: SectionWithQuery): Intent()
     }
 
     sealed class Output {
@@ -27,4 +28,8 @@ interface FanficsListComponent {
         val isLoading: Boolean = true,
         val page: Int = 1
     )
+}
+
+internal interface FanficsListComponentInternal: FanficsListComponent {
+    fun setSection(section: ru.blays.ficbookapi.data.SectionWithQuery)
 }

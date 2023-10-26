@@ -3,9 +3,9 @@ package ru.blays.ficbookReader.android
 import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import ru.blays.ficbookReader.shared.data.di.ficbookApiModule
-import ru.blays.ficbookReader.shared.data.di.realmModule
-import ru.blays.preferences.DI.preferencesModule
+import ru.blays.ficbookReader.shared.di.ficbookApiModule
+import ru.blays.ficbookReader.shared.di.realmModule
+import ru.blays.ficbookReader.shared.di.repositoryModule
 
 class App: Application() {
     override fun onCreate() {
@@ -14,9 +14,9 @@ class App: Application() {
         startKoin {
             androidContext(this@App)
             modules(
-                preferencesModule,
                 realmModule,
-                ficbookApiModule
+                ficbookApiModule,
+                repositoryModule
             )
         }
     }

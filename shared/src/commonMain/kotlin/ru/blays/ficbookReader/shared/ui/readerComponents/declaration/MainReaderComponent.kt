@@ -25,7 +25,7 @@ interface MainReaderComponent {
     }
 
     @Serializable
-    data class DialogConfig(val settings: Settings)
+    data class SettingsDialogConfig(val settings: Settings)
 
     @Serializable
     data class State(

@@ -1,13 +1,15 @@
 package ru.blays.ficbookReader.shared.ui.RootComponent
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.*
-import org.koin.java.KoinJavaComponent.get
+import org.koin.core.parameter.parametersOf
+import org.koin.java.KoinJavaComponent.inject
 import ru.blays.ficbookReader.shared.data.realmModels.CookieEntity
 import ru.blays.ficbookReader.shared.data.realmModels.toApiModel
 import ru.blays.ficbookReader.shared.data.realmModels.toEntity
@@ -19,11 +21,10 @@ import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScr
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultMainScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultUserLogInComponent
-import ru.blays.ficbookapi.data.Section.Companion.toSectionWithQuery
+import ru.blays.ficbookReader.shared.ui.themeComponents.DefaultThemeComponent
+import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
-import ru.blays.ficbookapi.data.UserSections
 import ru.blays.ficbookapi.dataModels.CookieModel
-import ru.blays.ficbookapi.ficbookConnection.FicbookApi
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultRootComponent private constructor(
@@ -43,7 +44,6 @@ class DefaultRootComponent private constructor(
     private val main: (
         componentContext: ComponentContext,
         ficbookApi: IFicbookApi,
-        initialSection: SectionWithQuery,
         output: (MainScreenComponent.Output) -> Unit
     ) -> MainScreenComponent,
     private val logIn: (
@@ -72,11 +72,10 @@ class DefaultRootComponent private constructor(
                 output = output
             )
         },
-        main = { componentContext, ficbookApi, initialSection, output ->
+        main = { componentContext, ficbookApi, output ->
             DefaultMainScreenComponent(
                 componentContext = componentContext,
                 ficbookApi = ficbookApi,
-                initialSection = initialSection,
                 output = output
             )
         },
@@ -89,7 +88,7 @@ class DefaultRootComponent private constructor(
         }
     )
 
-    private val ficbookApi: IFicbookApi = runBlocking { createFicbookApi() }
+    private val ficbookApi: IFicbookApi = runBlocking { initFicbookApi() }
 
     private val navigation = StackNavigation<RootComponent.Config>()
     override val childStack: Value<ChildStack<*, RootComponent.Child>> = childStack(
@@ -98,6 +97,10 @@ class DefaultRootComponent private constructor(
         serializer = RootComponent.Config.serializer(),
         childFactory = ::childFactory,
         handleBackButton = true
+    )
+
+    override val themeComponent: ThemeComponent = DefaultThemeComponent(
+        childContext("theme_component")
     )
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -114,7 +117,7 @@ class DefaultRootComponent private constructor(
                 logIn(componentContext, ficbookApi, ::onLogInOutput)
             )
             is RootComponent.Config.Main -> RootComponent.Child.Main(
-                main(componentContext, ficbookApi, getFeedSection(), ::onMainOutput)
+                main(componentContext, ficbookApi, ::onMainOutput)
             )
             is RootComponent.Config.Settings -> TODO()
             is RootComponent.Config.FanficPage -> RootComponent.Child.FanficPage(
@@ -126,20 +129,11 @@ class DefaultRootComponent private constructor(
         }
     }
 
-    private fun getFeedSection(): SectionWithQuery {
-        return UserSections._favourites.toSectionWithQuery()
-        /*if(ficbookApi.isAuthorized.value) {
-            UserSections._follow.toSectionWithQuery()
-        } else {
-            PopularSections._gen.toSectionWithQuery()
-        }*/
-    }
-
-    private suspend fun createFicbookApi(): FicbookApi {
-        val ficbookApi = FicbookApi()
+    private suspend fun initFicbookApi(): IFicbookApi = coroutineScope {
+        val ficbookApi: IFicbookApi by inject(IFicbookApi::class.java)
         val cookies = readCookiesFromDB()
         ficbookApi.setCookie(cookies)
-        return ficbookApi
+        return@coroutineScope ficbookApi
     }
 
     private fun onFanficPageOutput(output: FanficPageComponent.Output) {
@@ -201,7 +195,9 @@ class DefaultRootComponent private constructor(
     }
 
     private suspend fun writeNewCookiesToDB(cookies: List<CookieModel>) = coroutineScope {
-        val realm = get<Realm>(Realm::class.java)
+        val realm: Realm by inject(Realm::class.java) {
+            parametersOf(setOf(CookieEntity::class))
+        }
         realm.write {
             val savedCookies = query<CookieEntity>().find()
             delete(savedCookies)
@@ -215,12 +211,14 @@ class DefaultRootComponent private constructor(
         realm.close()
     }
 
-    private suspend fun readCookiesFromDB(): List<CookieModel> {
-        val realm = get<Realm>(Realm::class.java)
+    private suspend fun readCookiesFromDB(): List<CookieModel> = coroutineScope {
+        val realm: Realm by inject(Realm::class.java) {
+            parametersOf(setOf(CookieEntity::class))
+        }
         val savedCookies = realm.query(CookieEntity::class).find().map {
             it.toApiModel()
         }
         realm.close()
-        return savedCookies
+        return@coroutineScope savedCookies
     }
 }

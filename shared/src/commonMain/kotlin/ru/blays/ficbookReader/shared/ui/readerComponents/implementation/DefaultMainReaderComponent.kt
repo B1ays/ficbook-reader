@@ -10,7 +10,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
+import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsJsonRepository
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
@@ -22,6 +24,14 @@ class DefaultMainReaderComponent(
     initialChapterIndex: Int,
     private val output: (output: MainReaderComponent.Output) -> Unit
 ): MainReaderComponent, ComponentContext by componentContext {
+    private val settingsJsonRepository: ISettingsJsonRepository by inject(ISettingsJsonRepository::class.java)
+
+    private var readerSettings: MainReaderComponent.Settings by settingsJsonRepository.getDelegate(
+        serializer = MainReaderComponent.Settings.serializer(),
+        defaultValue = MainReaderComponent.Settings(),
+        key = "ReaderPrefs"
+    )
+
     private val _state: MutableValue<MainReaderComponent.State> = MutableValue(
         MainReaderComponent.State(
             chapterIndex = initialChapterIndex,
@@ -32,21 +42,21 @@ class DefaultMainReaderComponent(
             text = "",
             loading = true,
             error = false,
-            settings = getSettings()
+            settings = readerSettings
         )
     )
     override val state: Value<MainReaderComponent.State>
         get() = _state
 
-    private val dialogNavigation = SlotNavigation<MainReaderComponent.DialogConfig>()
+    private val dialogNavigation = SlotNavigation<MainReaderComponent.SettingsDialogConfig>()
     override val dialog: Value<ChildSlot<*, SettingsReaderComponent>> = childSlot(
-        serializer = MainReaderComponent.DialogConfig.serializer(),
+        serializer = MainReaderComponent.SettingsDialogConfig.serializer(),
         source = dialogNavigation,
         handleBackButton = true
     ) { config, childComponentContext ->
         DefaultSettingsReaderComponent(
             componentContext = childComponentContext,
-            initialSettings = config.settings,
+            config.settings,
             onSettingsChanged = ::onSettingsChanged
         )
     }
@@ -68,7 +78,7 @@ class DefaultMainReaderComponent(
             is MainReaderComponent.Intent.OpenCloseSettings -> {
                 if(dialog.value.child == null) {
                     dialogNavigation.activate(
-                        MainReaderComponent.DialogConfig(state.value.settings)
+                        MainReaderComponent.SettingsDialogConfig(state.value.settings)
                     )
                 } else {
                     dialogNavigation.dismiss()
@@ -87,6 +97,7 @@ class DefaultMainReaderComponent(
                 settings = settings
             )
         }
+        readerSettings = settings
     }
 
     private fun openChapter(index: Int) {
@@ -130,9 +141,5 @@ class DefaultMainReaderComponent(
                 }
             }
         }
-    }
-
-    private fun getSettings(): MainReaderComponent.Settings {
-        return MainReaderComponent.Settings()
     }
 }

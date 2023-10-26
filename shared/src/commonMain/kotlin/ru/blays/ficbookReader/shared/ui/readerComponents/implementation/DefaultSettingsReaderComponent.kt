@@ -19,45 +19,47 @@ class DefaultSettingsReaderComponent(
     override fun sendIntent(intent: SettingsReaderComponent.Intent) {
         when(intent) {
             is SettingsReaderComponent.Intent.DarkColorChanged -> {
-                _state.update {
-                    it.copy(
+                changeState(
+                    state.value.copy(
                         darkColor = intent.color
                     )
-                }
-                onSettingsChanged(state.value)
+                )
             }
             is SettingsReaderComponent.Intent.LightColorChanged -> {
-                _state.update {
-                    it.copy(
+                changeState(
+                    state.value.copy(
                         lightColor = intent.color
                     )
-                }
-                onSettingsChanged(state.value)
+                )
             }
             is SettingsReaderComponent.Intent.FontSizeChanged -> {
-                _state.update {
-                    it.copy(
+                changeState(
+                    state.value.copy(
                         fontSize = intent.fontSize
                     )
-                }
-                onSettingsChanged(state.value)
+                )
             }
             is SettingsReaderComponent.Intent.FullscreenModeChanged -> {
-                _state.update {
-                    it.copy(
+                changeState(
+                    state.value.copy(
                         fullscreenMode = intent.fullscreenMode
                     )
-                }
-                onSettingsChanged(state.value)
+                )
             }
             is SettingsReaderComponent.Intent.NightModeChanged -> {
-                _state.update {
-                    it.copy(
+                changeState(
+                    state.value.copy(
                         nightMode = intent.nightMode
                     )
-                }
-                onSettingsChanged(state.value)
+                )
             }
         }
+    }
+
+    private fun changeState(newState: MainReaderComponent.Settings) {
+        _state.update {
+            newState
+        }
+        onSettingsChanged(state.value)
     }
 }

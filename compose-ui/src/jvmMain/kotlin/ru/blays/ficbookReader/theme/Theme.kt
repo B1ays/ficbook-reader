@@ -16,20 +16,20 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.materialkolor.LocalDynamicMaterialThemeSeed
 import com.materialkolor.dynamicColorScheme
-import org.koin.compose.koinInject
-import ru.blays.preferences.DataStores.AmoledThemeDS
-import ru.blays.preferences.DataStores.ColorAccentIndexDS
-import ru.blays.preferences.DataStores.ThemeDS
+import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 
 @Composable
 actual fun AppTheme(
+    component: ThemeComponent,
     content: @Composable () -> Unit
 ) {
-    val themeIndex by koinInject<ThemeDS>().asState()
-    val isAmoledTheme by koinInject<AmoledThemeDS>().asState()
-    val colorAccentIndex by koinInject<ColorAccentIndexDS>().asState()
+    val state by component.state.subscribeAsState()
+    val themeIndex = state.themeIndex
+    val isAmoledTheme = state.amoledTheme
+    val colorAccentIndex = state.defaultAccentIndex
 
     val primaryColor = remember(colorAccentIndex) {
         defaultAccentColorsList.getOrElse(colorAccentIndex) {

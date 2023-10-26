@@ -18,8 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.example.myapplication.compose.Res
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficCard
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
@@ -110,6 +112,21 @@ fun FanficsListScreenContent(
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "Стрелка назад"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            component.sendIntent(
+                                FanficsListComponent.Intent.SetAsFeed(state.section)
+                            )
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.image.ic_star_filled),
+                            contentDescription = "Иконка добавить в избранное",
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },

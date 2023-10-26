@@ -3,9 +3,9 @@ package ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration
 import com.arkivanov.decompose.value.Value
 import ru.blays.ficbookReader.shared.data.dto.Section
 import ru.blays.ficbookReader.shared.data.dto.UserModelStable
-import ru.blays.ficbookapi.data.Section.Companion.toSectionWithQuery
+import ru.blays.ficbookReader.shared.data.mappers.toApiModel
+import ru.blays.ficbookReader.shared.data.sections.userSections
 import ru.blays.ficbookapi.data.SectionWithQuery
-import ru.blays.ficbookapi.data.UserSections
 
 interface MainScreenComponent {
     val tabs: Array<TabModel>
@@ -32,6 +32,11 @@ interface MainScreenComponent {
                     queryParameters = emptyList()
                 )
             )
+            constructor(
+                sectionWithQuery: ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
+            ) : this(
+                sectionWithQuery = sectionWithQuery.toApiModel()
+            )
         }
         data class OpenFanficPage(val href: String): Output()
         data object OpenRandomFanficPage: Output()
@@ -55,7 +60,7 @@ interface MainScreenComponent {
     }*/
 
     data class State(
-        val mainFeed: SectionWithQuery = UserSections._follow.toSectionWithQuery(),
+        val mainFeed: SectionWithQuery = userSections.follow.toApiModel(),
         val user: UserModelStable? = null,
         val authorized: Boolean = false,
     )

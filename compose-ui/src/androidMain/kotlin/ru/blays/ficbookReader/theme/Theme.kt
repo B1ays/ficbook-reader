@@ -15,24 +15,23 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.materialkolor.LocalDynamicMaterialThemeSeed
 import com.materialkolor.dynamicColorScheme
-import org.koin.compose.koinInject
-import ru.blays.preferences.DataStores.AmoledThemeDS
-import ru.blays.preferences.DataStores.ColorAccentIndexDS
-import ru.blays.preferences.DataStores.MonetColorsDS
-import ru.blays.preferences.DataStores.ThemeDS
+import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 
 @Composable
 actual fun AppTheme(
+    component: ThemeComponent,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
 
-    val themeIndex by koinInject<ThemeDS>().asState()
-    val amoledTheme by koinInject<AmoledThemeDS>().asState()
-    val monetTheme  by koinInject<MonetColorsDS>().asState()
-    val colorAccentIndex by koinInject<ColorAccentIndexDS>().asState()
+    val state by component.state.subscribeAsState()
+    val themeIndex = state.themeIndex
+    val isAmoledTheme = state.amoledTheme
+    val colorAccentIndex = state.defaultAccentIndex
+    val monetTheme = state.dynamicColors
 
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val darkTheme = remember(key1 = themeIndex) {
@@ -55,7 +54,7 @@ actual fun AppTheme(
         spring(stiffness = Spring.StiffnessLow)
     }
 
-    val colors: ColorScheme by remember(primaryColor, darkTheme, amoledTheme, monetTheme) {
+    val colors: ColorScheme by remember(primaryColor, darkTheme, isAmoledTheme, monetTheme) {
         derivedStateOf {
             val scheme = when {
                 monetTheme && darkTheme -> dynamicDarkColorScheme(context)
@@ -66,7 +65,7 @@ actual fun AppTheme(
                 )
             }
             scheme.run {
-                if(amoledTheme) copy(
+                if(isAmoledTheme) copy(
                     background = Color.Black,
                     surface = Color.Black,
                     surfaceVariant = Color.Black,

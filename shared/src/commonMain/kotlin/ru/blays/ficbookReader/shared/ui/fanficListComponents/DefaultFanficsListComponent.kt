@@ -9,26 +9,46 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.koin.java.KoinJavaComponent.inject
 import ru.blays.ficbookReader.shared.data.dto.FanficCardModelStable
+import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
+import ru.blays.ficbookReader.shared.preferences.SettingsKeys
+import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultFanficsListComponent(
     componentContext: ComponentContext,
-    private val section: SectionWithQuery,
+    section: SectionWithQuery,
     private val ficbookApi: IFicbookApi,
     private val output: (output: FanficsListComponent.Output) -> Unit
-): FanficsListComponent, ComponentContext by componentContext {
+): FanficsListComponentInternal, ComponentContext by componentContext {
     private val _state: MutableValue<FanficsListComponent.State> = MutableValue(
             FanficsListComponent.State(
             section = section.toStableModel()
         )
     )
+
+    override fun setSection(section: SectionWithQuery) {
+        _state.update {
+            it.copy(
+                section = section.toStableModel()
+            )
+        }
+        println("Set section to $section")
+        println("Refresh list")
+        refresh()
+    }
+
     override val state: Value<FanficsListComponent.State>
         get() = _state
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+    private val settingsComponent: ISettingsRepository by inject(ISettingsRepository::class.java)
 
     init {
         refresh()
@@ -41,6 +61,7 @@ class DefaultFanficsListComponent(
         when(intent) {
             is FanficsListComponent.Intent.Refresh -> refresh()
             is FanficsListComponent.Intent.LoadNextPage -> loadNextPage()
+            is FanficsListComponent.Intent.SetAsFeed -> setAsFeed(intent.section)
         }
     }
 
@@ -56,7 +77,10 @@ class DefaultFanficsListComponent(
                     isLoading = true
                 )
             }
-            val page = getPage(section, 1)
+            val page = getPage(
+                section = state.value.section.toApiModel(),
+                page = 1
+            )
             _state.update {
                 it.copy(
                     list = page,
@@ -76,7 +100,10 @@ class DefaultFanficsListComponent(
                     )
                 }
                 val nextPage = (state.value.page) + 1
-                val page = getPage(section, nextPage)
+                val page = getPage(
+                    section = state.value.section.toApiModel(),
+                    page = nextPage
+                )
                 _state.update {
                     it.copy(
                         list = state.value.list + page,
@@ -89,6 +116,16 @@ class DefaultFanficsListComponent(
     }
 
     private suspend fun getPage(section: SectionWithQuery, page: Int): List<FanficCardModelStable> {
-        return ficbookApi.getFanficsForSection(section, page).map { it.toStableModel() }
+        return ficbookApi.getFanficsForSection(
+            section = section,
+            page = page
+        ).map { it.toStableModel() }
+    }
+
+    private fun setAsFeed(section: ru.blays.ficbookReader.shared.data.dto.SectionWithQuery) {
+        settingsComponent.setValueForKey(
+            key = ISettingsRepository.stringKey(SettingsKeys.FEED_SECTION_KEY),
+            value = Json.encodeToString(section)
+        )
     }
 }

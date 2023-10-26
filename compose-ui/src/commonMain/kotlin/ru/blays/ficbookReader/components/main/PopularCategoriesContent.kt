@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.example.myapplication.compose.Res
 import ru.blays.ficbookReader.platformUtils.onPointerEventPlatform
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
-import ru.blays.ficbookReader.shared.data.dto.Section
+import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.PopularSectionsComponent
 import ru.blays.ficbookReader.theme.getColorForDirection
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -78,7 +78,7 @@ fun PopularCategoriesContent(component: PopularSectionsComponent) {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun CategoryListItem(
-    section: Section,
+    section: SectionWithQuery,
     direction: FanficDirection,
     onClick: () -> Unit
 ) {
@@ -139,7 +139,7 @@ private fun CategoryListItem(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun CategoryGridItem(
-    section: Section,
+    section: SectionWithQuery,
     direction: FanficDirection,
     onClick: () -> Unit
 ) {

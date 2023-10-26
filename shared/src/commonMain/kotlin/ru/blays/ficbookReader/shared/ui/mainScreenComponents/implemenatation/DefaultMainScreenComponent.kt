@@ -10,12 +10,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import ru.blays.ficbookReader.shared.data.dto.toSectionWithQuery
-import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.*
-import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultMainScreenComponent private constructor(
@@ -31,7 +28,6 @@ class DefaultMainScreenComponent private constructor(
     constructor(
         componentContext: ComponentContext,
         ficbookApi: IFicbookApi,
-        initialSection: SectionWithQuery,
         output: (MainScreenComponent.Output) -> Unit
     ): this(
         componentContext = componentContext,
@@ -39,7 +35,6 @@ class DefaultMainScreenComponent private constructor(
         feed = { componentContext, output ->
             DefaultFeedComponent(
                 componentContext = componentContext,
-                initialSection = initialSection,
                 ficbookApi = ficbookApi,
                 onOutput = output
             )
@@ -135,7 +130,7 @@ class DefaultMainScreenComponent private constructor(
             is PopularSectionsComponent.Output.NavigateToSection -> {
                 this.output(
                     MainScreenComponent.Output.OpenFanficsList(
-                        output.section.toSectionWithQuery().toApiModel()
+                        output.section
                     )
                 )
             }
@@ -158,6 +153,7 @@ class DefaultMainScreenComponent private constructor(
             is SavedFanficsComponent.Output.NavigateToFanficPage -> TODO()
         }
     }
+
 
     private val _feedComponent: FeedComponentInternal = feed(
         childContext(
@@ -201,6 +197,7 @@ class DefaultMainScreenComponent private constructor(
         }
         coroutineScope.launch {
             ficbookApi.currentUser.collect { newUser ->
+                println("user: $$newUser")
                 _state.update {
                     it.copy(
                         user = newUser?.toStableModel()
@@ -210,6 +207,7 @@ class DefaultMainScreenComponent private constructor(
         }
         coroutineScope.launch {
             ficbookApi.isAuthorized.collect { authorized ->
+                println("authorized: $authorized")
                 _state.update {
                     it.copy(
                         authorized = authorized

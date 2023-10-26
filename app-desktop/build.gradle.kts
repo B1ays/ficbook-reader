@@ -16,7 +16,6 @@ kotlin {
             dependencies {
                 implementation(projects.shared)
                 implementation(projects.composeUi)
-                implementation(projects.preferences)
 
                 implementation(compose.desktop.currentOs)
                 implementation(compose.ui)
@@ -32,10 +31,12 @@ compose.desktop {
     application {
         mainClass = "ru.blays.ficbookReader.desktop.MainKt"
 
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
-            packageName = "KotlinMultiplatformComposeDesktopApplication"
+            packageName = "Ficbook reader"
             packageVersion = libs.versions.project.get()
+            includeAllModules = true
         }
     }
 }
