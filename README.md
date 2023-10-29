@@ -30,7 +30,7 @@
 > 
 > *Installer - версия с установщиком
 
-## Скриншоты
+## 🖼️Скриншоты
 ### Android
 ![promo banner](https://github.com/B1ays/ficbook-reader/blob/ebe0cd86d1c18a09099ee23acc99fe3995c0e0b1/promo/promo_android.png "promo banner")
 ### Desktop
