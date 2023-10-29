@@ -8,7 +8,7 @@ import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponen
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
-import ru.blays.ficbookReader.shared.ui.settingsComponents.SettingsMainComponent
+import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 

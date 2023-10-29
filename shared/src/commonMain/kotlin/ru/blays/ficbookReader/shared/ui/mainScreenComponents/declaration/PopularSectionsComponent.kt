@@ -10,7 +10,6 @@ interface PopularSectionsComponent {
 
     sealed class Output {
         data class NavigateToSection(val section: SectionWithQuery): Output()
-        data object NavigateBack: Output()
     }
 
 }

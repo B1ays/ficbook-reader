@@ -1,28 +1,48 @@
 package ru.blays.ficbookReader.components.fanficPage.reader
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.*
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.ColorUtils
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.example.myapplication.compose.Res
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import ru.blays.ficbookReader.platformUtils.FullscreenContainer
 import ru.blays.ficbookReader.platformUtils.rememberTimeObserver
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
+import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbookReader.theme.ReaderTheme
+import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
+import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -37,42 +57,90 @@ actual fun LandscapeContent(component: MainReaderComponent) {
 
     var pagerState: PagerState? by remember { mutableStateOf(null) }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
+    val controlEventSource = remember { MutableStateFlow(false) }
+
+    FullscreenContainer(
+        enabled = settings.fullscreenMode
     ) {
-        ReaderTopBarContent(
-            component = component,
-            modifier = Modifier.weight(0.04F)
-        )
-        ReaderTheme(
-            darkTheme = settings.nightMode,
-            darkColor = Color(settings.darkColor),
-            lightColor = Color(settings.lightColor)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            pagerState = ReaderContent(
-                modifier = Modifier.weight(0.92F),
-                text = text,
-                settings = settings
-            ) {
-                // TODO
-            }
-        }
-        pagerState?.let {
-            ReaderBottomContent(
-                pagerState = it,
+            ReaderTopBarContent(
                 component = component,
                 modifier = Modifier.weight(0.04F)
             )
+            Box(
+                modifier = Modifier.weight(0.92F),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                ReaderTheme(
+                    darkTheme = settings.nightMode,
+                    darkColor = Color(settings.darkColor),
+                    lightColor = Color(settings.lightColor)
+                ) {
+                    pagerState = ReaderContent(
+                        modifier = Modifier,
+                        text = text,
+                        settings = settings,
+                        onCenterZoneClick = {
+                           /* component.onIntent(
+                                MainReaderComponent.Intent.OpenOrCloseSettings
+                            )*/
+                            controlEventSource.value = !controlEventSource.value
+                        }
+                    )
+                }
+                pagerState?.let {
+                    Control(
+                        pagerState = it,
+                        readerState = state,
+                        eventSource = controlEventSource,
+                        modifier = Modifier,
+                        openPreviousChapter = {
+                            component.sendIntent(
+                                MainReaderComponent.Intent.ChangeChapter(state.chapterIndex - 1)
+                            )
+                        },
+                        openNextChapter = {
+                            component.sendIntent(
+                                MainReaderComponent.Intent.ChangeChapter(state.chapterIndex + 1)
+                            )
+                        },
+                        openSettings = {
+                            component.sendIntent(
+                                MainReaderComponent.Intent.OpenOrCloseSettings
+                            )
+                        }
+                    )
+                }
+            }
+            pagerState?.let {
+                ReaderBottomContent(
+                    pagerState = it,
+                    modifier = Modifier.weight(0.04F)
+                )
+            }
+        }
+        slotInstance?.let { dialogComponent ->
+            ReaderSettingPopup(
+                component = dialogComponent,
+                readerSettingsModel = settings,
+            ) {
+                component.sendIntent(
+                    MainReaderComponent.Intent.OpenOrCloseSettings
+                )
+            }
         }
     }
-
 }
 
 @Composable
 actual fun PortraitContent(component: MainReaderComponent) = LandscapeContent(component)
 
 
+@Suppress("AnimatedContentLabel")
+@SuppressLint("ComposableNaming")
 @Composable
 private fun ReaderContent(
     modifier: Modifier = Modifier,
@@ -87,38 +155,52 @@ private fun ReaderContent(
         )
     }
     var pagerState: PagerState? by remember { mutableStateOf(null) }
-    if(text.isNotEmpty()) {
-        BoxWithConstraints(
-            modifier = modifier
-                .background(MaterialTheme.colorScheme.background)
-                .padding(DefaultPadding.CardDefaultPadding)
-        ) {
-            val pages = rememberTextPages(
-                text = text,
-                config = TextSplitterConfig.SinglePanelConfig(
-                    style = style,
-                    constraints = constraints
+    AnimatedContent(
+        modifier = modifier,
+        targetState = text
+    ) {
+        if(it.isNotEmpty()) {
+            BoxWithConstraints(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(DefaultPadding.CardDefaultPadding)
+            ) {
+                val pages = rememberTextPages(
+                    text = text,
+                    config = TextSplitterConfig.SinglePanelConfig(
+                        style = style,
+                        constraints = constraints
+                    )
                 )
-            )
-            pagerState = rememberPagerState {
-                pages.size
+                pagerState = rememberPagerState {
+                    pages.size
+                }
+                val config = remember(style, constraints.maxHeight, constraints.maxWidth) {
+                    TextSplitterConfig.SinglePanelConfig(
+                        style = style,
+                        constraints = constraints
+                    )
+                }
+                TextPager(
+                    pagerState = pagerState!!,
+                    onCenterZoneClick = onCenterZoneClick
+                ) { page ->
+                    Text(
+                        text = pages[page],
+                        style = config.style,
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             }
-            val config = remember(style, constraints.maxHeight, constraints.maxWidth) {
-                TextSplitterConfig.SinglePanelConfig(
-                    style = style,
-                    constraints = constraints
-                )
-            }
-            TextPager(
-                pagerState = pagerState!!,
-                onCenterZoneClick = onCenterZoneClick
-            ) { page ->
-                Text(
-                    text = pages[page],
-                    style = config.style,
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+        } else {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
@@ -205,11 +287,9 @@ private fun ReaderTopBarContent(
 @Composable
 private fun ReaderBottomContent(
     pagerState: PagerState,
-    component: MainReaderComponent,
     modifier: Modifier
 ) {
     val time by rememberTimeObserver()
-    val state by component.state.subscribeAsState()
 
     Row(
         modifier = modifier
@@ -231,7 +311,7 @@ private fun ReaderBottomContent(
         )
         Spacer(modifier = Modifier.width(5.dp))
         Text(
-            text = "${pagerState.currentPage}/${pagerState.pageCount}",
+            text = "${(pagerState.currentPage)+1}/${pagerState.pageCount}",
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.width(5.dp))
@@ -240,5 +320,331 @@ private fun ReaderBottomContent(
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.width(12.dp))
+    }
+}
+
+@Composable
+private fun Control(
+    pagerState: PagerState,
+    readerState: MainReaderComponent.State,
+    eventSource: Flow<Boolean>,
+    modifier: Modifier = Modifier,
+    openNextChapter: () -> Unit,
+    openPreviousChapter: () -> Unit,
+    openSettings: () -> Unit
+) {
+    val hasPreviousPage = pagerState.canScrollBackward
+    val hasNextPage = pagerState.canScrollForward
+    val hasNextChapter = readerState.chapterIndex < readerState.chaptersCount-1
+    val hasPreviousChapter = readerState.chapterIndex > 0
+
+    val previousButtonShowed = hasPreviousChapter && !hasPreviousPage
+    val nextButtonShowed = hasNextChapter && !hasNextPage
+
+    val scope = rememberCoroutineScope()
+
+    var expanded by remember { mutableStateOf(false) }
+
+    val shape = CardDefaults.shape
+
+    LaunchedEffect(previousButtonShowed, nextButtonShowed) {
+        if(previousButtonShowed) {
+            expanded = true
+        }
+        if (nextButtonShowed) {
+            expanded = true
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        eventSource.collect { newValue ->
+            expanded = newValue
+        }
+    }
+
+    AnimatedVisibility(
+        visible = expanded,
+        enter = slideInVertically(spring()) { it/2 }
+            + expandVertically(spring()),
+        exit = slideOutVertically(spring()) { it/2 }
+            + shrinkVertically(spring()),
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth(0.4F)
+                    .defaultMinSize(
+                        minHeight = 35.dp
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = CircleShape
+                    )
+                    .clip(CircleShape)
+                    .clickable(onClick = openSettings)
+            ) {
+                Row(
+                    modifier = Modifier.padding(4.dp).align(Alignment.Center),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(Res.image.ic_settings),
+                        contentDescription = "Иконка настроек",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Spacer(modifier = Modifier.requiredWidth(6.dp))
+                    Text(
+                        text = "Настройки",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.requiredHeight(15.dp))
+            Row(
+                modifier = modifier
+                    .padding(
+                        horizontal = 14.dp,
+                        vertical = 10.dp
+                    )
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = shape
+                    )
+                    .clip(shape)
+                    .padding(DefaultPadding.CardDefaultPaddingSmall),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                ChangeChapterButton(
+                    modifier = Modifier.weight(1F / 5F).padding(6.dp),
+                    icon = Icons.Rounded.ArrowBack,
+                    enabled = previousButtonShowed,
+                    onClick = openPreviousChapter
+                )
+                Slider(
+                    modifier = Modifier.weight(3F / 5F).padding(horizontal = 3.dp),
+                    value = pagerState.currentPage.toFloat(),
+                    onValueChange = {
+                        scope.launch {
+                            pagerState.scrollToPage(it.toInt())
+                        }
+                    },
+                    valueRange = (
+                            0F..(pagerState.pageCount - 1).coerceAtLeast(1).toFloat()
+                            )
+                )
+                ChangeChapterButton(
+                    modifier = Modifier.weight(1F / 5F).padding(6.dp),
+                    icon = Icons.Rounded.ArrowForward,
+                    enabled = nextButtonShowed,
+                    onClick = openNextChapter
+                )
+            }
+        }
+    }
+}
+
+@Suppress("AnimateAsStateLabel")
+@Composable
+fun ChangeChapterButton(
+    modifier: Modifier,
+    icon: ImageVector,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val containerColor by animateColorAsState(
+        targetValue = if(enabled) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            val primaryContainer = MaterialTheme.colorScheme.primaryContainer.toArgb()
+            val surfaceColor = Color.Gray.toArgb()
+            val blendedArgb = ColorUtils.blendARGB(primaryContainer, surfaceColor, 0.6f)
+            Color(blendedArgb)
+        }
+    )
+    val shape = CardShape.CardStandaloneLarge
+
+    Row(
+        modifier = modifier
+            .layout { measurable, constraints ->
+                val size = constraints.maxWidth
+                val placeable = measurable.measure(
+                    constraints.copy(
+                        minWidth = size,
+                        maxWidth = size,
+                        minHeight = size,
+                        maxHeight = size
+                    )
+                )
+                layout(size, size) {
+                    placeable.place(0, 0)
+                }
+            }
+            .clickable(
+                onClick = onClick,
+                enabled = enabled
+            )
+            .background(
+                color = containerColor,
+                shape = shape
+            )
+            .clip(shape),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
+@Composable
+private fun ReaderSettingPopup(
+    component: SettingsReaderComponent,
+    readerSettingsModel: MainReaderComponent.Settings,
+    closeDialog: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = closeDialog,
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.8F)
+
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(DefaultPadding.CardDefaultPaddingLarge)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Настройки читалки",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                HorizontalDivider()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Ночная тема")
+                    Switch(
+                        checked = readerSettingsModel.nightMode,
+                        onCheckedChange = {
+                            component.sendIntent(
+                                SettingsReaderComponent.Intent.NightModeChanged(it)
+                            )
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(3.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Полноэкранный режим")
+                    Switch(
+                        checked = readerSettingsModel.fullscreenMode,
+                        onCheckedChange = {
+                            component.sendIntent(
+                                SettingsReaderComponent.Intent.FullscreenModeChanged(it)
+                            )
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Размер шрифта",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    CustomIconButton(
+                        shape = CircleShape,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.background,
+                        minSize = 30.dp,
+                        onClick = {
+                            component.sendIntent(
+                                SettingsReaderComponent.Intent.FontSizeChanged(
+                                    (readerSettingsModel.fontSize - 1).coerceAtLeast(1)
+                                )
+                            )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(text = readerSettingsModel.fontSize.toString())
+                    Spacer(modifier = Modifier.width(6.dp))
+                    CustomIconButton(
+                        shape = CircleShape,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.background,
+                        minSize = 30.dp,
+                        onClick = {
+                            component.sendIntent(
+                                SettingsReaderComponent.Intent.FontSizeChanged(
+                                    (readerSettingsModel.fontSize + 1)
+                                )
+                            )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowForward,
+                            contentDescription = null
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+
+                    }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .background(
+                                Color(readerSettingsModel.lightColor),
+                                RoundedCornerShape(10.dp)
+                            )
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Светлый цвет")
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+
+                    }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .background(
+                                Color(readerSettingsModel.darkColor),
+                                RoundedCornerShape(10.dp)
+                            )
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Тёмный цвет")
+                }
+            }
+        }
     }
 }

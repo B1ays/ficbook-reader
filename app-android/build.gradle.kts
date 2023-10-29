@@ -15,6 +15,10 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = libs.versions.project.get()
+
+        ndk {
+            abiFilters += setOf("arm64-v8a")
+        }
     }
 
     packaging {

@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -65,7 +65,7 @@ fun CustomIconButton(
 @Composable
 fun BackgroundIcon(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
+    icon: Painter,
     shape: Shape = ButtonDefaults.shape,
     minSize: Dp = 50.dp,
     iconScale: Float = 1F,
@@ -85,7 +85,7 @@ fun BackgroundIcon(
                 .defaultMinSize(minSize, minSize)
                 .padding(contentPadding)
                 .scale(iconScale),
-            imageVector = icon,
+            painter = icon,
             contentDescription = null,
             tint = contentColor
         )

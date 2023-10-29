@@ -41,6 +41,7 @@ interface MainScreenComponent {
         data class OpenFanficPage(val href: String): Output()
         data object OpenRandomFanficPage: Output()
         data object UserButtonClicked: Output()
+        data object OpenSettings: Output()
     }
 
     sealed class Intent {

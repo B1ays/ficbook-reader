@@ -57,7 +57,7 @@ actual fun AppTheme(
                 seedColor = primaryColor,
                 isDark = darkTheme
             ).run {
-                if(isAmoledTheme) copy(
+                if(isAmoledTheme && darkTheme) copy(
                     background = Color.Black,
                     surface = Color.Black,
                     surfaceVariant = Color.Black,

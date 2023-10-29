@@ -1,4 +1,4 @@
-package ru.blays.ficbookReader.shared.data.realmModels
+package ru.blays.ficbookReader.shared.data.realm.entity
 
 import io.realm.kotlin.types.RealmObject
 

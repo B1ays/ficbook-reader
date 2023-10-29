@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-            android:label="Ficbook Reader"
-            android:name="ru.blays.ficbookReader.android.App"
-            android:allowBackup="false"
-            android:supportsRtl="true">
+        android:label="Ficbook Reader"
+        android:name="ru.blays.ficbookReader.android.App"
+        android:allowBackup="false"
+        android:supportsRtl="true"
+        android:icon="@mipmap/ic_launcher"
+        tools:ignore="DataExtractionRules">
         <activity
             android:name="ru.blays.ficbookReader.android.MainActivity"
             android:exported="true"

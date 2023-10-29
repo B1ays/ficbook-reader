@@ -12,7 +12,7 @@ import ru.blays.ficbookReader.shared.preferences.repositiry.SettingsJsonReposito
 import ru.blays.ficbookReader.shared.preferences.repositiry.SettingsRepository
 import ru.blays.ficbookReader.shared.preferences.settings
 
-val repositoryModule = module {
+internal val repositoryModule = module {
     singleOf(::SettingsRepository) bind ISettingsRepository::class
     singleOf(::SettingsJsonRepository) bind ISettingsJsonRepository::class
     single { settings } binds arrayOf(Settings::class, ObservableSettings::class)

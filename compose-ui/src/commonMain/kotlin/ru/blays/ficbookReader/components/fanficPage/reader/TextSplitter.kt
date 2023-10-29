@@ -135,7 +135,7 @@ private suspend fun calculatePages(
 
             currentPage += text
                 .substring(lineStart .. lineEnd)
-                .run { if(last() == '\n') this else dropLast(1) }
+                .run { if(lastOrNull() == '\n') this else dropLast(1) }
         }
     }
 

@@ -70,12 +70,12 @@ class DefaultMainReaderComponent(
         }
     }
 
-    override fun onIntent(intent: MainReaderComponent.Intent) {
+    override fun sendIntent(intent: MainReaderComponent.Intent) {
         when(intent) {
             is MainReaderComponent.Intent.ChangeChapter -> {
                 openChapter(intent.chapterIndex)
             }
-            is MainReaderComponent.Intent.OpenCloseSettings -> {
+            is MainReaderComponent.Intent.OpenOrCloseSettings -> {
                 if(dialog.value.child == null) {
                     dialogNavigation.activate(
                         MainReaderComponent.SettingsDialogConfig(state.value.settings)

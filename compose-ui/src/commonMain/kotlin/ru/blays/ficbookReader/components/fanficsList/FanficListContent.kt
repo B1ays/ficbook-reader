@@ -1,5 +1,9 @@
 package ru.blays.ficbookReader.components.fanficsList
 
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,16 +12,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pullrefresh.PullRefreshIndicator
 import androidx.compose.material3.pullrefresh.pullRefresh
 import androidx.compose.material3.pullrefresh.rememberPullRefreshState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
@@ -26,8 +31,9 @@ import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponen
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficCard
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.DefaultPadding
-import ru.hh.toolbar.custom_toolbar.CollapsedToolbar
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
+import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
 
 @Composable
 fun FanficsListContent(
@@ -57,16 +63,15 @@ fun FanficsListContent(
     }
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = Modifier
     ) {
         LazyColumn(
             modifier = Modifier
+                .pullRefresh(pullRefreshState)
+                .then(modifier)
+                .fillMaxSize()
                 .padding(DefaultPadding.CardDefaultPadding)
-                .padding(end = 4.dp)
-                .pullRefresh(
-                    state = pullRefreshState
-                ),
+                .padding(end = 4.dp),
             state = lazyListState
         ) {
             items(list) { fanfic ->
@@ -81,6 +86,8 @@ fun FanficsListContent(
         PullRefreshIndicator(
             refreshing = isLoading,
             state = pullRefreshState,
+            contentColor = MaterialTheme.colorScheme.primary,
+            scale = true,
             modifier = Modifier.align(Alignment.TopCenter)
         )
         VerticalScrollbar(
@@ -98,9 +105,10 @@ fun FanficsListScreenContent(
     component: FanficsListComponent
 ) {
     val state by component.state.subscribeAsState()
+    val scrollBehavior = rememberToolbarScrollBehavior()
     Scaffold(
         topBar = {
-            CollapsedToolbar(
+            CollapsingsToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -116,8 +124,27 @@ fun FanficsListScreenContent(
                     }
                 },
                 actions = {
+                    var clicked by remember { mutableStateOf(false) }
+                    val transition = updateTransition(
+                        targetState = clicked
+                    )
+                    val angle by transition.animateFloat(
+                        transitionSpec = {
+                            tween(1000)
+                        }
+                    ) {
+                        if(it) 180f else 0f
+                    }
+                    val scale by animateFloatAsState(
+                        targetValue = if (clicked) 1.2f else 1f,
+                        animationSpec = tween(1000),
+                        finishedListener = {
+                            clicked = false
+                        }
+                    )
                     IconButton(
                         onClick = {
+                            clicked = true
                             component.sendIntent(
                                 FanficsListComponent.Intent.SetAsFeed(state.section)
                             )
@@ -126,17 +153,23 @@ fun FanficsListScreenContent(
                         Icon(
                             painter = painterResource(Res.image.ic_star_filled),
                             contentDescription = "Иконка добавить в избранное",
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .rotate(angle)
+                                .scale(scale)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.small(state.section.name)
+                collapsingTitle = CollapsingTitle.small(state.section.name),
+                scrollBehavior = scrollBehavior
             )
         }
     ) { padding ->
         FanficsListContent(
             component = component,
-            modifier = Modifier.padding(top = padding.calculateTopPadding())
+            modifier = Modifier
+                .padding(top = padding.calculateTopPadding())
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
         )
     }
 }

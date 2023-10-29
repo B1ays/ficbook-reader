@@ -48,8 +48,8 @@ import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
-import ru.hh.toolbar.custom_toolbar.CollapsedToolbar
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
+import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
 
 @Composable
@@ -228,6 +228,20 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                 scaffoldState = bottomSheetScaffoldState,
                 sheetPeekHeight = 110.dp,
                 sheetContent = {
+                    BackHandler(true) {
+                        when (bottomSheetState.currentValue) {
+                            SheetValue.Expanded -> {
+                                scope.launch {
+                                    bottomSheetScaffoldState.bottomSheetState.partialExpand()
+                                }
+                            }
+                            else -> {
+                                component.onOutput(
+                                    FanficPageInfoComponent.Output.ClosePage
+                                )
+                            }
+                        }
+                    }
                     AnimatedVisibility(
                         visible = bottomSheetState.currentValue == SheetValue.PartiallyExpanded,
                         enter = fadeIn(animationSpec = tween(100)) +
@@ -243,11 +257,6 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                             }
                         )
                         Spacer(modifier = Modifier.height(24.dp))
-                        BackHandler(true) {
-                            scope.launch {
-                                bottomSheetScaffoldState.bottomSheetState.hide()
-                            }
-                        }
                     }
                     BottomSheetContentOpened(
                         fanficPage = fanfic,
@@ -267,7 +276,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     )
                 },
                 topBar = {
-                    CollapsedToolbar(
+                    CollapsingsToolbar(
                         scrollBehavior = scrollBehavior,
                         navigationIcon = {
                             IconButton(
@@ -293,8 +302,8 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     fanfic = fanfic,
                     modifier = Modifier
                         .padding(top = padding.calculateTopPadding())
-                        .nestedScroll(scrollBehavior.nestedScrollConnection)
                         .pullRefresh(state = pullRefreshState)
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
                 )
             }
         }
@@ -312,8 +321,8 @@ private fun LandscapeContent(
     component: FanficPageInfoComponent
 ) {
     val state by component.state.subscribeAsState()
-    val fanfic = remember(state) { state.fanfic }
-    val isLoading = remember(state) { state.isLoading }
+    val fanfic = state.fanfic
+    val isLoading = state.isLoading
 
     if(fanfic != null && !isLoading) {
         Row(
@@ -349,7 +358,7 @@ private fun LandscapeContent(
             }
             Scaffold(
                 topBar = {
-                    CollapsedToolbar(
+                    CollapsingsToolbar(
                         navigationIcon = {
                             IconButton(
                                 onClick = {
@@ -371,8 +380,9 @@ private fun LandscapeContent(
                 FanficDescription(
                     component = component,
                     fanfic = fanfic,
-                    modifier = Modifier
-                        .padding(top = padding.calculateTopPadding())
+                    modifier = Modifier.padding(
+                        top = padding.calculateTopPadding()
+                    )
                 )
             }
         }

@@ -6,6 +6,6 @@ import org.koin.dsl.module
 import ru.blays.ficbookapi.ficbookConnection.FicbookApi
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
-val ficbookApiModule = module {
+internal val ficbookApiModule = module {
     singleOf(::FicbookApi) bind IFicbookApi::class
 }

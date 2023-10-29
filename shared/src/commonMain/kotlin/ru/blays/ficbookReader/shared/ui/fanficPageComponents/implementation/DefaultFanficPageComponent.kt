@@ -83,7 +83,7 @@ class DefaultFanficPageComponent(
                 } else if (chapters.isNotEmpty()) {
                     navigation.push(
                         FanficPageComponent.Config.Reader(
-                            index = 1,
+                            index = 0,
                             chapters = chapters
                         )
                     )

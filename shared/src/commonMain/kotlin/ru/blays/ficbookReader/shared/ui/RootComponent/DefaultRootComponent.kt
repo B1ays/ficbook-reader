@@ -10,9 +10,10 @@ import io.realm.kotlin.ext.query
 import kotlinx.coroutines.*
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.inject
-import ru.blays.ficbookReader.shared.data.realmModels.CookieEntity
-import ru.blays.ficbookReader.shared.data.realmModels.toApiModel
-import ru.blays.ficbookReader.shared.data.realmModels.toEntity
+import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
+import ru.blays.ficbookReader.shared.data.realm.entity.toApiModel
+import ru.blays.ficbookReader.shared.data.realm.entity.toEntity
+import ru.blays.ficbookReader.shared.data.realm.utils.copyToRealm
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
@@ -21,8 +22,11 @@ import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScr
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultMainScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultUserLogInComponent
+import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
+import ru.blays.ficbookReader.shared.ui.settingsComponents.implementation.DefaultSettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.DefaultThemeComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
+import ru.blays.ficbookapi.RANDOM_FANFIC
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.CookieModel
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
@@ -88,7 +92,7 @@ class DefaultRootComponent private constructor(
         }
     )
 
-    private val ficbookApi: IFicbookApi = runBlocking { initFicbookApi() }
+    private val ficbookApi: IFicbookApi = initFicbookApi()
 
     private val navigation = StackNavigation<RootComponent.Config>()
     override val childStack: Value<ChildStack<*, RootComponent.Child>> = childStack(
@@ -119,7 +123,11 @@ class DefaultRootComponent private constructor(
             is RootComponent.Config.Main -> RootComponent.Child.Main(
                 main(componentContext, ficbookApi, ::onMainOutput)
             )
-            is RootComponent.Config.Settings -> TODO()
+            is RootComponent.Config.Settings -> RootComponent.Child.Settings(
+                DefaultSettingsMainComponent(
+                    componentContext, ::onSettingsOutput
+                )
+            )
             is RootComponent.Config.FanficPage -> RootComponent.Child.FanficPage(
                 fanficPage(componentContext, ficbookApi, configuration.href, ::onFanficPageOutput)
             )
@@ -129,11 +137,13 @@ class DefaultRootComponent private constructor(
         }
     }
 
-    private suspend fun initFicbookApi(): IFicbookApi = coroutineScope {
+    private fun initFicbookApi(): IFicbookApi  {
         val ficbookApi: IFicbookApi by inject(IFicbookApi::class.java)
-        val cookies = readCookiesFromDB()
-        ficbookApi.setCookie(cookies)
-        return@coroutineScope ficbookApi
+        ficbookApi.init {
+            val cookies = readCookiesFromDB()
+            ficbookApi.setCookie(cookies)
+        }
+        return ficbookApi
     }
 
     private fun onFanficPageOutput(output: FanficPageComponent.Output) {
@@ -161,7 +171,12 @@ class DefaultRootComponent private constructor(
             }
             is MainScreenComponent.Output.OpenRandomFanficPage -> {
                 navigation.push(
-                    RootComponent.Config.FanficPage("randomfic")
+                    RootComponent.Config.FanficPage(RANDOM_FANFIC)
+                )
+            }
+            is MainScreenComponent.Output.OpenSettings -> {
+                navigation.push(
+                    RootComponent.Config.Settings
                 )
             }
         }
@@ -194,6 +209,12 @@ class DefaultRootComponent private constructor(
         }
     }
 
+    private fun onSettingsOutput(output: SettingsMainComponent.Output) {
+        when(output) {
+            SettingsMainComponent.Output.NavigateBack -> navigation.pop()
+        }
+    }
+
     private suspend fun writeNewCookiesToDB(cookies: List<CookieModel>) = coroutineScope {
         val realm: Realm by inject(Realm::class.java) {
             parametersOf(setOf(CookieEntity::class))
@@ -203,10 +224,8 @@ class DefaultRootComponent private constructor(
             delete(savedCookies)
         }
         realm.write {
-            val newCookies = cookies.map { it.toEntity() }
-            newCookies.forEach { cookieEntity ->
-                copyToRealm(cookieEntity)
-            }
+            val newCookies = cookies.map(CookieModel::toEntity)
+            copyToRealm(newCookies)
         }
         realm.close()
     }
@@ -215,9 +234,11 @@ class DefaultRootComponent private constructor(
         val realm: Realm by inject(Realm::class.java) {
             parametersOf(setOf(CookieEntity::class))
         }
-        val savedCookies = realm.query(CookieEntity::class).find().map {
-            it.toApiModel()
-        }
+        val savedCookies = realm
+            .query(CookieEntity::class)
+            .find()
+            .map(CookieEntity::toApiModel)
+
         realm.close()
         return@coroutineScope savedCookies
     }

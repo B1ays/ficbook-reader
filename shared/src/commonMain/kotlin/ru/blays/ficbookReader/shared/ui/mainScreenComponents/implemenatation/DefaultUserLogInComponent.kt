@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.get
-import ru.blays.ficbookReader.shared.data.realmModels.CookieEntity
+import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
 import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
 import ru.blays.ficbookapi.dataModels.LoginModel

@@ -31,12 +31,15 @@ compose.desktop {
     application {
         mainClass = "ru.blays.ficbookReader.desktop.MainKt"
 
-
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "Ficbook reader"
             packageVersion = libs.versions.project.get()
             includeAllModules = true
+
+            windows {
+                iconFile.set(File("src/jvmMain/resources/icon_windows.ico"))
+            }
         }
     }
 }

@@ -10,19 +10,16 @@ import kotlinx.serialization.json.Json
 import okhttp3.internal.closeQuietly
 import okio.use
 import org.jsoup.Jsoup
-import ru.blays.ficbookapi.HEADER_COOKIE_SET
-import ru.blays.ficbookapi.SETTING_HREF
+import ru.blays.ficbookapi.*
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.*
-import ru.blays.ficbookapi.getHtmlBody
-import ru.blays.ficbookapi.makeRequest
 import ru.blays.ficbookapi.parsers.*
 
 open class FicbookApi: IFicbookApi {
 
     private var cookies: List<CookieModel> = emptyList()
     private val _user: MutableStateFlow<UserModel?> = MutableStateFlow(null)
-    private val _isAuthorized = MutableStateFlow(false)
+    private val _isAuthorized: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     override val currentUser: StateFlow<UserModel?>
         get() = _user
@@ -33,7 +30,7 @@ open class FicbookApi: IFicbookApi {
 
     override fun init(block: suspend IFicbookApi.() -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            block(this@FicbookApi)
+            block()
         }
     }
 
@@ -99,7 +96,7 @@ open class FicbookApi: IFicbookApi {
         val response = makeRequest(request) {
             followRedirects(false)
         }
-        println("Current cookies: ${cookies.joinToString { "${it.name} | ${it.value}" }}")
+        //println("Current cookies: ${cookies.joinToString { "${it.name} | ${it.value}" }}")
         response?.use { resp ->
             val code = resp.code
             val body = resp.body?.string()
@@ -115,25 +112,9 @@ open class FicbookApi: IFicbookApi {
         return@coroutineScope false
     }
 
-
-    override suspend fun getFanficsForHref(section: String, page: Int): List<FanficModel> {
-        val url = buildFicbookURL {
-            addPathSegments(section)
-            page(page)
-        }
-        val list = mutableListOf<FanficModel>()
-        val request = buildFicbookRequest(cookies) {
-            url(url)
-        }
-        val body = getHtmlBody(request)
-        val fanficsListParser = FanficsListParser()
-        val fanficCardParser = FanficCardParser()
-
-        val fanficsHtml = body?.let { fanficsListParser.parse(it) }
-        fanficsHtml?.forEach {
-            list += fanficCardParser.parse(it)
-        }
-        return list
+    override suspend fun getFanficsForHref(href: String, page: Int): List<FanficModel> {
+        val section = SectionWithQuery(href = href)
+        return getFanficsForSection(section, page)
     }
 
     override suspend fun getFanficsForSection(section: SectionWithQuery, page: Int): List<FanficModel> {
@@ -148,7 +129,9 @@ open class FicbookApi: IFicbookApi {
         }
         val list = mutableListOf<FanficModel>()
 
-        val body = getHtmlBody(request)
+        val body = getHtmlBody(request) {
+            followRedirects(false)
+        }
         val fanficsListParser = FanficsListParser()
         val fanficCardParser = FanficCardParser()
 
@@ -160,7 +143,11 @@ open class FicbookApi: IFicbookApi {
     }
 
     override suspend fun getFanficPageByID(id: String): FanficPageModel? {
-        return getFanficPageByHref("/readfic/$id")
+        return getFanficPageByHref(getFanficHrefForID(id))
+    }
+
+    private fun getFanficHrefForID(id: String): String {
+        return "$READFIC_HREF/$id"
     }
 
     override suspend fun getFanficPageByHref(href: String): FanficPageModel? {
@@ -177,10 +164,8 @@ open class FicbookApi: IFicbookApi {
         return body?.let { fanficPageParser.parse(it) }
     }
 
-
-
     override suspend fun getFanficChapterText(href: String): String? = coroutineScope {
-        val hrefWithoutFragment = href.removeSuffix("#part_content")
+        val hrefWithoutFragment = href.removeSuffix(SUFFIX_PART_CONTENT)
         val url = buildFicbookURL {
             href(hrefWithoutFragment)
         }
@@ -206,7 +191,9 @@ open class FicbookApi: IFicbookApi {
         val request = buildFicbookRequest(cookies) {
             url(url)
         }
-        val body = getHtmlBody(request)
+        val body = getHtmlBody(request) {
+            followRedirects(false)
+        }
         val document = body?.let { Jsoup.parse(it) }
 
         val collectionListParser = CollectionListParser()

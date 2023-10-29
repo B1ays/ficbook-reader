@@ -39,9 +39,10 @@ import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbookReader.theme.ReaderTheme
+import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
-import ru.hh.toolbar.custom_toolbar.CollapsedToolbar
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
+import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -54,7 +55,7 @@ actual fun LandscapeContent(component: MainReaderComponent) {
 
     Scaffold(
         topBar = {
-            CollapsedToolbar(
+            CollapsingsToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -72,8 +73,8 @@ actual fun LandscapeContent(component: MainReaderComponent) {
                 actions = {
                     IconButton(
                         onClick = {
-                            component.onIntent(
-                                MainReaderComponent.Intent.OpenCloseSettings
+                            component.sendIntent(
+                                MainReaderComponent.Intent.OpenOrCloseSettings
                             )
                         }
                     ) {
@@ -116,17 +117,17 @@ actual fun LandscapeContent(component: MainReaderComponent) {
                     )
                 }
                 if (pagerState.value != null) {
-                    BottomControlLandscape(
+                    BottomControl(
                         pagerState = pagerState.value!!,
                         readerState = state,
                         modifier = Modifier.fillMaxHeight(),
                         openNextChapter = {
-                            component.onIntent(
+                            component.sendIntent(
                                 MainReaderComponent.Intent.ChangeChapter(state.chapterIndex + 1)
                             )
                         },
                         openPreviousChapter = {
-                            component.onIntent(
+                            component.sendIntent(
                                 MainReaderComponent.Intent.ChangeChapter(state.chapterIndex - 1)
                             )
                         }
@@ -140,7 +141,7 @@ actual fun LandscapeContent(component: MainReaderComponent) {
                 }
             ) {
                 if(it != null) {
-                    LandscapeSettings(
+                    ReaderSettings(
                         component = it,
                         modifier = Modifier
                             .padding(top = padding.calculateTopPadding())
@@ -355,7 +356,7 @@ private fun TextPager(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun BottomControlLandscape(
+private fun BottomControl(
     pagerState: PagerState,
     readerState: MainReaderComponent.State,
     modifier: Modifier = Modifier,
@@ -377,7 +378,7 @@ private fun BottomControlLandscape(
             modifier = Modifier.weight(1F/5F),
             contentAlignment = Alignment.Center
         ) {
-            NextChapterButton(
+            ChangeChapterButton(
                 visible = !hasPreviousPage && hasPreviousChapter,
                 icon = Icons.Rounded.ArrowBack,
                 contentDescription = "Кнопка предыдущая глава",
@@ -417,7 +418,7 @@ private fun BottomControlLandscape(
             modifier = Modifier.weight(1F/5F),
             contentAlignment = Alignment.Center
         ) {
-            NextChapterButton(
+            ChangeChapterButton(
                 visible = !hasNextPage && hasNextChapter,
                 icon = Icons.Rounded.ArrowForward,
                 contentDescription = "Кнопка следующая глава",
@@ -428,40 +429,40 @@ private fun BottomControlLandscape(
 }
 
 @Composable
-private fun NextChapterButton(
+private fun ChangeChapterButton(
     visible: Boolean,
     icon: ImageVector,
     contentDescription: String? = null,
     onClick: () -> Unit
 ) {
     AnimatedContent(
-        targetState = visible
+        targetState = visible,
+        modifier = Modifier.layout { measurable, _ ->
+            val maxSize = 60
+
+            layout(maxSize, maxSize) {
+                measurable
+                    .measure(
+                        Constraints(
+                            maxWidth = maxSize,
+                            maxHeight = maxSize,
+                            minWidth = maxSize,
+                            minHeight = maxSize
+                        )
+                    )
+                    .place(0, -(maxSize/2))
+            }
+        }
     ) { state ->
         if (state) {
+            val shape = CardShape.CardStandaloneLarge
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .layout { measurable, constraints ->
-                        val maxSize = 60
-
-                        layout(maxSize, maxSize) {
-                            measurable
-                                .measure(
-                                    Constraints(
-                                        maxWidth = maxSize,
-                                        maxHeight = maxSize,
-                                        minWidth = maxSize,
-                                        minHeight = maxSize
-                                    )
-                                )
-                                .place(0, -(maxSize/2))
-                        }
-                    }
                     .background(
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = CircleShape
+                        shape = shape
                     )
-                    .clip(CircleShape)
+                    .clip(shape)
                     .clickable(onClick = onClick),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -480,7 +481,7 @@ private fun NextChapterButton(
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun LandscapeSettings(
+private fun ReaderSettings(
     component: SettingsReaderComponent,
     modifier: Modifier = Modifier
 ) {

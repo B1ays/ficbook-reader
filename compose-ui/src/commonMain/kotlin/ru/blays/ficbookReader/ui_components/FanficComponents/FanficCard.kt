@@ -17,7 +17,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -112,7 +111,7 @@ private fun PortraitContent(
     ) {
         KamelImage(
             modifier = Modifier
-                .offset(y = 8.dp)
+                .offset(y = 16.dp)
                 .fillMaxWidth()
                 .heightIn(
                     max = 250.dp
@@ -130,7 +129,6 @@ private fun PortraitContent(
         CardWithDirectionIndicator(
             direction = status.direction,
             modifier = Modifier
-                .offset(y = (-8).dp)
                 .fillMaxWidth(),
             onClick = onClick
         ) {
@@ -162,12 +160,18 @@ fun CardWithDirectionIndicator(
         SubcomposeLayout(
             modifier = Modifier.fillMaxWidth()
         ) { constraints ->
+            val indicatorWidth = (constraints.minWidth*0.025F).toInt()
 
             val info = subcompose(
                 slotId = "Info",
                 content = content
             ).map {
-                    it.measure(constraints)
+                it.measure(
+                    constraints.copy(
+                        maxWidth = constraints.maxWidth-indicatorWidth,
+                        minWidth = 0
+                    )
+                )
             }
 
             val maxHeight = info.fold(IntSize.Zero) { currentMax, placeable ->
@@ -186,7 +190,7 @@ fun CardWithDirectionIndicator(
             }.map {
                 it.measure(
                     Constraints.fixed(
-                        width = (constraints.minWidth*0.025F).toInt(),
+                        width = indicatorWidth,
                         height = maxHeight.height
                     )
                 )
@@ -195,7 +199,7 @@ fun CardWithDirectionIndicator(
             layout(width = constraints.maxWidth, height = maxHeight.height) {
                 val firstIndicator =  indicator.first()
                 firstIndicator.place(0, 0)
-                info.first().placeRelative(firstIndicator.width, 0)
+                info.first().placeRelative(indicatorWidth, 0)
             }
         }
     }
@@ -308,67 +312,53 @@ fun FanficChips(
 fun FanficHeader(
     fanfic: FanficCardModelStable
 ) {
-    Row(
-        modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+    Column(
+        modifier = Modifier
+            .padding(DefaultPadding.CardDefaultPaddingSmall)
     ) {
-        Column(
-            modifier = Modifier
-                .weight(0.6F)
+        Text(
+            text = fanfic.title,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = fanfic.title,
-                style = MaterialTheme.typography.titleLarge
+            Icon(
+                modifier = Modifier.size(16.dp),
+                painter = painterResource(Res.image.ic_user),
+                contentDescription = "Иконка человек"
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(Res.image.ic_user),
-                    contentDescription = "Иконка человек"
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = fanfic.author,
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-            Spacer(modifier = Modifier.height(3.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(Res.image.ic_open_book),
-                    contentDescription = "Иконка открытая книга"
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = fanfic.fandom,
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-            FlowRow {
-                fanfic.tags.forEach { tag ->
-                    FanficTagChip(tag = tag)
-                }
-            }
-            Spacer(modifier = Modifier.requiredHeight(6.dp))
-            Row {
-                Text(
-                    text = "Обновлено: ",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-                Text(
-                    text = fanfic.updateDate,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            Spacer(modifier = Modifier.width(2.dp))
+            Text(
+                text = fanfic.author,
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+        Spacer(modifier = Modifier.height(3.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier.size(16.dp),
+                painter = painterResource(Res.image.ic_open_book),
+                contentDescription = "Иконка открытая книга"
+            )
+            Spacer(modifier = Modifier.width(2.dp))
+            Text(
+                text = fanfic.fandom,
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+        FlowRow {
+            fanfic.tags.forEach { tag ->
+                FanficTagChip(tag = tag)
             }
         }
+        Spacer(modifier = Modifier.requiredHeight(4.dp))
+        Text(
+            text = "Обновлено: ${fanfic.updateDate}",
+            style = MaterialTheme.typography.labelLarge
+        )
     }
 }

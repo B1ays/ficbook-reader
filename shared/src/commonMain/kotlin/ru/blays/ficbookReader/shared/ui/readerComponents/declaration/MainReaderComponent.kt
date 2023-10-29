@@ -11,12 +11,12 @@ interface MainReaderComponent {
 
     val dialog: Value<ChildSlot<*, SettingsReaderComponent>>
 
-    fun onIntent(intent: Intent)
+    fun sendIntent(intent: Intent)
 
     fun onOutput(output: Output)
 
     sealed class Intent {
-        data object OpenCloseSettings: Intent()
+        data object OpenOrCloseSettings: Intent()
         data class ChangeChapter(val chapterIndex: Int): Intent()
     }
 

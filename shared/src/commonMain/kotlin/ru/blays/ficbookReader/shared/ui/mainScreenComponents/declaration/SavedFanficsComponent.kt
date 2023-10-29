@@ -9,7 +9,6 @@ interface SavedFanficsComponent {
     fun onOutput(output: Output)
 
     sealed class Output {
-        data object NavigateBack: Output()
         data class NavigateToFanficPage(val href: String): Output()
     }
 }

@@ -43,6 +43,14 @@ data class SectionWithQuery(
         path = paths.joinToString("/"),
         queryParameters = queryParameters
     )
+
+    constructor(
+        href: String
+    ): this(
+        name = "",
+        queryParameters = emptyList(),
+        path = href
+    )
 }
 
 data class PopularSections(
