@@ -18,3 +18,5 @@ venv
 /dist
 /mkdocs_material.egg-info
 .vscode
+/app-android/release/app-android-release.apk
+/app-android/release/output-metadata.json
