@@ -14,19 +14,19 @@ import ru.blays.ficbookapi.*
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.*
 import ru.blays.ficbookapi.parsers.*
+import ru.blays.ficbookapi.result.ApiResult
 
 open class FicbookApi: IFicbookApi {
 
     private var cookies: List<CookieModel> = emptyList()
-    private val _user: MutableStateFlow<UserModel?> = MutableStateFlow(null)
+    private val _currentUser: MutableStateFlow<UserModel?> = MutableStateFlow(null)
     private val _isAuthorized: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     override val currentUser: StateFlow<UserModel?>
-        get() = _user
+        get() = _currentUser
 
     override val isAuthorized: StateFlow<Boolean>
         get() = _isAuthorized
-
 
     override fun init(block: suspend IFicbookApi.() -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -41,11 +41,11 @@ open class FicbookApi: IFicbookApi {
 
     override fun logOut() {
         _isAuthorized.value = false
-        _user.value = null
+        _currentUser.value = null
         cookies = emptyList()
     }
 
-    override suspend fun authorize(loginModel: LoginModel): AuthorizationResult {
+    override suspend fun authorize(loginModel: LoginModel): AuthorizationResult = coroutineScope {
         val loginDataBody = loginModel.toRequestBody()
         val url = buildFicbookURL {
             addPathSegment("login_check")
@@ -60,9 +60,8 @@ open class FicbookApi: IFicbookApi {
         val response = makeRequest(request)
         val bodyString = response?.body?.string()
         val resultModel = bodyString?.let {
-            Json.decodeFromString<AuthorizationResponseModel>(it)
-        }
-        ?: AuthorizationResponseModel(
+            Json.decodeFromString<AuthorizationResponseModel?>(it)
+        } ?: AuthorizationResponseModel(
             error = AuthorizationResponseModel.Error(
                 "Can't able to send request"
             ),
@@ -75,12 +74,11 @@ open class FicbookApi: IFicbookApi {
         val cookieParser = CookieParser()
         val cookies = cookiesHeaders?.let {
             cookieParser.parse(it)
-        }
-        ?: emptyList()
+        } ?: emptyList()
 
         response?.closeQuietly()
 
-        return AuthorizationResult(
+        return@coroutineScope AuthorizationResult(
             resultModel,
             cookies
         )
@@ -96,7 +94,7 @@ open class FicbookApi: IFicbookApi {
         val response = makeRequest(request) {
             followRedirects(false)
         }
-        //println("Current cookies: ${cookies.joinToString { "${it.name} | ${it.value}" }}")
+
         response?.use { resp ->
             val code = resp.code
             val body = resp.body?.string()
@@ -105,19 +103,22 @@ open class FicbookApi: IFicbookApi {
             val userParser = UserParser()
 
             val userModel = document?.let { userParser.parse(it) }
-            _user.value = userModel
+            _currentUser.value = userModel
 
             return@coroutineScope code == 200
         }
         return@coroutineScope false
     }
 
-    override suspend fun getFanficsForHref(href: String, page: Int): List<FanficModel> {
+    override suspend fun getFanficsForHref(href: String, page: Int): ApiResult<List<FanficModel>> {
         val section = SectionWithQuery(href = href)
         return getFanficsForSection(section, page)
     }
 
-    override suspend fun getFanficsForSection(section: SectionWithQuery, page: Int): List<FanficModel> {
+    override suspend fun getFanficsForSection(
+        section: SectionWithQuery,
+        page: Int
+    ): ApiResult<List<FanficModel>> = coroutineScope {
         val url = buildFicbookURL {
             href(section.path)
             section.queryParameters.forEach { (name, value) ->
@@ -127,22 +128,27 @@ open class FicbookApi: IFicbookApi {
         val request = buildFicbookRequest(cookies) {
             url(url)
         }
-        val list = mutableListOf<FanficModel>()
 
         val body = getHtmlBody(request) {
             followRedirects(false)
         }
-        val fanficsListParser = FanficsListParser()
-        val fanficCardParser = FanficCardParser()
 
-        val fanficsHtml = body?.let { fanficsListParser.parse(it) }
-        fanficsHtml?.forEach {
-            list += fanficCardParser.parse(it)
+        return@coroutineScope if(body.value != null) {
+            val list = mutableListOf<FanficModel>()
+            val fanficsListParser = FanficsListParser()
+            val fanficCardParser = FanficCardParser()
+
+            val fanficsHtml = fanficsListParser.parse(body.value)
+            fanficsHtml.forEach {
+                list += fanficCardParser.parse(it)
+            }
+            ApiResult.Success(list)
+        } else {
+            ApiResult.Error("Unable to load fanfics list")
         }
-        return list
     }
 
-    override suspend fun getFanficPageByID(id: String): FanficPageModel? {
+    override suspend fun getFanficPageByID(id: String): ApiResult<FanficPageModel> {
         return getFanficPageByHref(getFanficHrefForID(id))
     }
 
@@ -150,8 +156,7 @@ open class FicbookApi: IFicbookApi {
         return "$READFIC_HREF/$id"
     }
 
-    override suspend fun getFanficPageByHref(href: String): FanficPageModel? {
-
+    override suspend fun getFanficPageByHref(href: String): ApiResult<FanficPageModel> = coroutineScope {
         val url = buildFicbookURL {
             href(href)
         }
@@ -160,11 +165,16 @@ open class FicbookApi: IFicbookApi {
         }
 
         val fanficPageParser = FanficPageParser()
-        val body = getHtmlBody(request)
-        return body?.let { fanficPageParser.parse(it) }
+        val bodyValue = getHtmlBody(request).value
+        return@coroutineScope if (bodyValue != null) {
+            val page = fanficPageParser.parse(bodyValue)
+            ApiResult.Success(page)
+        } else {
+            ApiResult.Error("Unable to load fanfic page")
+        }
     }
 
-    override suspend fun getFanficChapterText(href: String): String? = coroutineScope {
+    override suspend fun getFanficChapterText(href: String): ApiResult<String> = coroutineScope {
         val hrefWithoutFragment = href.removeSuffix(SUFFIX_PART_CONTENT)
         val url = buildFicbookURL {
             href(hrefWithoutFragment)
@@ -172,16 +182,19 @@ open class FicbookApi: IFicbookApi {
         val request = buildFicbookRequest(cookies) {
             url(url)
         }
-        val body = getHtmlBody(request)
-        val chapterTextParser = SeparateChapterParser()
-        val document = body?.let { Jsoup.parse(it) }
+        val bodyValue = getHtmlBody(request).value
 
-        return@coroutineScope if(document != null) {
-            chapterTextParser.parse(document)
-        } else null
+        return@coroutineScope if(bodyValue != null) {
+            val chapterTextParser = SeparateChapterParser()
+            val document = Jsoup.parse(bodyValue)
+            val chapterText = chapterTextParser.parse(document)
+            ApiResult.Success(chapterText)
+        } else {
+            ApiResult.Error("Unable to load chapter text")
+        }
     }
 
-    override suspend fun getCollections(section: SectionWithQuery): List<CollectionModel> {
+    override suspend fun getCollections(section: SectionWithQuery): ApiResult<List<CollectionModel>> = coroutineScope {
         val url = buildFicbookURL {
             href(section.path)
             section.queryParameters.forEach { (name, value) ->
@@ -191,17 +204,17 @@ open class FicbookApi: IFicbookApi {
         val request = buildFicbookRequest(cookies) {
             url(url)
         }
-        val body = getHtmlBody(request) {
+        val bodyValue = getHtmlBody(request) {
             followRedirects(false)
-        }
-        val document = body?.let { Jsoup.parse(it) }
+        }.value
 
-        val collectionListParser = CollectionListParser()
-
-        return if(document != null) {
-            collectionListParser.parse(document)
+        return@coroutineScope if(bodyValue != null) {
+            val document = Jsoup.parse(bodyValue)
+            val collectionListParser = CollectionListParser()
+            val collections = collectionListParser.parse(document)
+            ApiResult.Success(collections)
         } else {
-            emptyList()
+            ApiResult.Error("Unable to load collection list")
         }
     }
 
@@ -217,7 +230,7 @@ open class FicbookApi: IFicbookApi {
         val fandomParser = FandomParser()
 
         val body = getHtmlBody(request)
-        val document = body?.let { Jsoup.parse(it) }
+        val document = body.value?.let { Jsoup.parse(it) }
         val fandoms = document?.let { fandomParser.parse(it) }
         return fandoms ?: emptyList()
     }

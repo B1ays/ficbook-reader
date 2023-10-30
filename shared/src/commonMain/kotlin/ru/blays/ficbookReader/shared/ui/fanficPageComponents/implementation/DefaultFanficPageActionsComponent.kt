@@ -10,13 +10,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
+import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.InternalFanficPageActionsComponent
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultFanficPageActionsComponent(
     componentContext: ComponentContext,
     private val ficbookApi: IFicbookApi,
     private val fanficID: String
-): FanficPageActionsComponent, ComponentContext by componentContext {
+): InternalFanficPageActionsComponent, ComponentContext by componentContext {
     private val _state = MutableValue(FanficPageActionsComponent.State())
     override val state: Value<FanficPageActionsComponent.State>
         get() = _state
@@ -37,7 +38,7 @@ class DefaultFanficPageActionsComponent(
         }
     }
 
-    internal fun setValue(value: FanficPageActionsComponent.State) {
+    override fun setValue(value: FanficPageActionsComponent.State) {
         _state.update { value }
     }
 

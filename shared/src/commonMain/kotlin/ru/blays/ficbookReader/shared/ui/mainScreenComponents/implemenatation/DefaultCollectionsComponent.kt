@@ -14,7 +14,9 @@ import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.Collect
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.CollectionsComponentInternal
 import ru.blays.ficbookapi.data.CollectionsTypes
 import ru.blays.ficbookapi.data.SectionWithQuery
+import ru.blays.ficbookapi.dataModels.CollectionModel
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
+import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultCollectionsComponent(
     componentContext: ComponentContext,
@@ -60,14 +62,29 @@ class DefaultCollectionsComponent(
                     isLoading = true
                 )
             }
-            val collections = ficbookApi
+
+            val apiResult = ficbookApi
                 .getCollections(section)
-                .map { it.toStableModel() }
-            _state.update {
-                it.copy(
-                    list = collections,
-                    isLoading = false
-                )
+
+            when(apiResult) {
+                is ApiResult.Success -> {
+                    val collections = apiResult
+                        .value
+                        .map(CollectionModel::toStableModel)
+                    _state.update {
+                        it.copy(
+                            list = collections,
+                            isLoading = false
+                        )
+                    }
+                }
+                is ApiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isError = true
+                        )
+                    }
+                }
             }
         }
     }

@@ -32,7 +32,8 @@ interface CollectionsComponent {
 
     data class State(
         val list: List<CollectionModelStable> = emptyList(),
-        val isLoading: Boolean = true
+        val isLoading: Boolean = true,
+        val isError: Boolean = false
     )
 }
 

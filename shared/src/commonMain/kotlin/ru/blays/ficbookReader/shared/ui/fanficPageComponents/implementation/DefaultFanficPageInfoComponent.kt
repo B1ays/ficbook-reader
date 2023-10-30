@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
+import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.InternalFanficPageActionsComponent
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
+import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultFanficPageInfoComponent(
     componentContext: ComponentContext,
@@ -25,7 +27,7 @@ class DefaultFanficPageInfoComponent(
     override val state: Value<FanficPageInfoComponent.State>
         get() = _state
 
-    override val actionsComponent: FanficPageActionsComponent = DefaultFanficPageActionsComponent(
+    private val _actionsComponent: InternalFanficPageActionsComponent = DefaultFanficPageActionsComponent(
         componentContext = childContext(
             key = "actions"
         ),
@@ -35,6 +37,9 @@ class DefaultFanficPageInfoComponent(
             .lastOrNull()
             ?: ""
     )
+
+    override val actionsComponent: FanficPageActionsComponent
+        get() = _actionsComponent
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -62,12 +67,30 @@ class DefaultFanficPageInfoComponent(
                     isLoading = true
                 )
             }
-            val page = ficbookApi.getFanficPageByHref(fanficHref)
-            _state.update {
-                it.copy(
-                    fanfic = page?.toStableModel(),
-                    isLoading = false
-                )
+            when(
+                val pageResult = ficbookApi.getFanficPageByHref(fanficHref)
+            ) {
+                is ApiResult.Success -> {
+                    _state.update {
+                        it.copy(
+                            fanfic = pageResult.value.toStableModel(),
+                            isLoading = false
+                        )
+                    }
+                    _actionsComponent.setValue(
+                        FanficPageActionsComponent.State(
+                            follow = pageResult.value.subscribed,
+                            mark = pageResult.value.liked
+                        )
+                    )
+                }
+                is ApiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isError = true
+                        )
+                    }
+                }
             }
         }
     }

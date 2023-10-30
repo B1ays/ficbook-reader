@@ -27,14 +27,9 @@ internal suspend fun actionChangeVote(
         header("Referer", "https://ficbook.net$chapterHref")
         url(url)
     }
-    val responseBody = getHtmlBody(request)
+    val responseBody = getHtmlBody(request).value
 
-    val responseModel = try {
-        Json.decodeFromString<AjaxSimpleResult>(responseBody!!)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
+    val responseModel = responseBody?.let { Json.decodeFromString<AjaxSimpleResult>(it) }
 
     return responseModel?.result ?: false
 }

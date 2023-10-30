@@ -26,6 +26,7 @@ interface FanficPageInfoComponent {
 
     data class State(
         val fanfic: FanficPageModelStable? = null,
-        val isLoading: Boolean = true
+        val isLoading: Boolean = true,
+        val isError: Boolean = false
     )
 }

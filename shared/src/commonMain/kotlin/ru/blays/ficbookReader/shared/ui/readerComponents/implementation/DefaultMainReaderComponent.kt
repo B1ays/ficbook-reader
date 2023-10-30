@@ -16,6 +16,7 @@ import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsJsonReposit
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
+import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultMainReaderComponent(
     componentContext: ComponentContext,
@@ -23,7 +24,7 @@ class DefaultMainReaderComponent(
     private val chapters: List<FanficChapterStable>,
     initialChapterIndex: Int,
     private val output: (output: MainReaderComponent.Output) -> Unit
-): MainReaderComponent, ComponentContext by componentContext {
+) : MainReaderComponent, ComponentContext by componentContext {
     private val settingsJsonRepository: ISettingsJsonRepository by inject(ISettingsJsonRepository::class.java)
 
     private var readerSettings: MainReaderComponent.Settings by settingsJsonRepository.getDelegate(
@@ -37,7 +38,7 @@ class DefaultMainReaderComponent(
             chapterIndex = initialChapterIndex,
             chaptersCount = chapters.size,
             chapterName = chapters[initialChapterIndex].run {
-                if(this is FanficChapterStable.SeparateChapterModel) name else "Глава 1"
+                if (this is FanficChapterStable.SeparateChapterModel) name else "Глава 1"
             },
             text = "",
             loading = true,
@@ -71,12 +72,13 @@ class DefaultMainReaderComponent(
     }
 
     override fun sendIntent(intent: MainReaderComponent.Intent) {
-        when(intent) {
+        when (intent) {
             is MainReaderComponent.Intent.ChangeChapter -> {
                 openChapter(intent.chapterIndex)
             }
+
             is MainReaderComponent.Intent.OpenOrCloseSettings -> {
-                if(dialog.value.child == null) {
+                if (dialog.value.child == null) {
                     dialogNavigation.activate(
                         MainReaderComponent.SettingsDialogConfig(state.value.settings)
                     )
@@ -100,9 +102,9 @@ class DefaultMainReaderComponent(
         readerSettings = settings
     }
 
-    private fun openChapter(index: Int) {
-        if(index in chapters.indices) {
-            when(val chapter = chapters[index]) {
+    private fun openChapter(index: Int) = coroutineScope.launch {
+        if (index in chapters.indices) {
+            when (val chapter = chapters[index]) {
                 is FanficChapterStable.SeparateChapterModel -> {
                     _state.update {
                         it.copy(
@@ -110,9 +112,11 @@ class DefaultMainReaderComponent(
                             text = ""
                         )
                     }
-                    coroutineScope.launch {
-                        val text = ficbookApi.getFanficChapterText(chapter.href)
-                        if(text != null) {
+                    when (
+                        val apiResult = ficbookApi.getFanficChapterText(chapter.href)
+                    ) {
+                        is ApiResult.Success -> {
+                            val text = apiResult.value
                             _state.update {
                                 it.copy(
                                     text = text,
@@ -121,12 +125,13 @@ class DefaultMainReaderComponent(
                                     chapterName = chapter.name,
                                 )
                             }
-                        } else {
+                        }
+                        is ApiResult.Error -> {
+                            val message = apiResult.message
                             _state.update {
                                 it.copy(
-                                    text = "Ошибка загрузки главы",
+                                    text = message,
                                     loading = false,
-
                                 )
                             }
                         }

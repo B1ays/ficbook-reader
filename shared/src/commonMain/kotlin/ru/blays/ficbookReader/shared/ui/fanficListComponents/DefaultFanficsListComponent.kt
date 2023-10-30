@@ -1,6 +1,7 @@
 package ru.blays.ficbookReader.shared.ui.fanficListComponents
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
@@ -18,7 +19,9 @@ import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbookapi.data.SectionWithQuery
+import ru.blays.ficbookapi.dataModels.FanficModel
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
+import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultFanficsListComponent(
     componentContext: ComponentContext,
@@ -31,6 +34,21 @@ class DefaultFanficsListComponent(
             section = section.toStableModel()
         )
     )
+
+    private val navigation = SlotNavigation<FanficsListComponent.DialogConfig>()
+
+    override val dialog: Value<ChildSlot<*, FanficsListDialogComponent>> = childSlot(
+        source = navigation,
+        serializer = FanficsListComponent.DialogConfig.serializer(),
+
+    ) { configuration, childContext ->
+        FanficsListDialogComponent(
+            componentContext = childContext,
+            message = configuration.message
+        ) {
+            navigation.dismiss()
+        }
+    }
 
     override fun setSection(section: SectionWithQuery) {
         _state.update {
@@ -116,10 +134,19 @@ class DefaultFanficsListComponent(
     }
 
     private suspend fun getPage(section: SectionWithQuery, page: Int): List<FanficCardModelStable> {
-        return ficbookApi.getFanficsForSection(
+        val result = ficbookApi.getFanficsForSection(
             section = section,
             page = page
-        ).map { it.toStableModel() }
+        )
+        return when (result) {
+            is ApiResult.Error -> {
+                navigation.activate(
+                    FanficsListComponent.DialogConfig(result.message)
+                )
+                return emptyList()
+            }
+            is ApiResult.Success -> result.value.map(FanficModel::toStableModel)
+        }
     }
 
     private fun setAsFeed(section: ru.blays.ficbookReader.shared.data.dto.SectionWithQuery) {
@@ -128,4 +155,12 @@ class DefaultFanficsListComponent(
             value = Json.encodeToString(section)
         )
     }
+}
+
+class FanficsListDialogComponent(
+    val componentContext: ComponentContext,
+    private val message: String,
+    private val onOutput: () -> Unit
+): ComponentContext by componentContext {
+
 }

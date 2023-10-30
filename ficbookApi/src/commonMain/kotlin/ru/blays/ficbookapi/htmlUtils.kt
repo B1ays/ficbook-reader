@@ -5,6 +5,7 @@ import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okio.use
 import ru.blays.ficbookapi.dataModels.CookieModel
+import ru.blays.ficbookapi.result.StringBody
 import java.time.Duration
 
 private val client = OkHttpClient
@@ -14,11 +15,11 @@ private val client = OkHttpClient
     .connectTimeout(Duration.ofMinutes(1))
     .build()
 
-internal suspend fun getHtmlBody(url: String): String? = coroutineScope {
+internal suspend fun getHtmlBody(url: String): StringBody = coroutineScope {
     getHtmlBody(url.toHttpUrl())
 }
 
-internal suspend fun getHtmlBody(url: HttpUrl): String? = coroutineScope {
+internal suspend fun getHtmlBody(url: HttpUrl): StringBody = coroutineScope {
     val request = Request.Builder()
         .url(url)
         .build()
@@ -30,18 +31,18 @@ internal suspend fun getHtmlBody(url: HttpUrl): String? = coroutineScope {
 internal suspend fun getHtmlBody(
     request: Request,
     block: (OkHttpClient.Builder.() -> Unit)? = null
-    ): String? = coroutineScope {
+    ): StringBody = coroutineScope {
     val builder = client.newBuilder()
     block?.invoke(builder)
     val client = builder.build()
 
     try {
         client.newCall(request).execute().use {
-            return@coroutineScope it.body?.string()
+            return@coroutineScope StringBody(it.body?.string())
         }
     } catch (e: Exception) {
         e.printStackTrace()
-        return@coroutineScope null
+        return@coroutineScope StringBody.empty
     }
 }
 

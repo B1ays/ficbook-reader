@@ -29,14 +29,9 @@ suspend fun actionChangeMark(
         header("Referer", "https://ficbook.net/readfic/$fanficID")
         url(url)
     }
-    val responseBody = getHtmlBody(request)
+    val responseBody = getHtmlBody(request).value
 
-    val result = try {
-        Json.decodeFromString<AjaxSimpleResult>(responseBody!!)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
+    val result = responseBody?.let { Json.decodeFromString<AjaxSimpleResult?>(it) }
 
     return result?.result ?: false
 }

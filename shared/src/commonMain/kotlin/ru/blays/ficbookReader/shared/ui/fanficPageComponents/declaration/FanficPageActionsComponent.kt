@@ -19,3 +19,7 @@ interface FanficPageActionsComponent {
         val readed: Boolean = false
     )
 }
+
+interface InternalFanficPageActionsComponent: FanficPageActionsComponent {
+    fun setValue(value: FanficPageActionsComponent.State)
+}

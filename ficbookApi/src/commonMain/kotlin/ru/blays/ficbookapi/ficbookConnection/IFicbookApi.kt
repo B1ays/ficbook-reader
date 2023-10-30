@@ -3,6 +3,7 @@ package ru.blays.ficbookapi.ficbookConnection
 import kotlinx.coroutines.flow.StateFlow
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.*
+import ru.blays.ficbookapi.result.ApiResult
 
 interface IFicbookApi {
     val isAuthorized: StateFlow<Boolean>
@@ -15,17 +16,17 @@ interface IFicbookApi {
     suspend fun setCookie(cookies: List<CookieModel>)
     fun logOut()
 
-    suspend fun getFanficPageByID(id: String): FanficPageModel?
-    suspend fun getFanficPageByHref(href: String): FanficPageModel?
+    suspend fun getFanficPageByID(id: String): ApiResult<FanficPageModel>
+    suspend fun getFanficPageByHref(href: String): ApiResult<FanficPageModel>
 
-    suspend fun getFanficsForHref(href: String, page: Int): List<FanficModel>
-    suspend fun getFanficsForSection(section: SectionWithQuery, page: Int): List<FanficModel>
+    suspend fun getFanficsForHref(href: String, page: Int): ApiResult<List<FanficModel>>
+    suspend fun getFanficsForSection(section: SectionWithQuery, page: Int): ApiResult<List<FanficModel>>
 
     suspend fun getFandomsForSection(section: String, page: Int): List<FandomModel>
 
-    suspend fun getFanficChapterText(href: String): String?
+    suspend fun getFanficChapterText(href: String): ApiResult<String>
 
-    suspend fun getCollections(section: SectionWithQuery): List<CollectionModel>
+    suspend fun getCollections(section: SectionWithQuery): ApiResult<List<CollectionModel>>
 
     suspend fun actionChangeFollow(
         follow: Boolean,
