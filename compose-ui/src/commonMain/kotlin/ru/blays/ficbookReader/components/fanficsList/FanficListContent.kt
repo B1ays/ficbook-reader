@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
+import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficCard
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
@@ -41,8 +42,8 @@ fun FanficsListContent(
     modifier: Modifier = Modifier
 ) {
     val state by component.state.subscribeAsState()
-    val list = remember(state) { state.list }
-    val isLoading = remember(state) { state.isLoading }
+    val list = state.list
+    val isLoading = state.isLoading
 
     val lazyListState = rememberLazyListState()
     val pullRefreshState = rememberPullRefreshState(
@@ -72,14 +73,41 @@ fun FanficsListContent(
                 .fillMaxSize()
                 .padding(DefaultPadding.CardDefaultPadding)
                 .padding(end = 4.dp),
-            state = lazyListState
+            state = lazyListState,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(list) { fanfic ->
-                FanficCard(fanfic = fanfic) {
-                    component.onOutput(
-                        FanficsListComponent.Output.OpenFanfic(fanfic.href)
-                    )
-                }
+                FanficCard(
+                    fanfic = fanfic,
+                    onCardClick = {
+                        component.onOutput(
+                            FanficsListComponent.Output.OpenFanfic(fanfic.href)
+                        )
+                    },
+                    onPairingClick = { pairing ->
+                        component.onOutput(
+                            FanficsListComponent.Output.OpenAnotherSection(
+                                section = SectionWithQuery(
+                                    name = pairing.character,
+                                    href = pairing.href
+                                )
+                            )
+                        )
+                    },
+                    onFandomClick = { fandom ->
+                        component.onOutput(
+                            FanficsListComponent.Output.OpenAnotherSection(
+                                section = SectionWithQuery(
+                                    name = fandom.name,
+                                    href = fandom.href
+                                )
+                            )
+                        )
+                    },
+                    onAuthorClick = { author ->  
+                        // TODO
+                    }
+                )
                 Spacer(modifier = Modifier.height(7.dp))
             }
         }

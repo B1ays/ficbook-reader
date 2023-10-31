@@ -26,17 +26,19 @@ fun FandomModel.toStableModel() = FandomModelStable(
     description = description
 )
 
-fun FanficModel.toStableModel() = FanficCardModelStable(
+fun FanficCardModel.toStableModel() = FanficCardModelStable(
     href = href,
     title = title,
     status = status.toStableModel(),
     author = author,
-    fandom = fandom,
+    fandom = fandom.toStableModel(),
     updateDate = updateDate,
     readInfo = readInfo?.toStableModel(),
-    tags = tags.map { it.toStableModel() },
+    tags = tags.map(FanficTag::toStableModel),
     description = description,
-    coverUrl = coverUrl
+    coverUrl = coverUrl.url,
+    pairings = pairings.map(PairingModel::toStableModel),
+    size = size
 )
 
 fun FanficStatus.toStableModel() = FanficStatusStable(
@@ -73,9 +75,9 @@ fun FanficPageModel.toStableModel() = FanficPageModelStable(
     status = status.toStableModel(),
     author = UserModelStable(name = author),
     fandoms = listOf(FandomModelStable(name = fandom)),
-    tags = tags.map { it.toStableModel() },
-    chapters = chapters.map { it.toStableModel() },
-    rewards = rewards.map { it.toStableModel() },
+    tags = tags.map(FanficTag::toStableModel),
+    chapters = chapters.map(FanficChapter::toStableModel),
+    rewards = rewards.map(RewardModel::toStableModel),
 )
 
 fun FanficChapter.toStableModel(): FanficChapterStable = when(this) {
@@ -114,7 +116,7 @@ fun UserModel.toStableModel() = UserModelStable(
 
 fun AuthorizationResult.toStableModel() = AuthorizationResultStable(
     responseResult = responseResult.toStableModel(),
-    cookies = cookies.map { it.toStableModel()}
+    cookies = cookies.map(CookieModel::toStableModel)
 )
 
 fun AuthorizationResponseModel.toStableModel() = AuthorizationResponseModelStable(
@@ -169,4 +171,10 @@ fun FanficCompletionStatus.toStableModel(): ru.blays.ficbookReader.shared.data.d
 fun Section.toStableModel() = Section(
     name = name,
     segments = segments
+)
+
+fun PairingModel.toStableModel() = PairingModelStable(
+    character = character,
+    href = href,
+    isHighlighted = isHighlighted
 )

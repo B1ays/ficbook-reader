@@ -110,7 +110,7 @@ open class FicbookApi: IFicbookApi {
         return@coroutineScope false
     }
 
-    override suspend fun getFanficsForHref(href: String, page: Int): ApiResult<List<FanficModel>> {
+    override suspend fun getFanficsForHref(href: String, page: Int): ApiResult<List<FanficCardModel>> {
         val section = SectionWithQuery(href = href)
         return getFanficsForSection(section, page)
     }
@@ -118,7 +118,7 @@ open class FicbookApi: IFicbookApi {
     override suspend fun getFanficsForSection(
         section: SectionWithQuery,
         page: Int
-    ): ApiResult<List<FanficModel>> = coroutineScope {
+    ): ApiResult<List<FanficCardModel>> = coroutineScope {
         val url = buildFicbookURL {
             href(section.path)
             section.queryParameters.forEach { (name, value) ->
@@ -134,7 +134,7 @@ open class FicbookApi: IFicbookApi {
         }
 
         return@coroutineScope if(body.value != null) {
-            val list = mutableListOf<FanficModel>()
+            val list = mutableListOf<FanficCardModel>()
             val fanficsListParser = FanficsListParser()
             val fanficCardParser = FanficCardParser()
 

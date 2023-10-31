@@ -3,32 +3,20 @@ package ru.blays.ficbookapi.dataModels
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FanficModel(
+data class FanficCardModel(
     val href: String,
     val title: String,
     val status: FanficStatus,
     val author: String,
-    val fandom: String,
+    val fandom: FandomModel,
+    val pairings: List<PairingModel>,
     val updateDate: String,
+    val size: String,
     val readInfo: ReadBadgeModel?,
     val tags: List<FanficTag>,
     val description: String,
-    val coverUrl: String
-) {
-    override fun toString(): String {
-        return """
-}
-    href = $href
-    title = $title
-    status = $status
-    author = $author
-    fandom = $fandom
-    updateDate = $updateDate
-    tags = $tags
-    description = $description
-}""".trimIndent()
-    }
-}
+    val coverUrl: CoverUrl
+)
 
 @Serializable
 data class FanficStatus(
@@ -38,28 +26,14 @@ data class FanficStatus(
     val hot: Boolean,
     val likes: Int,
     val trophies: Int
-) {
-    override fun toString(): String {
-        return """
-            direction: $direction
-            rating: $rating
-            status: $status
-            likes: $likes
-            trophies: $trophies
-        """.trimIndent()
-    }
-}
+)
 
 @Serializable
 data class FanficTag(
     val name: String,
     val isAdult: Boolean,
     val href: String = ""
-) {
-    override fun toString(): String {
-        return name + if (isAdult) " | 18+" else ""
-    }
-}
+)
 
 @Serializable
 data class ReadBadgeModel(

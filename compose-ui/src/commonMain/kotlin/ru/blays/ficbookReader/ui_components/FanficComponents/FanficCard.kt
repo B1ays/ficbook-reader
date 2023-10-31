@@ -2,20 +2,25 @@
 
 package ru.blays.ficbookReader.ui_components.FanficComponents
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
@@ -33,14 +38,31 @@ import ru.blays.ficbookReader.values.DefaultPadding
 fun FanficCard(
     fanfic: FanficCardModelStable,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onCardClick: () -> Unit,
+    onPairingClick: (pairing: PairingModelStable) -> Unit,
+    onFandomClick: (fandom: FandomModelStable) -> Unit,
+    onAuthorClick: (author: UserModelStable) -> Unit
 ) {
     val windowSize = WindowSize()
 
     if(windowSize.width > 700) {
-        LandscapeContent(modifier, fanfic, onClick)
+        LandscapeContent(
+            modifier = modifier,
+            fanfic = fanfic,
+            onCardClick = onCardClick,
+            onPairingClick = onPairingClick,
+            onFandomClick = onFandomClick,
+            onAuthorClick = onAuthorClick
+        )
     } else {
-        PortraitContent(modifier, fanfic, onClick)
+        PortraitContent(
+            modifier = modifier,
+            fanfic = fanfic,
+            onCardClick = onCardClick,
+            onPairingClick = onPairingClick,
+            onFandomClick = onFandomClick,
+            onAuthorClick = onAuthorClick
+        )
     }
 }
 
@@ -48,52 +70,77 @@ fun FanficCard(
 private fun LandscapeContent(
     modifier: Modifier = Modifier,
     fanfic: FanficCardModelStable,
-    onClick: () -> Unit
+    onCardClick: () -> Unit,
+    onPairingClick: (pairing: PairingModelStable) -> Unit,
+    onFandomClick: (fandom: FandomModelStable) -> Unit,
+    onAuthorClick: (author: UserModelStable) -> Unit
 ) {
     val status = fanfic.status
-    CardWithDirectionIndicator(
-        direction = status.direction,
-        modifier = modifier.fillMaxWidth(),
-        onClick = onClick
-    ) {
-        Column {
-            FanficChips(status)
-            Spacer(modifier = Modifier.height(3.dp))
-            Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier
-                    .padding(DefaultPadding.CardDefaultPaddingSmall)
-                    .fillMaxWidth()
-            ) {
-                if(fanfic.coverUrl.isNotEmpty()) {
-                    KamelImage(
-                        modifier = Modifier
-                            .layout { measurable, constraints ->
-                                val widthFloat = (constraints.maxWidth*0.38F)
-                                val heightFloat = widthFloat*1.5F
 
-                                layout(width = widthFloat.toInt(), height = heightFloat.toInt()) {
-                                    measurable.measure(
-                                        Constraints(
-                                            maxWidth = widthFloat.toInt(),
-                                            maxHeight = heightFloat.toInt()
-                                        )
-                                    ).place(0, 0)
+    BoxWithConstraints {
+        val widthFill = when(constraints.maxWidth) {
+            in 2000..Int.MAX_VALUE -> 0.65F
+            in 1600..2000 -> 0.7F
+            in 1300..1600 -> 0.8F
+            in 900..1300 -> 0.9F
+            else -> 1F
+        }
+        CardWithDirectionIndicator(
+            direction = status.direction,
+            modifier = modifier.fillMaxWidth(widthFill),
+            onClick = onCardClick
+        ) {
+            println("Element width: ${constraints.maxWidth}")
+
+            Column(
+                modifier = Modifier.fillMaxWidth(widthFill)
+            ) {
+                FanficChips(status)
+                Spacer(modifier = Modifier.height(3.dp))
+                Row(
+                    verticalAlignment = Alignment.Top,
+                    modifier = Modifier
+                        .padding(DefaultPadding.CardDefaultPaddingSmall)
+                        .fillMaxWidth()
+                ) {
+                    if (fanfic.coverUrl.isNotEmpty()) {
+                        KamelImage(
+                            modifier = Modifier
+                                .layout { measurable, constraints ->
+                                    val widthFloat = (constraints.maxWidth * 0.38F).coerceAtMost(300F)
+                                    val heightFloat = widthFloat * 1.5F
+
+                                    layout(
+                                        width = widthFloat.toInt(),
+                                        height = heightFloat.toInt()
+                                    ) {
+                                        measurable.measure(
+                                            Constraints(
+                                                maxWidth = widthFloat.toInt(),
+                                                maxHeight = heightFloat.toInt()
+                                            )
+                                        ).place(0, 0)
+                                    }
                                 }
-                            }
-                            .clip(CardDefaults.shape),
-                        resource = asyncPainterResource(fanfic.coverUrl),
-                        contentDescription = "Обложка фанфика",
-                        contentScale = ContentScale.Crop
+                                .clip(CardDefaults.shape),
+                            resource = asyncPainterResource(fanfic.coverUrl),
+                            contentDescription = "Обложка фанфика",
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    FanficHeader(
+                        fanfic = fanfic,
+                        onPairingClick = onPairingClick,
+                        onFandomClick = onFandomClick,
+                        onAuthorClick = onAuthorClick
                     )
                 }
-                FanficHeader(fanfic)
+                Spacer(modifier = Modifier.height(3.dp))
+                Text(
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    text = fanfic.description
+                )
             }
-            Spacer(modifier = Modifier.height(3.dp))
-            Text(
-                modifier = Modifier.padding(horizontal = 4.dp),
-                text = fanfic.description
-            )
         }
     }
 }
@@ -102,7 +149,10 @@ private fun LandscapeContent(
 private fun PortraitContent(
     modifier: Modifier = Modifier,
     fanfic: FanficCardModelStable,
-    onClick: () -> Unit
+    onCardClick: () -> Unit,
+    onPairingClick: (pairing: PairingModelStable) -> Unit,
+    onFandomClick: (fandom: FandomModelStable) -> Unit,
+    onAuthorClick: (author: UserModelStable) -> Unit
 ) {
     val status = fanfic.status
 
@@ -130,11 +180,16 @@ private fun PortraitContent(
             direction = status.direction,
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = onClick
+            onClick = onCardClick
         ) {
             Column {
                 FanficChips(status)
-                FanficHeader(fanfic)
+                FanficHeader(
+                    fanfic = fanfic,
+                    onPairingClick = onPairingClick,
+                    onFandomClick = onFandomClick,
+                    onAuthorClick = onAuthorClick
+                )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     modifier = Modifier.padding(horizontal = 4.dp),
@@ -153,6 +208,9 @@ fun CardWithDirectionIndicator(
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    val density = LocalDensity.current
+    val indicatorWidthInDp = 10.dp
+    val indicatorWidthInPx = with(density) { indicatorWidthInDp.roundToPx() }
     Card(
         modifier = modifier,
         onClick = onClick
@@ -160,15 +218,13 @@ fun CardWithDirectionIndicator(
         SubcomposeLayout(
             modifier = Modifier.fillMaxWidth()
         ) { constraints ->
-            val indicatorWidth = (constraints.minWidth*0.025F).toInt()
-
             val info = subcompose(
                 slotId = "Info",
                 content = content
             ).map {
                 it.measure(
                     constraints.copy(
-                        maxWidth = constraints.maxWidth-indicatorWidth,
+                        maxWidth = constraints.maxWidth - indicatorWidthInPx,
                         minWidth = 0
                     )
                 )
@@ -190,7 +246,7 @@ fun CardWithDirectionIndicator(
             }.map {
                 it.measure(
                     Constraints.fixed(
-                        width = indicatorWidth,
+                        width = indicatorWidthInPx,
                         height = maxHeight.height
                     )
                 )
@@ -199,7 +255,7 @@ fun CardWithDirectionIndicator(
             layout(width = constraints.maxWidth, height = maxHeight.height) {
                 val firstIndicator =  indicator.first()
                 firstIndicator.place(0, 0)
-                info.first().placeRelative(indicatorWidth, 0)
+                info.first().placeRelative(indicatorWidthInPx, 0)
             }
         }
     }
@@ -307,10 +363,13 @@ fun FanficChips(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun FanficHeader(
-    fanfic: FanficCardModelStable
+    fanfic: FanficCardModelStable,
+    onPairingClick: (pairing: PairingModelStable) -> Unit,
+    onFandomClick: (fandom: FandomModelStable) -> Unit,
+    onAuthorClick: (author: UserModelStable) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -322,7 +381,10 @@ fun FanficHeader(
         )
         Spacer(modifier = Modifier.height(6.dp))
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable {
+                // TODO
+            }
         ) {
             Icon(
                 modifier = Modifier.size(16.dp),
@@ -337,7 +399,10 @@ fun FanficHeader(
         }
         Spacer(modifier = Modifier.height(3.dp))
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable {
+                onFandomClick(fanfic.fandom)
+            }
         ) {
             Icon(
                 modifier = Modifier.size(16.dp),
@@ -346,10 +411,53 @@ fun FanficHeader(
             )
             Spacer(modifier = Modifier.width(2.dp))
             Text(
-                text = fanfic.fandom,
+                text = fanfic.fandom.name,
                 style = MaterialTheme.typography.labelLarge
             )
         }
+        if(fanfic.pairings.isNotEmpty()) {
+            FlowRow {
+                val shape = remember { RoundedCornerShape(percent = 20) }
+                val style = MaterialTheme.typography.labelLarge
+                Text(
+                    text = "Пэйринги и персонажи:",
+                    style = style
+                )
+                Spacer(modifier = Modifier.requiredWidth(3.dp))
+                fanfic.pairings.forEach { pairing ->
+                    Text(
+                        text = pairing.character + ',',
+                        style = style,
+                        color = if (pairing.isHighlighted) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            Color.Unspecified
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(2.dp)
+                            .background(
+                                color = if (pairing.isHighlighted) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    Color.Unspecified
+                                },
+                                shape = shape
+                            )
+                            .clip(shape)
+                            .clickable {
+                                onPairingClick(pairing)
+                            }
+                    )
+                    Spacer(modifier = Modifier.requiredWidth(3.dp))
+                }
+            }
+        }
+        Spacer(modifier = Modifier.requiredHeight(2.dp))
+        Text(
+            text = "Тэги:",
+            style = MaterialTheme.typography.labelLarge
+        )
         FlowRow {
             fanfic.tags.forEach { tag ->
                 FanficTagChip(tag = tag)
@@ -358,6 +466,11 @@ fun FanficHeader(
         Spacer(modifier = Modifier.requiredHeight(4.dp))
         Text(
             text = "Обновлено: ${fanfic.updateDate}",
+            style = MaterialTheme.typography.labelLarge
+        )
+        Spacer(modifier = Modifier.requiredHeight(4.dp))
+        Text(
+            text = "Размер: ${fanfic.size}",
             style = MaterialTheme.typography.labelLarge
         )
     }

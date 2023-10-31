@@ -19,7 +19,7 @@ import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbookapi.data.SectionWithQuery
-import ru.blays.ficbookapi.dataModels.FanficModel
+import ru.blays.ficbookapi.dataModels.FanficCardModel
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -145,7 +145,7 @@ class DefaultFanficsListComponent(
                 )
                 return emptyList()
             }
-            is ApiResult.Success -> result.value.map(FanficModel::toStableModel)
+            is ApiResult.Success -> result.value.map(FanficCardModel::toStableModel)
         }
     }
 

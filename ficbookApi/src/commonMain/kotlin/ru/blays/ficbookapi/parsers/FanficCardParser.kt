@@ -8,13 +8,8 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.jsoup.select.Evaluator
-import ru.blays.ficbookapi.dataModels.FanficCompletionStatus
-import ru.blays.ficbookapi.dataModels.FanficDirection
-import ru.blays.ficbookapi.dataModels.FanficModel
-import ru.blays.ficbookapi.dataModels.FanficRating
-import ru.blays.ficbookapi.dataModels.FanficStatus
-import ru.blays.ficbookapi.dataModels.FanficTag
-import ru.blays.ficbookapi.dataModels.ReadBadgeModel
+import ru.blays.ficbookapi.dataModels.*
+import java.net.URLDecoder
 
 internal class FanficsListParser: IDataParser<String, Elements> {
     override suspend fun parse(data: String): Elements = coroutineScope {
@@ -31,8 +26,8 @@ internal class FanficsListParser: IDataParser<String, Elements> {
     }
 }
 
-internal class FanficCardParser: IDataParser<Element, FanficModel> {
-    override suspend fun parse(data: Element): FanficModel = coroutineScope {
+internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
+    override suspend fun parse(data: Element): FanficCardModel = coroutineScope {
         val fanficMainInfo = data
             .select(".fanfic-main-info")
             .firstOrNull()
@@ -120,13 +115,58 @@ internal class FanficCardParser: IDataParser<Element, FanficModel> {
             .text()
             ?: ""
 
-        val fandom = fanficInlineInfo
+        val fandom: FandomModel = fanficInlineInfo
             .firstOrNull {
                 it.html().contains("Фэндом:")
             }
             ?.select("a")
-            ?.text()
-            ?: ""
+            .run {
+                if (this != null) {
+                    val name = text()
+                    val href = attr("href")
+
+                    FandomModel(
+                        href = href,
+                        name = name,
+                        description = ""
+                    )
+                } else {
+                    FandomModel(
+                        href = "",
+                        name = "",
+                        description = ""
+                    )
+                }
+            }
+
+        val pairings: List<PairingModel> = fanficInlineInfo
+            .run {
+                val list = mutableListOf<PairingModel>()
+
+                forEach { element ->
+                    val dt = element.select("dt")
+                    if (dt.text().contains("Пэйринг и персонажи:")) {
+                        val a = element.select("dd a")
+
+                        a.forEach { aElement ->
+                            val character = aElement.text()
+                            val href = aElement
+                                .attr("href")
+                                .let { URLDecoder.decode(it, "UTF-8") }
+
+                            val isHighlighted = aElement.className().contains("pairing-highlight")
+
+                            list += PairingModel(
+                                character = character,
+                                href = href,
+                                isHighlighted = isHighlighted
+                            )
+                        }
+                    }
+                }
+
+                return@run list
+            }
 
         val updateDate = fanficInlineInfo
             .firstOrNull {
@@ -137,6 +177,16 @@ internal class FanficCardParser: IDataParser<Element, FanficModel> {
             ?.select("dd")
             ?.text()
             ?: ""
+
+        val size = fanficInlineInfo.run {
+            forEach { element ->
+                val label = element.select("dt").text()
+                if (label.contains("Размер:")) {
+                    return@run element.select("dd").text()
+                }
+            }
+            return@run ""
+        }
 
 
         val tagsElements = data
@@ -164,8 +214,9 @@ internal class FanficCardParser: IDataParser<Element, FanficModel> {
             .select(".side-Section")
             .select("source")
             .attr("srcset")
+            .let { CoverUrl(it) }
 
-        return@coroutineScope FanficModel(
+        return@coroutineScope FanficCardModel(
             href = href,
             title = title,
             status = FanficStatus(
@@ -178,7 +229,9 @@ internal class FanficCardParser: IDataParser<Element, FanficModel> {
             ),
             author = author,
             fandom = fandom,
+            pairings = pairings,
             updateDate = updateDate,
+            size = size,
             tags = tags,
             description = description,
             coverUrl = coverUrl,
@@ -186,8 +239,8 @@ internal class FanficCardParser: IDataParser<Element, FanficModel> {
         )
     }
 
-    override fun parseSynchronously(data: Element): StateFlow<FanficModel?> {
-        val resultFlow = MutableStateFlow<FanficModel?>(null)
+    override fun parseSynchronously(data: Element): StateFlow<FanficCardModel?> {
+        val resultFlow = MutableStateFlow<FanficCardModel?>(null)
         launch {
             resultFlow.value = parse(data)
         }

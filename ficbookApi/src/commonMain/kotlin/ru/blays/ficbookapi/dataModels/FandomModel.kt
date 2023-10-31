@@ -1,5 +1,8 @@
 package ru.blays.ficbookapi.dataModels
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class FandomModel(
     val href: String,
     val name: String,

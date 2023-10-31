@@ -7,7 +7,16 @@ data class SectionWithQuery(
     val name: String,
     val path: String,
     val queryParameters: List<Pair<String, String>>
-)
+) {
+    constructor(
+        name: String,
+        href: String
+    ): this(
+        name = name,
+        path = href,
+        queryParameters = emptyList()
+    )
+}
 
 @Serializable
 data class Section(

@@ -10,6 +10,7 @@ import io.realm.kotlin.ext.query
 import kotlinx.coroutines.*
 import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.inject
+import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
 import ru.blays.ficbookReader.shared.data.realm.entity.toApiModel
 import ru.blays.ficbookReader.shared.data.realm.entity.toEntity
@@ -206,6 +207,13 @@ class DefaultRootComponent private constructor(
                 )
             }
             is FanficsListComponent.Output.NavigateBack -> navigation.pop()
+            is FanficsListComponent.Output.OpenAnotherSection -> {
+                navigation.push(
+                    RootComponent.Config.FanficsList(
+                        section = output.section.toApiModel()
+                    )
+                )
+            }
         }
     }
 

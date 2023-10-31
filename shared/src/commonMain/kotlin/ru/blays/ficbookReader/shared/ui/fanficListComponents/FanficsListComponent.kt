@@ -24,6 +24,7 @@ interface FanficsListComponent {
     sealed class Output {
         data object NavigateBack: Output()
         data class OpenFanfic(val href: String): Output()
+        data class OpenAnotherSection(val section: SectionWithQuery): Output()
     }
 
     data class State(

@@ -38,7 +38,7 @@ class DefaultMainScreenComponent private constructor(
         componentContext: ComponentContext,
         ficbookApi: IFicbookApi
     ) -> UserLogInComponent,
-    private val output: (MainScreenComponent.Output) -> Unit
+    private val onMainOutput: (MainScreenComponent.Output) -> Unit
 ): MainScreenComponent, ComponentContext by componentContext {
     constructor(
         componentContext: ComponentContext,
@@ -80,7 +80,7 @@ class DefaultMainScreenComponent private constructor(
                 output = {}
             )
         },
-        output = output
+        onMainOutput = output
     )
 
     override val tabs: Array<MainScreenComponent.TabModel> = arrayOf(
@@ -117,31 +117,36 @@ class DefaultMainScreenComponent private constructor(
     override fun sendIntent(intent: MainScreenComponent.Intent) {
         when(intent) {
             is MainScreenComponent.Intent.Login -> {
-                output(
+                onMainOutput(
                     MainScreenComponent.Output.UserButtonClicked
                 )
             }
         }
     }
 
-    override fun onOutput(output: MainScreenComponent.Output) = this.output(output)
+    override fun onOutput(output: MainScreenComponent.Output) = onMainOutput(output)
 
     private fun onFeedOutput(output: FanficsListComponent.Output) {
         when(output) {
             is FanficsListComponent.Output.OpenFanfic -> {
-                this.output(
+                onMainOutput(
                     MainScreenComponent.Output.OpenFanficPage(output.href)
                 )
             }
 
             FanficsListComponent.Output.NavigateBack -> {}
+            is FanficsListComponent.Output.OpenAnotherSection -> {
+                onMainOutput(
+                    MainScreenComponent.Output.OpenFanficsList(output.section)
+                )
+            }
         }
     }
 
     private fun onPopularOutput(output: PopularSectionsComponent.Output) {
         when(output) {
             is PopularSectionsComponent.Output.NavigateToSection -> {
-                this.output(
+                this.onMainOutput(
                     MainScreenComponent.Output.OpenFanficsList(
                         output.section
                     )
@@ -153,7 +158,7 @@ class DefaultMainScreenComponent private constructor(
     private fun onCollectionsOutput(output: CollectionsComponent.Output) {
         when(output) {
             is CollectionsComponent.Output.OpenCollection -> {
-                this.output(
+                this.onMainOutput(
                     MainScreenComponent.Output.OpenFanficsList(output.section)
                 )
             }

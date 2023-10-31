@@ -20,3 +20,5 @@ venv
 .vscode
 /app-android/release/app-android-release.apk
 /app-android/release/output-metadata.json
+/app-desktop/default.realm
+/app-desktop/default.realm.lock
