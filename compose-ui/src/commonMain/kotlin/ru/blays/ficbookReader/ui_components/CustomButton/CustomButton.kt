@@ -67,7 +67,7 @@ fun BackgroundIcon(
     modifier: Modifier = Modifier,
     icon: Painter,
     shape: Shape = ButtonDefaults.shape,
-    minSize: Dp = 50.dp,
+    size: Dp = 50.dp,
     iconScale: Float = 1F,
     containerColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8F),
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -82,7 +82,7 @@ fun BackgroundIcon(
     ) {
         Icon(
             modifier = Modifier
-                .defaultMinSize(minSize, minSize)
+                .size(size)
                 .padding(contentPadding)
                 .scale(iconScale),
             painter = icon,

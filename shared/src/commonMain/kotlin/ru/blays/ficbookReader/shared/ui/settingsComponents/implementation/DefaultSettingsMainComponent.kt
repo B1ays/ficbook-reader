@@ -31,5 +31,11 @@ class DefaultSettingsMainComponent(
         defaultValue = 3
     )
 
+    override val superfilterSetting = DefaultSettingsUnitComponent(
+        componentContext = childContext("superfilter_component"),
+        key = ISettingsRepository.stringKey(SettingsKeys.SUPERFILTER_KEY),
+        defaultValue = ""
+    )
+
     override fun onOutput(output: SettingsMainComponent.Output) = this.output(output)
 }

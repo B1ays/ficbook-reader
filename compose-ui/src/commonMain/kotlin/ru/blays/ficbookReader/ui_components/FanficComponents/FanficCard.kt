@@ -90,8 +90,6 @@ private fun LandscapeContent(
             modifier = modifier.fillMaxWidth(widthFill),
             onClick = onCardClick
         ) {
-            println("Element width: ${constraints.maxWidth}")
-
             Column(
                 modifier = Modifier.fillMaxWidth(widthFill)
             ) {

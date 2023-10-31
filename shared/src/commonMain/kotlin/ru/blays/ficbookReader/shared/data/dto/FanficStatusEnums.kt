@@ -11,9 +11,14 @@ enum class FanficDirection(val direction: String) {
     UNKNOWN("");
 
     companion object {
-        fun getForName(name: String): FanficDirection {
+        fun getForDirection(direction: String): FanficDirection {
             return FanficDirection.entries
-                .firstOrNull { it.direction == name }
+                .firstOrNull { it.direction == direction }
+                ?: UNKNOWN
+        }
+        fun getForName(name: String) : FanficDirection {
+            return FanficDirection.entries
+                .firstOrNull { it.name == name }
                 ?: UNKNOWN
         }
     }

@@ -2,9 +2,11 @@ package ru.blays.ficbookReader.components.settings
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Icon
@@ -19,9 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.myapplication.compose.Res
 import ru.blays.ficbookReader.platformUtils.WindowSize
+import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsUnitComponent
 import ru.blays.ficbookReader.theme.defaultAccentColorsList
+import ru.blays.ficbookReader.ui_components.LazyItems.itemsGroupWithHeader
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
@@ -30,7 +34,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 fun SettingsContent(component: SettingsMainComponent) {
     val windowSize = WindowSize()
     val widthFill = remember(windowSize.width) {
-        when(windowSize.width) {
+        when (windowSize.width) {
             in 1300..Int.MAX_VALUE -> 0.6F
             in 1000..1300 -> 0.7F
             in 800..1000 -> 0.8F
@@ -38,6 +42,9 @@ fun SettingsContent(component: SettingsMainComponent) {
             else -> 1F
         }
     }
+
+    val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             CollapsingsToolbar(
@@ -65,16 +72,22 @@ fun SettingsContent(component: SettingsMainComponent) {
                 .fillMaxSize(),
             contentAlignment = Alignment.TopCenter
         ) {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(widthFill)
+                    .fillMaxHeight()
                     .padding(DefaultPadding.CardDefaultPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ThemeSetting(component.themeSetting)
-                DynamicColorsSetting(component.dynamicColorsSetting)
-                AmoledThemeSetting(component.amoledSetting)
-                AccentColorSetting(component.accentIndexSetting)
+                itemsGroupWithHeader("Тема и цвета") {
+                    ThemeSetting(component.themeSetting)
+                    DynamicColorsSetting(component.dynamicColorsSetting)
+                    AmoledThemeSetting(component.amoledSetting)
+                    AccentColorSetting(component.accentIndexSetting)
+                }
+                itemsGroupWithHeader("Общие") {
+                    SuperfilterSetting(component.superfilterSetting)
+                }
             }
         }
     }
@@ -191,5 +204,56 @@ private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
+    val state by component.state.collectAsState()
+    val icon = painterResource(Res.image.ic_filter_outlined)
+    val selectedDirections: List<FanficDirection> = remember(state) {
+        val directionNames = state
+            .removeSuffix(",")
+            .split(",")
+
+        directionNames.map(FanficDirection::getForName)
+    }
+
+    fun newValue(
+        direction: FanficDirection,
+        add: Boolean,
+        list: List<FanficDirection>
+    ): String {
+        return if (add) {
+            list + direction
+        } else {
+            list.filterNot { it == direction }
+        }.joinToString("") { it.name + ',' }
+    }
+
+    SettingsExpandableCard(
+        title = "Суперфильтр фанфиков",
+        subtitle = "Скрыть выбранные направленности",
+        icon = icon
+    ) {
+        FanficDirection.entries
+            .filterNot { it == FanficDirection.UNKNOWN }
+            .forEach { direction ->
+                SettingsCheckboxWithTitle(
+                    title = direction.direction,
+                    state = direction in selectedDirections
+                ) { add ->
+                    val newValue = newValue(
+                        direction = direction,
+                        add = add,
+                        list = selectedDirections
+                    )
+                    component.onIntent(
+                        SettingsUnitComponent.Intent.ChangeValue(
+                            value = newValue
+                        )
+                    )
+                }
+            }
     }
 }

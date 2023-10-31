@@ -14,6 +14,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.java.KoinJavaComponent.inject
 import ru.blays.ficbookReader.shared.data.dto.FanficCardModelStable
+import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
@@ -67,6 +68,13 @@ class DefaultFanficsListComponent(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val settingsComponent: ISettingsRepository by inject(ISettingsRepository::class.java)
+
+    private val settingsRepository: ISettingsRepository by inject(ISettingsRepository::class.java)
+
+    val superfilterSetting: String by settingsRepository.getDelegate(
+        key = ISettingsRepository.stringKey(SettingsKeys.SUPERFILTER_KEY),
+        defaultValue = ""
+    )
 
     init {
         refresh()
@@ -145,7 +153,16 @@ class DefaultFanficsListComponent(
                 )
                 return emptyList()
             }
-            is ApiResult.Success -> result.value.map(FanficCardModel::toStableModel)
+            is ApiResult.Success -> {
+                val deniedDirections = superfilterSetting
+                    .removeSuffix(",")
+                    .split(",")
+                    .map(FanficDirection::getForName)
+
+                result.value
+                    .map(FanficCardModel::toStableModel)
+                    .filterNot { it.status.direction in deniedDirections }
+            }
         }
     }
 
