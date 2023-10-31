@@ -34,7 +34,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "Ficbook reader"
-            packageVersion = libs.versions.project.get()
+            packageVersion = libs.versions.projectVersion.get()
             includeAllModules = true
 
             windows {

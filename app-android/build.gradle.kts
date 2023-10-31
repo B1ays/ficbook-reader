@@ -13,8 +13,8 @@ android {
         applicationId = "ru.blays.ficbook.reader"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = libs.versions.project.get()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.projectVersion.get()
 
         ndk {
             abiFilters += setOf("arm64-v8a")
