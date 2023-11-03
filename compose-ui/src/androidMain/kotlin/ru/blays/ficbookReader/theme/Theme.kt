@@ -3,6 +3,7 @@
 package ru.blays.ficbookReader.theme
 
 import android.app.Activity
+import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
@@ -57,8 +58,8 @@ actual fun AppTheme(
     val colors: ColorScheme by remember(primaryColor, darkTheme, isAmoledTheme, monetTheme) {
         derivedStateOf {
             val scheme = when {
-                monetTheme && darkTheme -> dynamicDarkColorScheme(context)
-                monetTheme -> dynamicLightColorScheme(context)
+                monetTheme && darkTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> dynamicDarkColorScheme(context)
+                monetTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> dynamicLightColorScheme(context)
                 else -> dynamicColorScheme(
                     seedColor = primaryColor,
                     isDark = darkTheme

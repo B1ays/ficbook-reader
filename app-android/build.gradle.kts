@@ -16,9 +16,7 @@ android {
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.projectVersion.get()
 
-        ndk {
-            abiFilters += setOf("arm64-v8a")
-        }
+
     }
 
     packaging {
@@ -28,7 +26,17 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
+            isMinifyEnabled = false
+            ndk {
+                //noinspection ChromeOsAbiSupport
+                abiFilters += setOf("arm64-v8a")
+            }
+        }
+        debug {
+            ndk {
+                abiFilters += setOf("arm64-v8a", "x86")
+            }
             isMinifyEnabled = false
         }
     }
