@@ -8,7 +8,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform).apply(false)
     alias(libs.plugins.kotlin.parcelize).apply(false)
     alias(libs.plugins.jetbrains.compose).apply(false)
-    alias(libs.plugins.gradle.versions.plugin)
+    alias(libs.plugins.com.github.ben.manes.versions)
+    alias(libs.plugins.nl.littlerobots.version.catalog.update)
 }
 
 
