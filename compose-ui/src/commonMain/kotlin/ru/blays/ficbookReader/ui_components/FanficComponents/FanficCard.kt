@@ -42,7 +42,8 @@ fun FanficCard(
     onCardClick: () -> Unit,
     onPairingClick: (pairing: PairingModelStable) -> Unit,
     onFandomClick: (fandom: FandomModelStable) -> Unit,
-    onAuthorClick: (author: UserModelStable) -> Unit
+    onAuthorClick: (author: UserModelStable) -> Unit,
+    onUrlClicked: (url: String) -> Unit
 ) {
     val windowSize = WindowSize()
 
@@ -53,7 +54,8 @@ fun FanficCard(
             onCardClick = onCardClick,
             onPairingClick = onPairingClick,
             onFandomClick = onFandomClick,
-            onAuthorClick = onAuthorClick
+            onAuthorClick = onAuthorClick,
+            onUrlClicked = onUrlClicked
         )
     } else {
         PortraitContent(
@@ -62,7 +64,8 @@ fun FanficCard(
             onCardClick = onCardClick,
             onPairingClick = onPairingClick,
             onFandomClick = onFandomClick,
-            onAuthorClick = onAuthorClick
+            onAuthorClick = onAuthorClick,
+            onUrlClicked = onUrlClicked
         )
     }
 }
@@ -74,7 +77,8 @@ private fun LandscapeContent(
     onCardClick: () -> Unit,
     onPairingClick: (pairing: PairingModelStable) -> Unit,
     onFandomClick: (fandom: FandomModelStable) -> Unit,
-    onAuthorClick: (author: UserModelStable) -> Unit
+    onAuthorClick: (author: UserModelStable) -> Unit,
+    onUrlClicked: (url: String) -> Unit
 ) {
     val status = fanfic.status
 
@@ -141,9 +145,7 @@ private fun LandscapeContent(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
-                    onClick = {
-                        println("link: $it")
-                    }
+                    onClick = onUrlClicked
                 )
             }
         }
@@ -157,7 +159,8 @@ private fun PortraitContent(
     onCardClick: () -> Unit,
     onPairingClick: (pairing: PairingModelStable) -> Unit,
     onFandomClick: (fandom: FandomModelStable) -> Unit,
-    onAuthorClick: (author: UserModelStable) -> Unit
+    onAuthorClick: (author: UserModelStable) -> Unit,
+    onUrlClicked: (url: String) -> Unit
 ) {
     val status = fanfic.status
 
@@ -196,9 +199,13 @@ private fun PortraitContent(
                     onAuthorClick = onAuthorClick
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                Text(
+                TextWithLinks(
                     modifier = Modifier.padding(horizontal = 4.dp),
-                    text = fanfic.description
+                    text = fanfic.description,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    onClick = onUrlClicked
                 )
             }
         }

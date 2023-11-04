@@ -1,4 +1,4 @@
-package android.util
+package ru.blays.ficbookReader.ui_components.LinkifyText
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern

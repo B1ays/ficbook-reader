@@ -106,6 +106,11 @@ fun FanficsListContent(
                     },
                     onAuthorClick = { author ->  
                         // TODO
+                    },
+                    onUrlClicked = { url ->
+                        component.onOutput(
+                            FanficsListComponent.Output.OpenUrl(url)
+                        )
                     }
                 )
                 Spacer(modifier = Modifier.height(7.dp))

@@ -89,6 +89,11 @@ class DefaultFanficPageComponent(
                     )
                 }
             }
+            is FanficPageInfoComponent.Output.OpenUrl -> {
+                onOutput(
+                    FanficPageComponent.Output.OpenUrl(output.url)
+                )
+            }
         }
     }
 

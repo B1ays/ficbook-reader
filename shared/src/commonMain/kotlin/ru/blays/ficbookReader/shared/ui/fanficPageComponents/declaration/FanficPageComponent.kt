@@ -12,6 +12,7 @@ interface FanficPageComponent {
 
     sealed class Output {
         data object NavigateBack: Output()
+        data class OpenUrl(val url: String): Output()
     }
 
     sealed class Child {

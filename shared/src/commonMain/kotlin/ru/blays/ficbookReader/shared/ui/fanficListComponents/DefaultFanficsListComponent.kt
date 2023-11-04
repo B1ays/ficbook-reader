@@ -71,7 +71,7 @@ class DefaultFanficsListComponent(
 
     private val settingsRepository: ISettingsRepository by inject(ISettingsRepository::class.java)
 
-    val superfilterSetting: String by settingsRepository.getDelegate(
+    private val superfilterSetting: String by settingsRepository.getDelegate(
         key = ISettingsRepository.stringKey(SettingsKeys.SUPERFILTER_KEY),
         defaultValue = ""
     )

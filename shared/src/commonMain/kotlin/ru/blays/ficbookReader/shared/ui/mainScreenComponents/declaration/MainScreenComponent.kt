@@ -39,6 +39,10 @@ interface MainScreenComponent {
             )
         }
         data class OpenFanficPage(val href: String): Output()
+        class OpenUrl(val url: String) : MainScreenComponent.Output() {
+
+        }
+
         data object OpenRandomFanficPage: Output()
         data object UserButtonClicked: Output()
         data object OpenSettings: Output()

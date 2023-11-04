@@ -11,12 +11,17 @@ import okhttp3.internal.closeQuietly
 import okio.use
 import org.jsoup.Jsoup
 import ru.blays.ficbookapi.*
+import ru.blays.ficbookapi.UrlProcessor.UrlProcessor
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.*
 import ru.blays.ficbookapi.parsers.*
 import ru.blays.ficbookapi.result.ApiResult
 
 open class FicbookApi: IFicbookApi {
+
+    init {
+        UrlProcessor.analyzeUrl("https://ficbook.net/fanfiction/cartoons/moj_malenjkij_poni__druzhba_____eto_chudo")
+    }
 
     private var cookies: List<CookieModel> = emptyList()
     private val _currentUser: MutableStateFlow<UserModel?> = MutableStateFlow(null)

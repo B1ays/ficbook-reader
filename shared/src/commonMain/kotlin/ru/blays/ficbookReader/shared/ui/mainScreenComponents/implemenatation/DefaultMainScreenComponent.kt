@@ -140,6 +140,10 @@ class DefaultMainScreenComponent private constructor(
                     MainScreenComponent.Output.OpenFanficsList(output.section)
                 )
             }
+
+            is FanficsListComponent.Output.OpenUrl -> onMainOutput(
+                MainScreenComponent.Output.OpenUrl(output.url)
+            )
         }
     }
 

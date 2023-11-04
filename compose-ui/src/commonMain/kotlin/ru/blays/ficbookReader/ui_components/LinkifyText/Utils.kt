@@ -1,8 +1,7 @@
 package ru.blays.ficbookReader.ui_components.LinkifyText
 
-import android.util.Patterns
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -14,7 +13,7 @@ fun rememberAnnotatedStringWithLinks(
     linkStyle: SpanStyle,
     normalTextStyle: SpanStyle
 ): AnnotatedString {
-    return rememberSaveable {
+    return remember {
         val matcher = Patterns.AUTOLINK_WEB_URL.matcher(text)
         val urls = mutableListOf<Url>()
         while (matcher.find()) {
@@ -58,7 +57,7 @@ fun rememberAnnotatedStringWithLinks(
                 )
             }
         }
-        return@rememberSaveable annotatedString
+        return@remember annotatedString
     }
 }
 

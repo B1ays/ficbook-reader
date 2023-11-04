@@ -146,7 +146,10 @@ data class UserSections(
     val liked: SectionWithQuery,
     val readed: SectionWithQuery ,
     val follow: SectionWithQuery,
-    val visited: SectionWithQuery
+    val visited: SectionWithQuery,
+    val all: Array<SectionWithQuery> = arrayOf(
+        favourites, liked, readed, follow, visited
+    )
 ) {
     companion object {
         fun default(): UserSections = UserSections(

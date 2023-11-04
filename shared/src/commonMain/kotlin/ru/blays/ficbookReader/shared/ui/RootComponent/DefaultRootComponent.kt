@@ -28,12 +28,15 @@ import ru.blays.ficbookReader.shared.ui.settingsComponents.implementation.Defaul
 import ru.blays.ficbookReader.shared.ui.themeComponents.DefaultThemeComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 import ru.blays.ficbookapi.RANDOM_FANFIC
+import ru.blays.ficbookapi.UrlProcessor.UrlProcessor
+import ru.blays.ficbookapi.UrlProcessor.UrlProcessor.analyzeUrl
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.CookieModel
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultRootComponent private constructor(
     private val componentContext: ComponentContext,
+    private val deepLink: String? = null,
     private val fanficPage: (
         componentContext: ComponentContext,
         ficbookApi: IFicbookApi,
@@ -59,8 +62,10 @@ class DefaultRootComponent private constructor(
 ): RootComponent, ComponentContext by componentContext {
     constructor(
         componentContext: ComponentContext,
+        deepLink: String?
     ): this(
         componentContext = componentContext,
+        deepLink = deepLink,
         fanficPage = { componentContext, ficbookApi, fanficHref, output ->
             DefaultFanficPageComponent(
                 componentContext = componentContext,
@@ -91,6 +96,13 @@ class DefaultRootComponent private constructor(
                 output = output
             )
         }
+    )
+
+    constructor(
+        componentContext: ComponentContext
+    ): this(
+        componentContext = componentContext,
+        deepLink = null
     )
 
     private val ficbookApi: IFicbookApi = initFicbookApi()
@@ -150,6 +162,7 @@ class DefaultRootComponent private constructor(
     private fun onFanficPageOutput(output: FanficPageComponent.Output) {
         when(output) {
             FanficPageComponent.Output.NavigateBack -> navigation.pop()
+            is FanficPageComponent.Output.OpenUrl -> navigateToLink(output.url)
         }
     }
 
@@ -180,6 +193,8 @@ class DefaultRootComponent private constructor(
                     RootComponent.Config.Settings
                 )
             }
+
+            is MainScreenComponent.Output.OpenUrl -> navigateToLink(output.url)
         }
     }
 
@@ -214,6 +229,7 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
+            is FanficsListComponent.Output.OpenUrl -> navigateToLink(output.url)
         }
     }
 
@@ -249,5 +265,36 @@ class DefaultRootComponent private constructor(
 
         realm.close()
         return@coroutineScope savedCookies
+    }
+
+    private fun navigateToLink(deepLink: String) {
+        when(
+            val analyzeResult = analyzeUrl(deepLink)
+        ) {
+            is UrlProcessor.FicbookUrlAnalyzeResult.FanficsList -> {
+                navigation.push(
+                    RootComponent.Config.FanficsList(analyzeResult.sectionWithQuery)
+                )
+            }
+            is UrlProcessor.FicbookUrlAnalyzeResult.Fanfic -> {
+                navigation.push(
+                    RootComponent.Config.FanficPage(analyzeResult.href)
+                )
+            }
+            is UrlProcessor.FicbookUrlAnalyzeResult.User -> {
+                navigation.push(
+                    RootComponent.Config.Login
+                )
+            }
+            UrlProcessor.FicbookUrlAnalyzeResult.Error -> {
+                println("Can't analyze url: $deepLink")
+            }
+        }
+    }
+
+    init {
+        if(deepLink != null) {
+            navigateToLink(deepLink)
+        }
     }
 }

@@ -434,8 +434,10 @@ private fun FanficDescription(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     ),
-                    onClick = {
-                        println("link: $it")
+                    onClick = { url ->
+                        component.onOutput(
+                            FanficPageInfoComponent.Output.OpenUrl(url)
+                        )
                     }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
