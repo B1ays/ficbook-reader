@@ -32,6 +32,7 @@ import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.theme.*
 import ru.blays.ficbookReader.ui_components.GradientIcon.GradientIcon
+import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
 import ru.blays.ficbookReader.values.DefaultPadding
 
 @Composable
@@ -134,9 +135,15 @@ private fun LandscapeContent(
                     )
                 }
                 Spacer(modifier = Modifier.height(3.dp))
-                Text(
+                TextWithLinks(
                     modifier = Modifier.padding(horizontal = 4.dp),
-                    text = fanfic.description
+                    text = fanfic.description,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    onClick = {
+                        println("link: $it")
+                    }
                 )
             }
         }

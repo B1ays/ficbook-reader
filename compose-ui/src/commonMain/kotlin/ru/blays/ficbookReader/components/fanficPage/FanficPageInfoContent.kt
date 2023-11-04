@@ -45,6 +45,7 @@ import ru.blays.ficbookReader.theme.likeColor
 import ru.blays.ficbookReader.theme.trophyColor
 import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
+import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -428,9 +429,14 @@ private fun FanficDescription(
                     text = "Описание:",
                     style = MaterialTheme.typography.titleMedium
                 )
-                Text(
+                TextWithLinks(
                     text = fanfic.description,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    onClick = {
+                        println("link: $it")
+                    }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -448,9 +454,15 @@ private fun FanficDescription(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Column {
-                        Text(text = "«${reward.message}» от ${reward.fromUser}")
+                        Text(
+                            text = "«${reward.message}» от ${reward.fromUser}",
+                            style = MaterialTheme.typography.labelLarge
+                        )
                         Spacer(modifier = Modifier.height(2.dp))
-                        Text(text = reward.awardDate)
+                        Text(
+                            text = reward.awardDate,
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                 }
             }
