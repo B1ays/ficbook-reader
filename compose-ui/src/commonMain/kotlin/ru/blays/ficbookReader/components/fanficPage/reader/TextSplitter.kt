@@ -16,7 +16,7 @@ fun rememberTextPages(
     val pages = remember {
         mutableStateListOf<String>()
     }
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope { Dispatchers.Default }
     var job: Job? by remember { mutableStateOf(null) }
 
     DisposableEffect(key1 = text, key2 = config) {
@@ -55,11 +55,10 @@ fun rememberTwoPanelTextPages(
     val pages = remember {
         mutableStateListOf<Pair<String, String>>()
     }
-    val scope = rememberCoroutineScope { Dispatchers.IO }
+    val scope = rememberCoroutineScope { Dispatchers.Default }
     var job by remember { mutableStateOf<Job?>(null) }
 
     DisposableEffect(key1 = text, key2 = config) {
-        println("Start two panel page splitter")
         job = scope.launch {
             val newPages = mutableListOf<String>()
 
@@ -115,27 +114,28 @@ private suspend fun calculatePages(
     var currentPage = ""
 
     for (line in 0 until measureResult.lineCount) {
-        yield()
-        currentHeight += measureResult.multiParagraph.getLineHeight(line)
-        if (currentHeight >= maxHeight) {
-            newPages += currentPage
-            val lineStart = measureResult.getLineStart(line)
-            val lineEnd = measureResult.getLineEnd(line)
-                .coerceAtMost(text.lastIndex)
+        if(isActive) {
+            currentHeight += measureResult.multiParagraph.getLineHeight(line)
+            if (currentHeight >= maxHeight) {
+                newPages += currentPage
+                val lineStart = measureResult.getLineStart(line)
+                val lineEnd = measureResult.getLineEnd(line)
+                    .coerceAtMost(text.lastIndex)
 
-            currentPage = text
-                .substring(lineStart .. lineEnd)
-                .run { if(last() == '\n') this else dropLast(1) }
-            currentHeight = measureResult.multiParagraph.getLineHeight(line)
-        } else {
-            val lineStart = measureResult.getLineStart(line)
-            val lineEnd = measureResult
-                .getLineEnd(line)
-                .coerceAtMost(text.lastIndex)
+                currentPage = text
+                    .substring(lineStart .. lineEnd)
+                    .run { if(last() == '\n') this else dropLast(1) }
+                currentHeight = measureResult.multiParagraph.getLineHeight(line)
+            } else {
+                val lineStart = measureResult.getLineStart(line)
+                val lineEnd = measureResult
+                    .getLineEnd(line)
+                    .coerceAtMost(text.lastIndex)
 
-            currentPage += text
-                .substring(lineStart .. lineEnd)
-                .run { if(lastOrNull() == '\n') this else dropLast(1) }
+                currentPage += text
+                    .substring(lineStart .. lineEnd)
+                    .run { if(lastOrNull() == '\n') this else dropLast(1) }
+            }
         }
     }
 

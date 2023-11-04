@@ -26,8 +26,7 @@ data class FanficPageModelStable(
 @Serializable
 @Immutable
 sealed class FanficChapterStable {
-
-    abstract val lastReadedPage: Int
+    abstract val lastWatchedCharIndex: Int
     abstract val readed: Boolean
 
     @Serializable
@@ -38,7 +37,7 @@ sealed class FanficChapterStable {
         val date: String,
         val commentsCount: Int,
         val commentsHref: String,
-        override val lastReadedPage: Int = 0,
+        override val lastWatchedCharIndex: Int = 0,
         override val readed: Boolean = false
     ): FanficChapterStable()
 
@@ -49,7 +48,7 @@ sealed class FanficChapterStable {
         val commentsCount: Int,
         val commentsHref: String,
         val text: String,
-        override val lastReadedPage: Int = 0,
+        override val lastWatchedCharIndex: Int = 0,
         override val readed: Boolean = false
     ): FanficChapterStable()
 }

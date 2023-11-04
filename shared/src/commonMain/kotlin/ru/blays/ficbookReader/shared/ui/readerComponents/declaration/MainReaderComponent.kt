@@ -18,6 +18,7 @@ interface MainReaderComponent {
     sealed class Intent {
         data object OpenOrCloseSettings: Intent()
         data class ChangeChapter(val chapterIndex: Int): Intent()
+        data class SaveProgress(val chapterIndex: Int, val charIndex: Int): Intent()
     }
 
     sealed class Output {
@@ -32,6 +33,7 @@ interface MainReaderComponent {
         val chapterIndex: Int = 1,
         val chaptersCount: Int = 1,
         val chapterName: String = "",
+        val initialCharIndex: Int = 0,
         val text: String = "",
         val loading: Boolean = true,
         val error: Boolean = false,

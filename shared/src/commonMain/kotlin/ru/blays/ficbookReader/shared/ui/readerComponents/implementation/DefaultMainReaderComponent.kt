@@ -6,12 +6,15 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import io.realm.kotlin.Realm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
+import ru.blays.ficbookReader.shared.data.realm.entity.ChapterEntity
+import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsJsonRepository
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
@@ -86,11 +89,18 @@ class DefaultMainReaderComponent(
                     dialogNavigation.dismiss()
                 }
             }
+            is MainReaderComponent.Intent.SaveProgress -> {
+                println("Intent received")
+                saveReadProgress(
+                    chapter = chapters[intent.chapterIndex],
+                    charIndex = intent.charIndex
+                )
+            }
         }
     }
 
     override fun onOutput(output: MainReaderComponent.Output) {
-        this.output.invoke(output)
+        this.output(output)
     }
 
     private fun onSettingsChanged(settings: MainReaderComponent.Settings) {
@@ -104,7 +114,10 @@ class DefaultMainReaderComponent(
 
     private fun openChapter(index: Int) = coroutineScope.launch {
         if (index in chapters.indices) {
-            when (val chapter = chapters[index]) {
+            val realm: Realm = injectRealm(ChapterEntity::class)
+            when (
+                val chapter = chapters[index]
+            ) {
                 is FanficChapterStable.SeparateChapterModel -> {
                     _state.update {
                         it.copy(
@@ -112,9 +125,29 @@ class DefaultMainReaderComponent(
                             text = ""
                         )
                     }
-                    when (
-                        val apiResult = ficbookApi.getFanficChapterText(chapter.href)
-                    ) {
+                    val savedChapter = realm.write {
+                        query(ChapterEntity::class)
+                            .query(
+                                "href = $0", chapter.href
+                            )
+                            .first()
+                            .find()
+                    }
+
+                    if(savedChapter?.text?.isNotEmpty() == true) {
+                        _state.update {
+                            it.copy(
+                                text = savedChapter.text,
+                                loading = false,
+                                chapterIndex = index,
+                                initialCharIndex = savedChapter.lastWatchedCharIndex,
+                                chapterName = chapter.name,
+                            )
+                        }
+                        return@launch
+                    }
+                    val apiResult = ficbookApi.getFanficChapterText(chapter.href)
+                    when (apiResult) {
                         is ApiResult.Success -> {
                             val text = apiResult.value
                             _state.update {
@@ -122,7 +155,19 @@ class DefaultMainReaderComponent(
                                     text = text,
                                     loading = false,
                                     chapterIndex = index,
+                                    initialCharIndex = savedChapter?.lastWatchedCharIndex ?: 0,
                                     chapterName = chapter.name,
+                                )
+                            }
+                            realm.write {
+                                copyToRealm(
+                                    ChapterEntity(
+                                        name = chapter.name,
+                                        href = chapter.href,
+                                        text = text,
+                                        lastWatchedCharIndex = 0,
+                                        readed = false
+                                    )
                                 )
                             }
                         }
@@ -143,6 +188,38 @@ class DefaultMainReaderComponent(
                             text = chapter.text
                         )
                     }
+                }
+            }
+        }
+    }
+
+    private fun saveReadProgress(
+        chapter: FanficChapterStable,
+        charIndex: Int
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        if (chapter is FanficChapterStable.SeparateChapterModel) {
+            println("Save read progress for chapter ${chapter.name}")
+            println("Position: $charIndex")
+            val realm: Realm = injectRealm(ChapterEntity::class)
+            realm.write {
+                val savedChapter = query(ChapterEntity::class).query(
+                    "href = $0", chapter.href
+                )
+                .first()
+                .find()
+
+                if (savedChapter != null) {
+                    savedChapter.lastWatchedCharIndex = charIndex
+                } else {
+                    copyToRealm(
+                        ChapterEntity(
+                            href = chapter.href,
+                            name = chapter.name,
+                            lastWatchedCharIndex = charIndex,
+                            readed = true,
+                            text = ""
+                        )
+                    )
                 }
             }
         }
