@@ -8,31 +8,23 @@ import ru.blays.ficbookapi.data.UserSections
 object UrlProcessor {
 
     fun analyzeUrl(url: String): FicbookUrlAnalyzeResult {
-        val httpUrl = url.toHttpUrlOrNull()
-        if (httpUrl != null) {
-            httpUrl.encodedFragment
-            println("""
-                scheme: ${httpUrl.scheme}
-                host: ${httpUrl.host}
-                pathSegments: ${httpUrl.pathSegments.joinToString(" | ")}
-                fragment: ${httpUrl.fragment}
-            """.trimIndent())
-            if(httpUrl.host == FICBOOK_HOST) {
-                val pathSegments = httpUrl.pathSegments
-                if(pathSegments.size > 1) {
-                    fanficsListChecker(pathSegments)?.let {
-                        return it
-                    }
-                    userChecker(pathSegments)?.let {
-                        return it
-                    }
-                    fanficPageChecker(pathSegments)?.let {
-                        return it
-                    }
+        val httpUrl = url.toHttpUrlOrNull() ?: return FicbookUrlAnalyzeResult.NotALink
+
+        if(httpUrl.host == FICBOOK_HOST) {
+            val pathSegments = httpUrl.pathSegments
+            if(pathSegments.size > 1) {
+                fanficsListChecker(pathSegments)?.let {
+                    return it
+                }
+                userChecker(pathSegments)?.let {
+                    return it
+                }
+                fanficPageChecker(pathSegments)?.let {
+                    return it
                 }
             }
         }
-        return FicbookUrlAnalyzeResult.Error
+        return FicbookUrlAnalyzeResult.NotFicbookUrl
     }
 
     private fun fanficsListChecker(pathSegments: List<String>): FicbookUrlAnalyzeResult.FanficsList? {
@@ -116,6 +108,7 @@ object UrlProcessor {
         data class Fanfic(val href: String) : FicbookUrlAnalyzeResult()
         data class User(val id: String) : FicbookUrlAnalyzeResult()
 
-        data object Error : FicbookUrlAnalyzeResult()
+        data object NotFicbookUrl : FicbookUrlAnalyzeResult()
+        data object NotALink : FicbookUrlAnalyzeResult()
     }
 }

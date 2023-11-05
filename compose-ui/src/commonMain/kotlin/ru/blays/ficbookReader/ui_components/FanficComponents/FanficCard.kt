@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-
 package ru.blays.ficbookReader.ui_components.FanficComponents
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -213,7 +211,6 @@ private fun PortraitContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardWithDirectionIndicator(
     direction: FanficDirection,

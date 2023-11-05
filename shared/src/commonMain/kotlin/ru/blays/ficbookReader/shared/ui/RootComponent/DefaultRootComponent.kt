@@ -8,13 +8,14 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.*
-import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.inject
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
 import ru.blays.ficbookReader.shared.data.realm.entity.toApiModel
 import ru.blays.ficbookReader.shared.data.realm.entity.toEntity
 import ru.blays.ficbookReader.shared.data.realm.utils.copyToRealm
+import ru.blays.ficbookReader.shared.di.injectRealm
+import ru.blays.ficbookReader.shared.platformUtils.openUrl
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
@@ -240,9 +241,7 @@ class DefaultRootComponent private constructor(
     }
 
     private suspend fun writeNewCookiesToDB(cookies: List<CookieModel>) = coroutineScope {
-        val realm: Realm by inject(Realm::class.java) {
-            parametersOf(setOf(CookieEntity::class))
-        }
+        val realm: Realm = injectRealm(CookieEntity::class)
         realm.write {
             val savedCookies = query<CookieEntity>().find()
             delete(savedCookies)
@@ -255,9 +254,7 @@ class DefaultRootComponent private constructor(
     }
 
     private suspend fun readCookiesFromDB(): List<CookieModel> = coroutineScope {
-        val realm: Realm by inject(Realm::class.java) {
-            parametersOf(setOf(CookieEntity::class))
-        }
+        val realm: Realm = injectRealm(CookieEntity::class)
         val savedCookies = realm
             .query(CookieEntity::class)
             .find()
@@ -267,9 +264,9 @@ class DefaultRootComponent private constructor(
         return@coroutineScope savedCookies
     }
 
-    private fun navigateToLink(deepLink: String) {
+    private fun navigateToLink(link: String) {
         when(
-            val analyzeResult = analyzeUrl(deepLink)
+            val analyzeResult = analyzeUrl(link)
         ) {
             is UrlProcessor.FicbookUrlAnalyzeResult.FanficsList -> {
                 navigation.push(
@@ -286,8 +283,11 @@ class DefaultRootComponent private constructor(
                     RootComponent.Config.Login
                 )
             }
-            UrlProcessor.FicbookUrlAnalyzeResult.Error -> {
-                println("Can't analyze url: $deepLink")
+            UrlProcessor.FicbookUrlAnalyzeResult.NotFicbookUrl -> {
+                openUrl(link)
+            }
+            UrlProcessor.FicbookUrlAnalyzeResult.NotALink -> {
+                println("Error, link: $link is incorrect")
             }
         }
     }
