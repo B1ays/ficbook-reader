@@ -1,7 +1,6 @@
 package ru.blays.ficbookReader.ui_components.LinkifyText
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -12,37 +11,40 @@ fun rememberAnnotatedStringWithLinks(
     text: String,
     linkStyle: SpanStyle,
     normalTextStyle: SpanStyle
-): AnnotatedString {
-    return remember {
+): State<AnnotatedString> {
+    val annotatedString = remember {
+        mutableStateOf(AnnotatedString(text))
+    }
+
+    LaunchedEffect(Unit) {
         val matcher = Patterns.AUTOLINK_WEB_URL.matcher(text)
-        val urls = mutableListOf<Url>()
-        while (matcher.find()) {
-            val start = matcher.start()
-            val end = matcher.end()
-            val value = text.substring(start, end)
-            urls += Url(start, end, value)
-        }
+
         var startIndex = 0
-        val annotatedString = buildAnnotatedString {
-            for (url in urls) {
+        annotatedString.value = buildAnnotatedString {
+            while (matcher.find()) {
+                val start = matcher.start()
+                val end = matcher.end()
+                val value = text.substring(start, end)
+
                 val substring = text.substring(
                     startIndex = startIndex,
-                    endIndex = url.start
+                    endIndex = start
                 )
                 withStyle(
                     style = normalTextStyle
                 ) {
                     append(substring)
                 }
-                startIndex = url.end
+                startIndex = end
+
                 pushStringAnnotation(
-                    tag = url.value,
-                    annotation = url.value
+                    tag = value,
+                    annotation = value
                 )
                 withStyle(
                     style = linkStyle
                 ) {
-                    append(url.value)
+                    append(value)
                 }
                 pop()
             }
@@ -51,19 +53,12 @@ fun rememberAnnotatedStringWithLinks(
             ) {
                 append(
                     text.substring(
-                    startIndex = startIndex.coerceAtMost(text.length),
-                    endIndex = text.length
+                        startIndex = startIndex.coerceAtMost(text.lastIndex),
+                        endIndex = text.lastIndex
                     )
                 )
             }
         }
-        return@remember annotatedString
     }
+    return annotatedString
 }
-
-
-private data class Url(
-    val start: Int,
-    val end: Int,
-    val value: String
-)

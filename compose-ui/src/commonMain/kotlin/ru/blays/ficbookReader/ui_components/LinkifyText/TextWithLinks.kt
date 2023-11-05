@@ -3,6 +3,7 @@ package ru.blays.ficbookReader.ui_components.LinkifyText
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -25,7 +26,7 @@ fun TextWithLinks(
         textDecoration = TextDecoration.Underline
     )
     val normalTextStyle = style.toSpanStyle()
-    val annotatedStringWithLinks = rememberAnnotatedStringWithLinks(
+    val annotatedStringWithLinks by rememberAnnotatedStringWithLinks(
         text = text,
         linkStyle = linkStyle,
         normalTextStyle = normalTextStyle
