@@ -129,6 +129,7 @@ open class FicbookApi: IFicbookApi {
             section.queryParameters.forEach { (name, value) ->
                 addQueryParameter(name, value)
             }
+            addQueryParameter(QUERY_PAGE, page.toString())
         }
         val request = buildFicbookRequest(cookies) {
             url(url)

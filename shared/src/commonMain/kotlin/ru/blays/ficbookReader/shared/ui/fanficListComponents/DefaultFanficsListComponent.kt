@@ -57,8 +57,6 @@ class DefaultFanficsListComponent(
                 section = section.toStableModel()
             )
         }
-        println("Set section to $section")
-        println("Refresh list")
         refresh()
     }
 
@@ -126,13 +124,15 @@ class DefaultFanficsListComponent(
                     )
                 }
                 val nextPage = (state.value.page) + 1
+                println("Previous page: ${state.value.page}")
+                println("Next page: $nextPage")
                 val page = getPage(
                     section = state.value.section.toApiModel(),
                     page = nextPage
                 )
                 _state.update {
                     it.copy(
-                        list = state.value.list + page,
+                        list = it.list + page,
                         isLoading = false,
                         page = nextPage
                     )
@@ -141,7 +141,10 @@ class DefaultFanficsListComponent(
         }
     }
 
-    private suspend fun getPage(section: SectionWithQuery, page: Int): List<FanficCardModelStable> {
+    private suspend fun getPage(
+        section: SectionWithQuery,
+        page: Int
+    ): List<FanficCardModelStable> {
         val result = ficbookApi.getFanficsForSection(
             section = section,
             page = page
