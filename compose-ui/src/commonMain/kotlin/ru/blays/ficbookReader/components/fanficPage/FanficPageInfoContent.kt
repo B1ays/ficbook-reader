@@ -23,14 +23,19 @@ import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
@@ -39,12 +44,8 @@ import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.platformUtils.WindowSize
-import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
-import ru.blays.ficbookReader.shared.data.dto.FanficPageModelStable
-import ru.blays.ficbookReader.shared.data.dto.FanficTagStable
-import ru.blays.ficbookReader.shared.data.dto.PairingModelStable
+import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
-import ru.blays.ficbookReader.theme.likeColor
 import ru.blays.ficbookReader.theme.trophyColor
 import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
@@ -70,132 +71,102 @@ fun FanficPageInfoContent(component: FanficPageInfoComponent) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FanficHeader(fanficPage: FanficPageModelStable) {
-    val status = fanficPage.status
-
-    var isCoverExpanded by remember {
-        mutableStateOf(false)
-    }
-    val animatedCoverWidth by animateFloatAsState(
-    targetValue = if (isCoverExpanded) 1F else 0.35F,
-    animationSpec = spring()
-    )
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if(fanficPage.coverUrl.isNotEmpty()) {
-            KamelImage(
-                modifier = Modifier
-                    .layout { measurable, constraints ->
-                        val width = constraints.maxWidth * animatedCoverWidth
-                        val height = width * 1.5F
-
-                        layout(width = width.toInt(), height = height.toInt()) {
-                            val placeable = measurable.measure(
-                                Constraints(
-                                    maxHeight = height.toInt(),
-                                    maxWidth = width.toInt()
-                                )
-                            )
-                            placeable.place(0, 0)
-                        }
-                    }
-                    .clip(CardShape.CardStandalone)
-                    .clickable {
-                        isCoverExpanded = !isCoverExpanded
-                    },
-                resource = asyncPainterResource(data = fanficPage.coverUrl) ,
-                contentDescription = "Обложка фанфика",
-                contentScale = ContentScale.Crop
+    FlowRow {
+        fanficPage.authors.forEach { userModel ->
+            AuthorItem(
+                userModel = userModel,
+                avatarSize = 40.dp,
+                onAuthorClick = { user ->
+                    // TODO
+                }
             )
-            Spacer(modifier = Modifier.width(6.dp))
+            Spacer(modifier = Modifier.width(8.dp))
         }
-        Spacer(modifier = Modifier.width(7.dp))
-        Column(
-            modifier = Modifier
-        ) {
-            FlowRow(
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(Res.image.ic_user),
-                    contentDescription = "Иконка человек"
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                fanficPage.author.forEach { author ->
-                    Text(
-                        text = author.name + ',',
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
 
-            }
-            Spacer(modifier = Modifier.height(7.dp))
-            FlowRow(
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(Res.image.ic_open_book),
-                    contentDescription = "Иконка открытая книга"
+    if(fanficPage.coverUrl.isNotEmpty()) {
+        val painter = asyncPainterResource(data = fanficPage.coverUrl)
+        var isCoverExpanded by remember {
+            mutableStateOf(false)
+        }
+        val animatedCoverWidth by animateFloatAsState(
+            targetValue = if (isCoverExpanded) 1F else 0.4F,
+            animationSpec = spring()
+        )
+        val contrast = 0.80F
+        val colorMatrix = floatArrayOf(
+            contrast, 0f, 0f, 0f, 0f,
+            0f, contrast, 0f, 0f, 0f,
+            0f, 0f, contrast, 0f, 0f,
+            0f, 0f, 0f, 1f, 0f
+        )
+
+        SubcomposeLayout { constraints ->
+            val fullWidth = constraints.maxWidth
+            val coverWidth = (fullWidth * animatedCoverWidth).toInt()
+            val coverHeight = (coverWidth * 1.5F).toInt()
+            val backgroundHeight = coverHeight + 16
+            val coverPlaceX = ((fullWidth - coverWidth) / 2F).toInt()
+
+            val backgroundImage = subcompose("background") {
+                KamelImage(
+                    resource = painter,
+                    contentDescription = "Размытый фон обложки",
+                    contentScale = ContentScale.FillWidth,
+                    colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .blur(
+                            radius = 16.dp,
+                            edgeTreatment = BlurredEdgeTreatment.Unbounded
+                        )
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                fanficPage.fandoms.forEach { fandom ->
-                    Text(
-                        text = fandom.name + ',',
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                }
             }
-            Spacer(modifier = Modifier.height(7.dp))
-            Row {
-                if (status.likes != 0) {
-                    CircleChip(
-                        color = MaterialTheme.colorScheme.surfaceVariant //TODO "surfaceContainerLowest"
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .padding(3.dp)
-                                .size(20.dp),
-                            painter = painterResource(Res.image.ic_like_outlined),
-                            contentDescription = "Значок лайка",
-                            tint = likeColor
+            val cover = subcompose("cover") {
+                KamelImage(
+                    modifier = Modifier
+                        .clip(CardShape.CardStandalone)
+                        .clickable {
+                            isCoverExpanded = !isCoverExpanded
+                        },
+                    resource = painter,
+                    contentDescription = "Обложка фанфика",
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            layout(
+                width = constraints.maxWidth,
+                height = backgroundHeight
+            ) {
+                backgroundImage.map {
+                    it.measure(
+                        Constraints(
+                            minWidth = fullWidth,
+                            maxWidth = fullWidth,
+                            minHeight = backgroundHeight,
+                            maxHeight = backgroundHeight
                         )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            text = status.likes.toString(),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                        Spacer(modifier = Modifier.width(3.dp))
-                    }
+                    )
                 }
-                if (status.trophies != 0) {
-                    CircleChip(
-                        color = MaterialTheme.colorScheme.surfaceVariant //TODO "surfaceContainerLowest"
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .padding(3.dp)
-                                .size(20.dp),
-                            painter = painterResource(Res.image.ic_trophy),
-                            contentDescription = "Значок награды",
-                            tint = trophyColor
+                .first()
+                .place(0, 0)
+                cover.map {
+                    it.measure(
+                        Constraints(
+                            minWidth = coverWidth,
+                            maxWidth = coverWidth,
+                            minHeight = coverHeight,
+                            maxHeight = coverHeight
                         )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            text = status.trophies.toString(),
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                        Spacer(modifier = Modifier.width(3.dp))
-                    }
+                    )
                 }
+                .first()
+                .place(
+                    x = coverPlaceX,
+                    y = 8
+                )
             }
         }
     }
@@ -437,6 +408,13 @@ private fun FanficDescription(
                 )
             }
             item {
+                Fandoms(
+                    fanfic.fandoms
+                ) {
+                    // TODO click on fandom
+                }
+            }
+            item {
                 Pairings(
                     pairings = fanfic.pairings,
                     onPairingClick = { pairing ->
@@ -497,6 +475,36 @@ private fun FanficDescription(
                 .fillMaxHeight()
                 .padding(end = 3.dp)
         )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun Fandoms(
+    fandoms: List<FandomModelStable>,
+    onFandomClick: (fandom: FandomModelStable) -> Unit
+) {
+    FlowRow {
+        Text(
+            text = "Фэндомы:",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+        Spacer(modifier = Modifier.requiredWidth(3.dp))
+        fandoms.forEach { fandom ->
+            Text(
+                text = fandom.name,
+                style = MaterialTheme.typography.labelLarge,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(2.dp)
+                    .clickable {
+                        onFandomClick(fandom)
+                    }
+            )
+        }
+
     }
 }
 
@@ -723,5 +731,35 @@ private fun ChapterItem(
                 Spacer(modifier = Modifier.width(2.dp))
             }
         }
+    }
+}
+
+@Composable
+private fun AuthorItem(
+    userModel: UserModelStable,
+    avatarSize: Dp,
+    onAuthorClick: (author: UserModelStable) -> Unit
+) {
+    val painter = asyncPainterResource(userModel.avatarUrl)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(CircleShape)
+            .clickable {
+                onAuthorClick(userModel)
+            }
+    ) {
+        KamelImage(
+            resource = painter,
+            contentDescription = "Аватар автора",
+            modifier = Modifier
+                .size(avatarSize)
+                .clip(CircleShape)
+        )
+        Spacer(modifier = Modifier.width(3.dp))
+        Text(
+            text = userModel.name,
+            style = MaterialTheme.typography.labelLarge
+        )
     }
 }

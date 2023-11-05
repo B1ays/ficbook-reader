@@ -8,7 +8,7 @@ data class FanficPageModelStable(
     val fanficID: String,
     val name: String,
     val status: FanficStatusStable,
-    val author: List<UserModelStable>,
+    val authors: List<UserModelStable>,
     val fandoms: List<FandomModelStable>,
     val pairings: List<PairingModelStable>,
     val tags: List<FanficTagStable>,
