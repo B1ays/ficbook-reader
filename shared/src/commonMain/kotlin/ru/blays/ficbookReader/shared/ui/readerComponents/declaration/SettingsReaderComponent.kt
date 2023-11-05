@@ -13,5 +13,8 @@ interface SettingsReaderComponent {
         data class FontSizeChanged(val fontSize: Int): Intent()
         data class NightModeChanged(val nightMode: Boolean): Intent()
         data class FullscreenModeChanged(val fullscreenMode: Boolean): Intent()
+        data class ScrollWithVolumeKeysChanged(val scrollWithVolumeButtons: Boolean): Intent()
+        data class KeepScreenOnChanged(val keepScreenOn: Boolean): Intent()
+
     }
 }

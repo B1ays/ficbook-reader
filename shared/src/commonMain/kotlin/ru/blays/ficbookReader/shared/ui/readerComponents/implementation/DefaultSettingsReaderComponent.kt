@@ -53,6 +53,21 @@ class DefaultSettingsReaderComponent(
                     )
                 )
             }
+
+            is SettingsReaderComponent.Intent.KeepScreenOnChanged -> {
+                changeState(
+                    state.value.copy(
+                        keepScreenOn = intent.keepScreenOn
+                    )
+                )
+            }
+            is SettingsReaderComponent.Intent.ScrollWithVolumeKeysChanged -> {
+                changeState(
+                    state.value.copy(
+                        scrollWithVolumeButtons = intent.scrollWithVolumeButtons
+                    )
+                )
+            }
         }
     }
 

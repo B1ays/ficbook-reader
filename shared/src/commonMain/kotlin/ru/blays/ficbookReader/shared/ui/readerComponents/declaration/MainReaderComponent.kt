@@ -46,6 +46,8 @@ interface MainReaderComponent {
         val lightColor: Int = Color.White.toArgb(),
         val fontSize: Int = 17,
         val nightMode: Boolean = true,
-        val fullscreenMode: Boolean = true
+        val fullscreenMode: Boolean = true,
+        val scrollWithVolumeButtons: Boolean = false,
+        val keepScreenOn: Boolean = false
     )
 }

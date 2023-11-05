@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -84,6 +85,11 @@ actual fun LandscapeContent(component: MainReaderComponent) {
                             chapterIndex = state.value.chapterIndex + 1
                         )
                     )
+                },
+                openSettings = {
+                    component.sendIntent(
+                        MainReaderComponent.Intent.OpenOrCloseSettings
+                    )
                 }
             )
         }
@@ -104,7 +110,8 @@ private class Reader(
     private val onDispose: (charIndex: Int) -> Unit,
     private val onCenterZoneClick: () -> Unit,
     private val openPreviousChapter: () -> Unit,
-    private val openNextChapter: () -> Unit
+    private val openNextChapter: () -> Unit,
+    private val openSettings: () -> Unit
 ) {
     var pagerState: PagerState? by mutableStateOf(null)
     var currentCharIndex = state.value.initialCharIndex
@@ -120,7 +127,8 @@ private class Reader(
         val text = currentState.text
         val settings = currentState.settings
 
-        val slotInstance = settingsSlot.value.child?.instance
+        val slotState by settingsSlot
+        val slotInstance = slotState.child?.instance
 
         FullscreenContainer(
             enabled = settings.fullscreenMode
@@ -157,7 +165,7 @@ private class Reader(
                             modifier = Modifier,
                             openPreviousChapter = openPreviousChapter,
                             openNextChapter = openNextChapter,
-                            openSettings = onCenterZoneClick
+                            openSettings = openSettings
                         )
                     }
                 }
@@ -172,11 +180,12 @@ private class Reader(
                 ReaderSettingPopup(
                     component = dialogComponent,
                     readerSettingsModel = settings,
-                ) {
-                    component.sendIntent(
-                        MainReaderComponent.Intent.OpenOrCloseSettings
-                    )
-                }
+                    closeDialog = {
+                        component.sendIntent(
+                            MainReaderComponent.Intent.OpenOrCloseSettings
+                        )
+                    }
+                )
             }
         }
     }
@@ -196,9 +205,11 @@ private class Reader(
             )
         }
         val scope = rememberCoroutineScope()
+        val volumeKeysEventSource = LocalVolumeKeysEventSource.current
+        val localView = LocalView.current
 
         BoxWithConstraints(
-            modifier = Modifier
+            modifier = modifier
                 .background(MaterialTheme.colorScheme.background)
                 .padding(DefaultPadding.CardDefaultPadding)
         ) {
@@ -235,6 +246,43 @@ private class Reader(
                 )
             }
 
+            if(settings.scrollWithVolumeButtons) {
+                DisposableEffect(Unit) {
+                    fun scrollToPage(next: Boolean) {
+                        scope.launch {
+                            pagerState?.let { localPagerState ->
+                                val newPage = (localPagerState.currentPage + if (next) 1 else -1)
+                                    .coerceIn(0 until localPagerState.pageCount)
+                                localPagerState.animateScrollToPage(newPage)
+                            }
+                        }
+                    }
+
+                    volumeKeysEventSource.collect { key ->
+                        when(key) {
+                            VOLUME_UP -> {
+                                scrollToPage(next = true)
+                            }
+                            VOLUME_DOWN -> {
+                                scrollToPage(next = false)
+                            }
+                        }
+                        true
+                    }
+
+                    onDispose {
+                        volumeKeysEventSource.dispose()
+                    }
+                }
+            }
+
+            DisposableEffect(settings.keepScreenOn) {
+                localView.keepScreenOn = settings.keepScreenOn
+                onDispose {
+                    localView.keepScreenOn = false
+                }
+            }
+
             DisposableEffect(Unit) {
                 scope.launch {
                     while(pages.isEmpty()) {
@@ -243,6 +291,7 @@ private class Reader(
                     val page = pages.findPageIndexForCharIndex(currentCharIndex)
                     pagerState?.scrollToPage(page.coerceAtMost(pages.lastIndex))
                 }
+
                 onDispose {
                     val pagerState = pagerState
                     if (pagerState != null) {
@@ -580,7 +629,10 @@ private class Reader(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = "Ночная тема")
+                        Text(
+                            text = "Ночная тема",
+                            modifier = Modifier.fillMaxWidth(0.7F)
+                        )
                         Switch(
                             checked = readerSettingsModel.nightMode,
                             onCheckedChange = {
@@ -596,12 +648,53 @@ private class Reader(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(text = "Полноэкранный режим")
+                        Text(
+                            text = "Полноэкранный режим",
+                            modifier = Modifier.fillMaxWidth(0.7F)
+                        )
                         Switch(
                             checked = readerSettingsModel.fullscreenMode,
                             onCheckedChange = {
                                 component.sendIntent(
                                     SettingsReaderComponent.Intent.FullscreenModeChanged(it)
+                                )
+                            }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Перелистывание кнопками громкости",
+                            modifier = Modifier.fillMaxWidth(0.7F)
+                        )
+                        Switch(
+                            checked = readerSettingsModel.scrollWithVolumeButtons,
+                            onCheckedChange = {
+                                component.sendIntent(
+                                    SettingsReaderComponent.Intent.ScrollWithVolumeKeysChanged(it)
+                                )
+                            }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Не выключать экран",
+                            modifier = Modifier.fillMaxWidth(0.7F)
+                        )
+                        Switch(
+                            checked = readerSettingsModel.keepScreenOn,
+                            onCheckedChange = {
+                                component.sendIntent(
+                                    SettingsReaderComponent.Intent.KeepScreenOnChanged(it)
                                 )
                             }
                         )
