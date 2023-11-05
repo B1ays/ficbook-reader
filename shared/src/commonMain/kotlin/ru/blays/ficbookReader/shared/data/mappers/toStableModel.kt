@@ -16,7 +16,7 @@ fun CollectionModel.toStableModel() = CollectionModelStable(
     owner = UserModelStable(
         name = owner.name,
         avatarUrl = owner.avatarUrl,
-        userID = owner.id
+        userID = owner.href
     )
 )
 
@@ -30,8 +30,8 @@ fun FanficCardModel.toStableModel() = FanficCardModelStable(
     href = href,
     title = title,
     status = status.toStableModel(),
-    author = author,
-    fandom = fandom.toStableModel(),
+    author = author.map(UserModel::toStableModel),
+    fandom = fandom.map(FandomModel::toStableModel),
     updateDate = updateDate,
     readInfo = readInfo?.toStableModel(),
     tags = tags.map(FanficTag::toStableModel),
@@ -64,7 +64,7 @@ fun ReadBadgeModel.toStableModel() = ReadBadgeModelStable(
 fun FanficPageModel.toStableModel() = FanficPageModelStable(
     fanficID = id,
     name = name,
-    coverUrl = coverUrl,
+    coverUrl = coverUrl.url,
     description = description,
     subscribersCount = subscribersCount,
     commentCount = commentCount,
@@ -73,8 +73,9 @@ fun FanficPageModel.toStableModel() = FanficPageModelStable(
     subscribed = subscribed,
     inCollectionsCount = inCollectionsCount,
     status = status.toStableModel(),
-    author = UserModelStable(name = author),
-    fandoms = listOf(FandomModelStable(name = fandom)),
+    author = author.map(UserModel::toStableModel),
+    fandoms = fandom.map(FandomModel::toStableModel),
+    pairings = pairings.map(PairingModel::toStableModel),
     tags = tags.map(FanficTag::toStableModel),
     chapters = chapters.map(FanficChapter::toStableModel),
     rewards = rewards.map(RewardModel::toStableModel),
@@ -110,7 +111,7 @@ fun LoginModel.toStableModel() = LoginModelStable(
 
 fun UserModel.toStableModel() = UserModelStable(
     name = name,
-    userID = id,
+    userID = href,
     avatarUrl = avatarUrl
 )
 

@@ -42,7 +42,7 @@ class CollectionParser: IDataParser<Element, CollectionModel> {
         val owner = data.select("div.collection-thumb-author").run {
             UserModel(
                 name = select("a").text(),
-                id = attr("href")
+                href = attr("href")
                     .split("/")
                     .lastOrNull()
                     ?: ""

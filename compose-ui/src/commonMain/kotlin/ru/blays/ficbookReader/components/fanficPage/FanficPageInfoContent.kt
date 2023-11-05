@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.*
@@ -40,6 +41,7 @@ import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.data.dto.FanficPageModelStable
 import ru.blays.ficbookReader.shared.data.dto.FanficTagStable
+import ru.blays.ficbookReader.shared.data.dto.PairingModelStable
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.theme.likeColor
 import ru.blays.ficbookReader.theme.trophyColor
@@ -64,6 +66,7 @@ fun FanficPageInfoContent(component: FanficPageInfoComponent) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FanficHeader(fanficPage: FanficPageModelStable) {
     val status = fanficPage.status
@@ -112,8 +115,8 @@ private fun FanficHeader(fanficPage: FanficPageModelStable) {
         Column(
             modifier = Modifier
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            FlowRow(
+                verticalArrangement = Arrangement.Center
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp),
@@ -121,11 +124,14 @@ private fun FanficHeader(fanficPage: FanficPageModelStable) {
                     contentDescription = "Иконка человек"
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = fanficPage.author.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2
-                )
+                fanficPage.author.forEach { author ->
+                    Text(
+                        text = author.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 2
+                    )
+                }
+
             }
             Spacer(modifier = Modifier.height(7.dp))
             Row(
@@ -425,6 +431,14 @@ private fun FanficDescription(
                 )
             }
             item {
+                Pairings(
+                    pairings = fanfic.pairings,
+                    onPairingClick = { pairing ->
+                        println("Clicked pairing: ${pairing.character}")
+                    }
+                )
+            }
+            item {
                 Text(
                     text = "Описание:",
                     style = MaterialTheme.typography.titleMedium
@@ -476,6 +490,51 @@ private fun FanficDescription(
                 .fillMaxHeight()
                 .padding(end = 3.dp)
         )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun Pairings(
+    pairings: List<PairingModelStable>,
+    onPairingClick: (pairing: PairingModelStable) -> Unit
+) {
+    FlowRow {
+        val shape = remember { RoundedCornerShape(percent = 20) }
+        val style = MaterialTheme.typography.labelLarge
+        Text(
+            text = "Пэйринги и персонажи:",
+            style = style,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+        Spacer(modifier = Modifier.requiredWidth(3.dp))
+        pairings.forEach { pairing ->
+            Text(
+                text = pairing.character + ',',
+                style = style,
+                color = if (pairing.isHighlighted) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    Color.Unspecified
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(2.dp)
+                    .background(
+                        color = if (pairing.isHighlighted) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            Color.Unspecified
+                        },
+                        shape = shape
+                    )
+                    .clip(shape)
+                    .clickable {
+                        onPairingClick(pairing)
+                    }
+            )
+            Spacer(modifier = Modifier.requiredWidth(3.dp))
+        }
     }
 }
 

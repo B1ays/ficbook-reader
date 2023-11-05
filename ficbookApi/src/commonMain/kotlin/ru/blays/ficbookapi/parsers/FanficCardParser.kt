@@ -112,58 +112,53 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
 
         val author = data
             .select(Evaluator.Class("author word-break"))
-            .text()
-            ?: ""
-
-        val fandom: FandomModel = fanficInlineInfo
-            .firstOrNull {
-                it.html().contains("Фэндом:")
-            }
-            ?.select("a")
-            .run {
-                if (this != null) {
-                    val name = text()
-                    val href = attr("href")
-
-                    FandomModel(
-                        href = href,
-                        name = name,
-                        description = ""
-                    )
-                } else {
-                    FandomModel(
-                        href = "",
-                        name = "",
-                        description = ""
-                    )
-                }
+            .map {
+                UserModel(
+                    name = it.text(),
+                    href = it.attr("href")
+                )
             }
 
-        val pairings: List<PairingModel> = fanficInlineInfo
-            .run {
-                val list = mutableListOf<PairingModel>()
-
-                forEach { element ->
-                    val dt = element.select("dt")
-                    if (dt.text().contains("Пэйринг и персонажи:")) {
-                        val a = element.select("dd a")
-
-                        a.forEach { aElement ->
-                            val character = aElement.text()
-                            val href = aElement
-                                .attr("href")
-                                .let { URLDecoder.decode(it, "UTF-8") }
-
-                            val isHighlighted = aElement.className().contains("pairing-highlight")
-
-                            list += PairingModel(
-                                character = character,
-                                href = href,
-                                isHighlighted = isHighlighted
-                            )
-                        }
+        val fandom: List<FandomModel> = fanficInlineInfo.run {
+            forEach { element ->
+                if (element.select("dt").text().contains("Фэндом:")) {
+                    val a = element.select("a")
+                    return@run a.map {
+                        FandomModel(
+                            href = it.attr("href"),
+                            name = it.text(),
+                            description = ""
+                        )
                     }
                 }
+            }
+            return@run emptyList()
+        }
+
+        val pairings: List<PairingModel> = fanficInlineInfo.run {
+            val list = mutableListOf<PairingModel>()
+
+            forEach { element ->
+                val dt = element.select("dt")
+                if (dt.text().contains("Пэйринг и персонажи:")) {
+                    val a = element.select("dd a")
+
+                    a.forEach { aElement ->
+                        val character = aElement.text()
+                        val href = aElement
+                            .attr("href")
+                            .let { URLDecoder.decode(it, "UTF-8") }
+
+                        val isHighlighted = aElement.className().contains("pairing-highlight")
+
+                        list += PairingModel(
+                            character = character,
+                            href = href,
+                            isHighlighted = isHighlighted
+                        )
+                    }
+                }
+            }
 
                 return@run list
             }

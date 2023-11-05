@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserModel(
     val name: String,
-    val id: String = "",
+    val href: String = "",
     val avatarUrl: String = ""
 )

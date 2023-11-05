@@ -392,40 +392,42 @@ fun FanficHeader(
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(modifier = Modifier.height(6.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable {
-                // TODO
-            }
-        ) {
+        FlowRow() {
             Icon(
                 modifier = Modifier.size(16.dp),
                 painter = painterResource(Res.image.ic_user),
                 contentDescription = "Иконка человек"
             )
             Spacer(modifier = Modifier.width(2.dp))
-            Text(
-                text = fanfic.author,
-                style = MaterialTheme.typography.labelLarge
-            )
+            fanfic.author.forEach {
+                Text(
+                    text = it.name + ',',
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.clickable {
+                        onAuthorClick(it)
+                    }
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+            }
         }
         Spacer(modifier = Modifier.height(3.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable {
-                onFandomClick(fanfic.fandom)
-            }
-        ) {
+        FlowRow() {
             Icon(
                 modifier = Modifier.size(16.dp),
                 painter = painterResource(Res.image.ic_open_book),
                 contentDescription = "Иконка открытая книга"
             )
             Spacer(modifier = Modifier.width(2.dp))
-            Text(
-                text = fanfic.fandom.name,
-                style = MaterialTheme.typography.labelLarge
-            )
+            fanfic.fandom.forEach {
+                Text(
+                    text = it.name + ',',
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.clickable {
+                        onFandomClick(it)
+                    }
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+            }
         }
         if(fanfic.pairings.isNotEmpty()) {
             FlowRow {
@@ -433,7 +435,8 @@ fun FanficHeader(
                 val style = MaterialTheme.typography.labelLarge
                 Text(
                     text = "Пэйринги и персонажи:",
-                    style = style
+                    style = style,
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Spacer(modifier = Modifier.requiredWidth(3.dp))
                 fanfic.pairings.forEach { pairing ->

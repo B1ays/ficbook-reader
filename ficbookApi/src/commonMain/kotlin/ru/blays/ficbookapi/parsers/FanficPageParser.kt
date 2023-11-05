@@ -10,15 +10,8 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
 import org.jsoup.select.Evaluator
-import ru.blays.ficbookapi.dataModels.FanficChapter
-import ru.blays.ficbookapi.dataModels.FanficCompletionStatus
-import ru.blays.ficbookapi.dataModels.FanficDirection
-import ru.blays.ficbookapi.dataModels.FanficPageModel
-import ru.blays.ficbookapi.dataModels.FanficRating
-import ru.blays.ficbookapi.dataModels.FanficStatus
-import ru.blays.ficbookapi.dataModels.FanficTag
-import ru.blays.ficbookapi.dataModels.RewardModel
-import ru.blays.ficbookapi.dataModels.RewardResponseItem
+import ru.blays.ficbookapi.dataModels.*
+import java.net.URLDecoder
 
 internal class FanficPageParser: IDataParser<String, FanficPageModel> {
     override suspend fun parse(data: String): FanficPageModel = coroutineScope {
@@ -102,19 +95,56 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
             return@run name.ifEmpty { headline }
         } ?: ""
 
-        val fandom = fanficMainInfo
+        val fandom: List<FandomModel> = fanficMainInfo
             ?.select(".mb-10")
-            ?.firstOrNull {
-                it.html().contains("ic_book")
+            ?.run {
+                forEach { element ->
+                    if(element.html().contains("ic_book")) {
+                        val a = element.select("a")
+                        return@run a.map {
+                            FandomModel(
+                                href = it.attr("href"),
+                                name = it.text(),
+                                description = ""
+                            )
+                        }
+                    }
+                }
+                return@run emptyList()
             }
-            ?.text()
-            ?: ""
+            ?: emptyList()
 
-        val author = document
+
+        val author: List<UserModel> = document
             .select(".hat-creator-container")
-            .select(".creator-username")
-            .text()
-            ?: ""
+            .map { element ->
+                val avatar = element.select("img").attr("src")
+                val creatorInfo = element.select(".creator-username")
+                UserModel(
+                    name = creatorInfo.text(),
+                    href = creatorInfo.attr("href"),
+                    avatarUrl = avatar
+                )
+            }
+
+        val pairings = document.select(Evaluator.Class("description word-break"))
+            .select("a")
+            .filter { element ->
+                element.className().contains("pairing-link")
+            }
+            .map {
+                val character = it.text()
+                val href = it
+                    .attr("href")
+                    .let { url -> URLDecoder.decode(url, "UTF-8") }
+
+                val isHighlighted = it.className().contains("pairing-highlight")
+                PairingModel(
+                    href = href,
+                    character = character,
+                    isHighlighted = isHighlighted
+                )
+            }
 
         val description = mb5
             .select("div:contains(Описание:)")
@@ -125,6 +155,7 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
             .select(".fanfic-hat")
             .select("fanfic-cover")
             .attr("src-desktop")
+            .let { CoverUrl(it) }
 
 
         val genres = mutableListOf<FanficTag>().apply {
@@ -311,6 +342,7 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
             ),
             author = author,
             fandom = fandom,
+            pairings = pairings,
             coverUrl = coverUrl,
             tags = genres,
             description = description,
