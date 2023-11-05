@@ -222,13 +222,11 @@ fun CardWithDirectionIndicator(
     val indicatorWidthInDp = 10.dp
     val indicatorWidthInPx = with(density) { indicatorWidthInDp.roundToPx() }
     Card(
-        modifier = modifier.apply {
-            if (onClick != null) {
-                clickable(
-                    onClick = onClick
-                )
-            }
-        }
+        modifier = modifier then if (onClick != null) {
+            Modifier.clickable(
+                onClick = onClick
+            )
+        } else Modifier,
     ) {
         SubcomposeLayout(
             modifier = Modifier.fillMaxWidth()
