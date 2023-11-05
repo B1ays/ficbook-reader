@@ -29,6 +29,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
@@ -126,16 +127,17 @@ private fun FanficHeader(fanficPage: FanficPageModelStable) {
                 Spacer(modifier = Modifier.width(4.dp))
                 fanficPage.author.forEach { author ->
                     Text(
-                        text = author.name,
+                        text = author.name + ',',
                         style = MaterialTheme.typography.titleMedium,
-                        maxLines = 2
+                        maxLines = 1
                     )
+                    Spacer(modifier = Modifier.width(2.dp))
                 }
 
             }
             Spacer(modifier = Modifier.height(7.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            FlowRow(
+                verticalArrangement = Arrangement.Center
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp),
@@ -145,10 +147,11 @@ private fun FanficHeader(fanficPage: FanficPageModelStable) {
                 Spacer(modifier = Modifier.width(4.dp))
                 fanficPage.fandoms.forEach { fandom ->
                     Text(
-                        text = fandom.name,
+                        text = fandom.name + ',',
                         style = MaterialTheme.typography.titleMedium,
-                        maxLines = 2
+                        maxLines = 1
                     )
+                    Spacer(modifier = Modifier.width(2.dp))
                 }
             }
             Spacer(modifier = Modifier.height(7.dp))
@@ -308,7 +311,10 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     component = component,
                     fanfic = fanfic,
                     modifier = Modifier
-                        .padding(top = padding.calculateTopPadding())
+                        .padding(
+                            top = padding.calculateTopPadding(),
+                            bottom = 110.dp
+                        )
                         .pullRefresh(state = pullRefreshState)
                         .nestedScroll(scrollBehavior.nestedScrollConnection)
                 )
@@ -434,6 +440,7 @@ private fun FanficDescription(
                 Pairings(
                     pairings = fanfic.pairings,
                     onPairingClick = { pairing ->
+                        //TODO realize onPairingClick
                         println("Clicked pairing: ${pairing.character}")
                     }
                 )
@@ -501,22 +508,22 @@ private fun Pairings(
 ) {
     FlowRow {
         val shape = remember { RoundedCornerShape(percent = 20) }
-        val style = MaterialTheme.typography.labelLarge
         Text(
             text = "Пэйринги и персонажи:",
-            style = style,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
         Spacer(modifier = Modifier.requiredWidth(3.dp))
         pairings.forEach { pairing ->
             Text(
                 text = pairing.character + ',',
-                style = style,
+                style = MaterialTheme.typography.labelLarge,
                 color = if (pairing.isHighlighted) {
                     MaterialTheme.colorScheme.onPrimary
                 } else {
                     Color.Unspecified
                 },
+                textDecoration = TextDecoration.Underline,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(2.dp)
