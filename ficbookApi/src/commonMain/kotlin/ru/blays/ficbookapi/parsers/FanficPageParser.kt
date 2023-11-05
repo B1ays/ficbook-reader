@@ -318,7 +318,6 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
         val rewardsSerialized = try {
             Json.decodeFromString<List<RewardResponseItem>>(rewardAnswer)
         } catch (e: Exception) {
-            e.printStackTrace()
             emptyList()
         }
 

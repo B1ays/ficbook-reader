@@ -124,8 +124,6 @@ class DefaultFanficsListComponent(
                     )
                 }
                 val nextPage = (state.value.page) + 1
-                println("Previous page: ${state.value.page}")
-                println("Next page: $nextPage")
                 val page = getPage(
                     section = state.value.section.toApiModel(),
                     page = nextPage
