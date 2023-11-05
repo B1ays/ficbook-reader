@@ -455,7 +455,7 @@ private fun FanficDescription(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     ),
-                    onClick = { url ->
+                    onUrlClick = { url ->
                         component.onOutput(
                             FanficPageInfoComponent.Output.OpenUrl(url)
                         )

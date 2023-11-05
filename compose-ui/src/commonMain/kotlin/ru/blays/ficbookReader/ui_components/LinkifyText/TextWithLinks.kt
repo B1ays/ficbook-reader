@@ -19,7 +19,8 @@ fun TextWithLinks(
     overflow: TextOverflow = TextOverflow.Clip,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    onClick: (url: String) -> Unit
+    onTextClick: () -> Unit = {},
+    onUrlClick: (url: String) -> Unit
 ) {
     val linkStyle = style.toSpanStyle().copy(
         color = MaterialTheme.colorScheme.primary,
@@ -46,8 +47,9 @@ fun TextWithLinks(
             )
             .firstOrNull()
             ?.let {
-                onClick(it.item)
+                onUrlClick(it.item)
             }
+            ?: onTextClick()
         },
     )
 }

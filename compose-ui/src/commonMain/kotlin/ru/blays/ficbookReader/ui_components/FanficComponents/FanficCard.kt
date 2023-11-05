@@ -145,7 +145,8 @@ private fun LandscapeContent(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
-                    onClick = onUrlClicked
+                    onTextClick = onCardClick,
+                    onUrlClick = onUrlClicked
                 )
             }
         }
@@ -165,7 +166,7 @@ private fun PortraitContent(
     val status = fanfic.status
 
     Column(
-        modifier = modifier
+        modifier = modifier.clickable(onClick = onCardClick)
     ) {
         KamelImage(
             modifier = Modifier
@@ -187,8 +188,7 @@ private fun PortraitContent(
         CardWithDirectionIndicator(
             direction = status.direction,
             modifier = Modifier
-                .fillMaxWidth(),
-            onClick = onCardClick
+                .fillMaxWidth()
         ) {
             Column {
                 FanficChips(status)
@@ -205,7 +205,8 @@ private fun PortraitContent(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
-                    onClick = onUrlClicked
+                    onTextClick = onCardClick,
+                    onUrlClick = onUrlClicked
                 )
             }
         }
@@ -217,15 +218,20 @@ private fun PortraitContent(
 fun CardWithDirectionIndicator(
     direction: FanficDirection,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val density = LocalDensity.current
     val indicatorWidthInDp = 10.dp
     val indicatorWidthInPx = with(density) { indicatorWidthInDp.roundToPx() }
     Card(
-        modifier = modifier,
-        onClick = onClick
+        modifier = modifier.apply {
+            if (onClick != null) {
+                clickable(
+                    onClick = onClick
+                )
+            }
+        }
     ) {
         SubcomposeLayout(
             modifier = Modifier.fillMaxWidth()
