@@ -7,8 +7,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -57,8 +55,8 @@ fun SettingsContent(component: SettingsMainComponent) {
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = "Иконка возврата",
+                            painter = painterResource(Res.image.ic_arrow_back),
+                            contentDescription = "Стрелка назад"
                         )
                     }
                 },

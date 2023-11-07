@@ -88,7 +88,7 @@ fun LoginContent(component: UserLogInComponent) {
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
+                            painter = androidx.compose.ui.res.painterResource(Res.image.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }

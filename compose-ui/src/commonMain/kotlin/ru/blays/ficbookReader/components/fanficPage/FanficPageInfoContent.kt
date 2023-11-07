@@ -94,7 +94,7 @@ private fun FanficHeader(fanficPage: FanficPageModelStable) {
             targetValue = if (isCoverExpanded) 1F else 0.4F,
             animationSpec = spring()
         )
-        val contrast = 0.80F
+        val contrast = 0.65F
         val colorMatrix = floatArrayOf(
             contrast, 0f, 0f, 0f, 0f,
             0f, contrast, 0f, 0f, 0f,
@@ -268,7 +268,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.ArrowBack,
+                                    painter = painterResource(Res.image.ic_arrow_back),
                                     contentDescription = "Стрелка назад"
                                 )
                             }
@@ -352,7 +352,7 @@ private fun LandscapeContent(
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.ArrowBack,
+                                    painter = painterResource(Res.image.ic_arrow_back),
                                     contentDescription = "Стрелка назад"
                                 )
                             }
