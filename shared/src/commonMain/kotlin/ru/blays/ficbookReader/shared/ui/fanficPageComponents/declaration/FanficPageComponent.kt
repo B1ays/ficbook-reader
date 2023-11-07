@@ -4,6 +4,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
+import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 
 interface FanficPageComponent {
@@ -13,6 +14,9 @@ interface FanficPageComponent {
     sealed class Output {
         data object NavigateBack: Output()
         data class OpenUrl(val url: String): Output()
+        class OpenSection(val section: SectionWithQuery) : Output() {
+
+        }
     }
 
     sealed class Child {

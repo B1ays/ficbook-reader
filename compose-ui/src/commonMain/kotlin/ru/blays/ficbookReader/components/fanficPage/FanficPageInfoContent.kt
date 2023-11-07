@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.material3.pullrefresh.PullRefreshIndicator
 import androidx.compose.material3.pullrefresh.pullRefresh
@@ -405,21 +403,37 @@ private fun FanficDescription(
                 FanficTags(
                     modifier = Modifier.fillMaxWidth(),
                     tags = fanfic.tags
-                )
+                ) { tag ->
+                    component.onOutput(
+                        FanficPageInfoComponent.Output.OpenSection(
+                            name = tag.name,
+                            href = tag.href
+                        )
+                    )
+                }
             }
             item {
                 Fandoms(
-                    fanfic.fandoms
-                ) {
-                    // TODO click on fandom
+                    fandoms = fanfic.fandoms
+                ) { fandom ->
+                    component.onOutput(
+                        FanficPageInfoComponent.Output.OpenSection(
+                            name = fandom.name,
+                            href = fandom.href
+                        )
+                    )
                 }
             }
             item {
                 Pairings(
                     pairings = fanfic.pairings,
                     onPairingClick = { pairing ->
-                        //TODO realize onPairingClick
-                        println("Clicked pairing: ${pairing.character}")
+                        component.onOutput(
+                            FanficPageInfoComponent.Output.OpenSection(
+                                name = pairing.character,
+                                href = pairing.href
+                            )
+                        )
                     }
                 )
             }
@@ -558,13 +572,19 @@ private fun Pairings(
 @Composable
 private fun FanficTags(
     modifier: Modifier = Modifier,
-    tags: List<FanficTagStable>
+    tags: List<FanficTagStable>,
+    onTagClick: (tag: FanficTagStable) -> Unit
 ) {
     FlowRow(
         modifier = modifier
     ) {
         tags.forEach { tag ->
-            FanficTagChip(tag = tag)
+            FanficTagChip(
+                tag = tag,
+                onClick = {
+                    onTagClick(tag)
+                }
+            )
         }
     }
 }

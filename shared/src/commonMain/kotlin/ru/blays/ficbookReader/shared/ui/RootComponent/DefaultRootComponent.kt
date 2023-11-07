@@ -164,6 +164,13 @@ class DefaultRootComponent private constructor(
         when(output) {
             FanficPageComponent.Output.NavigateBack -> navigation.pop()
             is FanficPageComponent.Output.OpenUrl -> navigateToLink(output.url)
+            is FanficPageComponent.Output.OpenSection -> {
+                navigation.push(
+                    configuration = RootComponent.Config.FanficsList(
+                        section = output.section.toApiModel()
+                    )
+                )
+            }
         }
     }
 

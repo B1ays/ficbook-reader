@@ -94,6 +94,12 @@ class DefaultFanficPageComponent(
                     FanficPageComponent.Output.OpenUrl(output.url)
                 )
             }
+
+            is FanficPageInfoComponent.Output.OpenSection -> {
+                onOutput(
+                    FanficPageComponent.Output.OpenSection(output.section)
+                )
+            }
         }
     }
 

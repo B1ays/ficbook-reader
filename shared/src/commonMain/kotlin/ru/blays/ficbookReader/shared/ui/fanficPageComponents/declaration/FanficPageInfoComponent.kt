@@ -3,6 +3,7 @@ package ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration
 import com.arkivanov.decompose.value.Value
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.data.dto.FanficPageModelStable
+import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 
 interface FanficPageInfoComponent {
     val state: Value<State>
@@ -22,6 +23,17 @@ interface FanficPageInfoComponent {
         data class OpenChapter(val index: Int, val chapters: List<FanficChapterStable>): Output()
         data class OpenLastOrFirstChapter(val chapters: List<FanficChapterStable>): Output()
         data class OpenComments(val href: String): Output()
+        data class OpenSection(val section: SectionWithQuery): Output() {
+            constructor(
+                name: String,
+                href: String
+            ): this(
+                section = SectionWithQuery(
+                    name = name,
+                    href = href
+                )
+            )
+        }
         data class OpenUrl(val url: String): Output()
     }
 
