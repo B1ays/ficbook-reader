@@ -65,8 +65,6 @@ class DefaultFanficsListComponent(
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private val settingsComponent: ISettingsRepository by inject(ISettingsRepository::class.java)
-
     private val settingsRepository: ISettingsRepository by inject(ISettingsRepository::class.java)
 
     private val superfilterSetting: String by settingsRepository.getDelegate(
@@ -168,7 +166,7 @@ class DefaultFanficsListComponent(
     }
 
     private fun setAsFeed(section: ru.blays.ficbookReader.shared.data.dto.SectionWithQuery) {
-        settingsComponent.setValueForKey(
+        settingsRepository.setValueForKey(
             key = ISettingsRepository.stringKey(SettingsKeys.FEED_SECTION_KEY),
             value = Json.encodeToString(section)
         )

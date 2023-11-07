@@ -5,13 +5,12 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import io.realm.kotlin.Realm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent.get
 import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
+import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
 import ru.blays.ficbookapi.dataModels.LoginModel
@@ -88,7 +87,7 @@ class DefaultUserLogInComponent(
     private fun logOut() {
         coroutineScope.launch {
             ficbookApi.logOut()
-            val realm = get<Realm>(Realm::class.java)
+            val realm = injectRealm(CookieEntity::class)
             realm.write {
                 val savedCookies = query(CookieEntity::class).find()
                 delete(savedCookies)
