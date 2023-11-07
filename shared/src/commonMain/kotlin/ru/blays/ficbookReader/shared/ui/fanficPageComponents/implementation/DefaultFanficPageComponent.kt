@@ -40,6 +40,7 @@ class DefaultFanficPageComponent(
                     ficbookApi = ficbookApi,
                     chapters = configuration.chapters,
                     initialChapterIndex = configuration.index,
+                    fanficID = getIDFromHref(fanficHref),
                     output = ::onReaderOutput
                 )
             )
@@ -107,5 +108,13 @@ class DefaultFanficPageComponent(
         when(output) {
             is MainReaderComponent.Output.NavigateBack -> navigation.pop()
         }
+    }
+
+    private fun getIDFromHref(href: String): String {
+        val clearedHref = href
+            .substringBefore('?')
+            .removeSuffix("/")
+
+        return clearedHref.substringAfterLast('/').substringBefore('#')
     }
 }

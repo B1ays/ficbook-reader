@@ -28,8 +28,11 @@ internal suspend fun actionChangeVote(
         url(url)
     }
     val responseBody = getHtmlBody(request).value
-
-    val responseModel = responseBody?.let { Json.decodeFromString<AjaxSimpleResult>(it) }
-
-    return responseModel?.result ?: false
+    return if (responseBody != null) {
+        try {
+            Json.decodeFromString<AjaxSimpleResult>(responseBody).result
+        } catch (e: Exception) {
+            false
+        }
+    } else false
 }

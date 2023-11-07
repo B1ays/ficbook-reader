@@ -11,6 +11,8 @@ interface MainReaderComponent {
 
     val dialog: Value<ChildSlot<*, SettingsReaderComponent>>
 
+    val voteComponent: VoteReaderComponent
+
     fun sendIntent(intent: Intent)
 
     fun onOutput(output: Output)

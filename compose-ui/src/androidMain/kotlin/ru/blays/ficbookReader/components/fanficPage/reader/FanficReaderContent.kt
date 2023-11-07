@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -42,8 +43,10 @@ import ru.blays.ficbookReader.platformUtils.FullscreenContainer
 import ru.blays.ficbookReader.platformUtils.rememberTimeObserver
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
+import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.VoteReaderComponent
 import ru.blays.ficbookReader.theme.ReaderTheme
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
+import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
@@ -159,6 +162,7 @@ private class Reader(
                     }
                     pagerState?.let {
                         Control(
+                            voteComponent = component.voteComponent,
                             pagerState = it,
                             readerState = currentState,
                             eventSource = controlEventSource,
@@ -419,8 +423,10 @@ private class Reader(
         }
     }
 
+    @Suppress("AnimateAsStateLabel")
     @Composable
     private fun Control(
+        voteComponent: VoteReaderComponent,
         pagerState: PagerState,
         readerState: MainReaderComponent.State,
         eventSource: Flow<Boolean>,
@@ -429,6 +435,8 @@ private class Reader(
         openPreviousChapter: () -> Unit,
         openSettings: () -> Unit
     ) {
+        val voteState by voteComponent.state.subscribeAsState()
+
         val hasPreviousPage = pagerState.canScrollBackward
         val hasNextPage = pagerState.canScrollForward
         val hasNextChapter = readerState.chapterIndex < readerState.chaptersCount-1
@@ -466,6 +474,109 @@ private class Reader(
                     + shrinkVertically(spring()),
         ) {
             Column {
+                AnimatedVisibility(
+                    visible = !hasNextChapter && !hasNextPage,
+                    enter = fadeIn(spring()),
+                    exit = fadeOut(spring()),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        if(voteState.canVote) {
+                            val backgroundColor by animateColorAsState(
+                                targetValue = if(voteState.votedForContinue) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant
+                                },
+                                animationSpec = spring()
+                            )
+                            val contentColor by animateColorAsState(
+                                targetValue = if(voteState.votedForContinue) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                }
+                            )
+                            CircleChip(
+                                color = backgroundColor,
+                                modifier = Modifier.toggleable(
+                                    value = voteState.votedForContinue,
+                                    onValueChange = { newValue ->
+                                        voteComponent.sendIntent(
+                                            VoteReaderComponent.Intent.VoteForContinue(
+                                                vote = newValue
+                                            )
+                                        )
+                                    }
+                                )
+                            ) {
+                                Icon(
+                                    painter = painterResource(Res.image.ic_clock),
+                                    contentDescription = "Проголосовать за продолжение",
+                                    tint = contentColor,
+                                    modifier = Modifier
+                                        .padding(6.dp)
+                                        .size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = "Жду продолжения",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = contentColor
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                            }
+                        }
+                        val backgroundColor by animateColorAsState(
+                            targetValue = if(voteState.readed) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            },
+                            animationSpec = spring()
+                        )
+                        val contentColor by animateColorAsState(
+                            targetValue = if(voteState.readed) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.primary
+                            }
+                        )
+                        CircleChip(
+                            color = backgroundColor,
+                            modifier = Modifier.toggleable(
+                                value = voteState.readed,
+                                onValueChange = { newValue ->
+                                    voteComponent.sendIntent(
+                                        VoteReaderComponent.Intent.Read(
+                                            read = newValue
+                                        )
+                                    )
+                                }
+                            )
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.image.ic_book),
+                                contentDescription = "Прочитанно",
+                                tint = contentColor,
+                                modifier = Modifier
+                                    .padding(6.dp)
+                                    .size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                text = "Прочитано",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = contentColor
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.requiredHeight(8.dp))
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
@@ -529,9 +640,9 @@ private class Reader(
                                 pagerState.scrollToPage(it.toInt())
                             }
                         },
-                        valueRange = (
-                                0F..(pagerState.pageCount - 1).coerceAtLeast(1).toFloat()
-                                )
+                        valueRange = 0F..(pagerState.pageCount - 1)
+                            .coerceAtLeast(1)
+                            .toFloat()
                     )
                     ChangeChapterButton(
                         modifier = Modifier.weight(1F / 5F).padding(6.dp),

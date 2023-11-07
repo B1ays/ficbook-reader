@@ -1,6 +1,7 @@
 package ru.blays.ficbookReader.shared.ui.readerComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -26,6 +27,7 @@ class DefaultMainReaderComponent(
     private val ficbookApi: IFicbookApi,
     private val chapters: List<FanficChapterStable>,
     initialChapterIndex: Int,
+    fanficID: String,
     private val output: (output: MainReaderComponent.Output) -> Unit
 ) : MainReaderComponent, ComponentContext by componentContext {
     private val settingsJsonRepository: ISettingsJsonRepository by inject(ISettingsJsonRepository::class.java)
@@ -64,6 +66,12 @@ class DefaultMainReaderComponent(
             onSettingsChanged = ::onSettingsChanged
         )
     }
+    override val voteComponent = DefaultVoteReaderComponent(
+        componentContext = childContext("voteComponent"),
+        ficbookApi = ficbookApi,
+        chapters = chapters,
+        fanficID = fanficID
+    )
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 

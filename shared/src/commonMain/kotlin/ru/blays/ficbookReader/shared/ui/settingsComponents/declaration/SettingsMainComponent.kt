@@ -8,6 +8,7 @@ interface SettingsMainComponent {
     val accentIndexSetting: SettingsUnitComponent<Int>
 
     val superfilterSetting: SettingsUnitComponent<String>
+    val autoVoteSetting: SettingsUnitComponent<Boolean>
 
     fun onOutput(output: Output)
 

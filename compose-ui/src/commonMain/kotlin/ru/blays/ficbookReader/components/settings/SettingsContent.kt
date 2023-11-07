@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -40,8 +39,6 @@ fun SettingsContent(component: SettingsMainComponent) {
             else -> 1F
         }
     }
-
-    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -85,6 +82,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                 }
                 itemsGroupWithHeader("Общие") {
                     SuperfilterSetting(component.superfilterSetting)
+                    AutoVoteSetting(component.autoVoteSetting)
                 }
             }
         }
@@ -253,5 +251,20 @@ private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
                     )
                 }
             }
+    }
+}
+
+@Composable
+private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
+    val state by component.state.collectAsState()
+    SettingsCardWithSwitch(
+        title = "Авто-голосование",
+        subtitle = "Автоматически ставить \"Жду продолжения\"",
+        state = state,
+        icon = painterResource(Res.image.ic_vote)
+    ) { newValue ->
+        component.onIntent(
+            SettingsUnitComponent.Intent.ChangeValue(newValue)
+        )
     }
 }

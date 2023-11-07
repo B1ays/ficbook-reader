@@ -30,7 +30,10 @@ fun CircleChip(
             .padding(2.dp)
             .background(color, CircleShape)
             .padding(3.dp)
-            .defaultMinSize(minHeight = minSize, minWidth = minSize)
+            .defaultMinSize(
+                minHeight = minSize,
+                minWidth = minSize
+            )
             .clip(CircleShape)
             .then(modifier),
         content = content,

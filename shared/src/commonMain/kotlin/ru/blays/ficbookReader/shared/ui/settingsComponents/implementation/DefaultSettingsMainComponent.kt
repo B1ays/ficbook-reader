@@ -5,6 +5,7 @@ import com.arkivanov.decompose.childContext
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
+import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsUnitComponent
 
 class DefaultSettingsMainComponent(
     componentContext: ComponentContext,
@@ -35,6 +36,11 @@ class DefaultSettingsMainComponent(
         componentContext = childContext("superfilter_component"),
         key = ISettingsRepository.stringKey(SettingsKeys.SUPERFILTER_KEY),
         defaultValue = ""
+    )
+    override val autoVoteSetting: SettingsUnitComponent<Boolean> = DefaultSettingsUnitComponent(
+        componentContext = childContext("auto_vote_component"),
+        key = ISettingsRepository.booleanKey(SettingsKeys.AUTO_VOTE_FOR_CONTINUE),
+        defaultValue = false
     )
 
     override fun onOutput(output: SettingsMainComponent.Output) = this.output(output)

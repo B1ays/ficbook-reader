@@ -3,6 +3,8 @@ package ru.blays.ficbookReader.shared.preferences
 object SettingsKeys {
 
 
+
+
     // Theme
     const val THEME_KEY = "theme_code"
     const val AMOLED_THEME_KEY = "amoled_theme"
@@ -12,5 +14,7 @@ object SettingsKeys {
     // Feed
     const val FEED_SECTION_KEY = "feed_section"
 
+    // Common
     const val SUPERFILTER_KEY: String = "superfilter"
+    const val AUTO_VOTE_FOR_CONTINUE: String = "auto_vote_for_continue"
 }
