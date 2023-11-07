@@ -185,6 +185,7 @@ class DefaultMainReaderComponent(
                 is FanficChapterStable.SingleChapterModel -> {
                     _state.update {
                         it.copy(
+                            loading = false,
                             text = chapter.text
                         )
                     }
@@ -198,8 +199,6 @@ class DefaultMainReaderComponent(
         charIndex: Int
     ) = CoroutineScope(Dispatchers.IO).launch {
         if (chapter is FanficChapterStable.SeparateChapterModel) {
-            println("Save read progress for chapter ${chapter.name}")
-            println("Position: $charIndex")
             val realm: Realm = injectRealm(ChapterEntity::class)
             realm.write {
                 val savedChapter = query(ChapterEntity::class).query(

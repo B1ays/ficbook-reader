@@ -38,7 +38,10 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
         val (href, title) = with(
             data.select(".fanfic-inline-title").select(".visit-link")
         ) {
-            attr("href") to text()
+            val fullHref = attr("href")
+            val clearedHref = fullHref.substringBefore('?')
+            val name =  text()
+            Pair(clearedHref, name)
         }
 
         val likes = fanficMainInfo
