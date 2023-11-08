@@ -1,10 +1,9 @@
 package ru.blays.ficbookapi.ficbookConnection
 
+import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.Request
 import ru.blays.ficbookapi.FICBOOK_HOST
-import ru.blays.ficbookapi.HEADER_COOKIE
-import ru.blays.ficbookapi.dataModels.CookieModel
 
 internal fun buildFicbookURL(block: HttpUrl.Builder.() -> Unit): HttpUrl {
     val builder = HttpUrl.Builder()
@@ -14,12 +13,9 @@ internal fun buildFicbookURL(block: HttpUrl.Builder.() -> Unit): HttpUrl {
     return builder.build()
 }
 
-internal fun buildFicbookRequest(cookies: List<CookieModel>? = null, block: Request.Builder.() -> Unit): Request {
+internal fun buildFicbookRequest(block: Request.Builder.() -> Unit): Request {
     val builder = Request.Builder()
-    if(!cookies.isNullOrEmpty()) {
-        val cookiesString = cookies.joinToString("; ") { it.toHttpFormat() }
-        builder.addHeader(HEADER_COOKIE, cookiesString)
-    }
+
     block(builder)
     return builder.build()
 }

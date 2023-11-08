@@ -1,9 +1,9 @@
 package ru.blays.ficbookapi.ajax
 
 import kotlinx.serialization.json.Json
+import okhttp3.CookieJar
 import okhttp3.FormBody
 import ru.blays.ficbookapi.dataModels.AjaxSimpleResult
-import ru.blays.ficbookapi.dataModels.CookieModel
 import ru.blays.ficbookapi.ficbookConnection.buildFicbookRequest
 import ru.blays.ficbookapi.ficbookConnection.buildFicbookURL
 import ru.blays.ficbookapi.ficbookConnection.href
@@ -11,7 +11,7 @@ import ru.blays.ficbookapi.getHtmlBody
 
 suspend fun actionChangeFollow(
     follow: Boolean,
-    cookies: List<CookieModel>,
+    cookieJar: CookieJar? = null,
     fanficID: String
 ): Boolean {
     val href = if (follow) "/fanfic_follow/follow" else "/fanfic_follow/unfollow"
@@ -22,13 +22,23 @@ suspend fun actionChangeFollow(
         .add("fanfic_id", fanficID)
         .build()
 
-    val request = buildFicbookRequest(cookies) {
+    val request = buildFicbookRequest {
         post(bodyBuilder)
         header("Referer", "https://ficbook.net/readfic/$fanficID")
         url(url)
     }
-    val responseBody = getHtmlBody(request).value
-    val responseModel = responseBody?.let { Json.decodeFromString<AjaxSimpleResult?>(it) }
+    val responseBody = getHtmlBody(
+        request = request,
+        cookieJar = cookieJar
+    ).value
 
-    return responseModel?.result ?: false
+    return if(responseBody != null) {
+        try {
+            Json.decodeFromString<AjaxSimpleResult>(responseBody).result
+        } catch (e: Exception) {
+            false
+        }
+    } else {
+        false
+    }
 }

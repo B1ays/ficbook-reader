@@ -7,23 +7,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import okhttp3.CookieJar
 import okhttp3.internal.closeQuietly
 import okio.use
 import org.jsoup.Jsoup
 import ru.blays.ficbookapi.*
-import ru.blays.ficbookapi.UrlProcessor.UrlProcessor
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.*
 import ru.blays.ficbookapi.parsers.*
 import ru.blays.ficbookapi.result.ApiResult
 
 open class FicbookApi: IFicbookApi {
-
-    init {
-        UrlProcessor.analyzeUrl("https://ficbook.net/fanfiction/cartoons/moj_malenjkij_poni__druzhba_____eto_chudo")
-    }
-
-    private var cookies: List<CookieModel> = emptyList()
+    private var cookieJar: CookieJar? = null
     private val _currentUser: MutableStateFlow<UserModel?> = MutableStateFlow(null)
     private val _isAuthorized: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -40,14 +35,14 @@ open class FicbookApi: IFicbookApi {
     }
 
     override suspend fun setCookie(cookies: List<CookieModel>) = coroutineScope {
-        this@FicbookApi.cookies = cookies
+        this@FicbookApi.cookieJar = CustomCookieJar(cookies)
         _isAuthorized.value = checkAuthorization()
     }
 
     override fun logOut() {
         _isAuthorized.value = false
         _currentUser.value = null
-        cookies = emptyList()
+        cookieJar = null
     }
 
     override suspend fun authorize(loginModel: LoginModel): AuthorizationResult = coroutineScope {
@@ -62,7 +57,10 @@ open class FicbookApi: IFicbookApi {
             header("origin", "https://ficbook.net")
             header("referer", "https://ficbook.net/")
         }
-        val response = makeRequest(request)
+        val response = makeRequest(
+            request = request,
+            cookieJar = cookieJar
+        )
         val bodyString = response?.body?.string()
         val resultModel = bodyString?.let {
             Json.decodeFromString<AuthorizationResponseModel?>(it)
@@ -84,8 +82,8 @@ open class FicbookApi: IFicbookApi {
         response?.closeQuietly()
 
         return@coroutineScope AuthorizationResult(
-            resultModel,
-            cookies
+            responseResult = resultModel,
+            cookies = cookies
         )
     }
 
@@ -93,10 +91,13 @@ open class FicbookApi: IFicbookApi {
         val url = buildFicbookURL {
             href(SETTING_HREF)
         }
-        val request = buildFicbookRequest(cookies) {
+        val request = buildFicbookRequest {
             url(url)
         }
-        val response = makeRequest(request) {
+        val response = makeRequest(
+            request = request,
+            cookieJar = cookieJar
+        ) {
             followRedirects(false)
         }
 
@@ -131,11 +132,14 @@ open class FicbookApi: IFicbookApi {
             }
             addQueryParameter(QUERY_PAGE, page.toString())
         }
-        val request = buildFicbookRequest(cookies) {
+        val request = buildFicbookRequest {
             url(url)
         }
 
-        val body = getHtmlBody(request) {
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ) {
             followRedirects(false)
         }
 
@@ -166,12 +170,15 @@ open class FicbookApi: IFicbookApi {
         val url = buildFicbookURL {
             href(href)
         }
-        val request = buildFicbookRequest(cookies) {
+        val request = buildFicbookRequest {
             url(url)
         }
 
         val fanficPageParser = FanficPageParser()
-        val bodyValue = getHtmlBody(request).value
+        val bodyValue = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
         return@coroutineScope if (bodyValue != null) {
             val page = fanficPageParser.parse(bodyValue)
             ApiResult.Success(page)
@@ -185,10 +192,13 @@ open class FicbookApi: IFicbookApi {
         val url = buildFicbookURL {
             href(hrefWithoutFragment)
         }
-        val request = buildFicbookRequest(cookies) {
+        val request = buildFicbookRequest {
             url(url)
         }
-        val bodyValue = getHtmlBody(request).value
+        val bodyValue = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
 
         return@coroutineScope if(bodyValue != null) {
             val chapterTextParser = SeparateChapterParser()
@@ -207,10 +217,13 @@ open class FicbookApi: IFicbookApi {
                 addQueryParameter(name, value)
             }
         }
-        val request = buildFicbookRequest(cookies) {
+        val request = buildFicbookRequest {
             url(url)
         }
-        val bodyValue = getHtmlBody(request) {
+        val bodyValue = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ) {
             followRedirects(false)
         }.value
 
@@ -229,13 +242,16 @@ open class FicbookApi: IFicbookApi {
             addPathSegments(section)
             page(page)
         }
-        val request = buildFicbookRequest(cookies) {
+        val request = buildFicbookRequest {
             url(url)
         }
 
         val fandomParser = FandomParser()
 
-        val body = getHtmlBody(request)
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        )
         val document = body.value?.let { Jsoup.parse(it) }
         val fandoms = document?.let { fandomParser.parse(it) }
         return fandoms ?: emptyList()
@@ -244,7 +260,7 @@ open class FicbookApi: IFicbookApi {
     override suspend fun actionChangeFollow(follow: Boolean, fanficID: String): Boolean {
         return ru.blays.ficbookapi.ajax.actionChangeFollow(
             follow = follow,
-            cookies = cookies,
+            cookieJar = cookieJar,
             fanficID = fanficID
         )
     }
@@ -252,7 +268,7 @@ open class FicbookApi: IFicbookApi {
     override suspend fun actionChangeMark(mark: Boolean, fanficID: String): Boolean {
         return ru.blays.ficbookapi.ajax.actionChangeMark(
             mark = mark,
-            cookies = cookies,
+            cookieJar = cookieJar,
             fanficID = fanficID
 
         )
@@ -260,13 +276,17 @@ open class FicbookApi: IFicbookApi {
 
     override suspend fun actionChangeRead(read: Boolean, fanficID: String): Boolean {
         return ru.blays.ficbookapi.ajax.actionChangeRead(
-            read, cookies, fanficID
+            read = read,
+            cookieJar = cookieJar,
+            fanficID = fanficID
         )
     }
 
     override suspend fun actionChangeVote(vote: Boolean, chapterHref: String): Boolean {
         return ru.blays.ficbookapi.ajax.actionChangeVote(
-            vote, cookies, chapterHref
+            vote = vote,
+            cookieJar = cookieJar,
+            chapterHref = chapterHref
         )
     }
 }
