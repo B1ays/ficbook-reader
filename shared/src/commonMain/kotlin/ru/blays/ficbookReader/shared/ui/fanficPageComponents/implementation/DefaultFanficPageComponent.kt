@@ -24,7 +24,10 @@ class DefaultFanficPageComponent(
         handleBackButton = true
     )
 
-    private fun childFactory(configuration: FanficPageComponent.Config, childContext: ComponentContext): FanficPageComponent.Child {
+    private fun childFactory(
+        configuration: FanficPageComponent.Config,
+        childContext: ComponentContext
+    ): FanficPageComponent.Child {
         return when(configuration) {
             is FanficPageComponent.Config.Info -> FanficPageComponent.Child.Info(
                 DefaultFanficPageInfoComponent(
@@ -40,7 +43,7 @@ class DefaultFanficPageComponent(
                     ficbookApi = ficbookApi,
                     chapters = configuration.chapters,
                     initialChapterIndex = configuration.index,
-                    fanficID = getIDFromHref(fanficHref),
+                    fanficID = configuration.fanficID,
                     output = ::onReaderOutput
                 )
             )
@@ -61,6 +64,7 @@ class DefaultFanficPageComponent(
             is FanficPageInfoComponent.Output.OpenChapter -> {
                 navigation.push(
                     FanficPageComponent.Config.Reader(
+                        fanficID = output.fanficID,
                         index = output.index,
                         chapters = output.chapters
                     )
@@ -77,6 +81,7 @@ class DefaultFanficPageComponent(
                 if(lastReadedChapterIndex != -1) {
                     navigation.push(
                         FanficPageComponent.Config.Reader(
+                            fanficID = output.fanficID,
                             index = lastReadedChapterIndex,
                             chapters = chapters
                         )
@@ -84,6 +89,7 @@ class DefaultFanficPageComponent(
                 } else if (chapters.isNotEmpty()) {
                     navigation.push(
                         FanficPageComponent.Config.Reader(
+                            fanficID = output.fanficID,
                             index = 0,
                             chapters = chapters
                         )

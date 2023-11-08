@@ -26,13 +26,11 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
             Evaluator.Class("mb-15 text-center")
         )
         val mb5 = document.select(Evaluator.Class("mb-5"))
-        val header = document.head()
 
-        val id = header
-            .select("[property=og:url]")
-            .attr("content")
-            .split("/")
-            .lastOrNull()
+        val id = document
+            .select("[data-fanfic-id]")
+            .firstOrNull()
+            ?.attr("data-fanfic-id")
             ?: ""
 
         val likes = fanficMainInfo

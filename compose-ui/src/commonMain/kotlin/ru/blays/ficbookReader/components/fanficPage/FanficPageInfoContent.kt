@@ -231,7 +231,10 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                             fanficPage = fanfic,
                             onReadClicked = {
                                 component.onOutput(
-                                    FanficPageInfoComponent.Output.OpenLastOrFirstChapter(fanfic.chapters)
+                                    FanficPageInfoComponent.Output.OpenLastOrFirstChapter(
+                                        fanficID = fanfic.fanficID,
+                                        chapters = fanfic.chapters
+                                    )
                                 )
                             }
                         )
@@ -242,6 +245,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                         onChapterClicked = { index ->
                             component.onOutput(
                                 FanficPageInfoComponent.Output.OpenChapter(
+                                    fanficID = fanfic.fanficID,
                                     index = index,
                                     chapters = fanfic.chapters
                                 )
@@ -316,7 +320,10 @@ private fun LandscapeContent(
             ) {
                 BottomSheetContentClosed(fanfic) {
                     component.onOutput(
-                        FanficPageInfoComponent.Output.OpenLastOrFirstChapter(fanfic.chapters)
+                        FanficPageInfoComponent.Output.OpenLastOrFirstChapter(
+                            fanficID = fanfic.fanficID,
+                            chapters = fanfic.chapters
+                        )
                     )
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
@@ -326,6 +333,7 @@ private fun LandscapeContent(
                     onChapterClicked = { index ->
                         component.onOutput(
                             FanficPageInfoComponent.Output.OpenChapter(
+                                fanficID = fanfic.fanficID,
                                 index = index,
                                 chapters = fanfic.chapters
                             )

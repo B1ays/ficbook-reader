@@ -20,8 +20,15 @@ interface FanficPageInfoComponent {
     sealed class Output {
         data object ClosePage: Output()
         data object NavigateBack: Output()
-        data class OpenChapter(val index: Int, val chapters: List<FanficChapterStable>): Output()
-        data class OpenLastOrFirstChapter(val chapters: List<FanficChapterStable>): Output()
+        data class OpenChapter(
+            val fanficID: String,
+            val index: Int,
+            val chapters: List<FanficChapterStable>
+        ): Output()
+        data class OpenLastOrFirstChapter(
+            val fanficID: String,
+            val chapters: List<FanficChapterStable>
+        ): Output()
         data class OpenComments(val href: String): Output()
         data class OpenSection(val section: SectionWithQuery): Output() {
             constructor(
