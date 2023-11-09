@@ -113,17 +113,22 @@ actual fun AppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            val transparentColor = Color.Transparent.toArgb()
 
-            window.statusBarColor = transparentColor
-            window.navigationBarColor = transparentColor
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val transparentColor = Color.Transparent.toArgb()
+                window.statusBarColor = transparentColor
+                window.navigationBarColor = transparentColor
+            } else {
+                val backgroundColor = animatedColorScheme.background.toArgb()
+                window.statusBarColor = backgroundColor
+                window.navigationBarColor = backgroundColor
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 window.isNavigationBarContrastEnforced = false
             }
 
             val windowsInsetsController = WindowCompat.getInsetsController(window, view)
-
             windowsInsetsController.isAppearanceLightStatusBars = !darkTheme
             windowsInsetsController.isAppearanceLightNavigationBars = !darkTheme
         }
