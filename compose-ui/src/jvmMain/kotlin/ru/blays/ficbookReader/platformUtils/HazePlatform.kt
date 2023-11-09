@@ -22,3 +22,5 @@ actual fun Modifier.blurPlatform(
     blurRadius = blurRadius,
     noiseFactor = noiseFactor
 )
+
+actual const val blurSupported: Boolean = true

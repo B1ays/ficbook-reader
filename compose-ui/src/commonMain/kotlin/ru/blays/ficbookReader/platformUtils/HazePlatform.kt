@@ -14,3 +14,5 @@ expect fun Modifier.blurPlatform(
     noiseFactor: Float/* = HazeDefaults.noiseFactor*/,
     edgeTreatment: BlurredEdgeTreatment = BlurredEdgeTreatment.Rectangle
 ): Modifier
+
+expect val blurSupported: Boolean

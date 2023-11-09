@@ -1,9 +1,7 @@
 package ru.blays.ficbookReader.components.fanficPage
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,30 +19,36 @@ import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
+import com.moriatsushi.insetsx.systemBarsPadding
+import io.kamel.core.Resource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.platformUtils.WindowSize
+import ru.blays.ficbookReader.platformUtils.blurPlatform
+import ru.blays.ficbookReader.platformUtils.blurSupported
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.theme.trophyColor
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
 import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
@@ -66,111 +70,6 @@ fun FanficPageInfoContent(component: FanficPageInfoComponent) {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun FanficHeader(fanficPage: FanficPageModelStable) {
-    FlowRow {
-        fanficPage.authors.forEach { userModel ->
-            AuthorItem(
-                userModel = userModel,
-                avatarSize = 40.dp,
-                onAuthorClick = { user ->
-                    // TODO
-                }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-
-    if(fanficPage.coverUrl.isNotEmpty()) {
-        val painter = asyncPainterResource(data = fanficPage.coverUrl)
-        var isCoverExpanded by remember {
-            mutableStateOf(false)
-        }
-        val animatedCoverWidth by animateFloatAsState(
-            targetValue = if (isCoverExpanded) 1F else 0.4F,
-            animationSpec = spring()
-        )
-        val contrast = 0.65F
-        val colorMatrix = floatArrayOf(
-            contrast, 0f, 0f, 0f, 0f,
-            0f, contrast, 0f, 0f, 0f,
-            0f, 0f, contrast, 0f, 0f,
-            0f, 0f, 0f, 1f, 0f
-        )
-
-        SubcomposeLayout { constraints ->
-            val fullWidth = constraints.maxWidth
-            val coverWidth = (fullWidth * animatedCoverWidth).toInt()
-            val coverHeight = (coverWidth * 1.5F).toInt()
-            val backgroundHeight = coverHeight + 16
-            val coverPlaceX = ((fullWidth - coverWidth) / 2F).toInt()
-
-            val backgroundImage = subcompose("background") {
-                KamelImage(
-                    resource = painter,
-                    contentDescription = "Размытый фон обложки",
-                    contentScale = ContentScale.FillWidth,
-                    colorFilter = ColorFilter.colorMatrix(ColorMatrix(colorMatrix)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .blur(
-                            radius = 16.dp,
-                            edgeTreatment = BlurredEdgeTreatment.Unbounded
-                        )
-                )
-            }
-            val cover = subcompose("cover") {
-                KamelImage(
-                    modifier = Modifier
-                        .clip(CardShape.CardStandalone)
-                        .clickable {
-                            isCoverExpanded = !isCoverExpanded
-                        },
-                    resource = painter,
-                    contentDescription = "Обложка фанфика",
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-            layout(
-                width = constraints.maxWidth,
-                height = backgroundHeight
-            ) {
-                backgroundImage.map {
-                    it.measure(
-                        Constraints(
-                            minWidth = fullWidth,
-                            maxWidth = fullWidth,
-                            minHeight = backgroundHeight,
-                            maxHeight = backgroundHeight
-                        )
-                    )
-                }
-                .first()
-                .place(0, 0)
-                cover.map {
-                    it.measure(
-                        Constraints(
-                            minWidth = coverWidth,
-                            maxWidth = coverWidth,
-                            minHeight = coverHeight,
-                            maxHeight = coverHeight
-                        )
-                    )
-                }
-                .first()
-                .place(
-                    x = coverPlaceX,
-                    y = 8
-                )
-            }
-        }
-    }
-}
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PortraitContent(component: FanficPageInfoComponent) {
@@ -178,14 +77,16 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
     val fanfic = remember(state) { state.fanfic }
     val isLoading = remember(state) { state.isLoading }
 
-    val bottomSheetState = rememberStandardBottomSheetState(
-        initialValue = SheetValue.PartiallyExpanded
-    )
+    val bottomSheetState =
+        ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberStandardBottomSheetState(
+            initialValue = SheetValue.PartiallyExpanded
+        )
     val snackbarHostState = remember { SnackbarHostState() }
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = bottomSheetState,
-        snackbarHostState = snackbarHostState
-    )
+    val bottomSheetScaffoldState =
+        ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState(
+            bottomSheetState = bottomSheetState,
+            snackbarHostState = snackbarHostState
+        )
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isLoading,
         onRefresh = {
@@ -198,99 +99,146 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
 
     val scope = rememberCoroutineScope()
 
-    Box(
+    BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
     ) {
         if(fanfic != null && !isLoading) {
-            BottomSheetScaffold(
-                modifier = Modifier,
-                scaffoldState = bottomSheetScaffoldState,
-                sheetPeekHeight = 110.dp,
-                sheetContent = {
-                    BackHandler(true) {
-                        when (bottomSheetState.currentValue) {
-                            SheetValue.Expanded -> {
-                                scope.launch {
-                                    bottomSheetScaffoldState.bottomSheetState.partialExpand()
-                                }
-                            }
-                            else -> {
-                                component.onOutput(
-                                    FanficPageInfoComponent.Output.ClosePage
-                                )
-                            }
-                        }
-                    }
-                    AnimatedVisibility(
-                        visible = bottomSheetState.currentValue == SheetValue.PartiallyExpanded,
-                        enter = fadeIn(animationSpec = tween(100)) +
-                                expandVertically(animationSpec = tween(100)),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        BottomSheetContentClosed(
-                            fanficPage = fanfic,
-                            onReadClicked = {
-                                component.onOutput(
-                                    FanficPageInfoComponent.Output.OpenLastOrFirstChapter(
-                                        fanficID = fanfic.fanficID,
-                                        chapters = fanfic.chapters
-                                    )
-                                )
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                    }
-                    BottomSheetContentOpened(
-                        fanficPage = fanfic,
-                        onChapterClicked = { index ->
-                            component.onOutput(
-                                FanficPageInfoComponent.Output.OpenChapter(
-                                    fanficID = fanfic.fanficID,
-                                    index = index,
-                                    chapters = fanfic.chapters
-                                )
-                            )
-                        },
-                        onCommentClicked = { href ->
-                            component.onOutput(
-                                FanficPageInfoComponent.Output.OpenComments(href = href)
-                            )
-                        }
+            val coverPainter: Resource<Painter>? = if(fanfic.coverUrl.isNotEmpty()) {
+                asyncPainterResource(data = fanfic.coverUrl)
+            } else {
+                null
+            }
+            if (coverPainter != null && blurSupported) {
+                val bounds = with(LocalDensity.current) {
+                    Rect(
+                        Offset(0f, 0f),
+                        Offset(maxWidth.toPx(), maxHeight.toPx()),
                     )
-                },
-                topBar = {
-                    CollapsingsToolbar(
-                        scrollBehavior = scrollBehavior,
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
+                }
+                KamelImage(
+                    resource = coverPainter,
+                    contentDescription = "Обложка фанфика",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blurPlatform(
+                            areas = arrayOf(bounds),
+                            backgroundColor = MaterialTheme.colorScheme.background,
+                            tint = MaterialTheme.colorScheme.surfaceVariant.copy(
+                                alpha = 0.4F
+                            ),
+                            blurRadius = 14.dp,
+                            noiseFactor = 0.08F
+                        )
+                )
+            }
+            val sheetProgress = remember(bottomSheetState.offset) {
+                bottomSheetState.progressBetweenTwoValues(
+                    SheetValue.Expanded,
+                    SheetValue.PartiallyExpanded
+                )
+            }
+            val sheetBackground = MaterialTheme.colorScheme.surfaceVariant
+            val sheetBackgroundAtProgress = remember(sheetProgress) {
+                sheetBackground.copy(
+                    alpha = sheetProgress
+                )
+            }
+            Box(
+                modifier = Modifier.systemBarsPadding()
+            ) {
+                ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold(
+                    scaffoldState = bottomSheetScaffoldState,
+                    sheetPeekHeight = 110.dp,
+                    containerColor = Color.Transparent,
+                    sheetContainerColor = sheetBackgroundAtProgress,
+                    sheetShadowElevation = 0.dp,
+                    sheetContent = {
+                        BackHandler(true) {
+                            when (bottomSheetState.currentValue) {
+                                SheetValue.Expanded -> {
+                                    scope.launch {
+                                        bottomSheetScaffoldState.bottomSheetState.partialExpand()
+                                    }
+                                }
+
+                                else -> {
                                     component.onOutput(
                                         FanficPageInfoComponent.Output.ClosePage
                                     )
                                 }
-                            ) {
-                                Icon(
-                                    painter = painterResource(Res.image.ic_arrow_back),
-                                    contentDescription = "Стрелка назад"
+                            }
+                        }
+                        BottomSheetContentClosed(
+                            fanficPage = fanfic,
+                            sheetProgress = sheetProgress
+                        ) {
+                            component.onOutput(
+                                FanficPageInfoComponent.Output.OpenLastOrFirstChapter(
+                                    fanficID = fanfic.fanficID,
+                                    chapters = fanfic.chapters
+                                )
+                            )
+                        }
+                        Spacer(
+                            modifier = Modifier.height(
+                                height = (24*(1-sheetProgress)).dp
+                            )
+                        )
+                        BottomSheetContentOpened(
+                            fanficPage = fanfic,
+                            onChapterClicked = { index ->
+                                component.onOutput(
+                                    FanficPageInfoComponent.Output.OpenChapter(
+                                        fanficID = fanfic.fanficID,
+                                        index = index,
+                                        chapters = fanfic.chapters
+                                    )
+                                )
+                            },
+                            onCommentClicked = { href ->
+                                component.onOutput(
+                                    FanficPageInfoComponent.Output.OpenComments(href = href)
                                 )
                             }
-                        },
-                        collapsingTitle = CollapsingTitle.small(fanfic.name),
-                        modifier = Modifier.background(Color.Transparent)
+                        )
+                    },
+                    topBar = {
+                        CollapsingsToolbar(
+                            scrollBehavior = scrollBehavior,
+                            containerColor = Color.Transparent,
+                            collapsedElevation = 0.dp,
+                            navigationIcon = {
+                                IconButton(
+                                    onClick = {
+                                        component.onOutput(
+                                            FanficPageInfoComponent.Output.ClosePage
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(Res.image.ic_arrow_back),
+                                        contentDescription = "Стрелка назад"
+                                    )
+                                }
+                            },
+                            collapsingTitle = CollapsingTitle.small(fanfic.name)
+                        )
+                    }
+                ) { padding ->
+                    FanficDescription(
+                        component = component,
+                        fanfic = fanfic,
+                        coverResource = coverPainter,
+                        modifier = Modifier
+                            .padding(
+                                top = padding.calculateTopPadding(),
+                                bottom = 110.dp
+                            )
+                            .pullRefresh(state = pullRefreshState)
+                            .nestedScroll(scrollBehavior.nestedScrollConnection)
                     )
                 }
-            ) { padding ->
-                FanficDescription(
-                    component = component,
-                    fanfic = fanfic,
-                    modifier = Modifier
-                        .padding(
-                            top = padding.calculateTopPadding(),
-                            bottom = 110.dp
-                        )
-                        .pullRefresh(state = pullRefreshState)
-                        .nestedScroll(scrollBehavior.nestedScrollConnection)
-                )
             }
         }
         PullRefreshIndicator(
@@ -311,12 +259,18 @@ private fun LandscapeContent(
     val isLoading = state.isLoading
 
     if(fanfic != null && !isLoading) {
+        val coverPainter: Resource<Painter>? = if(fanfic.coverUrl.isNotEmpty()) {
+            asyncPainterResource(data = fanfic.coverUrl)
+        } else {
+            null
+        }
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             ModalDrawerSheet(
-                modifier = Modifier.fillMaxWidth(0.35F)
+                modifier = Modifier
+                    .systemBarsPadding()
+                    .fillMaxWidth(0.35F)
             ) {
                 BottomSheetContentClosed(fanfic) {
                     component.onOutput(
@@ -326,63 +280,166 @@ private fun LandscapeContent(
                         )
                     )
                 }
-                HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
                 BottomSheetContentOpened(
                     modifier = Modifier.padding(end = 4.dp),
                     fanficPage = fanfic,
-                    onChapterClicked = { index ->
-                        component.onOutput(
-                            FanficPageInfoComponent.Output.OpenChapter(
-                                fanficID = fanfic.fanficID,
-                                index = index,
-                                chapters = fanfic.chapters
-                            )
-                        )
-                    },
                     onCommentClicked = { href ->
                         component.onOutput(
                             FanficPageInfoComponent.Output.OpenComments(href = href)
                         )
                     }
-                )
-            }
-            Scaffold(
-                topBar = {
-                    CollapsingsToolbar(
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    component.onOutput(
-                                        FanficPageInfoComponent.Output.ClosePage
-                                    )
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(Res.image.ic_arrow_back),
-                                    contentDescription = "Стрелка назад"
-                                )
-                            }
-                        },
-                        collapsingTitle = CollapsingTitle.small(fanfic.name)
+                ) { index ->
+                    component.onOutput(
+                        FanficPageInfoComponent.Output.OpenChapter(
+                            fanficID = fanfic.fanficID,
+                            index = index,
+                            chapters = fanfic.chapters
+                        )
                     )
                 }
-            ) { padding ->
-                FanficDescription(
-                    component = component,
-                    fanfic = fanfic,
-                    modifier = Modifier.padding(
-                        top = padding.calculateTopPadding()
+            }
+            BoxWithConstraints(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (coverPainter != null && blurSupported) {
+                    val bounds = with(LocalDensity.current) {
+                        Rect(
+                            Offset(0f, 0f),
+                            Offset(maxWidth.toPx(), maxHeight.toPx()),
+                        )
+                    }
+                    KamelImage(
+                        resource = coverPainter,
+                        contentDescription = "Обложка фанфика",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .blurPlatform(
+                                arrayOf(bounds),
+                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                                tint = MaterialTheme.colorScheme.surfaceVariant.copy(
+                                    alpha = 0.4F
+                                ),
+                                blurRadius = 12.dp,
+                                noiseFactor = 0.08F
+                            )
                     )
-                )
+                }
+                Scaffold(
+                    modifier = Modifier.systemBarsPadding(),
+                    topBar = {
+                        CollapsingsToolbar(
+                            containerColor = Color.Transparent,
+                            navigationIcon = {
+                                IconButton(
+                                    onClick = {
+                                        component.onOutput(
+                                            FanficPageInfoComponent.Output.ClosePage
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(Res.image.ic_arrow_back),
+                                        contentDescription = "Стрелка назад"
+                                    )
+                                }
+                            },
+                            collapsingTitle = CollapsingTitle.small(fanfic.name)
+                        )
+                    },
+                    containerColor = Color.Transparent
+                ) { padding ->
+                    FanficDescription(
+                        component = component,
+                        fanfic = fanfic,
+                        coverResource = coverPainter,
+                        modifier = Modifier.padding(
+                            top = padding.calculateTopPadding()
+                        )
+                    )
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FanficHeader(
+    fanficPage: FanficPageModelStable,
+    coverResource: Resource<Painter>?
+) {
+    FlowRow {
+        fanficPage.authors.forEach { userModel ->
+            AuthorItem(
+                userModel = userModel,
+                avatarSize = 40.dp,
+                onAuthorClick = { user ->
+                    // TODO
+                }
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+
+    if(coverResource != null) {
+        var isCoverExpanded by remember {
+            mutableStateOf(false)
+        }
+        val animatedCoverWidth by animateFloatAsState(
+            targetValue = if (isCoverExpanded) 1F else 0.4F,
+            animationSpec = spring()
+        )
+
+        KamelImage(
+            modifier = Modifier
+                .layout { measurable, constraints ->
+                    val fullWidth = constraints.maxWidth
+                    val coverWidth = (fullWidth * animatedCoverWidth).toInt()
+                    val coverHeight = (coverWidth * 1.5F).toInt()
+                    val coverPlaceX = ((fullWidth - coverWidth) / 2F).toInt()
+
+                    layout(
+                        width = constraints.maxWidth,
+                        height = coverHeight
+                    ) {
+                        val placeable = measurable.measure(
+                            constraints.copy(
+                                minWidth = coverWidth,
+                                maxWidth = coverWidth,
+                                minHeight = coverHeight,
+                                maxHeight = coverHeight
+                            )
+                        )
+                        placeable.placeRelative(
+                            x = coverPlaceX,
+                            y = 0
+                        )
+                    }
+                }
+                .clip(CardShape.CardStandalone)
+                .shadow(
+                    elevation = 4.dp,
+                    shape = CardShape.CardStandalone,
+                    clip = true
+                )
+                .clickable {
+                    isCoverExpanded = !isCoverExpanded
+                },
+            resource = coverResource,
+            contentDescription = "Обложка фанфика",
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+
+
 @Composable
 private fun FanficDescription(
     component: FanficPageInfoComponent,
     fanfic: FanficPageModelStable,
+    coverResource: Resource<Painter>?,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -391,8 +448,7 @@ private fun FanficDescription(
         modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(
-            modifier = Modifier
-                .then(modifier)
+            modifier = modifier
                 .align(Alignment.TopStart)
                 .padding(DefaultPadding.CardDefaultPadding)
                 .padding(end = 4.dp)
@@ -400,7 +456,10 @@ private fun FanficDescription(
             state = lazyListState
         ) {
             item {
-                FanficHeader(fanficPage = fanfic)
+                FanficHeader(
+                    fanficPage = fanfic,
+                    coverResource = coverResource
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
             item {
@@ -600,6 +659,7 @@ private fun FanficTags(
 @Composable
 private fun BottomSheetContentClosed(
     fanficPage: FanficPageModelStable,
+    sheetProgress: Float = 1F,
     onReadClicked: () -> Unit
 ) {
     Row(
@@ -620,21 +680,35 @@ private fun BottomSheetContentClosed(
             )
         }
 
-        Button(
-            onClick = onReadClicked
-
-        ) {
-            Icon(
-                modifier = Modifier.size(14.dp),
-                painter = painterResource(Res.image.ic_open_book),
-                contentDescription = "Иконка книги"
-            )
-            Spacer(modifier = Modifier.width(5.dp))
-            Text(
-                text = "Читать"
-            )
+        if(sheetProgress < 1F) {
+            Button(
+                onClick = onReadClicked,
+                modifier = Modifier.graphicsLayer(
+                    alpha = 1-sheetProgress
+                )
+            ) {
+                Icon(
+                    modifier = Modifier.size(14.dp),
+                    painter = painterResource(Res.image.ic_open_book),
+                    contentDescription = "Иконка книги"
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = "Читать"
+                )
+            }
         }
+
     }
+    HorizontalDivider(
+        modifier = Modifier
+            .padding(vertical = 2.dp)
+            .graphicsLayer(
+            scaleY = sheetProgress
+        ),
+        color = MaterialTheme.colorScheme.outline,
+        thickness = (1.5F).dp
+    )
 }
 
 @Composable
@@ -642,8 +716,8 @@ private
 fun BottomSheetContentOpened(
     modifier: Modifier = Modifier,
     fanficPage: FanficPageModelStable,
-    onChapterClicked: (index: Int) -> Unit,
-    onCommentClicked: (href: String) -> Unit
+    onCommentClicked: (href: String) -> Unit,
+    onChapterClicked: (index: Int) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     Box {
@@ -772,6 +846,7 @@ private fun AuthorItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .padding(3.dp)
             .clip(CircleShape)
             .clickable {
                 onAuthorClick(userModel)

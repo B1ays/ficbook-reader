@@ -63,3 +63,5 @@ actual fun Modifier.blurPlatform(
         this
     }
 }
+
+actual val blurSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
