@@ -38,9 +38,14 @@ kotlin {
                 // materialKolor
                 implementation(libs.materialKolor)
 
+                // Haze
+                implementation(libs.haze)
+
                 // Color-picker
                 implementation(libs.compose.color.picker)
 
+                //InsetsX
+                implementation(libs.moriatsushi.insetsx)
 
                 // Decompose Libraries
                 implementation(libs.decompose.decompose)
