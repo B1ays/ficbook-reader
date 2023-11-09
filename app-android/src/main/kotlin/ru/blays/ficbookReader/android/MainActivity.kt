@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.retainedComponent
 import ru.blays.ficbookReader.components.fanficPage.reader.LocalVolumeKeysEventSource
@@ -30,6 +31,8 @@ class MainActivity: ComponentActivity() {
                 deepLink = deepLinkData.toString()
             )
         }
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             AppTheme(root.themeComponent) {

@@ -1,7 +1,7 @@
 [versions]
 # Project
-projectVersion = "1.0.2"
-versionCode = "3"
+projectVersion = "1.0.3"
+versionCode = "4"
 kotlin = "1.9.20"
 agp = "8.1.0"
 jvmTarget = "18"
@@ -33,6 +33,8 @@ androidx-activityCompose = "1.8.0"
 commons-text = "1.10.0"
 composeColorPicker = "0.7.0"
 composeColorPickerJvm = "0.7.0"
+haze = "0.3.0-SNAPSHOT"
+moriatsushi-insetsx = "0.1.0-alpha10"
 
 [libraries]
 androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -44,6 +46,7 @@ compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-c
 decompose-decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensionsComposeJetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "decompose" }
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 kamel-image = { module = "media.kamel:kamel-image", version.ref = "kamelImage" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
@@ -55,6 +58,7 @@ ktor-ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref =
 libres-compose = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
 libres-plugin = { module = "io.github.skeptick.libres:gradle-plugin", version.ref = "libres" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
+moriatsushi-insetsx = { module = "com.moriatsushi.insetsx:insetsx", version.ref = "moriatsushi-insetsx" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
 multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
