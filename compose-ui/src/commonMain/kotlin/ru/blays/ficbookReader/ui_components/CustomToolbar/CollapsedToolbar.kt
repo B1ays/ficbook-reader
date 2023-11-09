@@ -2,6 +2,7 @@ package ru.hh.toolbar.custom_toolbar
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
@@ -24,6 +26,8 @@ import kotlin.math.roundToInt
 @Composable
 fun CollapsingsToolbar(
     modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.background,
+    contentColor: Color = LocalContentColor.current,
     navigationIcon: (@Composable () -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)? = null,
     centralContent: (@Composable () -> Unit)? = null,
@@ -57,7 +61,8 @@ fun CollapsingsToolbar(
     Surface(
         modifier = modifier,
         shadowElevation = elevationState.value,
-        color = MaterialTheme.colorScheme.background
+        color = containerColor,
+        contentColor = contentColor
     ) {
         Layout(
             content = {

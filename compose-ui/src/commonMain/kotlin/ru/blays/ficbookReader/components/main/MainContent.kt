@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
+import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -73,7 +74,9 @@ private fun LandscapeContent(
 ) {
     val tabs = component.tabs
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .systemBarsPadding()
+            .fillMaxWidth()
     ) {
         DrawerLandscape(
             component = component,
@@ -100,7 +103,8 @@ private fun PortraitContent(
         drawerContent = {
             DrawerPortrait(component = component)
         },
-        drawerState = drawerState
+        drawerState = drawerState,
+        modifier = Modifier.systemBarsPadding()
     ) {
         Scaffold(
             topBar = {

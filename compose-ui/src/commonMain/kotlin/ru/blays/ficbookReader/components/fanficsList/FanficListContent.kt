@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
+import com.moriatsushi.insetsx.systemBarsPadding
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficCard
@@ -138,6 +139,7 @@ fun FanficsListScreenContent(
     val state by component.state.subscribeAsState()
     val scrollBehavior = rememberToolbarScrollBehavior()
     Scaffold(
+        modifier = Modifier.systemBarsPadding(),
         topBar = {
             CollapsingsToolbar(
                 navigationIcon = {

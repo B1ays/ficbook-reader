@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.myapplication.compose.Res
+import com.moriatsushi.insetsx.systemBarsPadding
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
@@ -41,6 +42,7 @@ fun SettingsContent(component: SettingsMainComponent) {
     }
 
     Scaffold(
+        modifier = Modifier.systemBarsPadding(),
         topBar = {
             CollapsingsToolbar(
                 navigationIcon = {

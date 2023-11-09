@@ -5,8 +5,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,14 +20,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
+import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.platformUtils.landscapeModeWidth
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
 import ru.blays.ficbookReader.ui_components.AutofillTextField.AutofillTextField
 import ru.blays.ficbookReader.values.DefaultPadding
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
+import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -76,7 +75,9 @@ fun LoginContent(component: UserLogInComponent) {
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .systemBarsPadding()
+            .fillMaxSize(),
         topBar = {
             CollapsingsToolbar(
                 navigationIcon = {
