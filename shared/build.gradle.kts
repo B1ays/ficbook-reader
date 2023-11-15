@@ -7,9 +7,8 @@ plugins {
     alias(libs.plugins.realm.plugin)
 }
 
-@Suppress("OPT_IN_USAGE")
 kotlin {
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
     jvm()
 
     androidTarget {
