@@ -26,6 +26,7 @@ interface FanficsListComponent {
         data class OpenFanfic(val href: String): Output()
         data class OpenAnotherSection(val section: SectionWithQuery): Output()
         data class OpenUrl(val url: String): Output()
+        data class OpenAuthor(val href: String) : Output()
     }
 
     data class State(
