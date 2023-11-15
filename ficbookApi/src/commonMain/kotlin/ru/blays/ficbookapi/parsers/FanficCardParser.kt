@@ -118,7 +118,7 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
             .map {
                 UserModel(
                     name = it.text(),
-                    href = it.attr("href")
+                    href = it.select("a").attr("href")
                 )
             }
 
