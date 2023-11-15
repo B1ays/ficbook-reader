@@ -48,14 +48,16 @@ fun FanficsListContent(
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isLoading,
         onRefresh = {
+            println("onRefresh")
             component.sendIntent(FanficsListComponent.Intent.Refresh)
         }
     )
 
     val canScrollForward = lazyListState.canScrollForward
+    val canScrollBackward = lazyListState.canScrollBackward
 
     LaunchedEffect(canScrollForward) {
-        if(!canScrollForward) {
+        if(!canScrollForward && canScrollBackward) {
             component.sendIntent(
                 FanficsListComponent.Intent.LoadNextPage
             )
@@ -104,7 +106,11 @@ fun FanficsListContent(
                         )
                     },
                     onAuthorClick = { author ->  
-                        // TODO
+                        component.onOutput(
+                            FanficsListComponent.Output.OpenAuthor(
+                                href = author.href
+                            )
+                        )
                     },
                     onUrlClicked = { url ->
                         component.onOutput(
