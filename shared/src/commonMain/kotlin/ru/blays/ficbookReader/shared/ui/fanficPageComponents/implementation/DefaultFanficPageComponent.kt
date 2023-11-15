@@ -107,6 +107,11 @@ class DefaultFanficPageComponent(
                     FanficPageComponent.Output.OpenSection(output.section)
                 )
             }
+            is FanficPageInfoComponent.Output.OpenAuthor -> {
+                onOutput(
+                    FanficPageComponent.Output.OpenAuthor(output.href)
+                )
+            }
         }
     }
 

@@ -16,7 +16,7 @@ fun CollectionModel.toStableModel() = CollectionModelStable(
     owner = UserModelStable(
         name = owner.name,
         avatarUrl = owner.avatarUrl,
-        userID = owner.href
+        href = owner.href
     )
 )
 
@@ -111,7 +111,7 @@ fun LoginModel.toStableModel() = LoginModelStable(
 
 fun UserModel.toStableModel() = UserModelStable(
     name = name,
-    userID = href,
+    href = href,
     avatarUrl = avatarUrl
 )
 
@@ -179,3 +179,65 @@ fun PairingModel.toStableModel() = PairingModelStable(
     href = href,
     isHighlighted = isHighlighted
 )
+
+fun AuthorProfileModel.toStableModel() = AuthorProfileModelStable(
+    authorMain = authorMain.toStableModel(),
+    authorInfo = authorInfo.toStableModel(),
+    authorBlogHref = authorBlogHref,
+    authorWorks = authorWorks?.toStableModel(),
+    authorWorksAsCoauthor = authorWorksAsCoauthor?.toStableModel(),
+    authorWorksAsBeta = authorWorksAsBeta?.toStableModel(),
+    authorWorksAsGamma = authorWorksAsGamma?.toStableModel(),
+    authorPresentsHref = authorPresentsHref,
+    authorCommentsHref = authorCommentsHref
+)
+
+fun AuthorMainInfo.toStableModel() = AuthorMainInfoStable(
+    name = name,
+    id = id,
+    avatarUrl = avatarUrl,
+    profileCoverUrl = profileCoverUrl,
+    subscribers = subscribers
+)
+
+fun AuthorInfoModel.toStableModel() = AuthorInfoModelStable(
+    about = about,
+    contacts = contacts,
+    support = support
+)
+
+fun BlogPostCardModel.toStableModel() = BlogPostCardModelStable(
+    href = href,
+    title = title,
+    date = date,
+    text = text,
+    likes = likes
+)
+
+fun BlogPostPageModel.toStableModel() = BlogPostPageModelStable(
+    title = title,
+    date = date,
+    text = text,
+    likes = likes
+)
+
+fun AuthorPresentModel.toStableModel() = AuthorPresentModelStable(
+    pictureUrl = pictureUrl,
+    text = text,
+    user = user.toStableModel()
+)
+
+fun AuthorFanficPresentModel.toStableModel() = AuthorFanficPresentModelStable(
+    pictureUrl = pictureUrl,
+    text = text,
+    user = user.toStableModel(),
+    forWork = forWork.toStableModel()
+)
+
+fun AuthorCommentPresentModel.toStableModel() = AuthorCommentPresentModelStable(
+    pictureUrl = pictureUrl,
+    text = text,
+    user = user.toStableModel(),
+    forWork = forWork.toStableModel()
+)
+

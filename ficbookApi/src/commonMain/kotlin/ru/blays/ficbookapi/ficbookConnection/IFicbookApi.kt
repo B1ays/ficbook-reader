@@ -28,6 +28,16 @@ interface IFicbookApi {
 
     suspend fun getCollections(section: SectionWithQuery): ApiResult<List<CollectionModel>>
 
+    suspend fun getAuthorProfileForHref(href: String): ApiResult<AuthorProfileModel>
+    suspend fun getAuthorProfileByID(id: String): ApiResult<AuthorProfileModel>
+
+    suspend fun getAuthorBlogPosts(href: String, page: Int): ApiResult<List<BlogPostCardModel>>
+
+    suspend fun getAuthorPresents(href: String, page: Int): ApiResult<List<AuthorPresentModel>>
+    suspend fun getAuthorFanficsPresents(href: String, page: Int): ApiResult<List<AuthorFanficPresentModel>>
+    suspend fun getAuthorCommentsPresents(href: String, page: Int): ApiResult<List<AuthorCommentPresentModel>>
+    suspend fun getAuthorBlogPost(href: String): ApiResult<BlogPostPageModel>
+
     suspend fun actionChangeFollow(
         follow: Boolean,
         fanficID: String

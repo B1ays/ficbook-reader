@@ -130,7 +130,7 @@ open class FicbookApi: IFicbookApi {
             section.queryParameters.forEach { (name, value) ->
                 addQueryParameter(name, value)
             }
-            addQueryParameter(QUERY_PAGE, page.toString())
+            page(page)
         }
         val request = buildFicbookRequest {
             url(url)
@@ -234,6 +234,223 @@ open class FicbookApi: IFicbookApi {
             ApiResult.Success(collections)
         } else {
             ApiResult.Error("Unable to load collection list")
+        }
+    }
+
+    override suspend fun getAuthorProfileForHref(href: String): ApiResult<AuthorProfileModel> = coroutineScope {
+        val baseUrl = buildFicbookURL {
+            href(href)
+        }
+        val infoPageRequest = buildFicbookRequest {
+            url(baseUrl)
+        }
+        val infoPageResponse = makeRequest(
+            request = infoPageRequest,
+            cookieJar = cookieJar
+        )
+        if(infoPageResponse != null && infoPageResponse.code == 200) {
+            val body = infoPageResponse.body
+                ?.string()
+                ?: return@coroutineScope ApiResult.Error("Unable to load author profile")
+
+            val document = Jsoup.parse(body)
+            val authorMain = AuthorMainInfoParser().parse(document)
+            val availableTabs = authorMain.availableTabs
+
+            val authorInfo = AuthorInfoParser().parse(document)
+
+            val authorBlog = "${href.trim('/')}/${AuthorProfileTabs.BLOG.href}"
+
+            val authorWorks = if(AuthorProfileTabs.WORKS in availableTabs) {
+                val worksHref = "${href.trim('/')}/${AuthorProfileTabs.WORKS.href}"
+                SectionWithQuery(
+                    name = "Работы автора: ${authorMain.name}",
+                    href = worksHref
+                )
+            } else {
+                null
+            }
+
+            val authorWorksAsCoauthor = if(AuthorProfileTabs.WORKS_COAUTHOR in availableTabs) {
+                val worksHref = "${href.trim('/')}/${AuthorProfileTabs.WORKS_COAUTHOR.href}"
+                SectionWithQuery(
+                    name = "Работы автора: ${authorMain.name}",
+                    href = worksHref
+                )
+            } else {
+                null
+            }
+
+            val authorWorksAsBeta = if(AuthorProfileTabs.WORKS_BETA in availableTabs) {
+                val worksHref = "${href.trim('/')}/${AuthorProfileTabs.WORKS_BETA.href}"
+                SectionWithQuery(
+                    name = "Работы автора ${authorMain.name} как Бета",
+                    href = worksHref
+                )
+            } else {
+                null
+            }
+
+            val authorWorksAsGamma = if(AuthorProfileTabs.WORKS_GAMMA in availableTabs) {
+                val worksHref = "${href.trim('/')}/${AuthorProfileTabs.WORKS_GAMMA.href}"
+                SectionWithQuery(
+                    name = "Работы автора ${authorMain.name} как Гамма",
+                    href = worksHref
+                )
+            } else {
+                null
+            }
+
+            val authorPresent = "${href.trim('/')}/${AuthorProfileTabs.PRESENTS.href}"
+
+            val authorComments = "${href.trim('/')}/${AuthorProfileTabs.COMMENTS.href}"
+
+            val authorProfileModel = AuthorProfileModel(
+                authorMain = authorMain,
+                authorInfo = authorInfo,
+                authorBlogHref = authorBlog,
+                authorWorks = authorWorks,
+                authorWorksAsCoauthor = authorWorksAsCoauthor,
+                authorWorksAsBeta = authorWorksAsBeta,
+                authorWorksAsGamma = authorWorksAsGamma,
+                authorPresentsHref = authorPresent,
+                authorCommentsHref = authorComments
+            )
+
+            return@coroutineScope ApiResult.Success(
+                value = authorProfileModel
+            )
+        }
+        return@coroutineScope ApiResult.Error("Unable to load author profile")
+    }
+
+    override suspend fun getAuthorProfileByID(id: String): ApiResult<AuthorProfileModel> = getAuthorProfileForHref(
+        href = "/$AUTHOR_PROFILE/$id"
+    )
+
+    override suspend fun getAuthorBlogPosts(
+        href: String,
+        page: Int
+    ): ApiResult<List<BlogPostCardModel>> = coroutineScope {
+        val url = buildFicbookURL {
+            href(href)
+            addQueryParameter(QUERY_PAGE, page.toString())
+            page(page)
+        }
+        val request = buildFicbookRequest {
+            url(url)
+        }
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
+
+        return@coroutineScope if(body != null) {
+            val document = Jsoup.parse(body)
+            ApiResult.Success(
+                value = AuthorBlogPostsParser().parse(document)
+            )
+        } else {
+            ApiResult.Error("Unable to load posts")
+        }
+    }
+
+    override suspend fun getAuthorPresents(
+        href: String,
+        page: Int
+    ): ApiResult<List<AuthorPresentModel>> = coroutineScope {
+        val url = buildFicbookURL {
+            href(href)
+            page(page)
+        }
+        val request = buildFicbookRequest {
+            url(url)
+        }
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
+
+        return@coroutineScope if (body != null) {
+            val document = Jsoup.parse(body)
+            ApiResult.Success(
+                value = AuthorPresentsParser().parse(document)
+            )
+        } else {
+            ApiResult.Error("Unable to load presents")
+        }
+    }
+
+    override suspend fun getAuthorFanficsPresents(
+        href: String,
+        page: Int
+    ): ApiResult<List<AuthorFanficPresentModel>> = coroutineScope {
+        val url = buildFicbookURL {
+            href(href)
+            page(page)
+        }
+        val request = buildFicbookRequest {
+            url(url)
+        }
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
+
+        return@coroutineScope if (body != null) {
+            val document = Jsoup.parse(body)
+            ApiResult.Success(
+                value = AuthorFanficPresentsParser().parse(document)
+            )
+        } else {
+            ApiResult.Error("Unable to load presents")
+        }
+    }
+
+    override suspend fun getAuthorCommentsPresents(
+        href: String,
+        page: Int
+    ): ApiResult<List<AuthorCommentPresentModel>> = coroutineScope {
+        val url = buildFicbookURL {
+            href(href)
+            page(page)
+        }
+        val request = buildFicbookRequest {
+            url(url)
+        }
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
+
+        return@coroutineScope if (body != null) {
+            val document = Jsoup.parse(body)
+            ApiResult.Success(
+                value = AuthorCommentPresentsParser().parse(document)
+            )
+        } else {
+            ApiResult.Error("Unable to load presents")
+        }
+    }
+
+    override suspend fun getAuthorBlogPost(href: String): ApiResult<BlogPostPageModel> = coroutineScope {
+        val url = buildFicbookURL {
+            href(href)
+        }
+        val request = buildFicbookRequest {
+            url(url)
+        }
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
+        return@coroutineScope if (body != null) {
+            val document = Jsoup.parse(body)
+            ApiResult.Success(
+                value = AuthorBlogPostParser().parse(document)
+            )
+        } else {
+            ApiResult.Error("Unable to load post")
         }
     }
 

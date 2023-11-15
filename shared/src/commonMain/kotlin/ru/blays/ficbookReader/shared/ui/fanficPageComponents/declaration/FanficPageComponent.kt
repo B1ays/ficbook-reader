@@ -14,9 +14,8 @@ interface FanficPageComponent {
     sealed class Output {
         data object NavigateBack: Output()
         data class OpenUrl(val url: String): Output()
-        class OpenSection(val section: SectionWithQuery) : Output() {
-
-        }
+        data class OpenSection(val section: SectionWithQuery) : Output()
+        data class OpenAuthor(val href: String) : Output()
     }
 
     sealed class Child {

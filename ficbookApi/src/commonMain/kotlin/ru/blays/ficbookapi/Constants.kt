@@ -5,6 +5,7 @@ const val FICBOOK_HOST = "ficbook.net"
 const val SETTING_HREF = "/home/settings"
 const val RANDOM_FANFIC = "randomfic"
 const val READFIC_HREF = "/readfic"
+const val AUTHOR_PROFILE = "authors"
 
 const val QUERY_PAGE = "p"
 

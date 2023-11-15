@@ -1,9 +1,9 @@
 package ru.blays.ficbookapi.ficbookConnection
 
-import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.Request
 import ru.blays.ficbookapi.FICBOOK_HOST
+import ru.blays.ficbookapi.QUERY_PAGE
 
 internal fun buildFicbookURL(block: HttpUrl.Builder.() -> Unit): HttpUrl {
     val builder = HttpUrl.Builder()
@@ -21,7 +21,7 @@ internal fun buildFicbookRequest(block: Request.Builder.() -> Unit): Request {
 }
 
 internal fun HttpUrl.Builder.page(page: Int): HttpUrl.Builder {
-    return addQueryParameter("p", page.toString())
+    return addQueryParameter(QUERY_PAGE, page.toString())
 }
 
 internal fun HttpUrl.Builder.href(href: String): HttpUrl.Builder {

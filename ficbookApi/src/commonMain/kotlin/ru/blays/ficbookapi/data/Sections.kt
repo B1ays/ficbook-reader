@@ -45,6 +45,15 @@ data class SectionWithQuery(
     )
 
     constructor(
+        name: String,
+        href: String
+    ): this(
+        name = name,
+        queryParameters = emptyList(),
+        path = href
+    )
+
+    constructor(
         href: String
     ): this(
         name = "",

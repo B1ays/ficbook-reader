@@ -144,6 +144,12 @@ class DefaultMainScreenComponent private constructor(
             is FanficsListComponent.Output.OpenUrl -> onMainOutput(
                 MainScreenComponent.Output.OpenUrl(output.url)
             )
+
+            is FanficsListComponent.Output.OpenAuthor -> {
+                onMainOutput(
+                    MainScreenComponent.Output.OpenAuthor(output.href)
+                )
+            }
         }
     }
 

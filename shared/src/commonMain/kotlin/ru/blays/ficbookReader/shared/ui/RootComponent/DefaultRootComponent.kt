@@ -16,6 +16,8 @@ import ru.blays.ficbookReader.shared.data.realm.entity.toEntity
 import ru.blays.ficbookReader.shared.data.realm.utils.copyToRealm
 import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookReader.shared.platformUtils.openUrl
+import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
+import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
@@ -148,6 +150,14 @@ class DefaultRootComponent private constructor(
             is RootComponent.Config.FanficsList -> RootComponent.Child.FanficsList(
                 fanficsList(componentContext, ficbookApi, configuration.section, ::onFanficsListOutput)
             )
+            is RootComponent.Config.AuthorProfile -> RootComponent.Child.AuthorProfile(
+                DefaultAuthorProfileComponent(
+                    componentContext = componentContext,
+                    ficbookApi = ficbookApi,
+                    href = configuration.href,
+                    output = ::onAuthorProfileOutput
+                )
+            )
         }
     }
 
@@ -168,6 +178,13 @@ class DefaultRootComponent private constructor(
                 navigation.push(
                     configuration = RootComponent.Config.FanficsList(
                         section = output.section.toApiModel()
+                    )
+                )
+            }
+            is FanficPageComponent.Output.OpenAuthor -> {
+                navigation.push(
+                    configuration = RootComponent.Config.AuthorProfile(
+                        href = output.href
                     )
                 )
             }
@@ -201,8 +218,14 @@ class DefaultRootComponent private constructor(
                     RootComponent.Config.Settings
                 )
             }
-
             is MainScreenComponent.Output.OpenUrl -> navigateToLink(output.url)
+            is MainScreenComponent.Output.OpenAuthor -> {
+                navigation.push(
+                    RootComponent.Config.AuthorProfile(
+                        href = output.href
+                    )
+                )
+            }
         }
     }
 
@@ -238,12 +261,51 @@ class DefaultRootComponent private constructor(
                 )
             }
             is FanficsListComponent.Output.OpenUrl -> navigateToLink(output.url)
+            is FanficsListComponent.Output.OpenAuthor -> {
+                navigation.push(
+                    RootComponent.Config.AuthorProfile(
+                        href = output.href
+                    )
+                )
+            }
         }
     }
 
     private fun onSettingsOutput(output: SettingsMainComponent.Output) {
         when(output) {
             SettingsMainComponent.Output.NavigateBack -> navigation.pop()
+        }
+    }
+
+    private fun onAuthorProfileOutput(output: AuthorProfileComponent.Output) {
+        when(output) {
+            is AuthorProfileComponent.Output.NavigateBack -> {
+                navigation.pop()
+            }
+            is AuthorProfileComponent.Output.OpenAnotherProfile -> {
+                navigation.push(
+                    RootComponent.Config.AuthorProfile(
+                        href = output.href
+                    )
+                )
+            }
+            is AuthorProfileComponent.Output.OpenFanfic -> {
+                navigation.push(
+                    RootComponent.Config.FanficPage(
+                        href = output.href
+                    )
+                )
+            }
+            is AuthorProfileComponent.Output.OpenFanficsList -> {
+                navigation.push(
+                    RootComponent.Config.FanficsList(
+                        section = output.section
+                    )
+                )
+            }
+            is AuthorProfileComponent.Output.OpenUrl -> {
+                navigateToLink(output.url)
+            }
         }
     }
 

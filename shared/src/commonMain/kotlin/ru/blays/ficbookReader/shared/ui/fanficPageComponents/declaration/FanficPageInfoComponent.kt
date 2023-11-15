@@ -42,6 +42,7 @@ interface FanficPageInfoComponent {
             )
         }
         data class OpenUrl(val url: String): Output()
+        data class OpenAuthor(val href: String) : Output()
     }
 
     data class State(

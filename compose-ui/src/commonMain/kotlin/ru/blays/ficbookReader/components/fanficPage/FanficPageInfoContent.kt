@@ -367,16 +367,15 @@ private fun LandscapeContent(
 @Composable
 private fun FanficHeader(
     fanficPage: FanficPageModelStable,
-    coverResource: Resource<Painter>?
+    coverResource: Resource<Painter>?,
+    onAuthorClick: (author: UserModelStable) -> Unit
 ) {
     FlowRow {
         fanficPage.authors.forEach { userModel ->
             AuthorItem(
                 userModel = userModel,
                 avatarSize = 40.dp,
-                onAuthorClick = { user ->
-                    // TODO
-                }
+                onAuthorClick = onAuthorClick
             )
         }
     }
@@ -459,7 +458,13 @@ private fun FanficDescription(
                 FanficHeader(
                     fanficPage = fanfic,
                     coverResource = coverResource
-                )
+                ) { author ->
+                    component.onOutput(
+                        FanficPageInfoComponent.Output.OpenAuthor(
+                            href = author.href
+                        )
+                    )
+                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
             item {

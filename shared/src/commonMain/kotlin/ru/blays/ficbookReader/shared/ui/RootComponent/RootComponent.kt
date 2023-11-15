@@ -3,6 +3,7 @@ package ru.blays.ficbookReader.shared.ui.RootComponent
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
+import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
@@ -33,6 +34,9 @@ interface RootComponent {
 
         @Serializable
         data class FanficsList(val section: SectionWithQuery): Config()
+
+        @Serializable
+        data class AuthorProfile(val href: String): Config()
     }
 
     sealed class Child {
@@ -41,5 +45,7 @@ interface RootComponent {
         data class Login(val component: UserLogInComponent): Child()
         data class FanficPage(val component: FanficPageComponent): Child()
         data class FanficsList(val component: FanficsListComponent): Child()
+
+        data class AuthorProfile(val component: AuthorProfileComponent): Child()
     }
 }
