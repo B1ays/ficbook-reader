@@ -11,9 +11,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
+import ru.blays.ficbookReader.shared.platformUtils.copyToClipboard
+import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
+import ru.blays.ficbookReader.shared.platformUtils.shareText
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.InternalFanficPageActionsComponent
+import ru.blays.ficbookapi.UrlProcessor.getUrlForHref
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -53,6 +57,19 @@ class DefaultFanficPageInfoComponent(
     override fun sendIntent(intent: FanficPageInfoComponent.Intent) {
         when(intent) {
             is FanficPageInfoComponent.Intent.Refresh -> loadPage()
+            is FanficPageInfoComponent.Intent.CopyLink -> {
+                val link = getUrlForHref(href = fanficHref)
+                copyToClipboard(link)
+            }
+            is FanficPageInfoComponent.Intent.Share -> {
+                val link = getUrlForHref(href = fanficHref)
+                val textToShare = "${state.value.fanfic?.name} - $link"
+                shareText(textToShare)
+            }
+            FanficPageInfoComponent.Intent.OpenInBrowser -> {
+                val link = getUrlForHref(href = fanficHref)
+                openInBrowser(link)
+            }
         }
     }
 

@@ -15,6 +15,9 @@ interface FanficPageInfoComponent {
 
     sealed class Intent {
         data object Refresh: Intent()
+        data object Share: Intent()
+        data object CopyLink: Intent()
+        data object OpenInBrowser: Intent()
     }
 
     sealed class Output {

@@ -15,7 +15,7 @@ import ru.blays.ficbookReader.shared.data.realm.entity.toApiModel
 import ru.blays.ficbookReader.shared.data.realm.entity.toEntity
 import ru.blays.ficbookReader.shared.data.realm.utils.copyToRealm
 import ru.blays.ficbookReader.shared.di.injectRealm
-import ru.blays.ficbookReader.shared.platformUtils.openUrl
+import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
@@ -353,7 +353,7 @@ class DefaultRootComponent private constructor(
                 )
             }
             UrlProcessor.FicbookUrlAnalyzeResult.NotFicbookUrl -> {
-                openUrl(link)
+                openInBrowser(link)
             }
             UrlProcessor.FicbookUrlAnalyzeResult.NotALink -> {
                 println("Error, link: $link is incorrect")

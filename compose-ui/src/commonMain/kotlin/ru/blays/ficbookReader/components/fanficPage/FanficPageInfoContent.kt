@@ -46,6 +46,7 @@ import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.platformUtils.blurPlatform
 import ru.blays.ficbookReader.platformUtils.blurSupported
 import ru.blays.ficbookReader.shared.data.dto.*
+import ru.blays.ficbookReader.shared.platformUtils.shareSupported
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.theme.trophyColor
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
@@ -222,6 +223,9 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                     )
                                 }
                             },
+                            actions = {
+                                topBarActions(component)
+                            },
                             collapsingTitle = CollapsingTitle.small(fanfic.name)
                         )
                     }
@@ -344,6 +348,9 @@ private fun LandscapeContent(
                                     )
                                 }
                             },
+                            actions = {
+                                topBarActions(component)
+                            },
                             collapsingTitle = CollapsingTitle.small(fanfic.name)
                         )
                     },
@@ -431,8 +438,6 @@ private fun FanficHeader(
         )
     }
 }
-
-
 
 @Composable
 private fun FanficDescription(
@@ -868,6 +873,84 @@ private fun AuthorItem(
         Text(
             text = userModel.name,
             style = MaterialTheme.typography.labelLarge
+        )
+    }
+}
+
+val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> Unit = { component ->
+    var dropDownMenuState by remember { mutableStateOf(false) }
+    IconButton(
+        onClick = {
+            dropDownMenuState = !dropDownMenuState
+        }
+    ) {
+        Icon(
+            painter = painterResource(Res.image.ic_more_vertical),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
+        )
+    }
+    DropdownMenu(
+        expanded = dropDownMenuState,
+        onDismissRequest = {
+            dropDownMenuState = false
+        }
+    ) {
+        if(shareSupported) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = "Поделиться",
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(Res.image.ic_share),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                onClick = {
+                    dropDownMenuState = false
+                    component.sendIntent(FanficPageInfoComponent.Intent.Share)
+                }
+            )
+        }
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = "Копировать ccылку",
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(Res.image.ic_link),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            },
+            onClick = {
+                dropDownMenuState = false
+                component.sendIntent(FanficPageInfoComponent.Intent.CopyLink)
+            }
+        )
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = "Открыть в браузере",
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(Res.image.ic_globe),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            },
+            onClick = {
+                dropDownMenuState = false
+                component.sendIntent(FanficPageInfoComponent.Intent.OpenInBrowser)
+            }
         )
     }
 }
