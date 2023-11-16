@@ -11,14 +11,24 @@ import org.jsoup.select.Evaluator
 import ru.blays.ficbookapi.dataModels.*
 import java.net.URLDecoder
 
-internal class FanficsListParser: IDataParser<String, Elements> {
-    override suspend fun parse(data: String): Elements = coroutineScope {
+internal class FanficsListParser: IDataParser<String, Pair<Elements, Boolean>> {
+    override suspend fun parse(data: String): Pair<Elements, Boolean> = coroutineScope {
         val document = Jsoup.parse(data)
-        return@coroutineScope document.select(".js-toggle-description")
+        val pageNav = document.select(
+            Evaluator.Class("pagenav my-15")
+        )
+        val hasNextPage = if(pageNav.isNotEmpty()) {
+            val forwardButton = pageNav.select("[class=\"page-arrow page-arrow-next\"]")
+            !forwardButton.hasClass("disabled")
+        } else {
+            false
+        }
+        println("hasNextPage: $hasNextPage")
+        return@coroutineScope document.select(".js-toggle-description") to hasNextPage
     }
 
-    override fun parseSynchronously(data: String): StateFlow<Elements?> {
-        val resultFlow = MutableStateFlow<Elements?>(null)
+    override fun parseSynchronously(data: String): StateFlow<Pair<Elements, Boolean>?> {
+        val resultFlow = MutableStateFlow<Pair<Elements, Boolean>?>(null)
         launch {
             resultFlow.value = parse(data)
         }

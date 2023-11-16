@@ -19,8 +19,8 @@ interface IFicbookApi {
     suspend fun getFanficPageByID(id: String): ApiResult<FanficPageModel>
     suspend fun getFanficPageByHref(href: String): ApiResult<FanficPageModel>
 
-    suspend fun getFanficsForHref(href: String, page: Int): ApiResult<List<FanficCardModel>>
-    suspend fun getFanficsForSection(section: SectionWithQuery, page: Int): ApiResult<List<FanficCardModel>>
+    suspend fun getFanficsForHref(href: String, page: Int): ApiResult<FanficsListResult>
+    suspend fun getFanficsForSection(section: SectionWithQuery, page: Int): ApiResult<FanficsListResult>
 
     suspend fun getFandomsForSection(section: String, page: Int): List<FandomModel>
 

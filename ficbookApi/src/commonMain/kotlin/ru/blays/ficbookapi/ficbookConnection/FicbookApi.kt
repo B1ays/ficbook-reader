@@ -116,7 +116,7 @@ open class FicbookApi: IFicbookApi {
         return@coroutineScope false
     }
 
-    override suspend fun getFanficsForHref(href: String, page: Int): ApiResult<List<FanficCardModel>> {
+    override suspend fun getFanficsForHref(href: String, page: Int): ApiResult<FanficsListResult> {
         val section = SectionWithQuery(href = href)
         return getFanficsForSection(section, page)
     }
@@ -124,7 +124,7 @@ open class FicbookApi: IFicbookApi {
     override suspend fun getFanficsForSection(
         section: SectionWithQuery,
         page: Int
-    ): ApiResult<List<FanficCardModel>> = coroutineScope {
+    ): ApiResult<FanficsListResult> = coroutineScope {
         val url = buildFicbookURL {
             href(section.path)
             section.queryParameters.forEach { (name, value) ->
@@ -148,11 +148,16 @@ open class FicbookApi: IFicbookApi {
             val fanficsListParser = FanficsListParser()
             val fanficCardParser = FanficCardParser()
 
-            val fanficsHtml = fanficsListParser.parse(body.value)
+            val (fanficsHtml, hasNextPage) = fanficsListParser.parse(body.value)
             fanficsHtml.forEach {
                 list += fanficCardParser.parse(it)
             }
-            ApiResult.Success(list)
+            ApiResult.Success(
+                FanficsListResult(
+                    fanfics = list,
+                    hasNextPage = hasNextPage
+                )
+            )
         } else {
             ApiResult.Error("Unable to load fanfics list")
         }

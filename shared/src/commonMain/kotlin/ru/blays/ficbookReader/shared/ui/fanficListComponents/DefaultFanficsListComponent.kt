@@ -63,6 +63,8 @@ class DefaultFanficsListComponent(
     override val state: Value<FanficsListComponent.State>
         get() = _state
 
+    private var hasNextPage: Boolean = true
+
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val settingsRepository: ISettingsRepository by inject(ISettingsRepository::class.java)
@@ -114,7 +116,7 @@ class DefaultFanficsListComponent(
     }
 
     private fun loadNextPage() {
-        if(!state.value.isLoading) {
+        if(!state.value.isLoading && hasNextPage) {
             coroutineScope.launch {
                 _state.update {
                     it.copy(
@@ -158,9 +160,13 @@ class DefaultFanficsListComponent(
                     .split(",")
                     .map(FanficDirection::getForName)
 
-                result.value
-                    .map(FanficCardModel::toStableModel)
-                    .filterNot { it.status.direction in deniedDirections }
+                val (fanfics, hasNextPage) = result.value
+
+                this.hasNextPage = hasNextPage
+
+                fanfics.map(FanficCardModel::toStableModel).filterNot {
+                    it.status.direction in deniedDirections
+                }
             }
         }
     }
