@@ -1,7 +1,7 @@
 [versions]
 # Project
-projectVersion = "1.0.3"
-versionCode = "4"
+projectVersion = "1.0.4"
+versionCode = "5"
 kotlin = "1.9.20"
 agp = "8.1.0"
 jvmTarget = "18"
