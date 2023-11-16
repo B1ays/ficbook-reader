@@ -16,7 +16,7 @@ android {
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.projectVersion.get()
 
-
+        proguardFile("proguard-rules.pro")
     }
 
     packaging {
@@ -27,9 +27,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            /*
+            TODO Configure Proguard
+            isMinifyEnabled = true
+            isShrinkResources = true
+            */
             ndk {
-                //noinspection ChromeOsAbiSupport
                 abiFilters += setOf("arm64-v8a")
             }
         }
