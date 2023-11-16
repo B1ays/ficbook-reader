@@ -3,6 +3,10 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <queries>
+        <package android:name="com.android.chrome"/>
+    </queries>
+
     <application
         android:label="Ficbook Reader"
         android:name="ru.blays.ficbookReader.android.App"

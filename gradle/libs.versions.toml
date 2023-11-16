@@ -35,9 +35,11 @@ composeColorPicker = "0.7.0"
 composeColorPickerJvm = "0.7.0"
 haze = "0.3.0-SNAPSHOT"
 moriatsushi-insetsx = "0.1.0-alpha10"
+browser = "1.7.0"
 
 [libraries]
 androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-core = { module = "androidx.core:core", version.ref = "ktxCore" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commons-text" }
 compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }

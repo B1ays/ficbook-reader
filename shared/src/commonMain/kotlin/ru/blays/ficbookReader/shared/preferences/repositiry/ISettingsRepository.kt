@@ -4,21 +4,23 @@ import io.realm.kotlin.internal.platform.runBlocking
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 interface ISettingsRepository {
     fun <T: Any> setValueForKey(key: SettingsKey<T>, value: T)
     fun <T: Any> getValueForKey(key: SettingsKey<T>, defaultValue: T): T
 
-    fun <T : Any> getDelegate(key: SettingsKey<T>, defaultValue: T): SettingsDelegate<T>
+    fun <T : Any> getDelegate(key: SettingsKey<T>, defaultValue: T): ReadWriteProperty<Any?, T>
     fun <T : Any, R: Flow<T>> getFlowDelegate(key: SettingsKey<T>, defaultValue: T): SettingsFlowDelegate<R>
 
     class SettingsDelegate<T: Any>(
         private val get: () -> T,
         private val set: (value: T) -> Unit
-    ) {
-        operator fun getValue(thisRef: Any, property: KProperty<*>): T = get()
-        operator fun setValue(thisRef: Any, property: KProperty<*>, t: T) = set(t)
+    ): ReadWriteProperty<Any?, T> {
+        override fun getValue(thisRef: Any?, property: KProperty<*>): T = get()
+
+        override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = set(value)
     }
 
     class SettingsFlowDelegate<T: Flow<*>>(

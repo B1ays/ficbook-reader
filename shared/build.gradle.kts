@@ -58,6 +58,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
+                // AndroidX
+                implementation(libs.androidx.browser)
+
                 // koin
                 implementation(libs.koin.android)
             }

@@ -4,19 +4,42 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
+import com.russhwolf.settings.get
 import org.koin.java.KoinJavaComponent
-
+import ru.blays.ficbookReader.shared.preferences.SettingsKeys
+import ru.blays.ficbookReader.shared.preferences.settings
 
 actual fun openInBrowser(url: String) {
     val context: Context by KoinJavaComponent.getKoin().inject()
+    val chromeCustomTabs = settings.get(
+        key = SettingsKeys.CHROME_CUSTOM_TABS_KEY,
+        defaultValue = false
+    )
+    val chromeInstalled = context.isPackageInstalled(CHROME_PACKAGE_NAME)
 
     try {
         val uri = url.toUri()
+
+        if(chromeCustomTabs && chromeInstalled) {
+            val builder = CustomTabsIntent.Builder()
+            builder.setShowTitle(true)
+            builder.setInstantAppsEnabled(false)
+            val customTabsIntent = builder.build()
+
+            customTabsIntent.intent.apply {
+                setPackage(CHROME_PACKAGE_NAME)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            customTabsIntent.launchUrl(context, uri)
+            return
+        }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val emptyBrowserIntent = Intent().apply {
@@ -43,6 +66,7 @@ actual fun openInBrowser(url: String) {
             context.startActivity(defaultBrowser)
         }
     } catch (e: Exception) {
+        e.printStackTrace()
         Toast.makeText(
             context,
             "Не удаётся открыть ссылку",
@@ -81,3 +105,18 @@ actual fun shareText(text: String) {
     chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     context.startActivity(chooserIntent)
 }
+
+fun Context.isPackageInstalled(packageName: String): Boolean {
+    return try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+        } else {
+            packageManager.getPackageInfo(packageName, 0)
+        }
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
+}
+
+private const val CHROME_PACKAGE_NAME = "com.android.chrome"

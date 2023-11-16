@@ -78,13 +78,18 @@ fun SettingsContent(component: SettingsMainComponent) {
             ) {
                 itemsGroupWithHeader("Тема и цвета") {
                     ThemeSetting(component.themeSetting)
-                    DynamicColorsSetting(component.dynamicColorsSetting)
+                    if(component.dynamicColorsSetting != null) {
+                        DynamicColorsSetting(component.dynamicColorsSetting!!)
+                    }
                     AmoledThemeSetting(component.amoledSetting)
                     AccentColorSetting(component.accentIndexSetting)
                 }
                 itemsGroupWithHeader("Общие") {
                     SuperfilterSetting(component.superfilterSetting)
                     AutoVoteSetting(component.autoVoteSetting)
+                    if(component.chromeCustomTabsSetting != null) {
+                        CustomTabsSetting(component.chromeCustomTabsSetting!!)
+                    }
                 }
             }
         }
@@ -264,6 +269,21 @@ private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
         subtitle = "Автоматически ставить \"Жду продолжения\"",
         state = state,
         icon = painterResource(Res.image.ic_vote)
+    ) { newValue ->
+        component.onIntent(
+            SettingsUnitComponent.Intent.ChangeValue(newValue)
+        )
+    }
+}
+
+@Composable
+private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
+    val state by component.state.collectAsState()
+    SettingsCardWithSwitch(
+        title = "Chrome Custom Tabs",
+        subtitle = "Открывать ссылки в Chrome Custom Tabs",
+        state = state,
+        icon = painterResource(Res.image.ic_chrome)
     ) { newValue ->
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(newValue)

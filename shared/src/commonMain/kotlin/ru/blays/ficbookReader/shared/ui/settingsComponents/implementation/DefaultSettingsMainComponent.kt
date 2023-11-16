@@ -2,6 +2,8 @@ package ru.blays.ficbookReader.shared.ui.settingsComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import ru.blays.ficbookReader.shared.platformUtils.customTabsSupported
+import ru.blays.ficbookReader.shared.platformUtils.dynamicColorSupported
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
@@ -21,11 +23,15 @@ class DefaultSettingsMainComponent(
         key = ISettingsRepository.booleanKey(SettingsKeys.AMOLED_THEME_KEY),
         defaultValue = false
     )
-    override val dynamicColorsSetting = DefaultSettingsUnitComponent(
-        componentContext = childContext("dynamic_colors_component"),
-        key = ISettingsRepository.booleanKey(SettingsKeys.DYNAMIC_COLORS_KEY),
-        defaultValue = true
-    )
+    override val dynamicColorsSetting = if(dynamicColorSupported) {
+        DefaultSettingsUnitComponent(
+            componentContext = childContext("dynamic_colors_component"),
+            key = ISettingsRepository.booleanKey(SettingsKeys.DYNAMIC_COLORS_KEY),
+            defaultValue = true
+        )
+    } else {
+        null
+    }
     override val accentIndexSetting = DefaultSettingsUnitComponent(
         componentContext = childContext("accent_index_component"),
         key = ISettingsRepository.intKey(SettingsKeys.ACCENT_INDEX_KEY),
@@ -37,11 +43,20 @@ class DefaultSettingsMainComponent(
         key = ISettingsRepository.stringKey(SettingsKeys.SUPERFILTER_KEY),
         defaultValue = ""
     )
-    override val autoVoteSetting: SettingsUnitComponent<Boolean> = DefaultSettingsUnitComponent(
+    override val autoVoteSetting = DefaultSettingsUnitComponent(
         componentContext = childContext("auto_vote_component"),
         key = ISettingsRepository.booleanKey(SettingsKeys.AUTO_VOTE_FOR_CONTINUE),
         defaultValue = false
     )
+    override val chromeCustomTabsSetting: SettingsUnitComponent<Boolean>? = if(customTabsSupported) {
+        DefaultSettingsUnitComponent(
+            componentContext = childContext("chrome_custom_tabs_component"),
+            key = ISettingsRepository.booleanKey(SettingsKeys.CHROME_CUSTOM_TABS_KEY),
+            defaultValue = false
+        )
+    } else {
+        null
+    }
 
     override fun onOutput(output: SettingsMainComponent.Output) = this.output(output)
 }
