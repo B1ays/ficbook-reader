@@ -19,6 +19,12 @@ interface RootComponent {
 
     val themeComponent: ThemeComponent
 
+    sealed class Intent {
+        data class NewDeepLink(val deepLink: String): Intent()
+    }
+
+    fun sendIntent(intent: Intent)
+
     @Serializable
     sealed class Config {
         @Serializable

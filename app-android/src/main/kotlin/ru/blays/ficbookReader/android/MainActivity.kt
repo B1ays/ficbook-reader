@@ -1,6 +1,7 @@
 package ru.blays.ficbookReader.android
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
@@ -14,18 +15,20 @@ import ru.blays.ficbookReader.components.fanficPage.reader.LocalVolumeKeysEventS
 import ru.blays.ficbookReader.components.fanficPage.reader.TwoWayVolumeKeysEventAdapter
 import ru.blays.ficbookReader.components.root.RootContent
 import ru.blays.ficbookReader.shared.ui.RootComponent.DefaultRootComponent
+import ru.blays.ficbookReader.shared.ui.RootComponent.RootComponent
 import ru.blays.ficbookReader.theme.AppTheme
 
 @OptIn(ExperimentalDecomposeApi::class)
 class MainActivity: ComponentActivity() {
-    private val volumeKeyEventSource =  TwoWayVolumeKeysEventAdapter()
+    private val volumeKeyEventSource = TwoWayVolumeKeysEventAdapter()
+    private var rootComponent: RootComponent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val deepLinkData: Uri? = intent?.data
 
-        val root = retainedComponent { componentContext ->
+        rootComponent = retainedComponent { componentContext ->
             DefaultRootComponent(
                 componentContext = componentContext,
                 deepLink = deepLinkData.toString()
@@ -35,14 +38,29 @@ class MainActivity: ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            AppTheme(root.themeComponent) {
+            AppTheme(rootComponent!!.themeComponent) {
                 CompositionLocalProvider(
                     LocalVolumeKeysEventSource provides volumeKeyEventSource
                 ) {
-                    RootContent(component = root)
+                    RootContent(component = rootComponent!!)
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        rootComponent = null
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val deepLinkData: Uri? = intent?.data
+        rootComponent?.sendIntent(
+            RootComponent.Intent.NewDeepLink(
+                deepLinkData.toString()
+            )
+        )
     }
 
     @SuppressLint("RestrictedApi")

@@ -113,7 +113,7 @@ class DefaultRootComponent private constructor(
     private val navigation = StackNavigation<RootComponent.Config>()
     override val childStack: Value<ChildStack<*, RootComponent.Child>> = childStack(
         source = navigation,
-        initialConfiguration = RootComponent.Config.Main,
+        initialConfiguration = getConfigurationForLink(deepLink),
         serializer = RootComponent.Config.serializer(),
         childFactory = ::childFactory,
         handleBackButton = true
@@ -128,6 +128,14 @@ class DefaultRootComponent private constructor(
     init {
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
+        }
+    }
+
+    override fun sendIntent(intent: RootComponent.Intent) {
+        when(intent) {
+            is RootComponent.Intent.NewDeepLink -> {
+                navigateToLink(intent.deepLink)
+            }
         }
     }
 
@@ -304,6 +312,7 @@ class DefaultRootComponent private constructor(
                 )
             }
             is AuthorProfileComponent.Output.OpenUrl -> {
+
                 navigateToLink(output.url)
             }
         }
@@ -333,6 +342,26 @@ class DefaultRootComponent private constructor(
         return@coroutineScope savedCookies
     }
 
+    private fun getConfigurationForLink(link: String?): RootComponent.Config {
+        if(link == null) return RootComponent.Config.Main
+        return when(
+            val analyzeResult = analyzeUrl(link)
+        ) {
+            is UrlProcessor.FicbookUrlAnalyzeResult.FanficsList -> {
+                RootComponent.Config.FanficsList(analyzeResult.sectionWithQuery)
+            }
+            is UrlProcessor.FicbookUrlAnalyzeResult.Fanfic -> {
+                RootComponent.Config.FanficPage(analyzeResult.href)
+            }
+            is UrlProcessor.FicbookUrlAnalyzeResult.User -> {
+                RootComponent.Config.AuthorProfile(analyzeResult.href)
+            }
+            else -> {
+                RootComponent.Config.Main
+            }
+        }
+    }
+
     private fun navigateToLink(link: String) {
         when(
             val analyzeResult = analyzeUrl(link)
@@ -355,15 +384,9 @@ class DefaultRootComponent private constructor(
             UrlProcessor.FicbookUrlAnalyzeResult.NotFicbookUrl -> {
                 openInBrowser(link)
             }
-            UrlProcessor.FicbookUrlAnalyzeResult.NotALink -> {
+            UrlProcessor.FicbookUrlAnalyzeResult.NotAUrl -> {
                 println("Error, link: $link is incorrect")
             }
-        }
-    }
-
-    init {
-        if(deepLink != null) {
-            navigateToLink(deepLink)
         }
     }
 }

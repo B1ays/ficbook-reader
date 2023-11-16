@@ -8,7 +8,8 @@ import ru.blays.ficbookapi.data.UserSections
 object UrlProcessor {
 
     fun analyzeUrl(url: String): FicbookUrlAnalyzeResult {
-        val httpUrl = url.toHttpUrlOrNull() ?: return FicbookUrlAnalyzeResult.NotALink
+        val httpUrl = url.toHttpUrlOrNull()
+            ?: return FicbookUrlAnalyzeResult.NotAUrl
 
         if(httpUrl.host == FICBOOK_HOST) {
             val pathSegments = httpUrl.pathSegments
@@ -74,7 +75,9 @@ object UrlProcessor {
 
     private fun userChecker(pathSegments: List<String>): FicbookUrlAnalyzeResult.User? {
         if (pathSegments[0] == AUTHORS) {
-            return FicbookUrlAnalyzeResult.User(id = pathSegments[1])
+            return FicbookUrlAnalyzeResult.User(
+                href = pathSegments.joinToString("/")
+            )
         }
         return null
     }
@@ -106,9 +109,9 @@ object UrlProcessor {
             )
         }
         data class Fanfic(val href: String) : FicbookUrlAnalyzeResult()
-        data class User(val id: String) : FicbookUrlAnalyzeResult()
+        data class User(val href: String) : FicbookUrlAnalyzeResult()
 
         data object NotFicbookUrl : FicbookUrlAnalyzeResult()
-        data object NotALink : FicbookUrlAnalyzeResult()
+        data object NotAUrl : FicbookUrlAnalyzeResult()
     }
 }
