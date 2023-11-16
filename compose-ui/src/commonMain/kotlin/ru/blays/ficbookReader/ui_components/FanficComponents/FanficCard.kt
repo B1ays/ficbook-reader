@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -404,6 +405,7 @@ fun FanficHeader(
                 Text(
                     text = it.name + ',',
                     style = MaterialTheme.typography.labelLarge,
+                    textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable {
                         onAuthorClick(it)
                     }
@@ -411,8 +413,8 @@ fun FanficHeader(
                 Spacer(modifier = Modifier.width(2.dp))
             }
         }
-        Spacer(modifier = Modifier.height(3.dp))
-        FlowRow() {
+        Spacer(modifier = Modifier.height(6.dp))
+        FlowRow {
             Icon(
                 modifier = Modifier.size(16.dp),
                 painter = painterResource(Res.image.ic_open_book),
@@ -423,6 +425,7 @@ fun FanficHeader(
                 Text(
                     text = it.name + ',',
                     style = MaterialTheme.typography.labelLarge,
+                    textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable {
                         onFandomClick(it)
                     }
@@ -430,6 +433,7 @@ fun FanficHeader(
                 Spacer(modifier = Modifier.width(2.dp))
             }
         }
+        Spacer(modifier = Modifier.height(6.dp))
         if(fanfic.pairings.isNotEmpty()) {
             FlowRow {
                 val shape = remember { RoundedCornerShape(percent = 20) }
