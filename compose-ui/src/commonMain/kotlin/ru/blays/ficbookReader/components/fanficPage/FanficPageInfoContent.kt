@@ -198,9 +198,10 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                 )
                             },
                             onCommentClicked = { href ->
-                                component.onOutput(
+                                // TODO comment screen
+                                /*component.onOutput(
                                     FanficPageInfoComponent.Output.OpenComments(href = href)
-                                )
+                                )*/
                             }
                         )
                     },
@@ -288,9 +289,10 @@ private fun LandscapeContent(
                     modifier = Modifier.padding(end = 4.dp),
                     fanficPage = fanfic,
                     onCommentClicked = { href ->
-                        component.onOutput(
+                        // TODO comment screen
+                        /*component.onOutput(
                             FanficPageInfoComponent.Output.OpenComments(href = href)
-                        )
+                        )*/
                     }
                 ) { index ->
                     component.onOutput(
