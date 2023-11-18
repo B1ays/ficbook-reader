@@ -10,9 +10,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
+import ru.blays.ficbookReader.shared.data.realm.entity.toEntity
+import ru.blays.ficbookReader.shared.data.realm.utils.copyToRealm
 import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
+import ru.blays.ficbookapi.dataModels.CookieModel
 import ru.blays.ficbookapi.dataModels.LoginModel
 import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
@@ -67,12 +70,9 @@ class DefaultUserLogInComponent(
                 )
             )
             if(result.responseResult.success) {
+                saveCookiesToDB(result.cookies)
                 runOnUiThread {
-                    output(
-                        UserLogInComponent.Output.LogInSuccess(
-                            result.cookies
-                        )
-                    )
+                    output(UserLogInComponent.Output.NavigateBack)
                 }
             } else {
                 _state.update {
@@ -97,5 +97,16 @@ class DefaultUserLogInComponent(
 
     override fun onOutput(output: UserLogInComponent.Output) {
         this.output.invoke(output)
+    }
+
+    private fun saveCookiesToDB(cookies: List<CookieModel>) {
+        val realm = injectRealm(CookieEntity::class)
+        val entities = cookies.map(CookieModel::toEntity)
+        realm.writeBlocking {
+            val savedCookies = query(CookieEntity::class).find()
+            delete(savedCookies)
+            copyToRealm(entities)
+        }
+        realm.close()
     }
 }

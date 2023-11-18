@@ -13,6 +13,8 @@ data class AuthorizationResult(
 data class AuthorizationResponseModel(
     @SerialName("error")
     val error: Error? = null,
+    @SerialName("data")
+    val data: Data? = null,
     @SerialName("result")
     val success: Boolean
 ) {
@@ -21,6 +23,9 @@ data class AuthorizationResponseModel(
         @SerialName("reason")
         val reason: String
     )
+    @Serializable
+    data class Data(
+        @SerialName("redirect")
+        val redirect: String
+    )
 }
-
-

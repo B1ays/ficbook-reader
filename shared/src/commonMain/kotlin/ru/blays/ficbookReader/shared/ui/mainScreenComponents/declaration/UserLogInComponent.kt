@@ -18,7 +18,6 @@ interface UserLogInComponent {
 
     sealed class Output {
         data object NavigateBack: Output()
-        data class LogInSuccess(val cookies: List<CookieModel>): Output()
     }
 
     data class State(

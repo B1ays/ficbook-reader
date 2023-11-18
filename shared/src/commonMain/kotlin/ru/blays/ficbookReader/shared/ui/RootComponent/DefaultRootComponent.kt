@@ -16,6 +16,7 @@ import ru.blays.ficbookReader.shared.data.realm.entity.toEntity
 import ru.blays.ficbookReader.shared.data.realm.utils.copyToRealm
 import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
+import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
@@ -240,16 +241,6 @@ class DefaultRootComponent private constructor(
     private fun onLogInOutput(output: UserLogInComponent.Output) {
         when(output) {
             is UserLogInComponent.Output.NavigateBack -> navigation.pop()
-            is UserLogInComponent.Output.LogInSuccess -> {
-                val cookies = output.cookies
-                if(cookies.isNotEmpty()) {
-                    coroutineScope.launch {
-                        ficbookApi.setCookie(cookies = cookies)
-                        writeNewCookiesToDB(cookies = cookies)
-                    }
-                }
-                navigation.pop()
-            }
         }
     }
 
@@ -312,23 +303,9 @@ class DefaultRootComponent private constructor(
                 )
             }
             is AuthorProfileComponent.Output.OpenUrl -> {
-
                 navigateToLink(output.url)
             }
         }
-    }
-
-    private suspend fun writeNewCookiesToDB(cookies: List<CookieModel>) = coroutineScope {
-        val realm: Realm = injectRealm(CookieEntity::class)
-        realm.write {
-            val savedCookies = query<CookieEntity>().find()
-            delete(savedCookies)
-        }
-        realm.write {
-            val newCookies = cookies.map(CookieModel::toEntity)
-            copyToRealm(newCookies)
-        }
-        realm.close()
     }
 
     private suspend fun readCookiesFromDB(): List<CookieModel> = coroutineScope {

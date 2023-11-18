@@ -62,14 +62,17 @@ open class FicbookApi: IFicbookApi {
             cookieJar = cookieJar
         )
         val bodyString = response?.body?.string()
-        val resultModel = bodyString?.let {
-            Json.decodeFromString<AuthorizationResponseModel?>(it)
-        } ?: AuthorizationResponseModel(
-            error = AuthorizationResponseModel.Error(
-                "Can't able to send request"
-            ),
-            success = false
-        )
+
+        val resultModel = if(bodyString != null) {
+            Json.decodeFromString<AuthorizationResponseModel>(bodyString)
+        } else {
+            AuthorizationResponseModel(
+                error = AuthorizationResponseModel.Error(
+                    "Can't able to send request"
+                ),
+                success = false
+            )
+        }
         val cookiesHeaders = response
             ?.headers
             ?.values(HEADER_COOKIE_SET)
