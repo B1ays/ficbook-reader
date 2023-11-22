@@ -5,6 +5,7 @@ import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbookReader.shared.data.dto.AuthorProfileModelStable
+import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 
@@ -39,6 +40,7 @@ interface AuthorProfileComponent {
         data class WorksAsCoauthor(val component: FanficsListComponent): Tabs()
         data class WorksAsBeta(val component: FanficsListComponent): Tabs()
         data class WorksAsGamma(val component: FanficsListComponent): Tabs()
+        data class Comments(val component: CommentsComponent): Tabs()
         data class Presents(val component: AuthorPresentsComponent): Tabs()
     }
 
@@ -56,6 +58,8 @@ interface AuthorProfileComponent {
         data class WorksAsBeta(val section: SectionWithQuery): TabConfig()
         @Serializable
         data class WorksAsGamma(val section: SectionWithQuery): TabConfig()
+        @Serializable
+        data class Comments(val href: String): TabConfig()
         @Serializable
         data class Presents(val href: String): TabConfig()
     }

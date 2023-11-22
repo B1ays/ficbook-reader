@@ -17,6 +17,8 @@ import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorBlogComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorPresentsComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultAllCommentsComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
@@ -39,6 +41,11 @@ class DefaultAuthorProfileComponent private constructor(
         href: String,
         output: (output: AuthorPresentsComponent.Output) -> Unit
     ) -> AuthorPresentsComponent,
+    private val commentsFactory: (
+        childContext: ComponentContext,
+        href: String,
+        output: (output: CommentsComponent.Output) -> Unit
+    ) -> CommentsComponent,
     private val fanficsListFactory: (
         childContext: ComponentContext,
         section: SectionWithQuery,
@@ -66,6 +73,14 @@ class DefaultAuthorProfileComponent private constructor(
         },
         presentsFactory = { childContext, href, output ->
             DefaultAuthorPresentsComponent(
+                componentContext = childContext,
+                ficbookApi = ficbookApi,
+                href = href,
+                output = output
+            )
+        },
+        commentsFactory = { childContext, href, output ->
+            DefaultAllCommentsComponent(
                 componentContext = childContext,
                 ficbookApi = ficbookApi,
                 href = href,
@@ -113,6 +128,7 @@ class DefaultAuthorProfileComponent private constructor(
 
     private var blogComponent: AuthorBlogComponent? = null
     private var presentsComponent: AuthorPresentsComponent? = null
+    private var commentsComponent: CommentsComponent? = null
     private var worksComponent: FanficsListComponent? = null
     private var worksAsCoauthorComponent: FanficsListComponent? = null
     private var worksAsBetaComponent: FanficsListComponent? = null
@@ -162,6 +178,33 @@ class DefaultAuthorProfileComponent private constructor(
                 )
             }
             is AuthorPresentsComponent.Output.OpenFanfic -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenFanfic(
+                        href = output.href
+                    )
+                )
+            }
+        }
+    }
+
+    private fun commentsOutput(output: CommentsComponent.Output) {
+        when(output) {
+            CommentsComponent.Output.NavigateBack -> {}
+            is CommentsComponent.Output.OpenAuthor -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenAnotherProfile(
+                        href = output.href
+                    )
+                )
+            }
+            is CommentsComponent.Output.OpenUrl -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenUrl(
+                        url = output.url
+                    )
+                )
+            }
+            is CommentsComponent.Output.OpenFanfic -> {
                 this.output(
                     AuthorProfileComponent.Output.OpenFanfic(
                         href = output.href
@@ -241,6 +284,11 @@ class DefaultAuthorProfileComponent private constructor(
                     component = worksAsGammaComponent!!
                 )
             }
+            is AuthorProfileComponent.TabConfig.Comments -> {
+                AuthorProfileComponent.Tabs.Comments(
+                    component = commentsComponent!!
+                )
+            }
         }
     }
 
@@ -297,6 +345,14 @@ class DefaultAuthorProfileComponent private constructor(
         availableTabs += AuthorProfileComponent.TabConfig.Presents(
             href = profile.authorPresentsHref
         )*/
+        commentsComponent = commentsFactory(
+            childContext("commentsComponent"),
+            profile.authorCommentsHref,
+            ::commentsOutput
+        )
+        availableTabs += AuthorProfileComponent.TabConfig.Comments(
+            href = profile.authorCommentsHref
+        )
         profile.authorWorks?.let { section ->
             worksComponent = fanficsListFactory(
                 childContext("worksComponent"),

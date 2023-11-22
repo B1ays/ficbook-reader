@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -28,9 +29,11 @@ fun HorizontalDivider(
     modifier: Modifier = Modifier,
     thickness: Dp = DividerDefaults.Thickness,
     color: Color = DividerDefaults.color,
+    cap: StrokeCap = StrokeCap.Square
 ) = Canvas(modifier.fillMaxWidth().height(thickness)) {
     drawLine(
         color = color,
+        cap = cap,
         strokeWidth = thickness.toPx(),
         start = Offset(0f, thickness.toPx() / 2),
         end = Offset(size.width, thickness.toPx() / 2),
@@ -54,9 +57,11 @@ fun VerticalDivider(
     modifier: Modifier = Modifier,
     thickness: Dp = DividerDefaults.Thickness,
     color: Color = DividerDefaults.color,
+    cap: StrokeCap = StrokeCap.Square
 ) = Canvas(modifier.fillMaxHeight().width(thickness)) {
     drawLine(
         color = color,
+        cap = cap,
         strokeWidth = thickness.toPx(),
         start = Offset(thickness.toPx() / 2, 0f),
         end = Offset(thickness.toPx() / 2, size.height),

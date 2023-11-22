@@ -23,7 +23,6 @@ internal class FanficsListParser: IDataParser<String, Pair<Elements, Boolean>> {
         } else {
             false
         }
-        println("hasNextPage: $hasNextPage")
         return@coroutineScope document.select(".js-toggle-description") to hasNextPage
     }
 

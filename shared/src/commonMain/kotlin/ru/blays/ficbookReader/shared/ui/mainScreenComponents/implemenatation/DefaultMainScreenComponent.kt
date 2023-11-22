@@ -224,7 +224,6 @@ class DefaultMainScreenComponent private constructor(
         }
         coroutineScope.launch {
             ficbookApi.currentUser.collect { newUser ->
-                println("user: $newUser")
                 _state.update {
                     it.copy(
                         user = newUser?.toStableModel()
@@ -234,7 +233,6 @@ class DefaultMainScreenComponent private constructor(
         }
         coroutineScope.launch {
             ficbookApi.isAuthorized.collect { authorized ->
-                println("authorized: $authorized")
                 _state.update {
                     it.copy(
                         authorized = authorized

@@ -38,6 +38,9 @@ interface IFicbookApi {
     suspend fun getAuthorCommentsPresents(href: String, page: Int): ApiResult<List<AuthorCommentPresentModel>>
     suspend fun getAuthorBlogPost(href: String): ApiResult<BlogPostPageModel>
 
+    suspend fun getComments(href: String, page: Int): ApiResult<CommentsListResult>
+    suspend fun getCommentsForPart(partID: String, page: Int): ApiResult<CommentsListResult>
+
     suspend fun actionChangeFollow(
         follow: Boolean,
         fanficID: String

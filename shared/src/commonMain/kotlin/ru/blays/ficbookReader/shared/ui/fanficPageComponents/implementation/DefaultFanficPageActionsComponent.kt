@@ -16,7 +16,8 @@ import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 class DefaultFanficPageActionsComponent(
     componentContext: ComponentContext,
     private val ficbookApi: IFicbookApi,
-    private val fanficID: String
+    private val fanficID: String,
+    private val output: (output: FanficPageActionsComponent.Output) -> Unit
 ): InternalFanficPageActionsComponent, ComponentContext by componentContext {
     private val _state = MutableValue(FanficPageActionsComponent.State())
     override val state: Value<FanficPageActionsComponent.State>
@@ -30,12 +31,15 @@ class DefaultFanficPageActionsComponent(
          }
      }
 
-    override fun onIntent(intent: FanficPageActionsComponent.Intent) {
+    override fun sendIntent(intent: FanficPageActionsComponent.Intent) {
         when(intent) {
             is FanficPageActionsComponent.Intent.Follow -> follow(intent.follow)
             is FanficPageActionsComponent.Intent.Mark -> mark(intent.mark)
-            is FanficPageActionsComponent.Intent.Read -> read(intent.read)
         }
+    }
+
+    override fun onOutput(output: FanficPageActionsComponent.Output) {
+        this.output(output)
     }
 
     override fun setValue(value: FanficPageActionsComponent.State) {
@@ -65,20 +69,6 @@ class DefaultFanficPageActionsComponent(
             if(isSuccess) {
                 _state.update {
                     it.copy(mark = mark)
-                }
-            }
-        }
-    }
-
-    private fun read(read: Boolean) {
-        coroutineScope.launch {
-            val isSuccess = ficbookApi.actionChangeRead(
-                read,
-                fanficID
-            )
-            if(isSuccess) {
-                _state.update {
-                    it.copy(readed = read)
                 }
             }
         }

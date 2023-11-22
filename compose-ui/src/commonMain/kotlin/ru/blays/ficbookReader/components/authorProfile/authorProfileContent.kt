@@ -38,6 +38,7 @@ import com.moriatsushi.insetsx.navigationBars
 import io.github.skeptick.libres.compose.painterResource
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import ru.blays.ficbookReader.components.commentsContent.CommentsContent
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.data.dto.AuthorMainInfoStable
 import ru.blays.ficbookReader.shared.data.dto.BlogPostCardModelStable
@@ -321,6 +322,12 @@ private fun ProfilePager(
             is AuthorProfileComponent.Tabs.WorksAsBeta -> FanficsListContent(page.component)
             is AuthorProfileComponent.Tabs.WorksAsCoauthor -> FanficsListContent(page.component)
             is AuthorProfileComponent.Tabs.WorksAsGamma -> FanficsListContent(page.component)
+            is AuthorProfileComponent.Tabs.Comments -> {
+                CommentsContent(
+                    component = page.component,
+                    hideAvatar = true
+                )
+            }
         }
     }
 }
@@ -704,6 +711,7 @@ private fun getTitleForTab(tab: AuthorProfileComponent.TabConfig): String {
         is AuthorProfileComponent.TabConfig.WorksAsBeta -> "Бета"
         is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> "Соавтор"
         is AuthorProfileComponent.TabConfig.WorksAsGamma -> "Гамма"
+        is AuthorProfileComponent.TabConfig.Comments -> "Отзывы"
     }
 }
 
@@ -717,6 +725,7 @@ private fun getIconForTab(tab: AuthorProfileComponent.TabConfig): Painter {
         is AuthorProfileComponent.TabConfig.WorksAsBeta -> painterResource(Res.image.ic_book)
         is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> painterResource(Res.image.ic_book)
         is AuthorProfileComponent.TabConfig.WorksAsGamma -> painterResource(Res.image.ic_book)
+        is AuthorProfileComponent.TabConfig.Comments -> painterResource(Res.image.ic_comment)
     }
 }
 

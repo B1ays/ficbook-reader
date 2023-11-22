@@ -6,17 +6,16 @@ import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import org.koin.java.KoinJavaComponent.inject
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
 import ru.blays.ficbookReader.shared.data.realm.entity.toApiModel
-import ru.blays.ficbookReader.shared.data.realm.entity.toEntity
-import ru.blays.ficbookReader.shared.data.realm.utils.copyToRealm
 import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
-import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
@@ -195,6 +194,11 @@ class DefaultRootComponent private constructor(
                     configuration = RootComponent.Config.AuthorProfile(
                         href = output.href
                     )
+                )
+            }
+            is FanficPageComponent.Output.OpenAnotherFanfic -> {
+                navigation.push(
+                    configuration = RootComponent.Config.FanficPage(output.href)
                 )
             }
         }

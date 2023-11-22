@@ -39,7 +39,8 @@ class DefaultFanficPageInfoComponent(
         fanficID = fanficHref
             .split("/")
             .lastOrNull()
-            ?: ""
+            ?: "",
+        output = ::onActionsOutput
     )
 
     override val actionsComponent: FanficPageActionsComponent
@@ -75,6 +76,17 @@ class DefaultFanficPageInfoComponent(
 
     override fun onOutput(output: FanficPageInfoComponent.Output) {
         onOutput.invoke(output)
+    }
+
+    private fun onActionsOutput(output: FanficPageActionsComponent.Output) {
+        when(output) {
+            FanficPageActionsComponent.Output.OpenComments -> {
+                val commentsHref = "$fanficHref/comments"
+                onOutput(
+                    FanficPageInfoComponent.Output.OpenAllComments(commentsHref)
+                )
+            }
+        }
     }
 
     private fun loadPage() {

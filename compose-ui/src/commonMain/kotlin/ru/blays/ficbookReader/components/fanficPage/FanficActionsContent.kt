@@ -22,7 +22,7 @@ fun FanficActionsContent(
     component: FanficPageActionsComponent
 ) {
     val state by component.state.subscribeAsState()
-    val (follow, mark, read) = state
+    val (follow, mark) = state
 
     val likeItemIcon = if (mark) {
         painterResource(Res.image.ic_like_filled)
@@ -34,11 +34,7 @@ fun FanficActionsContent(
     } else {
         painterResource(Res.image.ic_star_outlined)
     }
-    val readedItemIcon = if (read) {
-        painterResource(Res.image.ic_bookmark_filled)
-    } else {
-        painterResource(Res.image.ic_bookmark_outlined)
-    }
+    val commentsItemIcon = painterResource(Res.image.ic_comment)
 
     Row(
         modifier = Modifier
@@ -55,7 +51,7 @@ fun FanficActionsContent(
             iconSize = 28.dp,
             iconColor = MaterialTheme.colorScheme.primary
         ) {
-            component.onIntent(
+            component.sendIntent(
                 FanficPageActionsComponent.Intent.Mark(it)
             )
         }
@@ -68,21 +64,21 @@ fun FanficActionsContent(
             iconSize = 28.dp,
             iconColor = MaterialTheme.colorScheme.primary
         ) {
-            component.onIntent(
+            component.sendIntent(
                 FanficPageActionsComponent.Intent.Follow(it)
             )
         }
         VerticalDivider()
         FanficActionItem(
             modifier = Modifier.weight(.33333F),
-            value = read,
-            icon = readedItemIcon,
-            title = "Прочитано",
+            value = true,
+            icon = commentsItemIcon,
+            title = "Отзывы",
             iconSize = 28.dp,
-            iconColor = MaterialTheme.colorScheme.outline
+            iconColor = MaterialTheme.colorScheme.primary
         ) {
-            component.onIntent(
-                FanficPageActionsComponent.Intent.Read(it)
+            component.onOutput(
+                FanficPageActionsComponent.Output.OpenComments
             )
         }
     }

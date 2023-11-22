@@ -32,7 +32,8 @@ interface FanficPageInfoComponent {
             val fanficID: String,
             val chapters: List<FanficChapterStable>
         ): Output()
-        data class OpenComments(val href: String): Output()
+        data class OpenPartComments(val href: String): Output()
+        data class OpenAllComments(val href: String): Output()
         data class OpenSection(val section: SectionWithQuery): Output() {
             constructor(
                 name: String,

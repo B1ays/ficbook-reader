@@ -162,7 +162,6 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                         bottomSheetScaffoldState.bottomSheetState.partialExpand()
                                     }
                                 }
-
                                 else -> {
                                     component.onOutput(
                                         FanficPageInfoComponent.Output.ClosePage
@@ -198,10 +197,9 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                 )
                             },
                             onCommentClicked = { href ->
-                                // TODO comment screen
-                                /*component.onOutput(
-                                    FanficPageInfoComponent.Output.OpenComments(href = href)
-                                )*/
+                                component.onOutput(
+                                    FanficPageInfoComponent.Output.OpenPartComments(href)
+                                )
                             }
                         )
                     },
@@ -289,10 +287,9 @@ private fun LandscapeContent(
                     modifier = Modifier.padding(end = 4.dp),
                     fanficPage = fanfic,
                     onCommentClicked = { href ->
-                        // TODO comment screen
-                        /*component.onOutput(
-                            FanficPageInfoComponent.Output.OpenComments(href = href)
-                        )*/
+                        component.onOutput(
+                            FanficPageInfoComponent.Output.OpenPartComments(href)
+                        )
                     }
                 ) { index ->
                     component.onOutput(

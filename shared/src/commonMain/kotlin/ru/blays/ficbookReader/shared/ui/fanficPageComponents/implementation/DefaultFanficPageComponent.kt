@@ -3,6 +3,9 @@ package ru.blays.ficbookReader.shared.ui.fanficPageComponents.implementation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
+import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultAllCommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultPartCommentsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
@@ -47,9 +50,24 @@ class DefaultFanficPageComponent(
                     output = ::onReaderOutput
                 )
             )
-            is FanficPageComponent.Config.Comments -> FanficPageComponent.Child.Comments(
-                TODO()
+            is FanficPageComponent.Config.PartComments -> FanficPageComponent.Child.PartComments(
+                DefaultPartCommentsComponent.createWithHref(
+                    componentContext = childContext,
+                    ficbookApi = ficbookApi,
+                    href = configuration.href,
+                    output = ::onCommentsOutput
+                )
             )
+            is FanficPageComponent.Config.AllComments -> {
+                FanficPageComponent.Child.AllComments(
+                    DefaultAllCommentsComponent(
+                        componentContext = childContext,
+                        ficbookApi = ficbookApi,
+                        href = configuration.href,
+                        output = ::onCommentsOutput
+                    )
+                )
+            }
         }
     }
 
@@ -70,9 +88,14 @@ class DefaultFanficPageComponent(
                     )
                 )
             }
-            is FanficPageInfoComponent.Output.OpenComments -> {
+            is FanficPageInfoComponent.Output.OpenPartComments -> {
                 navigation.push(
-                    FanficPageComponent.Config.Comments(output.href)
+                    FanficPageComponent.Config.PartComments(output.href)
+                )
+            }
+            is FanficPageInfoComponent.Output.OpenAllComments -> {
+                navigation.push(
+                    FanficPageComponent.Config.AllComments(output.href)
                 )
             }
             is FanficPageInfoComponent.Output.OpenLastOrFirstChapter -> {
@@ -110,6 +133,27 @@ class DefaultFanficPageComponent(
             is FanficPageInfoComponent.Output.OpenAuthor -> {
                 onOutput(
                     FanficPageComponent.Output.OpenAuthor(output.href)
+                )
+            }
+        }
+    }
+
+    private fun onCommentsOutput(output: CommentsComponent.Output) {
+        when(output) {
+            is CommentsComponent.Output.NavigateBack -> navigation.pop()
+            is CommentsComponent.Output.OpenAuthor -> {
+                onOutput(
+                    FanficPageComponent.Output.OpenAuthor(output.href)
+                )
+            }
+            is CommentsComponent.Output.OpenUrl -> {
+                onOutput(
+                    FanficPageComponent.Output.OpenUrl(output.url)
+                )
+            }
+            is CommentsComponent.Output.OpenFanfic -> {
+                onOutput(
+                    FanficPageComponent.Output.OpenAnotherFanfic(output.href)
                 )
             }
         }

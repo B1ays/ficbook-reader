@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.CookieJar
+import okhttp3.FormBody
 import okhttp3.internal.closeQuietly
 import okio.use
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import ru.blays.ficbookapi.*
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.*
@@ -460,6 +462,78 @@ open class FicbookApi: IFicbookApi {
         } else {
             ApiResult.Error("Unable to load post")
         }
+    }
+
+    override suspend fun getComments(href: String, page: Int): ApiResult<CommentsListResult> = coroutineScope {
+        val trimmedHref = href.substringBefore('#')
+        val url = buildFicbookURL {
+            href(trimmedHref)
+            page(page)
+        }
+        val request = buildFicbookRequest {
+            url(url)
+        }
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
+        return@coroutineScope if (body != null) {
+            val document = Jsoup.parse(body)
+            val comments = getCommentsForDocument(document)
+            val pageButtonsInfo = checkPageButtonsExists(document)
+            ApiResult.Success(
+                value = CommentsListResult(
+                    comments = comments,
+                    hasNextPage = pageButtonsInfo.hasNext
+                )
+            )
+        } else {
+            ApiResult.Error("Unable to load comments")
+        }
+    }
+
+    override suspend fun getCommentsForPart(partID: String, page: Int): ApiResult<CommentsListResult> {
+        val url = buildFicbookURL {
+            href(PART_COMMENTS_HREF)
+        }
+        val formBody = FormBody.Builder()
+            .add("id", partID)
+            .add("page", page.toString())
+            .build()
+        val request = buildFicbookRequest {
+            url(url)
+            post(formBody)
+        }
+        val body = getHtmlBody(
+            request = request,
+            cookieJar = cookieJar
+        ).value
+        return if (!body.isNullOrEmpty()) {
+            val document = Jsoup.parse(body)
+            val comments = getCommentsForDocument(document)
+            ApiResult.Success(
+                CommentsListResult(
+                    comments = comments,
+                    hasNextPage = true
+                )
+            )
+        } else if (body != null) {
+            ApiResult.Success(
+                CommentsListResult(
+                    comments = emptyList(),
+                    hasNextPage = false
+                )
+            )
+        } else {
+            ApiResult.Error("Unable to load comments")
+        }
+    }
+
+    private suspend fun getCommentsForDocument(document: Document): List<CommentModel> = coroutineScope {
+        val commentParser = CommentParser()
+        val commentListParser = CommentListParser()
+        val commentElements = commentListParser.parse(document)
+        return@coroutineScope commentElements.map { commentParser.parse(it) }
     }
 
     override suspend fun getFandomsForSection(section: String, page: Int): List<FandomModel> {

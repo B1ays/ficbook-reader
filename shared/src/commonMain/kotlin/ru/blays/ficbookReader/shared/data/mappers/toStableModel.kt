@@ -7,6 +7,7 @@ import ru.blays.ficbookapi.dataModels.*
 import ru.blays.ficbookapi.dataModels.FanficCompletionStatus
 import ru.blays.ficbookapi.dataModels.FanficDirection
 import ru.blays.ficbookapi.dataModels.FanficRating
+import ru.blays.ficbookapi.dataModels.FanficShortcut
 
 fun CollectionModel.toStableModel() = CollectionModelStable(
     href = href,
@@ -241,3 +242,29 @@ fun AuthorCommentPresentModel.toStableModel() = AuthorCommentPresentModelStable(
     forWork = forWork.toStableModel()
 )
 
+fun CommentModel.toStableModel() = CommentModelStable(
+    user = user.toStableModel(),
+    date = date,
+    blocks = blocks.map(CommentBlockModel::toStableModel),
+    likes = likes,
+    forFanfic = forFanfic?.toStableModel()
+)
+
+fun CommentBlockModel.toStableModel() = CommentBlockModelStable(
+    quote = quote?.toStableModel(),
+    text = text
+)
+
+fun QuoteModel.toStableModel(): QuoteModelStable {
+    val quote = quote?.toStableModel()
+    return QuoteModelStable(
+        quote = quote,
+        userName = userName,
+        text = text
+    )
+}
+
+fun FanficShortcut.toStableModel() = ru.blays.ficbookReader.shared.data.dto.FanficShortcut(
+    name = name,
+    href = href
+)
