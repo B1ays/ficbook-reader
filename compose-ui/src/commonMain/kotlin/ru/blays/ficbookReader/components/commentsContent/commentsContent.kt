@@ -36,6 +36,7 @@ import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.CommentModelStable
 import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
+import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -85,6 +86,11 @@ fun CommentsContent(
                         component.onOutput(
                             CommentsComponent.Output.OpenAuthor(comment.user.href)
                         )
+                    },
+                    onUrlClick = { url ->
+                        component.onOutput(
+                            CommentsComponent.Output.OpenUrl(url)
+                        )
                     }
                 )
             }
@@ -104,7 +110,8 @@ private fun CommentItem(
     comment: CommentModelStable,
     hideAvatar: Boolean,
     onUserClick: () -> Unit,
-    onFanficClick: (href: String) -> Unit
+    onFanficClick: (href: String) -> Unit,
+    onUrlClick: (url: String) -> Unit
 ) {
     val user = comment.user
     val avatarResource = asyncPainterResource(user.avatarUrl)
@@ -157,7 +164,10 @@ private fun CommentItem(
             }
             Spacer(modifier = Modifier.requiredHeight(3.dp))
             comment.blocks.forEach { block ->
-                CommentBlockElement(block)
+                CommentBlockElement(
+                    block = block,
+                    onUrlClick = onUrlClick
+                )
             }
             if(comment.forFanfic != null) {
                 Spacer(modifier = Modifier.requiredHeight(2.dp))
@@ -184,8 +194,13 @@ private fun CommentItem(
 }
 
 @Composable
-private fun CommentBlockElement(block: CommentBlockModelStable) {
-    val quoteContainerColor = MaterialTheme.colorScheme.run { primary.compositeOver(surface) }
+private fun CommentBlockElement(
+    block: CommentBlockModelStable,
+    onUrlClick: (url: String) -> Unit
+) {
+    val quoteContainerColor = MaterialTheme.colorScheme.run {
+        primary.compositeOver(surface).copy(0.7F)
+    }
     val contentColor = MaterialTheme.colorScheme.onPrimary
     Column(
         modifier = Modifier
@@ -198,20 +213,29 @@ private fun CommentBlockElement(block: CommentBlockModelStable) {
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             if (block.quote != null) {
-                QuoteElement(block.quote!!)
+                QuoteElement(
+                    quote = block.quote!!,
+                    onUrlClick = onUrlClick
+                )
                 Spacer(modifier = Modifier.requiredHeight(7.dp))
             }
         }
     }
-    Text(
+    TextWithLinks(
         text = block.text,
-        style = MaterialTheme.typography.bodyMedium,
+        style = MaterialTheme.typography.bodyMedium.copy(
+            color = MaterialTheme.colorScheme.onSurface
+        ),
         modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
+        onUrlClick = onUrlClick
     )
 }
 
 @Composable
-private fun QuoteElement(quote: QuoteModelStable) {
+private fun QuoteElement(
+    quote: QuoteModelStable,
+    onUrlClick: (url: String) -> Unit
+) {
     val contentColor = LocalContentColor.current
     Column(
         modifier = Modifier.padding(start = 12.dp),
@@ -225,7 +249,10 @@ private fun QuoteElement(quote: QuoteModelStable) {
             Spacer(modifier = Modifier.requiredHeight(2.dp))
         }
         if(quote.quote != null) {
-            QuoteElement(quote.quote!!)
+            QuoteElement(
+                quote = quote.quote!!,
+                onUrlClick = onUrlClick
+                )
             Spacer(modifier = Modifier.requiredHeight(2.dp))
         }
         if(quote.text.isNotEmpty()) {
@@ -239,10 +266,12 @@ private fun QuoteElement(quote: QuoteModelStable) {
                     )
                 }
                 val text = subcompose(QUOTE_TEXT_SLOTS.TEXT) {
-                    Text(
+                    TextWithLinks(
                         text = quote.text,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = contentColor
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = contentColor
+                        ),
+                        onUrlClick = onUrlClick
                     )
                 }
                 val textHeight = text.fold(0) { acc, it ->
