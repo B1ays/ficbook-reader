@@ -21,33 +21,33 @@ fun rememberAnnotatedStringWithLinks(
     LaunchedEffect(Unit) {
         val matcher = Patterns.AUTOLINK_WEB_URL.matcher(text)
 
-        var startIndex = 0
+        var normalTextStart = 0
         try {
             annotatedString.value = buildAnnotatedString {
                 while (matcher.find()) {
-                    val start = matcher.start()
-                    val end = matcher.end()
-                    val value = text.substring(start, end)
+                    val linkStart = matcher.start()
+                    val linkEnd = matcher.end()
 
-                    val substring = text.substring(
-                        startIndex = startIndex,
-                        endIndex = start
+                    val normalText = text.substring(
+                        startIndex = normalTextStart,
+                        endIndex = linkStart
                     )
                     withStyle(
                         style = normalTextStyle
                     ) {
-                        append(substring)
+                        append(normalText)
                     }
-                    startIndex = end
+                    normalTextStart = linkEnd
 
+                    val linkText = text.substring(linkStart..<linkEnd)
                     pushStringAnnotation(
-                        tag = value,
-                        annotation = value
+                        tag = linkText,
+                        annotation = linkText
                     )
                     withStyle(
                         style = linkStyle
                     ) {
-                        append(value)
+                        append(linkText)
                     }
                     pop()
                 }
@@ -56,7 +56,7 @@ fun rememberAnnotatedStringWithLinks(
                 ) {
                     append(
                         text.substring(
-                            startIndex.coerceIn(text.indices)..text.length.coerceIn(text.indices)
+                            normalTextStart.coerceIn(text.indices)..text.length.coerceIn(text.indices)
                         )
                     )
                 }
