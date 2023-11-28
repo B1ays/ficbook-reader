@@ -17,7 +17,17 @@ internal class AuthorMainInfoParser : IDataParser<Document, AuthorMainInfo> {
             .text()
             .trim()
 
-        val id = data.select("[name=userId]").attr("value")
+        val id: String = data.run {
+            val first = select("[name=userId]").attr("value")
+            if(first.isNotEmpty()) return@run first
+            val second = select(".user-name-box div").getOrNull(1)?.text()
+            return@run if(second?.startsWith("ID") == true) {
+                return@run second.replace(
+                    regex = Regex("[^0-9]+"),
+                    replacement = ""
+                )
+            } else ""
+        }
 
         val avatarUrl = profileHeader
             .select(".avatar-cropper")
