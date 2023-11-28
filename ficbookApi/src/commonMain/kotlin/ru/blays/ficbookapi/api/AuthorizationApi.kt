@@ -3,6 +3,7 @@ package ru.blays.ficbookapi.api
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import okio.IOException
 import org.jsoup.Jsoup
 import ru.blays.ficbookapi.LOGIN_CHECK
 import ru.blays.ficbookapi.SETTING_HREF
@@ -11,10 +12,7 @@ import ru.blays.ficbookapi.dataModels.AuthorizationResult
 import ru.blays.ficbookapi.dataModels.LoginModel
 import ru.blays.ficbookapi.dataModels.UserModel
 import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
-import ru.blays.ficbookapi.okHttpDsl.formBody
-import ru.blays.ficbookapi.okHttpDsl.get
-import ru.blays.ficbookapi.okHttpDsl.post
-import ru.blays.ficbookapi.okHttpDsl.stringOrThrow
+import ru.blays.ficbookapi.okHttpDsl.*
 import ru.blays.ficbookapi.parsers.UserParser
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -62,14 +60,19 @@ class AuthorizationApiImpl(
         return@coroutineScope try {
             val response = client.get {
                 ficbookUrl {
-                    addPathSegment(SETTING_HREF)
+                    href(SETTING_HREF)
                 }
             }
+            val finalUrl = response.request.url.toString()
+            if(finalUrl == "https://ficbook.net/login") throw(
+                IOException("User not authorized")
+            )
             val body: String = response.body.stringOrThrow()
             val document = Jsoup.parse(body)
             val user = userParser.parse(document)
             ApiResult.success(user)
         } catch (e: Exception) {
+            e.printStackTrace()
             ApiResult.failure(e)
         }
     }
