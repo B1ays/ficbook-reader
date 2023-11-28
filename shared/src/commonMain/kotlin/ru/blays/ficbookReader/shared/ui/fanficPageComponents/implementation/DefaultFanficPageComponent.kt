@@ -3,6 +3,8 @@ package ru.blays.ficbookReader.shared.ui.fanficPageComponents.implementation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
+import org.koin.mp.KoinPlatform.getKoin
+import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultAllCommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultPartCommentsComponent
@@ -10,11 +12,9 @@ import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficP
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.implementation.DefaultMainReaderComponent
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultFanficPageComponent(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
     private val fanficHref: String,
     private val onOutput: (FanficPageComponent.Output) -> Unit
 ): FanficPageComponent, ComponentContext by componentContext {
@@ -35,7 +35,6 @@ class DefaultFanficPageComponent(
             is FanficPageComponent.Config.Info -> FanficPageComponent.Child.Info(
                 DefaultFanficPageInfoComponent(
                     componentContext = childContext,
-                    ficbookApi = ficbookApi,
                     fanficHref = fanficHref,
                     onOutput = ::onInfoOutput
                 )
@@ -43,7 +42,6 @@ class DefaultFanficPageComponent(
             is FanficPageComponent.Config.Reader -> FanficPageComponent.Child.Reader(
                 DefaultMainReaderComponent(
                     componentContext = childContext,
-                    ficbookApi = ficbookApi,
                     chapters = configuration.chapters,
                     initialChapterIndex = configuration.index,
                     fanficID = configuration.fanficID,
@@ -53,7 +51,6 @@ class DefaultFanficPageComponent(
             is FanficPageComponent.Config.PartComments -> FanficPageComponent.Child.PartComments(
                 DefaultPartCommentsComponent.createWithHref(
                     componentContext = childContext,
-                    ficbookApi = ficbookApi,
                     href = configuration.href,
                     output = ::onCommentsOutput
                 )
@@ -62,7 +59,6 @@ class DefaultFanficPageComponent(
                 FanficPageComponent.Child.AllComments(
                     DefaultAllCommentsComponent(
                         componentContext = childContext,
-                        ficbookApi = ficbookApi,
                         href = configuration.href,
                         output = ::onCommentsOutput
                     )

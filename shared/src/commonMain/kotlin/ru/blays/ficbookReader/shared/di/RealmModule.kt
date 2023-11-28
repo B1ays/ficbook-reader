@@ -5,7 +5,7 @@ import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.types.RealmObject
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
-import org.koin.java.KoinJavaComponent
+import org.koin.mp.KoinPlatform.getKoin
 import kotlin.reflect.KClass
 
 internal val realmModule = module {
@@ -16,7 +16,7 @@ internal val realmModule = module {
 }
 
 fun injectRealm(vararg entities: KClass<out RealmObject>): Realm {
-    return KoinJavaComponent.getKoin().get {
+    return getKoin().get {
         parametersOf(entities.toSet())
     }
 }

@@ -5,9 +5,11 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.jsoup.select.Evaluator
+import ru.blays.ficbookapi.ATTR_HREF
+import ru.blays.ficbookapi.ATTR_SRC
 import ru.blays.ficbookapi.dataModels.*
 
-class CommentListParser: IDataParser<Document, Elements> {
+internal class CommentListParser: IDataParser<Document, Elements> {
     override suspend fun parse(data: Document): Elements {
         return data.select(".comment-container")
     }
@@ -17,13 +19,13 @@ class CommentListParser: IDataParser<Document, Elements> {
     }
 }
 
-class CommentParser: IDataParser<Element, CommentModel> {
+internal class CommentParser: IDataParser<Element, CommentModel> {
     override suspend fun parse(data: Element): CommentModel {
-        val avatarUrl = data.select(".comment-avatar img").attr("src")
+        val avatarUrl = data.select(".comment-avatar img").attr(ATTR_SRC)
         val (href, userName) = data.select(".author")
             .select("a")
             .let {
-                it.attr("href") to it.text()
+                it.attr(ATTR_HREF) to it.text()
             }
         val commentMessage = data.select(
             Evaluator.Class("comment_message urlize js-comment-message")
@@ -40,7 +42,7 @@ class CommentParser: IDataParser<Element, CommentModel> {
             ?.let {
                 FanficShortcut(
                     name = it.text(),
-                    href = it.attr("href").substringBeforeLast('/')
+                    href = it.attr(ATTR_HREF).substringBeforeLast('/')
                 )
             }
 

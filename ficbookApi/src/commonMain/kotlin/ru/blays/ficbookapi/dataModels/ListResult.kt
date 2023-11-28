@@ -1,6 +1,6 @@
 package ru.blays.ficbookapi.dataModels
 
-data class FanficsListResult(
-    val fanfics: List<FanficCardModel>,
+data class ListResult <T: Any> (
+    val list: List<T>,
     val hasNextPage: Boolean
 )

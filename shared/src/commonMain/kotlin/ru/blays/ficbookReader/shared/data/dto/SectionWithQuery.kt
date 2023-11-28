@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class SectionWithQuery(
     val name: String,
     val path: String,
-    val queryParameters: List<Pair<String, String>>
+    val queryParameters: List<Pair<String, String>>?
 ) {
     constructor(
         name: String,
@@ -14,7 +14,7 @@ data class SectionWithQuery(
     ): this(
         name = name,
         path = href,
-        queryParameters = emptyList()
+        queryParameters = null
     )
 }
 

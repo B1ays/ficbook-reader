@@ -1,11 +1,13 @@
 package ru.blays.ficbookReader.shared.di
 
 import org.koin.dsl.module
+import ru.blays.ficbookapi.di.apiModule
 
 val sharedModule = module {
     includes(
-        ficbookApiModule,
+        okHttpModule,
+        apiModule,
+        repositoryModule,
         realmModule,
-        repositoryModule
     )
 }

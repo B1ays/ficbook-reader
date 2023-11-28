@@ -1,18 +1,13 @@
 package ru.blays.ficbookReader.shared.data.dto
 
 import androidx.compose.runtime.Immutable
+import ru.blays.ficbookapi.dataModels.AuthorProfileTabs
 
 @Immutable
 data class AuthorProfileModelStable(
     val authorMain: AuthorMainInfoStable,
     val authorInfo: AuthorInfoModelStable,
-    val authorBlogHref: String,
-    val authorWorks: SectionWithQuery?,
-    val authorWorksAsCoauthor: SectionWithQuery?,
-    val authorWorksAsBeta: SectionWithQuery?,
-    val authorWorksAsGamma: SectionWithQuery?,
-    val authorPresentsHref: String,
-    val authorCommentsHref: String
+    internal val availableTabs: List<AuthorProfileTabs>
 )
 
 @Immutable
@@ -33,14 +28,14 @@ data class AuthorInfoModelStable(
 
 @Immutable
 data class BlogPostCardModelStable(
-    val href: String,
+    val id: String,
     val title: String,
     val date: String,
     val text: String,
     val likes: Int
 )
 
-data class BlogPostPageModelStable(
+data class BlogPostModelStable(
     val title: String,
     val date: String,
     val text: String,

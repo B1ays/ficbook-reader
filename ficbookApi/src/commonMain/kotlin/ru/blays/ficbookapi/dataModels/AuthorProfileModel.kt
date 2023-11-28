@@ -1,31 +1,17 @@
 package ru.blays.ficbookapi.dataModels
 
 import ru.blays.ficbookapi.data.Section
-import ru.blays.ficbookapi.data.SectionWithQuery
 
 data class AuthorProfileModel(
     val authorMain: AuthorMainInfo,
     val authorInfo: AuthorInfoModel,
-    val authorBlogHref: String,
-    val authorWorks: SectionWithQuery?,
-    val authorWorksAsCoauthor: SectionWithQuery?,
-    val authorWorksAsBeta: SectionWithQuery?,
-    val authorWorksAsGamma: SectionWithQuery?,
-    val authorPresentsHref: String,
-    val authorCommentsHref: String
+    val availableTabs: List<AuthorProfileTabs>
 ) {
     override fun toString(): String =
         """
             AuthorProfileModel(
                 authorMain: $authorMain,
-                authorInfo: $authorInfo,
-                authorBlog: $authorBlogHref,
-                authorWorks: $authorWorks,
-                authorWorksAsCoauthor: $authorWorksAsCoauthor,
-                authorWorksAsBeta: $authorWorksAsBeta,
-                authorWorksAsGamma: $authorWorksAsGamma,
-                authorPresentHref: $authorPresentsHref,
-                authorCommentsHref: $authorCommentsHref
+                authorInfo: $authorInfo
             )
         """.trimIndent()
 }
@@ -64,13 +50,8 @@ data class AuthorInfoModel(
     """.trimIndent()
 }
 
-data class AuthorCommentsModel(
-    val commentsForFanfics: List<CommentModel>, // TODO realize comment model
-    val commentsForRequests: List<CommentModel>
-)
-
 data class BlogPostCardModel(
-    val href: String,
+    val id: String,
     val title: String,
     val date: String,
     val text: String,
@@ -78,7 +59,7 @@ data class BlogPostCardModel(
 ) {
     override fun toString(): String = """
         BlogPostCardModel(
-            href: $href,
+            href: $id,
             title: $title,
             date: $date,
             text: $text,
@@ -140,7 +121,7 @@ data class AuthorCommentPresentModel(
     """.trimIndent()
 }
 
-internal enum class AuthorProfileTabs(val href: String) {
+enum class AuthorProfileTabs(internal val href: String) {
     BLOG("blog"),
     WORKS("profile/works"),
     WORKS_COAUTHOR("profile/coauthor"),

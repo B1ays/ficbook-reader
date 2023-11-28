@@ -13,23 +13,25 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.java.KoinJavaComponent.inject
+import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.dto.FanficCardModelStable
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
+import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficsListRepo
+import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbookapi.data.SectionWithQuery
-import ru.blays.ficbookapi.dataModels.FanficCardModel
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultFanficsListComponent(
     componentContext: ComponentContext,
     section: SectionWithQuery,
-    private val ficbookApi: IFicbookApi,
     private val output: (output: FanficsListComponent.Output) -> Unit
 ): FanficsListComponentInternal, ComponentContext by componentContext {
+    val repository: IFanficsListRepo by getKoin().inject()
+
     private val _state: MutableValue<FanficsListComponent.State> = MutableValue(
             FanficsListComponent.State(
             section = section.toStableModel()
@@ -143,15 +145,17 @@ class DefaultFanficsListComponent(
         section: SectionWithQuery,
         page: Int
     ): List<FanficCardModelStable> {
-        val result = ficbookApi.getFanficsForSection(
+        val result = repository.get(
             section = section,
             page = page
         )
         return when (result) {
             is ApiResult.Error -> {
-                navigation.activate(
-                    FanficsListComponent.DialogConfig(result.message)
-                )
+                runOnUiThread {
+                    navigation.activate(
+                        FanficsListComponent.DialogConfig(result.exception.message ?: "Unknown error")
+                    )
+                }
                 return emptyList()
             }
             is ApiResult.Success -> {
@@ -164,7 +168,7 @@ class DefaultFanficsListComponent(
 
                 this.hasNextPage = hasNextPage
 
-                fanfics.map(FanficCardModel::toStableModel).filterNot {
+                fanfics.filterNot {
                     it.status.direction in deniedDirections
                 }
             }

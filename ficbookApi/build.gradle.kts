@@ -1,29 +1,30 @@
-//@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    kotlin("plugin.serialization") version "1.9.10"
+    alias(libs.plugins.kotlin.serialization)
 }
 
-@Suppress("OPT_IN_USAGE")
 kotlin {
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
     jvm()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                // Coroutines
+                // KotlinX
                 implementation(libs.kotlinx.coroutines.core.jvm)
                 implementation(libs.kotlinx.serialization.json)
 
                 // Apache
                 implementation(libs.commons.text)
 
-                // KSoup
+                // JSoup
                 api(libs.jsoup)
 
                 // OkHttp
                 api(libs.okhttp)
+
+                // Koin
+                api(libs.koin.core)
             }
         }
     }

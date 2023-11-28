@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jsoup.nodes.Element
+import ru.blays.ficbookapi.ATTR_HREF
 import ru.blays.ficbookapi.dataModels.FandomModel
 
 internal class FandomParser: IDataParser<Element, List<FandomModel>> {
@@ -14,7 +15,7 @@ internal class FandomParser: IDataParser<Element, List<FandomModel>> {
 
         mb15.forEach {
             val a = it.select("a")
-            val href = a.attr("href")
+            val href = a.attr(ATTR_HREF)
             val name = a.text()
             val description = it.select(".text-muted").text()
             fandomsList += FandomModel(

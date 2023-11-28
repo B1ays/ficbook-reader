@@ -4,6 +4,7 @@ import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookapi.data.Section
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.*
+import ru.blays.ficbookapi.dataModels.AvailableCollectionsModel
 import ru.blays.ficbookapi.dataModels.FanficCompletionStatus
 import ru.blays.ficbookapi.dataModels.FanficDirection
 import ru.blays.ficbookapi.dataModels.FanficRating
@@ -116,11 +117,6 @@ fun UserModel.toStableModel() = UserModelStable(
     avatarUrl = avatarUrl
 )
 
-fun AuthorizationResult.toStableModel() = AuthorizationResultStable(
-    responseResult = responseResult.toStableModel(),
-    cookies = cookies.map(CookieModel::toStableModel)
-)
-
 fun AuthorizationResponseModel.toStableModel() = AuthorizationResponseModelStable(
     error = error
         ?.reason
@@ -184,13 +180,7 @@ fun PairingModel.toStableModel() = PairingModelStable(
 fun AuthorProfileModel.toStableModel() = AuthorProfileModelStable(
     authorMain = authorMain.toStableModel(),
     authorInfo = authorInfo.toStableModel(),
-    authorBlogHref = authorBlogHref,
-    authorWorks = authorWorks?.toStableModel(),
-    authorWorksAsCoauthor = authorWorksAsCoauthor?.toStableModel(),
-    authorWorksAsBeta = authorWorksAsBeta?.toStableModel(),
-    authorWorksAsGamma = authorWorksAsGamma?.toStableModel(),
-    authorPresentsHref = authorPresentsHref,
-    authorCommentsHref = authorCommentsHref
+    availableTabs = availableTabs
 )
 
 fun AuthorMainInfo.toStableModel() = AuthorMainInfoStable(
@@ -208,14 +198,14 @@ fun AuthorInfoModel.toStableModel() = AuthorInfoModelStable(
 )
 
 fun BlogPostCardModel.toStableModel() = BlogPostCardModelStable(
-    href = href,
+    id = id,
     title = title,
     date = date,
     text = text,
     likes = likes
 )
 
-fun BlogPostPageModel.toStableModel() = BlogPostPageModelStable(
+fun BlogPostPageModel.toStableModel() = BlogPostModelStable(
     title = title,
     date = date,
     text = text,
@@ -267,4 +257,27 @@ fun QuoteModel.toStableModel(): QuoteModelStable {
 fun FanficShortcut.toStableModel() = ru.blays.ficbookReader.shared.data.dto.FanficShortcut(
     name = name,
     href = href
+)
+
+fun AvailableCollectionsModel.toStableModel() = ru.blays.ficbookReader.shared.data.dto.AvailableCollectionsModel(
+    data = data.toStableModel(),
+    result = result
+)
+
+fun AvailableCollectionsModel.Data.toStableModel() = ru.blays.ficbookReader.shared.data.dto.AvailableCollectionsModel.Data(
+    blacklisted = blacklisted,
+    collections = collections.map(AvailableCollectionsModel.Data.Collection::toStableModel)
+)
+
+fun AvailableCollectionsModel.Data.Collection.toStableModel() = ru.blays.ficbookReader.shared.data.dto.AvailableCollectionsModel.Data.Collection(
+    added = added,
+    authorId = authorId,
+    count = count,
+    description = description,
+    id = id,
+    isInThisCollection = isInThisCollection,
+    isPublic = isPublic,
+    lastUpdated = lastUpdated,
+    name = name,
+    slug = slug
 )

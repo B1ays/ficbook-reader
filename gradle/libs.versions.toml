@@ -21,12 +21,12 @@ koin = "3.5.0"
 koinCompose = "1.1.0"
 kotlinx-coroutines-core-jvm = "1.7.3"
 kotlinx-serialization-json = "1.6.1"
-ktor-ktorClientOkhttp = "2.3.4"
+ktor = "2.3.6"
 ktxCore = "1.12.0"
 libres = "1.2.0"
 materialKolor = "1.2.6"
-multiplatform-settings = "1.1.0"
-okhttp = "4.11.0"
+multiplatform-settings = "1.1.1"
+okhttp = "4.12.0"
 realm = "1.12.0"
 compose-jetbrains = "1.6.0-dev1276"
 androidx-activityCompose = "1.8.1"
@@ -56,7 +56,7 @@ koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComp
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core-jvm" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
-ktor-ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor-ktorClientOkhttp" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 libres-compose = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
 libres-plugin = { module = "io.github.skeptick.libres:gradle-plugin", version.ref = "libres" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
@@ -78,3 +78,4 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref =
 libres = { id = "io.github.skeptick.libres", version.ref = "libres" }
 nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.1"
 realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

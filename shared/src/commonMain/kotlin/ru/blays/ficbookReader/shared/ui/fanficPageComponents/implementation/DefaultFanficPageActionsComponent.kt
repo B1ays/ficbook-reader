@@ -9,19 +9,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatform.getKoin
+import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.InternalFanficPageActionsComponent
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultFanficPageActionsComponent(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
-    private val fanficID: String,
     private val output: (output: FanficPageActionsComponent.Output) -> Unit
 ): InternalFanficPageActionsComponent, ComponentContext by componentContext {
+    private val repository: IFanficPageRepo by getKoin().inject()
+
     private val _state = MutableValue(FanficPageActionsComponent.State())
     override val state: Value<FanficPageActionsComponent.State>
         get() = _state
+
+    private var fanficID: String = ""
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -42,13 +45,17 @@ class DefaultFanficPageActionsComponent(
         this.output(output)
     }
 
+    override fun setFanficID(id: String) {
+        this.fanficID = id
+    }
+
     override fun setValue(value: FanficPageActionsComponent.State) {
         _state.update { value }
     }
 
     private fun follow(follow: Boolean) {
         coroutineScope.launch {
-            val isSuccess = ficbookApi.actionChangeFollow(
+            val isSuccess = repository.follow(
                 follow,
                 fanficID
             )
@@ -62,7 +69,7 @@ class DefaultFanficPageActionsComponent(
 
     private fun mark(mark: Boolean) {
         coroutineScope.launch {
-            val isSuccess = ficbookApi.actionChangeMark(
+            val isSuccess = repository.mark(
                 mark,
                 fanficID
             )

@@ -4,7 +4,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbookReader.shared.data.dto.BlogPostCardModelStable
-import ru.blays.ficbookReader.shared.data.dto.BlogPostPageModelStable
+import ru.blays.ficbookReader.shared.data.dto.BlogPostModelStable
 
 interface AuthorBlogComponent {
 
@@ -17,10 +17,10 @@ interface AuthorBlogComponent {
     @Serializable
     sealed class Config {
         @Serializable
-        data class PostsList(val href: String): Config()
+        data object PostsList: Config()
 
         @Serializable
-        data class PostPage(val href: String): Config()
+        data class PostPage(val postID: String): Config()
     }
 
     sealed class Child {
@@ -40,7 +40,7 @@ interface AuthorBlogPostsComponent {
     }
 
     sealed class Output {
-        data class OpenPostPage(val href: String): Output()
+        data class OpenPostPage(val postID: String): Output()
         data class OpenUrl(val url: String): Output()
     }
 
@@ -66,6 +66,6 @@ interface AuthorBlogPageComponent {
         val loading: Boolean,
         val error: Boolean,
         val errorMessage: String?,
-        val post: BlogPostPageModelStable?
+        val post: BlogPostModelStable?
     )
 }

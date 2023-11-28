@@ -11,25 +11,25 @@ import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.blays.ficbookReader.shared.data.mappers.toStableModel
+import org.koin.java.KoinJavaComponent
+import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorProfileRepo
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorBlogComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorBlogPageComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorBlogPostsComponent
-import ru.blays.ficbookapi.dataModels.BlogPostCardModel
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultAuthorBlogComponent(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
-    href: String,
+    private val userID: String,
     private val output: (output: AuthorBlogComponent.Output) -> Unit
 ): AuthorBlogComponent, ComponentContext by componentContext {
+    private val authorProfileRepo: IAuthorProfileRepo by KoinJavaComponent.getKoin().inject()
+
     private val navigation = StackNavigation<AuthorBlogComponent.Config>()
     override val childStack = childStack(
         source = navigation,
         serializer = AuthorBlogComponent.Config.serializer(),
-        initialConfiguration = AuthorBlogComponent.Config.PostsList(href),
+        initialConfiguration = AuthorBlogComponent.Config.PostsList,
         handleBackButton = true,
         childFactory = ::childFactory
     )
@@ -42,16 +42,17 @@ class DefaultAuthorBlogComponent(
             is AuthorBlogComponent.Config.PostPage -> AuthorBlogComponent.Child.PostPage(
                 DefaultAuthorBlogPageComponent(
                     componentContext = componentContext,
-                    ficbookApi = ficbookApi,
-                    href = config.href,
+                    authorProfileRepo = authorProfileRepo,
+                    userID = userID,
+                    postID = config.postID,
                     output = ::pageOutput
                 )
             )
             is AuthorBlogComponent.Config.PostsList -> AuthorBlogComponent.Child.PostsList(
                 DefaultAuthorBlogPosts(
                     componentContext = componentContext,
-                    ficbookApi = ficbookApi,
-                    href = config.href,
+                    authorProfileRepo = authorProfileRepo,
+                    userID = userID,
                     output = ::listOutput
                 )
             )
@@ -70,7 +71,7 @@ class DefaultAuthorBlogComponent(
             is AuthorBlogPostsComponent.Output.OpenPostPage -> {
                 navigation.push(
                     AuthorBlogComponent.Config.PostPage(
-                        href = output.href
+                        postID = output.postID
                     )
                 )
             }
@@ -93,8 +94,8 @@ class DefaultAuthorBlogComponent(
 
 class DefaultAuthorBlogPosts(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
-    private val href: String,
+    private val authorProfileRepo: IAuthorProfileRepo,
+    private val userID: String,
     private val output: (output: AuthorBlogPostsComponent.Output) -> Unit
 ): AuthorBlogPostsComponent, ComponentContext by componentContext {
     private val _state: MutableValue<AuthorBlogPostsComponent.State> = MutableValue(
@@ -111,6 +112,7 @@ class DefaultAuthorBlogPosts(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private var nextPage: Int = 1
+    private var hasNextPage = true
 
     override fun onOutput(output: AuthorBlogPostsComponent.Output) {
         this.output(output)
@@ -129,8 +131,8 @@ class DefaultAuthorBlogPosts(
                     loading = true
                 )
             }
-            val result = ficbookApi.getAuthorBlogPosts(
-                href = href,
+            val result = authorProfileRepo.getBlogPosts(
+                id = userID,
                 page = page
             )
             when(result) {
@@ -139,20 +141,21 @@ class DefaultAuthorBlogPosts(
                         it.copy(
                             loading = false,
                             error = true,
-                            errorMessage = result.message
+                            errorMessage = result.exception.message
                         )
                     }
                 }
                 is ApiResult.Success -> {
+                    hasNextPage = result.value.hasNextPage
                     _state.update {
-                        val posts = it.posts + result.value.map(BlogPostCardModel::toStableModel)
+                        val posts = it.posts + result.value.list
                         it.copy(
                             loading = false,
                             error = false,
                             posts = posts
                         )
                     }
-                    this@DefaultAuthorBlogPosts.nextPage += 1
+                    nextPage += 1
                 }
             }
         }
@@ -165,8 +168,9 @@ class DefaultAuthorBlogPosts(
 
 class DefaultAuthorBlogPageComponent(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
-    private val href: String,
+    private val authorProfileRepo: IAuthorProfileRepo,
+    private val userID: String,
+    private val postID: String,
     private val output: (output: AuthorBlogPageComponent.Output) -> Unit
 ): AuthorBlogPageComponent, ComponentContext by componentContext {
     private val _state: MutableValue<AuthorBlogPageComponent.State> = MutableValue(
@@ -192,14 +196,17 @@ class DefaultAuthorBlogPageComponent(
                 loading = true
             )
         }
-        val result = ficbookApi.getAuthorBlogPost(href = href)
+        val result = authorProfileRepo.getBlogPage(
+            userID = userID,
+            postID = postID
+        )
         when(result) {
             is ApiResult.Error -> {
                 _state.update {
                     it.copy(
                         loading = false,
                         error = true,
-                        errorMessage = result.message
+                        errorMessage = result.exception.message
                     )
                 }
             }
@@ -208,7 +215,7 @@ class DefaultAuthorBlogPageComponent(
                     it.copy(
                         loading = false,
                         error = false,
-                        post = result.value.toStableModel()
+                        post = result.value
                     )
                 }
             }
@@ -217,29 +224,5 @@ class DefaultAuthorBlogPageComponent(
 
     init {
         loadPage()
-        /*val fakePage = BlogPostPageModelStable(
-            title = "Test post",
-            date = "Test date",
-            text = testText,
-            likes = 10
-        )
-        _state.update {
-            it.copy(
-                loading = false,
-                error = false,
-                post = fakePage
-            )
-        }*/
     }
-
 }
-
-const val testText = """
-    Ну что, любимые мои дорогие читатели?
-Уже почти Новый год. А это значит что? Это значит, что я начинаю выкладку подарков. Первый уже выложен, "Семейное дело" по осточертевшим Сумеркам, которые я "не смотрела, но осуждаю". Также будут обновки по Флагу, Норе и даже Крови. Сейчас они чистятся, полируются и дописываются. Думаю, к новогодней ночи успею что-то еще выложить.
-
-Ну и конечно, поздравляю с наступающим Новым годом всех своих читателей!
-Вы меня поддерживали и толкали в сторону ноутбука весь этот тяжелый год, ждали и верили в меня. Спасибо ВАМ ВСЕМ. Благодаря вам я пережила этот год и не поехала крышей. Спасибо!
-
-Пусть у нас всех все будет хорошо.
-"""

@@ -10,18 +10,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
+import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
+import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.VoteReaderComponent
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultVoteReaderComponent(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
     chapters: List<FanficChapterStable>,
     private val fanficID: String
-    ): VoteReaderComponent, ComponentContext by componentContext {
+): VoteReaderComponent, ComponentContext by componentContext {
+    private val fanficPageRepo: IFanficPageRepo by getKoin().inject()
+
     private val separateChapters = chapters.filterIsInstance(
         FanficChapterStable.SeparateChapterModel::class.java
     )
@@ -51,9 +53,11 @@ class DefaultVoteReaderComponent(
 
     private suspend fun setVote(vote: Boolean) {
         if(state.value.canVote) {
-            val success = ficbookApi.actionChangeVote(
+            val lastChapterHref = getLastChapterHref()
+            val chapterID = getChapterID(lastChapterHref)
+            val success = fanficPageRepo.vote(
                 vote = vote,
-                chapterHref = getLastChapterHref()
+                partID = chapterID
             )
             if (success) {
                 _state.update {
@@ -66,7 +70,7 @@ class DefaultVoteReaderComponent(
     }
 
     private suspend  fun setRead(read: Boolean) {
-        val success = ficbookApi.actionChangeRead(
+        val success = fanficPageRepo.read(
             read = read,
             fanficID = fanficID
         )
@@ -89,6 +93,9 @@ class DefaultVoteReaderComponent(
     private fun getLastChapterHref(): String {
         val rawHref = separateChapters.last().href
         return rawHref.substringBefore('#')
+    }
+    private fun getChapterID(href: String): String {
+        return href.substringAfterLast('/')
     }
 
     private suspend fun dispose() {

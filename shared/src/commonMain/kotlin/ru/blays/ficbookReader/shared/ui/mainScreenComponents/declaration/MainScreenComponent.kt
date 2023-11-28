@@ -5,6 +5,7 @@ import ru.blays.ficbookReader.shared.data.dto.Section
 import ru.blays.ficbookReader.shared.data.dto.UserModelStable
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.sections.userSections
+import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 
 interface MainScreenComponent {

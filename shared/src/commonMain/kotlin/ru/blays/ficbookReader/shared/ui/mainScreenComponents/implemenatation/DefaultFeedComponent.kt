@@ -10,7 +10,9 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.java.KoinJavaComponent.inject
+import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
+import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbookReader.shared.data.sections.popularSections
 import ru.blays.ficbookReader.shared.data.sections.userSections
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
@@ -21,11 +23,9 @@ import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponen
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.FeedComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.FeedComponentInternal
 import ru.blays.ficbookapi.data.SectionWithQuery
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultFeedComponent private constructor(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
     fanficsList: (
         componentContext: ComponentContext,
         initialSection: SectionWithQuery,
@@ -35,21 +35,20 @@ class DefaultFeedComponent private constructor(
 ): FeedComponentInternal, ComponentContext by componentContext {
     constructor(
         componentContext: ComponentContext,
-        ficbookApi: IFicbookApi,
         onOutput: (FanficsListComponent.Output) -> Unit
     ): this(
         componentContext = componentContext,
-        ficbookApi = ficbookApi,
         fanficsList = { childContext, initialSection, output ->
             DefaultFanficsListComponent(
                 componentContext = childContext,
                 section = initialSection,
-                ficbookApi = ficbookApi,
                 output = output
             )
         },
         output = onOutput
     )
+
+    private val authRepository: IAuthorizationRepo by getKoin().inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -78,7 +77,7 @@ class DefaultFeedComponent private constructor(
             Json.decodeFromString(saved)
         } catch (e: Exception) {
             e.printStackTrace()
-            if(ficbookApi.isAuthorized.value) {
+            if(authRepository.authorized.value) {
                 userSections.favourites.toApiModel()
             } else {
                 popularSections.allPopular.toApiModel()

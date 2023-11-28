@@ -12,8 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
-import ru.blays.ficbookReader.shared.data.mappers.toStableModel
+import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorProfileRepo
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorBlogComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorPresentsComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
@@ -22,18 +23,16 @@ import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultAllCommentsComp
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
-import ru.blays.ficbookapi.dataModels.AuthorProfileModel
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
+import ru.blays.ficbookapi.dataModels.AuthorProfileTabs
 import ru.blays.ficbookapi.result.ApiResult
 
 @OptIn(ExperimentalDecomposeApi::class)
 class DefaultAuthorProfileComponent private constructor(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
     private val href: String,
     private val blogFactory: (
         childContext: ComponentContext,
-        href: String,
+        id: String,
         output: (output: AuthorBlogComponent.Output) -> Unit
     ) -> AuthorBlogComponent,
     private val presentsFactory: (
@@ -43,7 +42,7 @@ class DefaultAuthorProfileComponent private constructor(
     ) -> AuthorPresentsComponent,
     private val commentsFactory: (
         childContext: ComponentContext,
-        href: String,
+        userID: String,
         output: (output: CommentsComponent.Output) -> Unit
     ) -> CommentsComponent,
     private val fanficsListFactory: (
@@ -53,37 +52,31 @@ class DefaultAuthorProfileComponent private constructor(
     ) -> FanficsListComponent,
     private val output: (output: AuthorProfileComponent.Output) -> Unit
 ): AuthorProfileComponent, ComponentContext by componentContext {
-
     constructor(
         componentContext: ComponentContext,
-        ficbookApi: IFicbookApi,
         href: String,
         output: (output: AuthorProfileComponent.Output) -> Unit
     ): this(
         componentContext = componentContext,
-        ficbookApi = ficbookApi,
         href = href,
-        blogFactory = { childContext, href, output ->
+        blogFactory = { childContext, userID, output ->
               DefaultAuthorBlogComponent(
                   componentContext = childContext,
-                  ficbookApi = ficbookApi,
-                  href = href,
+                  userID = userID,
                   output = output
               )
         },
         presentsFactory = { childContext, href, output ->
             DefaultAuthorPresentsComponent(
                 componentContext = childContext,
-                ficbookApi = ficbookApi,
                 href = href,
                 output = output
             )
         },
-        commentsFactory = { childContext, href, output ->
+        commentsFactory = { childContext, userID, output ->
             DefaultAllCommentsComponent(
                 componentContext = childContext,
-                ficbookApi = ficbookApi,
-                href = href,
+                href = "authors/$userID/comments",
                 output = output
             )
         },
@@ -91,13 +84,13 @@ class DefaultAuthorProfileComponent private constructor(
             DefaultFanficsListComponent(
                 componentContext = childContext,
                 section = section,
-                ficbookApi = ficbookApi,
                 output = output
-
             )
         },
         output = output
     )
+
+    private val authorProfileRepo: IAuthorProfileRepo by KoinJavaComponent.getKoin().inject()
 
     private val _state: MutableValue<AuthorProfileComponent.State> = MutableValue(
         AuthorProfileComponent.State(
@@ -299,7 +292,7 @@ class DefaultAuthorProfileComponent private constructor(
             )
         }
         when(
-            val result = ficbookApi.getAuthorProfileForHref(href)
+            val result = authorProfileRepo.getByHref(href)
         ) {
             is ApiResult.Error -> {
                 _state.update {
@@ -307,18 +300,21 @@ class DefaultAuthorProfileComponent private constructor(
                     it.copy(
                         loading = false,
                         error = true,
-                        errorMessage = result.message
+                        errorMessage = result.exception.message
                     )
                 }
             }
             is ApiResult.Success -> {
-                val availableTabs = createComponentsForProfile(result.value)
+                val availableTabs = createComponentsForProfile(
+                    userID = result.value.authorMain.id,
+                    tabs = result.value.availableTabs
+                )
                 transformTabsStack(availableTabs)
                 _state.update {
                     it.copy(
                         loading = false,
                         error = false,
-                        profile = result.value.toStableModel(),
+                        profile = result.value,
                         availableTabs = availableTabs
                     )
                 }
@@ -326,72 +322,96 @@ class DefaultAuthorProfileComponent private constructor(
         }
     }
 
-    private suspend fun createComponentsForProfile(profile: AuthorProfileModel): List<AuthorProfileComponent.TabConfig> {
+    private suspend fun createComponentsForProfile(
+        userID: String,
+        tabs: List<AuthorProfileTabs>
+    ): List<AuthorProfileComponent.TabConfig> {
         val availableTabs: MutableList<AuthorProfileComponent.TabConfig> = mutableListOf()
 
-        blogComponent = blogFactory(
-            childContext("blogComponent"),
-            profile.authorBlogHref,
-            ::blogOutput
-        )
-        availableTabs += AuthorProfileComponent.TabConfig.Blog(
-            href = profile.authorBlogHref
-        )
-        /*presentsComponent = presentsFactory(
-            childContext("presentsComponent"),
-            profile.authorPresentsHref,
-            ::presentsOutput
-        )
-        availableTabs += AuthorProfileComponent.TabConfig.Presents(
-            href = profile.authorPresentsHref
-        )*/
-        commentsComponent = commentsFactory(
-            childContext("commentsComponent"),
-            profile.authorCommentsHref,
-            ::commentsOutput
-        )
-        availableTabs += AuthorProfileComponent.TabConfig.Comments(
-            href = profile.authorCommentsHref
-        )
-        profile.authorWorks?.let { section ->
-            worksComponent = fanficsListFactory(
-                childContext("worksComponent"),
-                section,
-                ::fanficsListOutput
-            )
-            availableTabs += AuthorProfileComponent.TabConfig.Works(
-                section = section
-            )
-        }
-        profile.authorWorksAsCoauthor?.let { section ->
-            worksAsCoauthorComponent = fanficsListFactory(
-                childContext("worksAsCoauthorComponent"),
-                section,
-                ::fanficsListOutput
-            )
-            availableTabs += AuthorProfileComponent.TabConfig.WorksAsCoauthor(
-                section = section
-            )
-        }
-        profile.authorWorksAsBeta?.let { section ->
-            worksAsBetaComponent = fanficsListFactory(
-                childContext("worksAsBetaComponent"),
-                section,
-                ::fanficsListOutput
-            )
-            availableTabs += AuthorProfileComponent.TabConfig.WorksAsBeta(
-                section = section
-            )
-        }
-        profile.authorWorksAsGamma?.let { section ->
-            worksAsGammaComponent = fanficsListFactory(
-                childContext("worksAsGammaComponent"),
-                section,
-                ::fanficsListOutput
-            )
-            availableTabs += AuthorProfileComponent.TabConfig.WorksAsGamma(
-                section = section
-            )
+        tabs.forEach { 
+            when(it) {
+                AuthorProfileTabs.BLOG -> {
+                    blogComponent = blogFactory(
+                        childContext("blogComponent"),
+                        userID,
+                        ::blogOutput
+                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.Blog(
+                        userID = userID
+                    )
+                }
+                AuthorProfileTabs.WORKS -> {
+                    val section = SectionWithQuery(
+                        href = "authors/$userID/profile/works"
+                    )
+                    worksComponent = fanficsListFactory(
+                        childContext("worksComponent"),
+                        section,
+                        ::fanficsListOutput
+                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.Works(
+                        section = section
+                    )
+                }
+                AuthorProfileTabs.WORKS_COAUTHOR -> {
+                    val section = SectionWithQuery(
+                        href = "authors/$userID/profile/coauthor"
+                    )
+                    worksAsCoauthorComponent = fanficsListFactory(
+                        childContext("worksAsCoauthorComponent"),
+                        section,
+                        ::fanficsListOutput
+                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsCoauthor(
+                        section = section
+                    )
+                }
+                AuthorProfileTabs.WORKS_BETA -> {
+                    val section = SectionWithQuery(
+                        href = "authors/$userID/profile/beta"
+                    )
+                    worksAsBetaComponent = fanficsListFactory(
+                        childContext("worksAsBetaComponent"),
+                        section,
+                        ::fanficsListOutput
+                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsBeta(
+                        section = section
+                    )
+                }
+                AuthorProfileTabs.WORKS_GAMMA -> {
+                    val section = SectionWithQuery(
+                        href = "authors/$userID/profile/gamma"
+                    )
+                    worksAsGammaComponent = fanficsListFactory(
+                        childContext("worksAsGammaComponent"),
+                        section,
+                        ::fanficsListOutput
+                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsGamma(
+                        section = section
+                    )
+                }
+                AuthorProfileTabs.REQUESTS -> {
+
+                }
+                AuthorProfileTabs.COLLECTIONS -> {
+
+                }
+                AuthorProfileTabs.PRESENTS -> {
+
+                }
+                AuthorProfileTabs.COMMENTS -> {
+                    commentsComponent = commentsFactory(
+                        childContext("commentsComponent"),
+                        userID,
+                        ::commentsOutput
+                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.Comments(
+                        userID = href
+                    )
+                }
+            }
         }
         return availableTabs
     }

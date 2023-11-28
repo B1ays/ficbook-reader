@@ -32,11 +32,11 @@ data class Section internal constructor (
 data class SectionWithQuery(
     val name: String,
     val path: String,
-    val queryParameters: List<Pair<String, String>>
+    val queryParameters: List<Pair<String, String>>?
 ): java.io.Serializable {
     constructor(
         name: String = "",
-        queryParameters: List<Pair<String, String>> = emptyList(),
+        queryParameters: List<Pair<String, String>>? = null,
         vararg paths: String
     ): this(
         name = name,
@@ -49,7 +49,7 @@ data class SectionWithQuery(
         href: String
     ): this(
         name = name,
-        queryParameters = emptyList(),
+        queryParameters = null,
         path = href
     )
 

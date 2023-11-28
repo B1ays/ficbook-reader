@@ -535,7 +535,7 @@ private fun BlogPostsList(component: AuthorBlogPostsComponent) {
                         onPostClicked = {
                             component.onOutput(
                                 AuthorBlogPostsComponent.Output.OpenPostPage(
-                                    href = post.href
+                                    postID = post.id
                                 )
                             )
                         }

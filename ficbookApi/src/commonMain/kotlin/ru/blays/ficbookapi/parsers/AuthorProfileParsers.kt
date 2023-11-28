@@ -3,6 +3,8 @@ package ru.blays.ficbookapi.parsers
 import kotlinx.coroutines.flow.StateFlow
 import org.jsoup.nodes.Document
 import org.jsoup.select.Evaluator
+import ru.blays.ficbookapi.ATTR_HREF
+import ru.blays.ficbookapi.ATTR_SRC
 import ru.blays.ficbookapi.data.Section
 import ru.blays.ficbookapi.dataModels.*
 
@@ -20,11 +22,11 @@ internal class AuthorMainInfoParser : IDataParser<Document, AuthorMainInfo> {
         val avatarUrl = profileHeader
             .select(".avatar-cropper")
             .select("img")
-            .attr("src")
+            .attr(ATTR_SRC)
 
         val profileCoverUrl = profileHeader
             .select(".img-responsive")
-            .attr("src")
+            .attr(ATTR_SRC)
 
         val subscribers = profileHeader
             .select("div.small-text a")
@@ -63,7 +65,7 @@ internal class AuthorProfileTabsParser: IDataParser<Document, List<AuthorProfile
         val tabs: MutableList<AuthorProfileTabs> = mutableListOf()
 
         sideBarNavListItems.forEach { element ->
-            val href = element.attr("href")
+            val href = element.attr(ATTR_HREF)
             val tab = AuthorProfileTabs.findForPath(href)
 
             if (tab != null) {
@@ -154,7 +156,11 @@ internal class AuthorBlogPostsParser: IDataParser<Document, List<BlogPostCardMod
 
         posts.forEach { element ->
             val (href, title) = element.select(".word-break").let {
-                it.attr("href").substringBefore('#') to it.text()
+                val id = it.attr("href")
+                    .substringBefore('#')
+                    .substringAfterLast('/')
+                val text = it.text()
+                return@let id to text
             }
             val date = element.select(
                 Evaluator.Class("small-text text-muted")
@@ -170,7 +176,7 @@ internal class AuthorBlogPostsParser: IDataParser<Document, List<BlogPostCardMod
                 .attr(":like-count")
                 .toIntOrNull() ?: 0
             postModels += BlogPostCardModel(
-                href = href,
+                id = href,
                 title = title,
                 date = date,
                 text = text,
@@ -186,7 +192,7 @@ internal class AuthorBlogPostsParser: IDataParser<Document, List<BlogPostCardMod
     }
 }
 
-class AuthorBlogPostParser: IDataParser<Document, BlogPostPageModel> {
+internal class AuthorBlogPostParser: IDataParser<Document, BlogPostPageModel> {
     override suspend fun parse(data: Document): BlogPostPageModel {
         val container = data.select(".profile-container")
         val title = container.select("h1.mb-10").text().trim()
@@ -231,13 +237,13 @@ internal class AuthorPresentsParser: IDataParser<Document, List<AuthorPresentMod
 
                     val user = UserModel(
                         name = a.text(),
-                        href = a.attr("href"),
+                        href = a.attr(ATTR_HREF),
                     )
                     user to text
                 }
             val pictureUrl = element
                 .select(".present-thumb-picture")
-                .attr("src")
+                .attr(ATTR_SRC)
 
             presentModels += AuthorPresentModel(
                 pictureUrl = pictureUrl,
@@ -270,19 +276,19 @@ internal class AuthorFanficPresentsParser: IDataParser<Document, List<AuthorFanf
 
                     val user = UserModel(
                         name = a.text(),
-                        href = a.attr("href"),
+                        href = a.attr(ATTR_HREF),
                     )
                     user to text
                 }
 
             val pictureUrl = element
                 .select(".present-thumb-picture")
-                .attr("src")
+                .attr(ATTR_SRC)
 
             val forWork = element.select("a:eq(0)").let {
                 Section(
                     name = it.text(),
-                    segments = it.attr("href")
+                    segments = it.attr(ATTR_HREF)
                 )
             }
 
@@ -318,19 +324,19 @@ internal class AuthorCommentPresentsParser: IDataParser<Document, List<AuthorCom
 
                     val user = UserModel(
                         name = a.text(),
-                        href = a.attr("href"),
+                        href = a.attr(ATTR_HREF),
                     )
                     user to text
                 }
 
             val pictureUrl = element
                 .select(".present-thumb-picture")
-                .attr("src")
+                .attr(ATTR_SRC)
 
             val forWork = element.select(".present-thumb-description a").let {
                 Section(
                     name = it.text().trim('«', '»'),
-                    segments = it.attr("href")
+                    segments = it.attr(ATTR_HREF)
                 )
             }
 

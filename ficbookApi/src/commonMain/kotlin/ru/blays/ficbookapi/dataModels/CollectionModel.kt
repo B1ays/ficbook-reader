@@ -20,3 +20,9 @@ data class CollectionModel(
         """.trimIndent()
     }
 }
+
+data class CollectionSortParams(
+    val availableSortParams: List<Pair<String, String>>,
+    val availableDirections: List<Pair<String, String>>,
+    val availableFandoms: List<Pair<String, String>>
+)

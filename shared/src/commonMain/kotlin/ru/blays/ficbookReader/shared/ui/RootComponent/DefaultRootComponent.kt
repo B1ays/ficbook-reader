@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
-import org.koin.java.KoinJavaComponent.inject
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
 import ru.blays.ficbookReader.shared.data.realm.entity.toApiModel
@@ -23,9 +22,9 @@ import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponen
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.implementation.DefaultFanficPageComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
-import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultMainScreenComponent
-import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultUserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.DefaultUserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.implementation.DefaultSettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.DefaultThemeComponent
@@ -35,31 +34,26 @@ import ru.blays.ficbookapi.UrlProcessor.UrlProcessor
 import ru.blays.ficbookapi.UrlProcessor.UrlProcessor.analyzeUrl
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.CookieModel
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 
 class DefaultRootComponent private constructor(
     private val componentContext: ComponentContext,
     private val deepLink: String? = null,
     private val fanficPage: (
         componentContext: ComponentContext,
-        ficbookApi: IFicbookApi,
         fanficHref: String,
         output: (FanficPageComponent.Output) -> Unit
     ) -> FanficPageComponent,
     private val fanficsList: (
         componentContext: ComponentContext,
-        ficbookApi: IFicbookApi,
         section: SectionWithQuery,
         output: (FanficsListComponent.Output) -> Unit
     ) -> FanficsListComponent,
     private val main: (
         componentContext: ComponentContext,
-        ficbookApi: IFicbookApi,
         output: (MainScreenComponent.Output) -> Unit
     ) -> MainScreenComponent,
     private val logIn: (
         componentContext: ComponentContext,
-        ficbookApi: IFicbookApi,
         output: (UserLogInComponent.Output) -> Unit
     ) -> UserLogInComponent
 ): RootComponent, ComponentContext by componentContext {
@@ -69,33 +63,29 @@ class DefaultRootComponent private constructor(
     ): this(
         componentContext = componentContext,
         deepLink = deepLink,
-        fanficPage = { componentContext, ficbookApi, fanficHref, output ->
+        fanficPage = { componentContext, fanficHref, output ->
             DefaultFanficPageComponent(
                 componentContext = componentContext,
-                ficbookApi = ficbookApi,
                 fanficHref = fanficHref,
                 onOutput = output
             )
         },
-        fanficsList = { componentContext, ficbookApi, section, output ->
+        fanficsList = { componentContext, section, output ->
             DefaultFanficsListComponent(
                 componentContext = componentContext,
                 section = section,
-                ficbookApi = ficbookApi,
                 output = output
             )
         },
-        main = { componentContext, ficbookApi, output ->
+        main = { componentContext, output ->
             DefaultMainScreenComponent(
                 componentContext = componentContext,
-                ficbookApi = ficbookApi,
                 output = output
             )
         },
-        logIn = { componentContext, ficbookApi, output ->
+        logIn = { componentContext, output ->
             DefaultUserLogInComponent(
                 componentContext = componentContext,
-                ficbookApi = ficbookApi,
                 output = output
             )
         }
@@ -107,8 +97,6 @@ class DefaultRootComponent private constructor(
         componentContext = componentContext,
         deepLink = null
     )
-
-    private val ficbookApi: IFicbookApi = initFicbookApi()
 
     private val navigation = StackNavigation<RootComponent.Config>()
     override val childStack: Value<ChildStack<*, RootComponent.Child>> = childStack(
@@ -142,10 +130,10 @@ class DefaultRootComponent private constructor(
     private fun childFactory(configuration: RootComponent.Config, componentContext: ComponentContext): RootComponent.Child {
         return when(configuration) {
             is RootComponent.Config.Login -> RootComponent.Child.Login(
-                logIn(componentContext, ficbookApi, ::onLogInOutput)
+                logIn(componentContext, ::onLogInOutput)
             )
             is RootComponent.Config.Main -> RootComponent.Child.Main(
-                main(componentContext, ficbookApi, ::onMainOutput)
+                main(componentContext, ::onMainOutput)
             )
             is RootComponent.Config.Settings -> RootComponent.Child.Settings(
                 DefaultSettingsMainComponent(
@@ -153,29 +141,19 @@ class DefaultRootComponent private constructor(
                 )
             )
             is RootComponent.Config.FanficPage -> RootComponent.Child.FanficPage(
-                fanficPage(componentContext, ficbookApi, configuration.href, ::onFanficPageOutput)
+                fanficPage(componentContext, configuration.href, ::onFanficPageOutput)
             )
             is RootComponent.Config.FanficsList -> RootComponent.Child.FanficsList(
-                fanficsList(componentContext, ficbookApi, configuration.section, ::onFanficsListOutput)
+                fanficsList(componentContext, configuration.section, ::onFanficsListOutput)
             )
             is RootComponent.Config.AuthorProfile -> RootComponent.Child.AuthorProfile(
                 DefaultAuthorProfileComponent(
                     componentContext = componentContext,
-                    ficbookApi = ficbookApi,
                     href = configuration.href,
                     output = ::onAuthorProfileOutput
                 )
             )
         }
-    }
-
-    private fun initFicbookApi(): IFicbookApi  {
-        val ficbookApi: IFicbookApi by inject(IFicbookApi::class.java)
-        ficbookApi.init {
-            val cookies = readCookiesFromDB()
-            ficbookApi.setCookie(cookies)
-        }
-        return ficbookApi
     }
 
     private fun onFanficPageOutput(output: FanficPageComponent.Output) {

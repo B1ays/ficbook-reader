@@ -10,14 +10,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import ru.blays.ficbookReader.shared.data.mappers.toStableModel
+import org.koin.mp.KoinPlatform.getKoin
+import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.*
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
+import ru.blays.ficbookReader.shared.ui.profileComponents.DefaultUserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
 
 class DefaultMainScreenComponent private constructor(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
     private val feed: (
         componentContext: ComponentContext,
         output: (FanficsListComponent.Output) -> Unit
@@ -36,21 +37,17 @@ class DefaultMainScreenComponent private constructor(
     ) -> SavedFanficsComponent,
     private val logIn: (
         componentContext: ComponentContext,
-        ficbookApi: IFicbookApi
     ) -> UserLogInComponent,
     private val onMainOutput: (MainScreenComponent.Output) -> Unit
 ): MainScreenComponent, ComponentContext by componentContext {
     constructor(
         componentContext: ComponentContext,
-        ficbookApi: IFicbookApi,
         output: (MainScreenComponent.Output) -> Unit
     ): this(
         componentContext = componentContext,
-        ficbookApi = ficbookApi,
         feed = { componentContext, output ->
             DefaultFeedComponent(
                 componentContext = componentContext,
-                ficbookApi = ficbookApi,
                 onOutput = output
             )
         },
@@ -63,7 +60,6 @@ class DefaultMainScreenComponent private constructor(
         collections = { componentContext, output ->
             DefaultCollectionsComponent(
                 componentContext = componentContext,
-                ficbookApi = ficbookApi,
                 onOutput = output
             )
         },
@@ -73,15 +69,17 @@ class DefaultMainScreenComponent private constructor(
                 onOutput = output
             )
         },
-        logIn = { componentContext, ficbookApi ->
+        logIn = { componentContext ->
             DefaultUserLogInComponent(
                 componentContext = componentContext,
-                ficbookApi = ficbookApi,
                 output = {}
             )
         },
         onMainOutput = output
     )
+
+    private val authorizationRepository: IAuthorizationRepo by getKoin().inject()
+
 
     override val tabs: Array<MainScreenComponent.TabModel> = arrayOf(
         MainScreenComponent.TabModel(
@@ -104,8 +102,8 @@ class DefaultMainScreenComponent private constructor(
 
     private val _state: MutableValue<MainScreenComponent.State> = MutableValue(
         MainScreenComponent.State(
-            user = ficbookApi.currentUser.value?.toStableModel(),
-            authorized = ficbookApi.isAuthorized.value
+            user = authorizationRepository.currentUser.value,
+            authorized = authorizationRepository.authorized.value
         )
     )
 
@@ -213,8 +211,7 @@ class DefaultMainScreenComponent private constructor(
     override val logInComponent: UserLogInComponent = logIn(
         childContext(
             key = "userLogIn"
-        ),
-        ficbookApi
+        )
     )
 
 
@@ -223,20 +220,16 @@ class DefaultMainScreenComponent private constructor(
             coroutineScope.cancel()
         }
         coroutineScope.launch {
-            ficbookApi.currentUser.collect { newUser ->
+            authorizationRepository.currentUser.collect { newUser ->
                 _state.update {
-                    it.copy(
-                        user = newUser?.toStableModel()
-                    )
+                    it.copy(user = newUser)
                 }
             }
         }
         coroutineScope.launch {
-            ficbookApi.isAuthorized.collect { authorized ->
+            authorizationRepository.authorized.collect { authorized ->
                 _state.update {
-                    it.copy(
-                        authorized = authorized
-                    )
+                    it.copy(authorized = authorized)
                 }
                 if(authorized) {
                     _feedComponent.refresh()

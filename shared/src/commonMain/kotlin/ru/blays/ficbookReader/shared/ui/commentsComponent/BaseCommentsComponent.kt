@@ -22,7 +22,7 @@ abstract class BaseCommentsComponent(
     internal val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     internal var hasNextPage: Boolean = true
-    internal var page: Int = 0
+    internal var currentPage: Int = 0
 
     override fun sendIntent(intent: CommentsComponent.Intent) {
         when(intent) {

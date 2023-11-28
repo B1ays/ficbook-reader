@@ -6,28 +6,28 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.apache.commons.text.StringEscapeUtils
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
 import org.jsoup.select.Evaluator
+import ru.blays.ficbookapi.ATTR_HREF
+import ru.blays.ficbookapi.ATTR_SRC
 import ru.blays.ficbookapi.dataModels.*
 import java.net.URLDecoder
 
-internal class FanficPageParser: IDataParser<String, FanficPageModel> {
-    override suspend fun parse(data: String): FanficPageModel = coroutineScope {
-        val document = Jsoup.parse(data)
+internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
+    override suspend fun parse(data: Document): FanficPageModel = coroutineScope {
         val outputSettings: Document.OutputSettings = Document.OutputSettings()
         outputSettings.prettyPrint(false)
         outputSettings.escapeMode(Entities.EscapeMode.extended)
-        document.outputSettings(outputSettings)
+        data.outputSettings(outputSettings)
 
-        val fanficMainInfo = document.select(".fanfic-main-info").first()
-        val bottomAction = document.select(
+        val fanficMainInfo = data.select(".fanfic-main-info").first()
+        val bottomAction = data.select(
             Evaluator.Class("mb-15 text-center")
         )
-        val mb5 = document.select(Evaluator.Class("mb-5"))
+        val mb5 = data.select(Evaluator.Class("mb-5"))
 
-        val id = document
+        val id = data
             .select("[data-fanfic-id]")
             .firstOrNull()
             ?.attr("data-fanfic-id")
@@ -101,7 +101,7 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
                         val a = element.select("a")
                         return@run a.map {
                             FandomModel(
-                                href = it.attr("href"),
+                                href = it.attr(ATTR_HREF),
                                 name = it.text(),
                                 description = ""
                             )
@@ -113,43 +113,52 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
             ?: emptyList()
 
 
-        val author: List<UserModel> = document
+        val author: List<UserModel> = data
             .select(".hat-creator-container")
             .map { element ->
-                val avatar = element.select("img").attr("src")
+                val avatar = element.select("img").attr(ATTR_SRC)
                 val creatorInfo = element.select(".creator-username")
                 UserModel(
                     name = creatorInfo.text(),
-                    href = creatorInfo.attr("href"),
+                    href = creatorInfo.attr(ATTR_HREF),
                     avatarUrl = avatar
                 )
             }
 
-        val pairings = document.select(Evaluator.Class("description word-break"))
-            .select("a")
-            .filter { element ->
-                element.className().contains("pairing-link")
+        val pairings = data.select(
+            Evaluator.Class("description word-break")
+        )
+        .select("a")
+        .filter { element ->
+            element.className().contains("pairing-link")
+        }
+        .map {
+            val character = it.text()
+            val href = it.attr(ATTR_HREF).let {
+                url -> URLDecoder.decode(url, "UTF-8")
             }
-            .map {
-                val character = it.text()
-                val href = it
-                    .attr("href")
-                    .let { url -> URLDecoder.decode(url, "UTF-8") }
 
-                val isHighlighted = it.className().contains("pairing-highlight")
-                PairingModel(
-                    href = href,
-                    character = character,
-                    isHighlighted = isHighlighted
-                )
-            }
+            val isHighlighted = it.className().contains("pairing-highlight")
+            PairingModel(
+                href = href,
+                character = character,
+                isHighlighted = isHighlighted
+            )
+        }
 
         val description = mb5
             .select("div:contains(Описание:)")
-            .text()
-            .removePrefix("Описание: ")
+            .fold(StringBuilder()) { acc, element ->
+                acc.append(element.wholeText())
+            }
+            .toString()
+            .trim(' ', '\n')
+            .replace(
+                regex = Regex("Описание:\\s*"),
+                replacement = ""
+            )
 
-        val coverUrl = document
+        val coverUrl = data
             .select(".fanfic-hat")
             .select("fanfic-cover")
             .attr("src-desktop")
@@ -170,7 +179,7 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
             }
         }
 
-        val parts = document
+        val parts = data
             .select(
                 Evaluator.Class("article mb-15")
             )
@@ -182,7 +191,7 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
             parts.forEach { part ->
                 val href = part
                     .select("a")
-                    .attr("href")
+                    .attr(ATTR_HREF)
 
                 val chapterName = part
                     .select(
@@ -214,11 +223,11 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
                 )
             }
         } else {
-            val date = document
+            val date = data
                 .select(".part-date")
                 .text()
 
-            val (commentsCount, commentsHref) = document
+            val (commentsCount, commentsHref) = data
                 .select(
                     Evaluator.Class("btn btn-primary btn-with-description")
                 )
@@ -234,13 +243,13 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
                             .trim()
                             .toIntOrNull()
                             ?: 0
-                    ) to attr("href")
+                    ) to attr(ATTR_HREF)
                 }
                 ?: (0 to "")
 
             val chapterTextParser = ChapterTextParser()
 
-            val textElements = document.select(
+            val textElements = data.select(
                 Evaluator.Class("js-part-text part_text clearfix js-public-beta-text js-bookmark-area")
             )
             val text = chapterTextParser.parse(textElements)
@@ -305,7 +314,7 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
 
         val rewardsList = mutableListOf<RewardModel>()
 
-        val rewardAnswer = document
+        val rewardAnswer = data
             .select(
                 Evaluator.Class("fanfic-reward-container rounded-block")
             )
@@ -354,7 +363,7 @@ internal class FanficPageParser: IDataParser<String, FanficPageModel> {
         )
     }
 
-    override fun parseSynchronously(data: String): StateFlow<FanficPageModel?> {
+    override fun parseSynchronously(data: Document): StateFlow<FanficPageModel?> {
         val resultFlow = MutableStateFlow<FanficPageModel?>(null)
         launch {
             resultFlow.value = parse(data)

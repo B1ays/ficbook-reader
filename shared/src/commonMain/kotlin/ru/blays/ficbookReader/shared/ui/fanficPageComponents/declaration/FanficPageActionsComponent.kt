@@ -24,5 +24,6 @@ interface FanficPageActionsComponent {
 }
 
 interface InternalFanficPageActionsComponent: FanficPageActionsComponent {
+    fun setFanficID(id: String)
     fun setValue(value: FanficPageActionsComponent.State)
 }

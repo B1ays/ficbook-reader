@@ -10,7 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import ru.blays.ficbookReader.shared.data.mappers.toStableModel
+import org.koin.mp.KoinPlatform.getKoin
+import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbookReader.shared.platformUtils.copyToClipboard
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
 import ru.blays.ficbookReader.shared.platformUtils.shareText
@@ -18,15 +19,15 @@ import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficP
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.InternalFanficPageActionsComponent
 import ru.blays.ficbookapi.UrlProcessor.getUrlForHref
-import ru.blays.ficbookapi.ficbookConnection.IFicbookApi
 import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultFanficPageInfoComponent(
     componentContext: ComponentContext,
-    private val ficbookApi: IFicbookApi,
     private val fanficHref: String,
     private val onOutput: (FanficPageInfoComponent.Output) -> Unit
 ): FanficPageInfoComponent, ComponentContext by componentContext {
+    private val repository: IFanficPageRepo by getKoin().inject()
+
     private val _state = MutableValue(FanficPageInfoComponent.State())
     override val state: Value<FanficPageInfoComponent.State>
         get() = _state
@@ -35,11 +36,6 @@ class DefaultFanficPageInfoComponent(
         componentContext = childContext(
             key = "actions"
         ),
-        ficbookApi = ficbookApi,
-        fanficID = fanficHref
-            .split("/")
-            .lastOrNull()
-            ?: "",
         output = ::onActionsOutput
     )
 
@@ -92,17 +88,15 @@ class DefaultFanficPageInfoComponent(
     private fun loadPage() {
         coroutineScope.launch {
             _state.update {
-                it.copy(
-                    isLoading = true
-                )
+                it.copy(isLoading = true)
             }
             when(
-                val pageResult = ficbookApi.getFanficPageByHref(fanficHref)
+                val pageResult = repository.get(fanficHref)
             ) {
                 is ApiResult.Success -> {
                     _state.update {
                         it.copy(
-                            fanfic = pageResult.value.toStableModel(),
+                            fanfic = pageResult.value,
                             isLoading = false
                         )
                     }
@@ -115,9 +109,7 @@ class DefaultFanficPageInfoComponent(
                 }
                 is ApiResult.Error -> {
                     _state.update {
-                        it.copy(
-                            isError = true
-                        )
+                        it.copy(isError = true)
                     }
                 }
             }

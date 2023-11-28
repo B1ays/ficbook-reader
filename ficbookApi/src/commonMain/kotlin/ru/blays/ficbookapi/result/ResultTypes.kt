@@ -1,16 +1,14 @@
 package ru.blays.ficbookapi.result
 
-@JvmInline
-value class StringBody(val value: String?) {
-    companion object {
-        val empty: StringBody get() = StringBody(null)
-    }
-}
-
-sealed class ApiResult<T> {
+sealed class ApiResult<T: Any> {
     data class Success<T: Any>(val value: T) : ApiResult<T>()
-    data class Error<T: Any>(val message: String) : ApiResult<T>() {
-        constructor(throwable: Throwable): this(throwable.message ?: "")
-    }
+    data class Error<T: Any>(val exception: Throwable) : ApiResult<T>()
 
+    fun getOrNull(): T? = if(this is Success) value else null
+    fun getOrElse(defaultValue: T): T = if(this is Success) value else defaultValue
+
+    companion object {
+        fun <T: Any> success(value: T): ApiResult<T> = Success(value)
+        fun <T: Any> failure(exception: Throwable): ApiResult<T> = Error(exception)
+    }
 }

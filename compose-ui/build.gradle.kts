@@ -56,7 +56,7 @@ kotlin {
                 implementation(libs.koin.compose)
 
                 // Ktor
-                implementation(libs.ktor.ktor.client.okhttp)
+                implementation(libs.ktor.client.okhttp)
             }
         }
 

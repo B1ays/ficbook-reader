@@ -49,7 +49,7 @@ interface AuthorProfileComponent {
         @Serializable
         data object Main: TabConfig()
         @Serializable
-        data class Blog(val href: String): TabConfig()
+        data class Blog(val userID: String): TabConfig()
         @Serializable
         data class Works(val section: SectionWithQuery): TabConfig()
         @Serializable
@@ -59,7 +59,7 @@ interface AuthorProfileComponent {
         @Serializable
         data class WorksAsGamma(val section: SectionWithQuery): TabConfig()
         @Serializable
-        data class Comments(val href: String): TabConfig()
+        data class Comments(val userID: String): TabConfig()
         @Serializable
         data class Presents(val href: String): TabConfig()
     }

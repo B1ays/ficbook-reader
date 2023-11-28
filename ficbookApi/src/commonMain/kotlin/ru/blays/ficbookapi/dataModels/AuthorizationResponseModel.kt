@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 data class AuthorizationResult(
     val responseResult: AuthorizationResponseModel,
-    val cookies: List<CookieModel>
+    val user: UserModel? = null
 )
 
 @Serializable

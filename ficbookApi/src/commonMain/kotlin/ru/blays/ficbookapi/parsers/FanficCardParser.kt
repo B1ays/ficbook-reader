@@ -8,6 +8,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.jsoup.select.Evaluator
+import ru.blays.ficbookapi.ATTR_HREF
 import ru.blays.ficbookapi.dataModels.*
 import java.net.URLDecoder
 
@@ -47,7 +48,7 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
         val (href, title) = with(
             data.select(".fanfic-inline-title").select(".visit-link")
         ) {
-            val fullHref = attr("href")
+            val fullHref = attr(ATTR_HREF)
             val clearedHref = fullHref.substringBefore('?')
             val name =  text()
             Pair(clearedHref, name)
@@ -127,7 +128,7 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
             .map {
                 UserModel(
                     name = it.text(),
-                    href = it.select("a").attr("href")
+                    href = it.select("a").attr(ATTR_HREF)
                 )
             }
 
@@ -137,7 +138,7 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
                     val a = element.select("a")
                     return@run a.map {
                         FandomModel(
-                            href = it.attr("href"),
+                            href = it.attr(ATTR_HREF),
                             name = it.text(),
                             description = ""
                         )
@@ -158,7 +159,7 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
                     a.forEach { aElement ->
                         val character = aElement.text()
                         val href = aElement
-                            .attr("href")
+                            .attr(ATTR_HREF)
                             .let { URLDecoder.decode(it, "UTF-8") }
 
                         val isHighlighted = aElement.className().contains("pairing-highlight")
@@ -178,8 +179,8 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
         val updateDate = fanficInlineInfo
             .firstOrNull {
                 it.text().contains("Дата обновления:") ||
-                        it.text().contains("Дата завершения:") ||
-                        it.text().contains("Дата создания:")
+                it.text().contains("Дата завершения:") ||
+                it.text().contains("Дата создания:")
             }
             ?.select("dd")
             ?.text()
@@ -202,7 +203,7 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
 
         val tags = mutableListOf<FanficTag>().apply {
             tagsElements.forEach {
-                val tagHref = it.attr("href")
+                val tagHref = it.attr(ATTR_HREF)
                 val name = it.text()
                 val isAdult = it.outerHtml().contains("tag-adult")
                 add(
@@ -215,7 +216,12 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
             }
         }
 
-        val description = data.select(".fanfic-description").text()
+        val description = data.select(".fanfic-description")
+            .fold(StringBuilder()) { acc, element ->
+                acc.append(element.wholeText())
+            }
+            .toString()
+            .trim(' ', '\n')
 
         val coverUrl = data
             .select(".side-Section")

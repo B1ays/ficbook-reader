@@ -32,7 +32,7 @@ import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.data.sections.userSections
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
-import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle

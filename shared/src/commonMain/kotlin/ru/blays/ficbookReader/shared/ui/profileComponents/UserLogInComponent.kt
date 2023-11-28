@@ -1,7 +1,6 @@
-package ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration
+package ru.blays.ficbookReader.shared.ui.profileComponents
 
 import com.arkivanov.decompose.value.Value
-import ru.blays.ficbookapi.dataModels.CookieModel
 
 interface UserLogInComponent {
     val state: Value<State>
@@ -24,6 +23,7 @@ interface UserLogInComponent {
         val login: String = "",
         val password: String = "",
         val loading: Boolean = false,
-        val success: Boolean = true
+        val success: Boolean = true,
+        val reason: String? = null
     )
 }

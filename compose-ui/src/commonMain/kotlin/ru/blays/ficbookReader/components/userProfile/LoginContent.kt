@@ -24,7 +24,7 @@ import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.platformUtils.landscapeModeWidth
-import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.UserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
 import ru.blays.ficbookReader.ui_components.AutofillTextField.AutofillTextField
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
