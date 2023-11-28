@@ -65,7 +65,7 @@ class DynamicCookieJar: MutableCookieJar, LocalCookieStorage {
             cookies.forEach { cookie ->
                 if(cookie.name == "PHPSESSID" || cookie.name == "rme") {
                     if(storage.isNotEmpty()) {
-                        storage.removeAll { it.name == cookie.name }
+                        storage.removeIf { it.name == cookie.name }
                     }
                     storage.add(cookie)
                     saveInMemory(cookie)

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent
 import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
+import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookapi.dataModels.LoginModel
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -68,9 +69,11 @@ class DefaultUserLogInComponent(
                     }
                 }
                 is ApiResult.Success -> {
-                    onOutput(
-                        UserLogInComponent.Output.NavigateBack
-                    )
+                    runOnUiThread {
+                        onOutput(
+                            UserLogInComponent.Output.NavigateBack
+                        )
+                    }
                 }
             }
         }
