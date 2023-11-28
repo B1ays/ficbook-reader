@@ -26,7 +26,7 @@ fun RootContent(component: RootComponent) {
     ) {
         val animator = fade(spring()) + scale()
         CompositionLocalProvider(
-            LocalStackAnimator provides fade(spring()) + scale()
+            LocalStackAnimator provides animator
         ) {
             Children(
                 stack = component.childStack,
