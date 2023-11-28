@@ -11,9 +11,7 @@ import ru.blays.ficbookapi.data.SectionWithQuery
 interface MainScreenComponent {
     val tabs: Array<TabModel>
     val state: Value<State>
-    /*val childStack: Value<ChildStack<*, Child>>*/
 
-    fun sendIntent(intent: Intent)
     fun onOutput(output: Output)
 
     val feedComponent: FeedComponent
@@ -43,12 +41,8 @@ interface MainScreenComponent {
         data class OpenUrl(val url: String) : MainScreenComponent.Output()
         data class OpenAuthor(val href: String) : Output()
         data object OpenRandomFanficPage: Output()
-        data object UserButtonClicked: Output()
         data object OpenSettings: Output()
-    }
-
-    sealed class Intent {
-        data object Login: Intent()
+        data object UserProfile: Output()
     }
 
     /*sealed class Child {

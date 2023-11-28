@@ -112,16 +112,6 @@ class DefaultMainScreenComponent private constructor(
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    override fun sendIntent(intent: MainScreenComponent.Intent) {
-        when(intent) {
-            is MainScreenComponent.Intent.Login -> {
-                onMainOutput(
-                    MainScreenComponent.Output.UserButtonClicked
-                )
-            }
-        }
-    }
-
     override fun onOutput(output: MainScreenComponent.Output) = onMainOutput(output)
 
     private fun onFeedOutput(output: FanficsListComponent.Output) {

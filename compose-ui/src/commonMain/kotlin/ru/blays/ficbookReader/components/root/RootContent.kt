@@ -13,7 +13,7 @@ import ru.blays.ficbookReader.components.fanficPage.FanficPageContent
 import ru.blays.ficbookReader.components.fanficsList.FanficsListScreenContent
 import ru.blays.ficbookReader.components.main.MainContent
 import ru.blays.ficbookReader.components.settings.SettingsContent
-import ru.blays.ficbookReader.components.userProfile.LoginContent
+import ru.blays.ficbookReader.components.userProfile.UserProfileRootContent
 import ru.blays.ficbookReader.shared.ui.RootComponent.RootComponent
 
 @Composable
@@ -27,7 +27,7 @@ fun RootContent(component: RootComponent) {
         ) {
             when(val child = it.instance) {
                 is RootComponent.Child.FanficPage -> FanficPageContent(child.component)
-                is RootComponent.Child.Login -> LoginContent(child.component)
+                is RootComponent.Child.UserProfile -> UserProfileRootContent(child.component)
                 is RootComponent.Child.Main -> MainContent(child.component)
                 is RootComponent.Child.Settings -> SettingsContent(child.component)
                 is RootComponent.Child.FanficsList -> FanficsListScreenContent(child.component)

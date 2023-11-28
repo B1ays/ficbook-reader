@@ -32,7 +32,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginContent(component: UserLogInComponent) {
+fun LogInContent(component: UserLogInComponent) {
     val state by component.state.subscribeAsState()
     val login = remember(state) { state.login }
     val password = remember(state) { state.password }

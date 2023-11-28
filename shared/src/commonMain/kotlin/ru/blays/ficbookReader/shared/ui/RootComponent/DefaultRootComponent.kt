@@ -23,8 +23,8 @@ import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficP
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.implementation.DefaultFanficPageComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultMainScreenComponent
-import ru.blays.ficbookReader.shared.ui.profileComponents.DefaultUserLogInComponent
-import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.DefaultUserProfileRootComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.implementation.DefaultSettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.DefaultThemeComponent
@@ -52,10 +52,10 @@ class DefaultRootComponent private constructor(
         componentContext: ComponentContext,
         output: (MainScreenComponent.Output) -> Unit
     ) -> MainScreenComponent,
-    private val logIn: (
+    private val userProfile: (
         componentContext: ComponentContext,
-        output: (UserLogInComponent.Output) -> Unit
-    ) -> UserLogInComponent
+        output: (UserProfileRootComponent.Output) -> Unit
+    ) -> UserProfileRootComponent
 ): RootComponent, ComponentContext by componentContext {
     constructor(
         componentContext: ComponentContext,
@@ -83,8 +83,8 @@ class DefaultRootComponent private constructor(
                 output = output
             )
         },
-        logIn = { componentContext, output ->
-            DefaultUserLogInComponent(
+        userProfile = { componentContext, output ->
+            DefaultUserProfileRootComponent(
                 componentContext = componentContext,
                 output = output
             )
@@ -129,8 +129,8 @@ class DefaultRootComponent private constructor(
 
     private fun childFactory(configuration: RootComponent.Config, componentContext: ComponentContext): RootComponent.Child {
         return when(configuration) {
-            is RootComponent.Config.Login -> RootComponent.Child.Login(
-                logIn(componentContext, ::onLogInOutput)
+            is RootComponent.Config.UserProfile -> RootComponent.Child.UserProfile(
+                userProfile(componentContext, ::onUserProfileOutput)
             )
             is RootComponent.Config.Main -> RootComponent.Child.Main(
                 main(componentContext, ::onMainOutput)
@@ -184,11 +184,9 @@ class DefaultRootComponent private constructor(
 
     private fun onMainOutput(output: MainScreenComponent.Output) {
         when(output) {
-            is MainScreenComponent.Output.UserButtonClicked -> {
-                navigation.push(
-                    configuration = RootComponent.Config.Login
-                )
-            }
+            is MainScreenComponent.Output.UserProfile -> navigation.push(
+                RootComponent.Config.UserProfile
+            )
             is MainScreenComponent.Output.OpenFanficPage -> {
                 navigation.push(
                     RootComponent.Config.FanficPage(output.href)
@@ -217,12 +215,18 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
+
         }
     }
 
-    private fun onLogInOutput(output: UserLogInComponent.Output) {
+    private fun onUserProfileOutput(output: UserProfileRootComponent.Output) {
         when(output) {
-            is UserLogInComponent.Output.NavigateBack -> navigation.pop()
+            is UserProfileRootComponent.Output.NavigateBack -> navigation.pop()
+            is UserProfileRootComponent.Output.OpenProfile -> navigation.push(
+                RootComponent.Config.AuthorProfile(
+                    href = output.userHref
+                )
+            )
         }
     }
 
@@ -337,7 +341,7 @@ class DefaultRootComponent private constructor(
             }
             is UrlProcessor.FicbookUrlAnalyzeResult.User -> {
                 navigation.push(
-                    RootComponent.Config.Login
+                    RootComponent.Config.UserProfile
                 )
             }
             UrlProcessor.FicbookUrlAnalyzeResult.NotFicbookUrl -> {

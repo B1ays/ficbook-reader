@@ -32,7 +32,6 @@ import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.data.sections.userSections
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
-import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -462,14 +461,9 @@ fun UserIconButton(
     component: MainScreenComponent
 ) {
     val state by component.state.subscribeAsState()
-    var isMenuExpanded by remember { mutableStateOf(false) }
     IconButton(
         onClick = {
-            if (state.authorized) {
-                isMenuExpanded = true
-            } else {
-                component.sendIntent(MainScreenComponent.Intent.Login)
-            }
+            component.onOutput(MainScreenComponent.Output.UserProfile)
         }
     ) {
         if (state.authorized) {
@@ -491,29 +485,5 @@ fun UserIconButton(
                 contentDescription = "Заполнитель иконки пользователя"
             )
         }
-    }
-    DropdownMenu(
-        expanded = isMenuExpanded,
-        onDismissRequest = {
-            isMenuExpanded = false
-        }
-    ) {
-        DropdownMenuItem(
-            text = {
-                Text("Выйти из аккаунта")
-            },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(Res.image.ic_exit),
-                    contentDescription = "Иконка выход",
-                    modifier = Modifier.size(16.dp)
-                )
-            },
-            onClick = {
-                component.logInComponent.sendIntent(
-                    UserLogInComponent.Intent.LogOut
-                )
-            }
-        )
     }
 }
