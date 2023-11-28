@@ -56,8 +56,7 @@ fun rememberAnnotatedStringWithLinks(
                 ) {
                     append(
                         text.substring(
-                            startIndex = startIndex.coerceIn(text.indices),
-                            endIndex = text.lastIndex.coerceIn(text.indices)
+                            startIndex.coerceIn(text.indices)..text.length.coerceIn(text.indices)
                         )
                     )
                 }
