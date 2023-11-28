@@ -26,9 +26,6 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.plus
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
@@ -46,6 +43,7 @@ import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.*
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
 import ru.blays.ficbookReader.ui_components.decomposePager.Pages
+import ru.blays.ficbookReader.utils.LocalStackAnimator
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.blays.ficbookReader.values.Zero
@@ -477,9 +475,10 @@ private fun ProfileMainInfo(component: AuthorProfileComponent) {
 private fun BlogPostsRoot(
     component: AuthorBlogComponent
 ) {
+    val animator = LocalStackAnimator.current
     Children(
         stack = component.childStack,
-        animation = stackAnimation(fade() + scale()),
+        animation = animator?.let { stackAnimation(it) },
         modifier = Modifier.fillMaxSize()
     ) {
         when(

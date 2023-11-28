@@ -4,16 +4,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
 import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
+import ru.blays.ficbookReader.utils.LocalStackAnimator
 
 @Composable
 fun UserProfileRootContent(component: UserProfileRootComponent) {
+    val animator = LocalStackAnimator.current
     Children(
         stack = component.childStack,
         modifier = Modifier.fillMaxSize(),
-        animation = stackAnimation(fade())
+        animation = animator?.let { stackAnimation(it) }
     ) {
         when(
             val child = it.instance
