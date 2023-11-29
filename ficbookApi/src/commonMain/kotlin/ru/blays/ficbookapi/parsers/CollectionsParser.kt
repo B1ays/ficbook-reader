@@ -87,9 +87,18 @@ internal class CollectionSortParamsParser: IDataParser<Document, CollectionSortP
         val availableFandoms = form.select("select[name=fandom_id] option").map {
             it.text() to it.attr(ATTR_VALUE)
         }
-        val availableSortParams = form.select("select[name=sort] option").map {
+        val availableSortParams = listOf(
+            Pair("По последнему обновлению", "1"),
+            Pair("По дате создания", "2"),
+            Pair("По оценкам", "3"),
+            Pair("По отзывам", "4"),
+            Pair("По наградам", "5"),
+            Pair("По порядку, предложенному автором сборника", "6"),
+            Pair("По добавлению в сборник", "7")
+        )
+            /*form.select("select[name=sort] option").map {
             it.text() to it.attr(ATTR_VALUE)
-        }
+        }*/
 
         return CollectionSortParams(
             availableSortParams = availableSortParams,
