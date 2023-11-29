@@ -28,7 +28,10 @@ class DefaultCollectionsComponent(
 
     override val state get() = _state
 
-    private val collectionSection = CollectionsTypes._personalCollections
+    private val collectionSections = listOf(
+        CollectionsTypes.personalCollections,
+        CollectionsTypes.trackedCollections
+    )
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -43,36 +46,45 @@ class DefaultCollectionsComponent(
     }
 
     override fun refresh() {
-        getCollections(collectionSection)
+        getCollections(collectionSections)
     }
 
-    private fun getCollections(section: SectionWithQuery) {
+    private fun getCollections(
+        sections: List<SectionWithQuery>
+    ) {
         coroutineScope.launch {
             _state.update {
-                it.copy(isLoading = true)
+                it.copy(
+                    list = emptyList(),
+                    isLoading = true
+                )
             }
-            when(
-                val result = repository.get(section, 1)
-            ) {
-                is ApiResult.Success -> {
-                    _state.update {
-                        it.copy(
-                            list = result.value.list,
-                            isLoading = false
-                        )
+            val results = sections.map { section ->
+                repository.get(section, 1)
+            }
+            results.forEach { result ->
+                when(result) {
+                    is ApiResult.Success -> {
+                        _state.update {
+                            it.copy(
+                                list = state.value.list + result.value.list
+                            )
+                        }
+                    }
+                    is ApiResult.Error -> {
+                        _state.update {
+                            it.copy(isError = true)
+                        }
                     }
                 }
-                is ApiResult.Error -> {
-                    _state.update {
-                        it.copy(isError = true)
-                    }
-                }
+            }
+            _state.update {
+                it.copy(isLoading = false)
             }
         }
     }
 
     init {
-        getCollections(collectionSection)
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }

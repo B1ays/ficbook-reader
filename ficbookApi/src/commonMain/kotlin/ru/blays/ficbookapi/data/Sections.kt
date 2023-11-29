@@ -182,15 +182,15 @@ data class UserSections(
 }
 
 object CollectionsTypes {
-    val _personalCollections = SectionWithQuery(
+    val personalCollections = SectionWithQuery(
         "Мои сборники",
         emptyList(),
         "home", "collections")
-    val _trackedCollections = SectionWithQuery(
+    val trackedCollections = SectionWithQuery(
         "Отслеживаемые сборники",
         listOf(
-            "type" to "_other"
+            "type" to "other"
         ),
-        "home", "collections", )
+        "home", "collections")
 }
 

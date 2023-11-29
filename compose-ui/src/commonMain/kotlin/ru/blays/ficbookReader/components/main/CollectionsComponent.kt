@@ -61,7 +61,7 @@ fun CollectionsComponent(component: CollectionsComponent) {
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             items(list) { collection ->
-                CollectionListItem(collection) {
+                CollectionItem(collection) {
                     component.onOutput(
                         CollectionsComponent.Output.OpenCollection(
                             name = collection.name,
@@ -81,7 +81,7 @@ fun CollectionsComponent(component: CollectionsComponent) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CollectionListItem(
+fun CollectionItem(
     collectionModel: CollectionModelStable,
     onClick: () -> Unit
 ) {
@@ -99,13 +99,14 @@ fun CollectionListItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = DefaultPadding.CardHorizontalPadding)
+                .padding(horizontal = 8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(0.7F, false)
             ) {
                 Icon(
                     painter = indicatorIcon,

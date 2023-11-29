@@ -74,8 +74,8 @@ val userSections = with(ru.blays.ficbookapi.data.UserSections.default()) {
 
 object CollectionsTypes {
     val personalCollections: SectionWithQuery
-        get() = ru.blays.ficbookapi.data.CollectionsTypes._personalCollections.toStableModel()
+        get() = ru.blays.ficbookapi.data.CollectionsTypes.personalCollections.toStableModel()
     val trackedCollections: SectionWithQuery
-        get() = ru.blays.ficbookapi.data.CollectionsTypes._trackedCollections.toStableModel()
+        get() = ru.blays.ficbookapi.data.CollectionsTypes.trackedCollections.toStableModel()
     
 }
