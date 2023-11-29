@@ -11,6 +11,7 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.plus
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
 import ru.blays.ficbookReader.components.authorProfile.AuthorProfileContent
+import ru.blays.ficbookReader.components.collectionContent.CollectionContent
 import ru.blays.ficbookReader.components.fanficPage.FanficPageContent
 import ru.blays.ficbookReader.components.fanficsList.FanficsListScreenContent
 import ru.blays.ficbookReader.components.main.MainContent
@@ -41,6 +42,7 @@ fun RootContent(component: RootComponent) {
                     is RootComponent.Child.Settings -> SettingsContent(child.component)
                     is RootComponent.Child.FanficsList -> FanficsListScreenContent(child.component)
                     is RootComponent.Child.AuthorProfile -> AuthorProfileContent(child.component)
+                    is RootComponent.Child.Collection -> CollectionContent(child.component)
                 }
             }
         }

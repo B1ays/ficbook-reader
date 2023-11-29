@@ -156,8 +156,8 @@ class DefaultMainScreenComponent private constructor(
     private fun onCollectionsOutput(output: CollectionsComponent.Output) {
         when(output) {
             is CollectionsComponent.Output.OpenCollection -> {
-                this.onMainOutput(
-                    MainScreenComponent.Output.OpenFanficsList(output.section)
+                onMainOutput(
+                    MainScreenComponent.Output.OpenCollection(output.section)
                 )
             }
         }

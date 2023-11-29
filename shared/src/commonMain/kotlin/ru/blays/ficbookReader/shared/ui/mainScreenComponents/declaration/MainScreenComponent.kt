@@ -1,7 +1,6 @@
 package ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration
 
 import com.arkivanov.decompose.value.Value
-import ru.blays.ficbookReader.shared.data.dto.Section
 import ru.blays.ficbookReader.shared.data.dto.UserModelStable
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.sections.userSections
@@ -23,39 +22,19 @@ interface MainScreenComponent {
     sealed class Output {
         data class OpenFanficsList(val sectionWithQuery: SectionWithQuery): Output() {
             constructor(
-                section: Section
-            ) : this(
-                sectionWithQuery = SectionWithQuery(
-                    name = section.name,
-                    path = section.segments,
-                    queryParameters = emptyList()
-                )
-            )
-            constructor(
                 sectionWithQuery: ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
             ) : this(
                 sectionWithQuery = sectionWithQuery.toApiModel()
             )
         }
+        data class OpenCollection(val section: SectionWithQuery): Output()
         data class OpenFanficPage(val href: String): Output()
-        data class OpenUrl(val url: String) : MainScreenComponent.Output()
+        data class OpenUrl(val url: String) : Output()
         data class OpenAuthor(val href: String) : Output()
         data object OpenRandomFanficPage: Output()
         data object OpenSettings: Output()
         data object UserProfile: Output()
     }
-
-    /*sealed class Child {
-        data class FanficPage(val component: FanficPageComponent): Child()
-    }
-
-    @Serializable
-    sealed class Config {
-        @Serializable
-        data object MainPage: Config()
-        @Serializable
-        data class FanficPage(val href: String): Config()
-    }*/
 
     data class State(
         val mainFeed: SectionWithQuery = userSections.follow.toApiModel(),

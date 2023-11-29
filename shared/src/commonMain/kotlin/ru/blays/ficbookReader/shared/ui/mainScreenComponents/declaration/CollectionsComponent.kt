@@ -18,15 +18,15 @@ interface CollectionsComponent {
     sealed class Output {
         data class OpenCollection(val section: SectionWithQuery): Output() {
             constructor(
+                name: String,
                 href: String
             ) : this(
-                SectionWithQuery(
+                section = SectionWithQuery(
+                    name = name,
                     path = href,
-                    name = "",
-                    queryParameters = emptyList()
+                    queryParameters = null
                 )
             )
-
         }
     }
 

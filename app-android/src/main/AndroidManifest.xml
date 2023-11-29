@@ -32,5 +32,6 @@
                     android:host="ficbook.net"/>
             </intent-filter>
         </activity>
+        <profileable android:shell="true" tools:targetApi="q"/>
     </application>
 </manifest> 

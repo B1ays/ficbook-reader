@@ -66,7 +66,6 @@ fun UserProfileContent(component: UserProfileComponent) {
                     in 500.dp..800.dp -> 0.9F
                     else -> 1F
                 }
-                println("maxWidth is $maxWidth")
 
                 Card(
                     onClick = {

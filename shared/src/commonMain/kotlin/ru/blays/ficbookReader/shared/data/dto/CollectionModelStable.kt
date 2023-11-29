@@ -10,3 +10,10 @@ data class CollectionModelStable(
     val private: Boolean,
     val owner: UserModelStable
 )
+
+@Immutable
+data class CollectionSortParamsStable(
+    val availableSortParams: List<Pair<String, String>>,
+    val availableDirections: List<Pair<String, String>>,
+    val availableFandoms: List<Pair<String, String>>
+)

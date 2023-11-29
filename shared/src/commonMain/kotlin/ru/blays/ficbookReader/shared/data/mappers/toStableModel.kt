@@ -281,3 +281,9 @@ fun AvailableCollectionsModel.Data.Collection.toStableModel() = ru.blays.ficbook
     name = name,
     slug = slug
 )
+
+fun CollectionSortParams.toStableModel() = CollectionSortParamsStable(
+    availableDirections = availableDirections,
+    availableFandoms = availableFandoms,
+    availableSortParams = availableSortParams
+)

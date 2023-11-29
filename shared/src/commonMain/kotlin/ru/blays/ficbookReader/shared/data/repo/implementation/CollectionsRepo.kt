@@ -2,6 +2,7 @@ package ru.blays.ficbookReader.shared.data.repo.implementation
 
 import ru.blays.ficbookReader.shared.data.dto.AvailableCollectionsModel
 import ru.blays.ficbookReader.shared.data.dto.CollectionModelStable
+import ru.blays.ficbookReader.shared.data.dto.CollectionSortParamsStable
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.ICollectionsRepo
 import ru.blays.ficbookapi.api.CollectionsApi
@@ -47,6 +48,19 @@ class CollectionsRepo(
     ): ApiResult<AvailableCollectionsModel> {
         return when(
             val result = api.getAvailableCollections(fanficID)
+        ) {
+            is ApiResult.Error -> ApiResult.failure(result.exception)
+            is ApiResult.Success -> ApiResult.success(
+                result.value.toStableModel()
+            )
+        }
+    }
+
+    override suspend fun getCollectionSortParams(
+        collectionID: String
+    ): ApiResult<CollectionSortParamsStable> {
+        return when(
+            val result = api.getCollectionSortParams(collectionID)
         ) {
             is ApiResult.Error -> ApiResult.failure(result.exception)
             is ApiResult.Success -> ApiResult.success(

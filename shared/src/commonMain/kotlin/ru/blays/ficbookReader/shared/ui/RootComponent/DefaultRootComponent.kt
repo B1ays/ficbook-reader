@@ -17,6 +17,7 @@ import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
+import ru.blays.ficbookReader.shared.ui.collectionSortComponent.DefaultCollectionFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
@@ -153,6 +154,15 @@ class DefaultRootComponent private constructor(
                     output = ::onAuthorProfileOutput
                 )
             )
+            is RootComponent.Config.Collection -> {
+                RootComponent.Child.Collection(
+                    DefaultCollectionFanficsListComponent(
+                        componentContext = componentContext,
+                        initialSection = configuration.section,
+                        output = ::onFanficsListOutput
+                    )
+                )
+            }
         }
     }
 
@@ -215,7 +225,11 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
-
+            is MainScreenComponent.Output.OpenCollection -> {
+                navigation.push(
+                    RootComponent.Config.Collection(output.section)
+                )
+            }
         }
     }
 

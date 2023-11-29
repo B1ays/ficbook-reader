@@ -63,7 +63,10 @@ fun CollectionsComponent(component: CollectionsComponent) {
             items(list) { collection ->
                 CollectionListItem(collection) {
                     component.onOutput(
-                        CollectionsComponent.Output.OpenCollection(collection.href)
+                        CollectionsComponent.Output.OpenCollection(
+                            name = collection.name,
+                            href = collection.href,
+                        )
                     )
                 }
             }
