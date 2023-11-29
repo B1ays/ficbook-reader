@@ -1,3 +1,8 @@
 package ru.blays.ficbookapi.UrlProcessor
 
-fun getUrlForHref(href: String): String = "" // TODO
+import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
+import ru.blays.ficbookapi.okHttpDsl.href
+
+fun getUrlForHref(href: String): String = ficbookUrl {
+    href(href)
+}.toString()
