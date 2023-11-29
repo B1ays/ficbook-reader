@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 class AjaxSimpleResult(
     @SerialName("result")
     val result: Boolean,
+    @SerialName("message")
+    val message: String = "",
     @SerialName("error")
     val error: String = ""
 )

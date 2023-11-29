@@ -112,6 +112,7 @@ class CollectionsApiImpl(
             val result: AjaxSimpleResult = Json.decodeFromString(body)
             result.result
         } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }
@@ -135,6 +136,7 @@ class CollectionsApiImpl(
             val result: AjaxSimpleResult = Json.decodeFromString(body)
             result.result
         } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }

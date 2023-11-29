@@ -106,6 +106,7 @@ class DefaultFanficPageInfoComponent(
                             mark = pageResult.value.liked
                         )
                     )
+                    _actionsComponent.setFanficID(pageResult.value.fanficID)
                 }
                 is ApiResult.Error -> {
                     _state.update {
