@@ -28,4 +28,5 @@ internal val repositoryModule = module {
     singleOf(::CommentsRepo) bind ICommentsRepo::class
     singleOf(::FanficsListRepo) bind IFanficsListRepo::class
     singleOf(::FanficPageRepo) bind IFanficPageRepo::class
+    singleOf(::UsersRepo) bind IUsersRepo::class
 }

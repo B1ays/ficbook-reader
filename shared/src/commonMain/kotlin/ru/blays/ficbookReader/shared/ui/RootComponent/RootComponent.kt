@@ -11,6 +11,7 @@ import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScr
 import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
+import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 
 interface RootComponent {
@@ -47,6 +48,9 @@ interface RootComponent {
 
         @Serializable
         data class AuthorProfile(val href: String): Config()
+
+        @Serializable
+        data object Users: Config()
     }
 
     sealed class Child {
@@ -57,5 +61,6 @@ interface RootComponent {
         data class FanficsList(val component: FanficsListComponent): Child()
         data class Collection(val component: CollectionFanficsListComponent): Child()
         data class AuthorProfile(val component: AuthorProfileComponent): Child()
+        data class Users(val component: UsersRootComponent): Child()
     }
 }

@@ -287,3 +287,15 @@ fun CollectionSortParams.toStableModel() = CollectionSortParamsStable(
     availableFandoms = availableFandoms,
     availableSortParams = availableSortParams
 )
+
+fun PopularAuthorModel.toStableModel() = PopularAuthorModelStable(
+    user = user.toStableModel(),
+    position = position,
+    subscribersInfo = subscribersInfo
+)
+
+fun AuthorSearchResult.Data.Result.toUserModel() = UserModelStable(
+    name = username,
+    href = "authors/$id",
+    avatarUrl = avatarPath
+)

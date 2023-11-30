@@ -17,6 +17,7 @@ import ru.blays.ficbookReader.components.fanficsList.FanficsListScreenContent
 import ru.blays.ficbookReader.components.main.MainContent
 import ru.blays.ficbookReader.components.settings.SettingsContent
 import ru.blays.ficbookReader.components.userProfile.UserProfileRootContent
+import ru.blays.ficbookReader.components.users.UsersRootContent
 import ru.blays.ficbookReader.shared.ui.RootComponent.RootComponent
 import ru.blays.ficbookReader.utils.LocalStackAnimator
 
@@ -43,6 +44,7 @@ fun RootContent(component: RootComponent) {
                     is RootComponent.Child.FanficsList -> FanficsListScreenContent(child.component)
                     is RootComponent.Child.AuthorProfile -> AuthorProfileContent(child.component)
                     is RootComponent.Child.Collection -> CollectionContent(child.component)
+                    is RootComponent.Child.Users -> UsersRootContent(child.component)
                 }
             }
         }

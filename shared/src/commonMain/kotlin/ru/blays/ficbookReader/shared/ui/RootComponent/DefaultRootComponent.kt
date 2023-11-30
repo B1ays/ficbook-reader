@@ -5,15 +5,10 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import io.realm.kotlin.Realm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
-import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
-import ru.blays.ficbookReader.shared.data.realm.entity.toApiModel
-import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
@@ -30,11 +25,12 @@ import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsM
 import ru.blays.ficbookReader.shared.ui.settingsComponents.implementation.DefaultSettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.DefaultThemeComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
+import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
+import ru.blays.ficbookReader.shared.ui.usersComponent.implementation.DefaultUsersRootComponent
 import ru.blays.ficbookapi.RANDOM_FANFIC
 import ru.blays.ficbookapi.UrlProcessor.UrlProcessor
 import ru.blays.ficbookapi.UrlProcessor.UrlProcessor.analyzeUrl
 import ru.blays.ficbookapi.data.SectionWithQuery
-import ru.blays.ficbookapi.dataModels.CookieModel
 
 class DefaultRootComponent private constructor(
     private val componentContext: ComponentContext,
@@ -163,6 +159,14 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
+            RootComponent.Config.Users -> {
+                RootComponent.Child.Users(
+                    DefaultUsersRootComponent(
+                        componentContext = componentContext,
+                        output = ::onUsersOutput
+                    )
+                )
+            }
         }
     }
 
@@ -228,6 +232,11 @@ class DefaultRootComponent private constructor(
             is MainScreenComponent.Output.OpenCollection -> {
                 navigation.push(
                     RootComponent.Config.Collection(output.section)
+                )
+            }
+            is MainScreenComponent.Output.OpenUsersScreen -> {
+                navigation.push(
+                    RootComponent.Config.Users
                 )
             }
         }
@@ -308,15 +317,15 @@ class DefaultRootComponent private constructor(
         }
     }
 
-    private suspend fun readCookiesFromDB(): List<CookieModel> = coroutineScope {
-        val realm: Realm = injectRealm(CookieEntity::class)
-        val savedCookies = realm
-            .query(CookieEntity::class)
-            .find()
-            .map(CookieEntity::toApiModel)
-
-        realm.close()
-        return@coroutineScope savedCookies
+    private fun onUsersOutput(output: UsersRootComponent.Output) {
+        when(output) {
+            UsersRootComponent.Output.NavigateBack -> navigation.pop()
+            is UsersRootComponent.Output.OpenAuthorProfile -> navigation.push(
+                RootComponent.Config.AuthorProfile(
+                    href = output.href
+                )
+            )
+        }
     }
 
     private fun getConfigurationForLink(link: String?): RootComponent.Config {

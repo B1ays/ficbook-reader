@@ -433,6 +433,24 @@ private fun DrawerContent(
                 )
             }
         )
+        NavigationDrawerItem(
+            label = {
+                Text(text = "Авторы")
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter =  painterResource(Res.image.ic_users),
+                    contentDescription = "Иконка пользователи"
+                )
+            },
+            selected = false,
+            onClick = {
+                component.onOutput(
+                    MainScreenComponent.Output.OpenUsersScreen
+                )
+            }
+        )
         Spacer(modifier = Modifier.height(4.dp))
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
         NavigationDrawerItem(

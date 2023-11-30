@@ -13,4 +13,5 @@ val apiModule = module {
     factoryOf(::CommentsApiImpl) bind CommentsApi::class
     factoryOf(::FanficPageApiImpl) bind FanficPageApi::class
     factoryOf(::FanficsListApiImpl) bind FanficsListApi::class
+    factoryOf(::UsersApiImpl) bind UsersApi::class
 }

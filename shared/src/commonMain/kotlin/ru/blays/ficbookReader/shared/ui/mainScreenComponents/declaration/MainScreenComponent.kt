@@ -34,6 +34,7 @@ interface MainScreenComponent {
         data object OpenRandomFanficPage: Output()
         data object OpenSettings: Output()
         data object UserProfile: Output()
+        data object OpenUsersScreen: Output()
     }
 
     data class State(

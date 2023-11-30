@@ -320,12 +320,10 @@ private fun ProfilePager(
             is AuthorProfileComponent.Tabs.WorksAsBeta -> FanficsListContent(page.component)
             is AuthorProfileComponent.Tabs.WorksAsCoauthor -> FanficsListContent(page.component)
             is AuthorProfileComponent.Tabs.WorksAsGamma -> FanficsListContent(page.component)
-            is AuthorProfileComponent.Tabs.Comments -> {
-                CommentsContent(
-                    component = page.component,
-                    hideAvatar = true
-                )
-            }
+            is AuthorProfileComponent.Tabs.Comments -> CommentsContent(
+                component = page.component,
+                hideAvatar = true
+            )
         }
     }
 }
