@@ -21,6 +21,7 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -144,6 +145,8 @@ private fun LandscapeContent(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
+                    maxLines = 6,
+                    overflow = TextOverflow.Ellipsis,
                     onTextClick = onCardClick,
                     onUrlClick = onUrlClicked
                 )
@@ -204,6 +207,8 @@ private fun PortraitContent(
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
+                    maxLines = 6,
+                    overflow = TextOverflow.Ellipsis,
                     onTextClick = onCardClick,
                     onUrlClick = onUrlClicked
                 )
