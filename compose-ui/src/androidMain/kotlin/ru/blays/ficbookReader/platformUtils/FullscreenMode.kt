@@ -3,21 +3,26 @@ package ru.blays.ficbookReader.platformUtils
 import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
 @Composable
-actual fun FullscreenContainer(enabled: Boolean, content: @Composable () -> Unit) {
+actual fun FullscreenContainer(
+    enabled: Boolean,
+    content: @Composable () -> Unit
+) {
     // Make app fullscreen
     val view = LocalView.current
-    val window = remember { (view.context as Activity).window }
+    val window = (view.context as Activity).window
 
     DisposableEffect(key1 = enabled) {
         val windowInsetsController =
             WindowCompat.getInsetsController(window, view)
+        val systemBarColor = window.statusBarColor
+        val navigationBarColor = window.navigationBarColor
+        val fitsSystemWindows = window.decorView.fitsSystemWindows
 
         if (!view.isInEditMode && enabled) {
             windowInsetsController.systemBarsBehavior =
@@ -31,6 +36,9 @@ actual fun FullscreenContainer(enabled: Boolean, content: @Composable () -> Unit
             windowInsetsController.show(
                 WindowInsetsCompat.Type.systemBars()
             )
+            window.decorView.fitsSystemWindows = fitsSystemWindows
+            window.statusBarColor = systemBarColor
+            window.navigationBarColor = navigationBarColor
         }
     }
     content()

@@ -9,6 +9,7 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -114,15 +115,9 @@ actual fun AppTheme(
         SideEffect {
             val window = (view.context as Activity).window
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val transparentColor = Color.Transparent.toArgb()
-                window.statusBarColor = transparentColor
-                window.navigationBarColor = transparentColor
-            } else {
-                val backgroundColor = animatedColorScheme.background.toArgb()
-                window.statusBarColor = backgroundColor
-                window.navigationBarColor = backgroundColor
-            }
+            val transparentColor = Color.Transparent.toArgb()
+            window.statusBarColor = transparentColor
+            window.navigationBarColor = transparentColor
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 window.isNavigationBarContrastEnforced = false
@@ -134,13 +129,27 @@ actual fun AppTheme(
         }
     }
 
-    CompositionLocalProvider(LocalDynamicMaterialThemeSeed provides primaryColor) {
-        MaterialTheme(
-            colorScheme = animatedColorScheme,
-            content = content,
-            typography = Typography
+    val rippleTheme = remember(animatedColorScheme) {
+        PrimaryRippleTheme(
+            primaryColor = animatedColorScheme.primary,
+            isDarkTheme = { darkTheme }
         )
     }
+
+
+    MaterialTheme(
+        colorScheme = animatedColorScheme,
+        content = {
+            CompositionLocalProvider(
+                LocalRippleTheme provides rippleTheme,
+                LocalDynamicMaterialThemeSeed provides primaryColor
+            ) {
+                content()
+            }
+        },
+        typography = Typography
+    )
+
 }
 
 @Composable

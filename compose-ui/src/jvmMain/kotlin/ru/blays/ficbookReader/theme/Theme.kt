@@ -100,37 +100,25 @@ actual fun AppTheme(
         scrim = animateColorAsState(colors.scrim, animationSpec).value
     )
 
-    class CustomRippleTheme(private val rippleColor: Color) : RippleTheme {
-        @Composable
-        override fun defaultColor(): Color =
-            RippleTheme.defaultRippleColor(
-                rippleColor,
-                lightTheme = !darkTheme
-            )
-
-        @Composable
-        override fun rippleAlpha(): RippleAlpha =
-            RippleTheme.defaultRippleAlpha(
-                rippleColor.copy(alpha = 0.85f),
-                lightTheme = !darkTheme
-            )
-    }
-
-    CompositionLocalProvider(
-        LocalDynamicMaterialThemeSeed provides primaryColor
-    ) {
-        MaterialTheme(
-            colorScheme = animatedColorScheme,
-            content = {
-                CompositionLocalProvider(
-                    LocalRippleTheme provides CustomRippleTheme(animatedColorScheme.primary)
-                ) {
-                    content()
-                }
-            },
-            typography = Typography
+    val rippleTheme = remember(animatedColorScheme) {
+        PrimaryRippleTheme(
+            primaryColor = animatedColorScheme.primary,
+            isDarkTheme = { darkTheme }
         )
     }
+
+    MaterialTheme(
+        colorScheme = animatedColorScheme,
+        content = {
+            CompositionLocalProvider(
+                LocalRippleTheme provides rippleTheme,
+                LocalDynamicMaterialThemeSeed provides primaryColor
+            ) {
+                content()
+            }
+        },
+        typography = Typography
+    )
 }
 
 @Composable
