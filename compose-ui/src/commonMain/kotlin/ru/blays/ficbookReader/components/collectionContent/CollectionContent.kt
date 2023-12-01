@@ -1,5 +1,10 @@
 package ru.blays.ficbookReader.components.collectionContent
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -23,74 +28,150 @@ import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 
 @Composable
 fun CollectionContent(component: CollectionFanficsListComponent) {
-    val state by component.state.subscribeAsState()
-
-    val bottomSheetState = rememberModalBottomSheetState(false)
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = bottomSheetState
-    )
-
-    val coroutineScope = rememberCoroutineScope()
-
-    Box(
+    BoxWithConstraints(
         modifier = Modifier.systemBarsPadding(),
     ) {
-        BottomSheetScaffold(
-            modifier = Modifier.fillMaxSize(),
-            sheetPeekHeight = 0.dp,
-            sheetContent = {
-                SortParamsBottomSheetContent(component) {
-                    coroutineScope.launch {
-                        bottomSheetState.partialExpand()
-                    }
-                }
-            },
-            topBar = {
-                CollapsingsToolbar(
-                    navigationIcon = {
-                        IconButton(
-                            onClick = {
-                                component.fanficsListComponent.onOutput(
-                                    FanficsListComponent.Output.NavigateBack
-                                )
-                            }
-                        ) {
-                            Icon(
-                                painter = painterResource(Res.image.ic_arrow_back),
-                                contentDescription = "Стрелка назад"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    bottomSheetState.expand()
-                                }
-                            }
-                        ) {
-                            Icon(
-                                painter = painterResource(Res.image.ic_sort),
-                                contentDescription = "Сортировка",
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
-                    },
-                    collapsingTitle = CollapsingTitle.small(state.collectionName)
-                )
-            },
-            scaffoldState = bottomSheetScaffoldState
-        ) { padding ->
-            FanficsListContent(
-                component = component.fanficsListComponent,
-                modifier = Modifier.padding(top = padding.calculateTopPadding()),
-            )
+        if(maxWidth > 500.dp) {
+            LandscapeContent(component)
+        } else {
+            PortraitContent(component)
         }
     }
 }
 
 @Composable
+private fun LandscapeContent(component: CollectionFanficsListComponent) {
+    val state by component.state.subscribeAsState()
+
+    var sortParamsOpened by rememberSaveable { mutableStateOf(false) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CollapsingsToolbar(
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            component.fanficsListComponent.onOutput(
+                                FanficsListComponent.Output.NavigateBack
+                            )
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.image.ic_arrow_back),
+                            contentDescription = "Стрелка назад"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            sortParamsOpened = !sortParamsOpened
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.image.ic_sort),
+                            contentDescription = "Сортировка",
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                },
+                collapsingTitle = CollapsingTitle.small(state.collectionName)
+            )
+        }
+    ) { padding ->
+        Box {
+            FanficsListContent(
+                component = component.fanficsListComponent,
+            )
+            AnimatedVisibility(
+                visible = sortParamsOpened,
+                enter = expandHorizontally(spring()),
+                exit = shrinkHorizontally(spring()),
+                modifier = Modifier
+                    .padding(top = padding.calculateTopPadding())
+                    .background(
+                        color = MaterialTheme.colorScheme.background,
+                        shape = DrawerDefaults.shape
+                    ),
+            ) {
+                SortParamsBottomSheetContent(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxHeight()
+                        .fillMaxWidth(0.4F),
+                    component = component,
+                ) {
+                    sortParamsOpened = false
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PortraitContent(component: CollectionFanficsListComponent) {
+    val state by component.state.subscribeAsState()
+    val bottomSheetState = rememberModalBottomSheetState(false)
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
+    val coroutineScope = rememberCoroutineScope()
+
+    BottomSheetScaffold(
+        modifier = Modifier.fillMaxSize(),
+        sheetPeekHeight = 0.dp,
+        sheetContent = {
+            SortParamsBottomSheetContent(component = component) {
+                coroutineScope.launch {
+                    bottomSheetState.partialExpand()
+                }
+            }
+        },
+        topBar = {
+            CollapsingsToolbar(
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            component.fanficsListComponent.onOutput(
+                                FanficsListComponent.Output.NavigateBack
+                            )
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.image.ic_arrow_back),
+                            contentDescription = "Стрелка назад"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                bottomSheetState.expand()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.image.ic_sort),
+                            contentDescription = "Сортировка",
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                },
+                collapsingTitle = CollapsingTitle.small(state.collectionName)
+            )
+        },
+        scaffoldState = bottomSheetScaffoldState
+    ) { padding ->
+        FanficsListContent(
+            component = component.fanficsListComponent,
+            modifier = Modifier.padding(top = padding.calculateTopPadding()),
+        )
+    }
+}
+
+@Composable
 private fun SortParamsBottomSheetContent(
+    modifier: Modifier = Modifier,
     component: CollectionFanficsListComponent,
     onDismissRequest: () -> Unit = {},
 ) {
@@ -101,7 +182,7 @@ private fun SortParamsBottomSheetContent(
     var sortMenuExpanded by rememberSaveable { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
+        modifier = modifier.padding(DefaultPadding.CardDefaultPadding),
     ) {
         TextField(
             value = state.currentParams.searchText ?: "",
