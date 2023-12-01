@@ -417,24 +417,6 @@ private fun DrawerContent(
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
         NavigationDrawerItem(
             label = {
-                Text(text = "Случайный фанфик")
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_dice),
-                    contentDescription = "Иконка игральные кости"
-                )
-            },
-            selected = false,
-            onClick = {
-                component.onOutput(
-                    MainScreenComponent.Output.OpenRandomFanficPage
-                )
-            }
-        )
-        NavigationDrawerItem(
-            label = {
                 Text(text = "Авторы")
             },
             icon = {
@@ -448,6 +430,24 @@ private fun DrawerContent(
             onClick = {
                 component.onOutput(
                     MainScreenComponent.Output.OpenUsersScreen
+                )
+            }
+        )
+        NavigationDrawerItem(
+            label = {
+                Text(text = "Случайный фанфик")
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter =  painterResource(Res.image.ic_dice),
+                    contentDescription = "Иконка игральные кости"
+                )
+            },
+            selected = false,
+            onClick = {
+                component.onOutput(
+                    MainScreenComponent.Output.OpenRandomFanficPage
                 )
             }
         )
