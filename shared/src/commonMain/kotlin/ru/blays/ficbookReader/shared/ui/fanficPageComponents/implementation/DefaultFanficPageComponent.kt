@@ -149,10 +149,11 @@ class DefaultFanficPageComponent(
             chapters
         ) {
             is FanficChapterStable.SeparateChaptersModel -> {
+                val index = chapters.chapters.indexOfLast { it.readed }
                 navigation.push(
                     FanficPageComponent.Config.Reader(
                         fanficID = fanficID,
-                        index = chapters.chapters.indexOfLast { it.readed },
+                        index = if(index == -1) 0 else index,
                         chapter = chapters
                     )
                 )
