@@ -27,6 +27,8 @@ val flameGradient = Brush.verticalGradient(
     )
 )
 
+val lightGreen = likeColor
+
 // Fanfic direction colors
 val genColor = Color(0xFF986a43)
 val hetColor = Color(0xFF1E7A20)
