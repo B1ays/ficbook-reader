@@ -52,6 +52,7 @@ class AuthorizationApiImpl(
                 )
             )
         } catch (e: Exception) {
+            e.printStackTrace()
             ApiResult.failure(e)
         }
     }

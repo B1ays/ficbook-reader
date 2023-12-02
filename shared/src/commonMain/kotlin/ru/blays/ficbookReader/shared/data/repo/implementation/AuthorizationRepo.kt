@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.CookieJar
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.cookieStorage.DynamicCookieJar
 import ru.blays.ficbookReader.shared.data.dto.UserModelStable
@@ -26,14 +25,15 @@ class AuthorizationRepo(
 
     override val authorized get() = _authorized
     override val currentUser get() = _currentUser
-    override val cookieStorage: CookieJar
-        get() = _cookieStorage
+    override val cookieStorage get() = _cookieStorage
 
     override suspend fun logIn(loginModel: LoginModel): ApiResult<AuthorizationResult> {
         val result = api.logIn(loginModel)
         if(result is ApiResult.Success) {
-            _currentUser.value = result.value.user?.toStableModel()
-            _authorized.value = true
+            if(result.value.responseResult.success) {
+                _currentUser.value = result.value.user?.toStableModel()
+                _authorized.value = true
+            }
         }
         return result
     }

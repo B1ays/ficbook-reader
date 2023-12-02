@@ -69,10 +69,19 @@ class DefaultUserLogInComponent(
                     }
                 }
                 is ApiResult.Success -> {
-                    runOnUiThread {
-                        onOutput(
-                            UserLogInComponent.Output.NavigateBack
-                        )
+                    if(result.value.responseResult.success) {
+                        runOnUiThread {
+                            onOutput(
+                                UserLogInComponent.Output.NavigateBack
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                success = false,
+                                reason = result.value.responseResult.error?.reason
+                            )
+                        }
                     }
                 }
             }
