@@ -29,9 +29,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.example.myapplication.compose.Res
@@ -40,6 +42,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
+import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.VoteReaderComponent
 import ru.blays.ficbookReader.theme.ReaderTheme
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -121,7 +124,8 @@ actual fun FanficReaderContent(component: MainReaderComponent) {
         reader.execute(
             modifier = Modifier
                 .padding(top = padding.calculateTopPadding())
-                .fillMaxSize()
+                .fillMaxSize(),
+            voteComponent = component.voteComponent
         )
     }
 }
@@ -138,7 +142,8 @@ private class Reader(
 
     @Composable
     fun execute(
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        voteComponent: VoteReaderComponent
     ) {
         val currentState by state
         val text = currentState.text
@@ -169,6 +174,7 @@ private class Reader(
                 }
                 if (pagerState != null) {
                     BottomControl(
+                        voteComponent = voteComponent,
                         pagerState = pagerState!!,
                         readerState = currentState,
                         modifier = Modifier.fillMaxHeight(),
@@ -253,9 +259,8 @@ private class Reader(
                         }
 
                         onDispose {
-                            val pagerState = pagerState
-                            if (pagerState != null) {
-                                val absoluteCharIndex = pages.findCharIndexForPageIndex(pagerState.currentPage)
+                            pagerState?.let {
+                                val absoluteCharIndex = pages.findCharIndexForPageIndex(it.currentPage)
                                 currentCharIndex = absoluteCharIndex
                                 onDispose(absoluteCharIndex)
                             }
@@ -298,9 +303,8 @@ private class Reader(
                             }
                         }
                         onDispose {
-                            val pagerState = pagerState
-                            if (pagerState != null) {
-                                val absoluteCharIndex = pages.findCharIndexForPageIndex(pagerState.currentPage)
+                            pagerState?.let {
+                                val absoluteCharIndex = pages.findCharIndexForPageIndex(it.currentPage)
                                 currentCharIndex = absoluteCharIndex
                                 onDispose(absoluteCharIndex)
                             }
@@ -438,18 +442,99 @@ private class Reader(
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun BottomControl(
-        pagerState: PagerState,
+        voteComponent: VoteReaderComponent,
         readerState: MainReaderComponent.State,
-        modifier: Modifier = Modifier,
+        pagerState: PagerState,
         openNextChapter: () -> Unit,
-        openPreviousChapter: () -> Unit
+        openPreviousChapter: () -> Unit,
+        modifier: Modifier = Modifier
     ) {
         val hasPreviousPage = pagerState.canScrollBackward
         val hasNextPage = pagerState.canScrollForward
         val hasNextChapter = readerState.chapterIndex < readerState.chaptersCount - 1
         val hasPreviousChapter = readerState.chapterIndex > 0
 
+        var dialogOpened by remember { mutableStateOf(false) }
+
         val scope = rememberCoroutineScope()
+
+        if(dialogOpened) {
+            val voteState by voteComponent.state.subscribeAsState()
+            Dialog(
+                onDismissRequest = { dialogOpened = false }
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        if(voteState.canVote) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "Жду продолжения",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
+                                    modifier = Modifier.weight(0.6F),
+                                )
+                                Checkbox(
+                                    checked = voteState.votedForContinue,
+                                    onCheckedChange = { newValue ->
+                                        voteComponent.sendIntent(
+                                            VoteReaderComponent.Intent.VoteForContinue(
+                                                vote = newValue
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Прочитано",
+                                style = MaterialTheme.typography.titleMedium,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                modifier = Modifier.weight(0.6F),
+                            )
+                            Checkbox(
+                                checked = voteState.readed,
+                                onCheckedChange = { newValue ->
+                                    voteComponent.sendIntent(
+                                        VoteReaderComponent.Intent.Read(
+                                            read = newValue
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(
+                                onClick = {
+                                    dialogOpened = false
+                                }
+                            ) {
+                                Text("Ок")
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         Row(
             modifier = modifier.fillMaxWidth(),
@@ -486,8 +571,8 @@ private class Reader(
                             }
                         },
                         valueRange = (
-                                0F..(pagerState.pageCount - 1).coerceAtLeast(1).toFloat()
-                                )
+                            0F..(pagerState.pageCount - 1).coerceAtLeast(1).toFloat()
+                        )
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
@@ -505,6 +590,12 @@ private class Reader(
                     contentDescription = "Кнопка следующая глава",
                     onClick = openNextChapter
                 )
+            }
+        }
+
+        LaunchedEffect(hasNextPage, hasNextChapter) {
+            if(!hasNextPage && !hasNextChapter && pagerState.pageCount >= 1) {
+                dialogOpened = true
             }
         }
     }
