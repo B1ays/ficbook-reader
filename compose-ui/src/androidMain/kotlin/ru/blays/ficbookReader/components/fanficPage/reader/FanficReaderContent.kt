@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
@@ -35,6 +37,9 @@ import androidx.core.graphics.ColorUtils
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.example.myapplication.compose.Res
+import com.godaddy.android.colorpicker.ClassicColorPicker
+import com.godaddy.android.colorpicker.HsvColor
+import com.godaddy.android.colorpicker.toColorInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -713,18 +718,18 @@ private class Reader(
         readerSettingsModel: MainReaderComponent.Settings,
         closeDialog: () -> Unit
     ) {
+        val scrollState = rememberScrollState()
         AlertDialog(
             onDismissRequest = closeDialog,
         ) {
             Card(
-                modifier = Modifier
-                    .fillMaxWidth(0.8F)
-
+                modifier = Modifier.fillMaxWidth(0.8F)
             ) {
                 Column(
                     modifier = Modifier
                         .padding(DefaultPadding.CardDefaultPaddingLarge)
                         .fillMaxWidth()
+                        .verticalScroll(scrollState)
                 ) {
                     Text(
                         text = "Настройки читалки",
@@ -856,46 +861,108 @@ private class Reader(
                         }
                     }
                     Spacer(modifier = Modifier.height(6.dp))
+                    val lightColor = remember(readerSettingsModel.lightColor) { Color(readerSettingsModel.lightColor) }
+                    var lightColorSelectorOpen by remember { mutableStateOf(false) }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable {
-
+                            lightColorSelectorOpen = !lightColorSelectorOpen
                         }
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(50.dp)
                                 .background(
-                                    Color(readerSettingsModel.lightColor),
-                                    RoundedCornerShape(10.dp)
+                                    color = lightColor,
+                                    shape = RoundedCornerShape(10.dp)
                                 )
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(text = "Светлый цвет")
                     }
+                    ColorPickerItem(
+                        visible = lightColorSelectorOpen,
+                        initialColor = lightColor,
+                        onColorSelected = { colorArgb ->
+                            component.sendIntent(
+                                SettingsReaderComponent.Intent.LightColorChanged(colorArgb)
+                            )
+                        }
+                    )
                     Spacer(modifier = Modifier.height(6.dp))
+                    var darkColorSelectorOpen by remember { mutableStateOf(false) }
+                    val darkColor = remember(readerSettingsModel.darkColor) { Color(readerSettingsModel.darkColor) }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable {
-
+                            darkColorSelectorOpen = !darkColorSelectorOpen
                         }
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(50.dp)
                                 .background(
-                                    Color(readerSettingsModel.darkColor),
+                                    darkColor,
                                     RoundedCornerShape(10.dp)
                                 )
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(text = "Тёмный цвет")
                     }
+                    ColorPickerItem(
+                        visible = darkColorSelectorOpen,
+                        initialColor = darkColor,
+                        onColorSelected = { colorArgb ->
+                            component.sendIntent(
+                                SettingsReaderComponent.Intent.DarkColorChanged(colorArgb)
+                            )
+                        }
+                    )
                 }
             }
         }
     }
 
+    @Composable
+    private fun ColorPickerItem(
+        visible: Boolean,
+        initialColor: Color,
+        onColorSelected: (colorArgb: Int) -> Unit
+    ) {
+        AnimatedVisibility(
+            visible = visible,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            var newColor by remember { mutableStateOf(HsvColor.from(initialColor)) }
+            Column {
+                Spacer(modifier = Modifier.height(10.dp))
+                ClassicColorPicker(
+                    color = newColor,
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth(),
+                ) { hsvColor ->
+                    newColor = hsvColor
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Button(
+                    onClick = {
+                        onColorSelected(newColor.toColorInt())
+                    }
+                ) {
+                    Text("Выбрать")
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Icon(
+                        painter = painterResource(id = Res.image.ic_dropper),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+        }
+    }
 
     @JvmName("findPageIndexForCharIndexSinglePanel")
     private fun List<String>.findPageIndexForCharIndex(index: Int): Int {
@@ -920,4 +987,3 @@ private class Reader(
         return currentIndex
     }
 }
-

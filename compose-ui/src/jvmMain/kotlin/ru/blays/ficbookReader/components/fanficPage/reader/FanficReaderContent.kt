@@ -1,10 +1,7 @@
 package ru.blays.ficbookReader.components.fanficPage.reader
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -22,6 +19,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -37,6 +35,8 @@ import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.example.myapplication.compose.Res
+import com.godaddy.android.colorpicker.ClassicColorPicker
+import com.godaddy.android.colorpicker.HsvColor
 import io.github.skeptick.libres.compose.painterResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -671,6 +671,8 @@ private class Reader(
                 modifier = Modifier.padding(horizontal = 10.dp)
             )
             Spacer(modifier = Modifier.height(6.dp))
+            val darkColor = remember(state.darkColor) { Color(state.darkColor) }
+            var darkColorSelectorOpen by remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -680,18 +682,30 @@ private class Reader(
                     modifier = Modifier
                         .size(50.dp)
                         .background(
-                            color = Color(state.darkColor),
+                            color = darkColor,
                             shape = CardDefaults.shape
                         )
                         .clip(CardDefaults.shape)
                         .clickable {
-
+                            darkColorSelectorOpen = !darkColorSelectorOpen
                         }
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text("Тёмный цвет")
             }
+            ColorPickerItem(
+                visible = darkColorSelectorOpen,
+                initialColor = darkColor,
+                onColorSelected = { colorArgb ->
+                    darkColorSelectorOpen = false
+                    component.sendIntent(
+                        SettingsReaderComponent.Intent.DarkColorChanged(colorArgb)
+                    )
+                }
+            )
             Spacer(modifier = Modifier.height(6.dp))
+            val lightColor = remember(state.lightColor) { Color(state.lightColor) }
+            var lightColorSelectorOpen by remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -701,17 +715,27 @@ private class Reader(
                     modifier = Modifier
                         .size(50.dp)
                         .background(
-                            color = Color(state.lightColor),
+                            color = lightColor,
                             shape = CardDefaults.shape
                         )
                         .clip(CardDefaults.shape)
                         .clickable {
-
+                            lightColorSelectorOpen = !lightColorSelectorOpen
                         }
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text("Светлый цвет")
             }
+            ColorPickerItem(
+                visible = lightColorSelectorOpen,
+                initialColor = lightColor,
+                onColorSelected = { colorArgb ->
+                    lightColorSelectorOpen = false
+                    component.sendIntent(
+                        SettingsReaderComponent.Intent.LightColorChanged(colorArgb)
+                    )
+                }
+            )
             Spacer(modifier = Modifier.height(6.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(6.dp))
@@ -756,6 +780,48 @@ private class Reader(
                         )
                     }
                 )
+            }
+        }
+    }
+
+    @Composable
+    private fun ColorPickerItem(
+        visible: Boolean,
+        initialColor: Color,
+        onColorSelected: (colorArgb: Int) -> Unit
+    ) {
+        AnimatedVisibility(
+            visible = visible,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            var newColor by remember { mutableStateOf(HsvColor.from(initialColor)) }
+            Column {
+                Spacer(modifier = Modifier.height(10.dp))
+                ClassicColorPicker(
+                    color = newColor,
+                    modifier = Modifier
+                        .padding(horizontal = 5.dp)
+                        .height(200.dp)
+                        .fillMaxWidth(),
+                ) { hsvColor ->
+                    newColor = hsvColor
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Button(
+                    onClick = {
+                        onColorSelected(newColor.toColor().toArgb())
+                    }
+                ) {
+                    Text("Выбрать")
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Icon(
+                        painter = painterResource(Res.image.ic_dropper),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
             }
         }
     }
