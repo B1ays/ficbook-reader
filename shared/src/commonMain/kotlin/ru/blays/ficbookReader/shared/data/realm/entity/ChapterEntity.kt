@@ -7,6 +7,7 @@ import org.mongodb.kbson.ObjectId
 @Suppress("PropertyName")
 class ChapterEntity(
     @PrimaryKey var _id: ObjectId = ObjectId(),
+    var fanficID: String,
     var name: String,
     var text: String,
     var href: String?,
@@ -15,6 +16,7 @@ class ChapterEntity(
 ): RealmObject {
     constructor(): this(
         name = "Глава 1",
+        fanficID = "",
         text = "",
         href = null,
         lastWatchedCharIndex = 0,

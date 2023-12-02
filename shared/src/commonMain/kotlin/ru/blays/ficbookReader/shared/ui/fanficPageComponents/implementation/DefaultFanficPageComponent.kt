@@ -3,8 +3,7 @@ package ru.blays.ficbookReader.shared.ui.fanficPageComponents.implementation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
-import org.koin.mp.KoinPlatform.getKoin
-import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficPageRepo
+import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultAllCommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultPartCommentsComponent
@@ -42,16 +41,16 @@ class DefaultFanficPageComponent(
             is FanficPageComponent.Config.Reader -> FanficPageComponent.Child.Reader(
                 DefaultMainReaderComponent(
                     componentContext = childContext,
-                    chapters = configuration.chapters,
+                    chapters = configuration.chapter,
                     initialChapterIndex = configuration.index,
                     fanficID = configuration.fanficID,
                     output = ::onReaderOutput
                 )
             )
             is FanficPageComponent.Config.PartComments -> FanficPageComponent.Child.PartComments(
-                DefaultPartCommentsComponent.createWithHref(
+                DefaultPartCommentsComponent(
                     componentContext = childContext,
-                    href = configuration.href,
+                    partID = configuration.chapterID,
                     output = ::onCommentsOutput
                 )
             )
@@ -80,13 +79,15 @@ class DefaultFanficPageComponent(
                     FanficPageComponent.Config.Reader(
                         fanficID = output.fanficID,
                         index = output.index,
-                        chapters = output.chapters
+                        chapter = output.chapters
                     )
                 )
             }
             is FanficPageInfoComponent.Output.OpenPartComments -> {
                 navigation.push(
-                    FanficPageComponent.Config.PartComments(output.href)
+                    FanficPageComponent.Config.PartComments(
+                        chapterID = output.chapterID
+                    )
                 )
             }
             is FanficPageInfoComponent.Output.OpenAllComments -> {
@@ -95,25 +96,10 @@ class DefaultFanficPageComponent(
                 )
             }
             is FanficPageInfoComponent.Output.OpenLastOrFirstChapter -> {
-                val chapters = output.chapters
-                val lastReadedChapterIndex = chapters.indexOfLast { it.readed }
-                if(lastReadedChapterIndex != -1) {
-                    navigation.push(
-                        FanficPageComponent.Config.Reader(
-                            fanficID = output.fanficID,
-                            index = lastReadedChapterIndex,
-                            chapters = chapters
-                        )
-                    )
-                } else if (chapters.isNotEmpty()) {
-                    navigation.push(
-                        FanficPageComponent.Config.Reader(
-                            fanficID = output.fanficID,
-                            index = 0,
-                            chapters = chapters
-                        )
-                    )
-                }
+               openLastReadedChapter(
+                   chapters = output.chapter,
+                   fanficID = output.fanficID
+               )
             }
             is FanficPageInfoComponent.Output.OpenUrl -> {
                 onOutput(
@@ -155,17 +141,37 @@ class DefaultFanficPageComponent(
         }
     }
 
+    private fun openLastReadedChapter(
+        chapters: FanficChapterStable,
+        fanficID: String
+    ) {
+        when(
+            chapters
+        ) {
+            is FanficChapterStable.SeparateChaptersModel -> {
+                navigation.push(
+                    FanficPageComponent.Config.Reader(
+                        fanficID = fanficID,
+                        index = chapters.chapters.indexOfLast { it.readed },
+                        chapter = chapters
+                    )
+                )
+            }
+            is FanficChapterStable.SingleChapterModel -> {
+                navigation.push(
+                    FanficPageComponent.Config.Reader(
+                        fanficID = fanficID,
+                        index = 0,
+                        chapter = chapters
+                    )
+                )
+            }
+        }
+    }
+
     private fun onReaderOutput(output: MainReaderComponent.Output) {
         when(output) {
             is MainReaderComponent.Output.NavigateBack -> navigation.pop()
         }
-    }
-
-    private fun getIDFromHref(href: String): String {
-        val clearedHref = href
-            .substringBefore('?')
-            .removeSuffix("/")
-
-        return clearedHref.substringAfterLast('/').substringBefore('#')
     }
 }

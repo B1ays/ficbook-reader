@@ -22,3 +22,7 @@ const val ATTR_HREF = "href"
 const val ATTR_SRC = "src"
 const val ATTR_VALUE = "value"
 const val ATTR_NAME = "name"
+
+
+/* ---- Regex constants ---- */
+val notNumberRegex = Regex("[^0-9]+")

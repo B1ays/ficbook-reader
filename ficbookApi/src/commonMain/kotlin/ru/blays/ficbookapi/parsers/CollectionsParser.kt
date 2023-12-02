@@ -10,6 +10,7 @@ import ru.blays.ficbookapi.ATTR_VALUE
 import ru.blays.ficbookapi.dataModels.CollectionModel
 import ru.blays.ficbookapi.dataModels.CollectionSortParams
 import ru.blays.ficbookapi.dataModels.UserModel
+import ru.blays.ficbookapi.notNumberRegex
 
 internal class CollectionListParser: IDataParser<Document, List<CollectionModel>> {
     private val collectionParser = CollectionParser()
@@ -57,7 +58,7 @@ internal class CollectionParser: IDataParser<Element, CollectionModel> {
             .select("div.collection-thumb-info")
             .text()
             .replace(
-                regex = Regex("[^0-9]+"),
+                regex = notNumberRegex,
                 replacement = ""
             )
             .toIntOrNull()

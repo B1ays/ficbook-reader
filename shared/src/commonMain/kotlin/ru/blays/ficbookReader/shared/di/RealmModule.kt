@@ -15,8 +15,14 @@ internal val realmModule = module {
     }
 }
 
-fun injectRealm(vararg entities: KClass<out RealmObject>): Realm {
+fun getRealm(vararg entities: KClass<out RealmObject>): Realm {
     return getKoin().get {
+        parametersOf(entities.toSet())
+    }
+}
+
+fun injectRealm(vararg entities: KClass<out RealmObject>): Lazy<Realm> {
+    return getKoin().inject {
         parametersOf(entities.toSet())
     }
 }

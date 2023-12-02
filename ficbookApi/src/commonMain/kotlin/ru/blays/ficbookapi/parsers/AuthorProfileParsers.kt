@@ -7,6 +7,7 @@ import ru.blays.ficbookapi.ATTR_HREF
 import ru.blays.ficbookapi.ATTR_SRC
 import ru.blays.ficbookapi.data.Section
 import ru.blays.ficbookapi.dataModels.*
+import ru.blays.ficbookapi.notNumberRegex
 
 internal class AuthorMainInfoParser : IDataParser<Document, AuthorMainInfo> {
     override suspend fun parse(data: Document): AuthorMainInfo {
@@ -23,7 +24,7 @@ internal class AuthorMainInfoParser : IDataParser<Document, AuthorMainInfo> {
             val second = select(".user-name-box div").getOrNull(1)?.text()
             return@run if(second?.startsWith("ID") == true) {
                 return@run second.replace(
-                    regex = Regex("[^0-9]+"),
+                    regex = notNumberRegex,
                     replacement = ""
                 )
             } else ""
@@ -42,7 +43,7 @@ internal class AuthorMainInfoParser : IDataParser<Document, AuthorMainInfo> {
             .select("div.small-text a")
             .text()
             .replace(
-                regex = Regex("[^0-9]+"),
+                regex = notNumberRegex,
                 replacement = ""
             )
             .toIntOrNull()

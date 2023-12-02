@@ -26,13 +26,13 @@ interface FanficPageInfoComponent {
         data class OpenChapter(
             val fanficID: String,
             val index: Int,
-            val chapters: List<FanficChapterStable>
+            val chapters: FanficChapterStable
         ): Output()
         data class OpenLastOrFirstChapter(
             val fanficID: String,
-            val chapters: List<FanficChapterStable>
+            val chapter: FanficChapterStable
         ): Output()
-        data class OpenPartComments(val href: String): Output()
+        data class OpenPartComments(val chapterID: String): Output()
         data class OpenAllComments(val href: String): Output()
         data class OpenSection(val section: SectionWithQuery): Output() {
             constructor(

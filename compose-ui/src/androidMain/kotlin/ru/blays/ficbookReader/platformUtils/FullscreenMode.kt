@@ -9,7 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
 @Composable
-actual fun FullscreenContainer(
+fun FullscreenContainer(
     enabled: Boolean,
     content: @Composable () -> Unit
 ) {

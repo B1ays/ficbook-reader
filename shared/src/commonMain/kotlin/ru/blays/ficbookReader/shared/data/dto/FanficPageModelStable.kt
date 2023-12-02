@@ -20,38 +20,41 @@ data class FanficPageModelStable(
     val liked: Boolean,
     val subscribed: Boolean,
     val inCollectionsCount: Int,
-    val chapters: List<FanficChapterStable>,
+    val chapters: FanficChapterStable,
     val rewards: List<RewardModelStable>
 )
 
 @Serializable
 @Immutable
 sealed class FanficChapterStable {
-    abstract val lastWatchedCharIndex: Int
-    abstract val readed: Boolean
+    @Serializable
+    data class SeparateChaptersModel(
+        val chapters: List<Chapter>,
+        val chaptersCount: Int
+    ): FanficChapterStable() {
+        @Serializable
+        data class Chapter(
+            val chapterID: String,
+            val href: String,
+            val name: String,
+            val date: String,
+            val commentsCount: Int,
+            val lastWatchedCharIndex: Int = 0,
+            val readed: Boolean = false
+        )
+    }
 
     @Serializable
-    @Immutable
-    data class SeparateChapterModel(
-        val href: String,
-        val name: String,
-        val date: String,
-        val commentsCount: Int,
-        val commentsHref: String,
-        override val lastWatchedCharIndex: Int = 0,
-        override val readed: Boolean = false
-    ): FanficChapterStable()
-
-    @Serializable
-    @Immutable
     data class SingleChapterModel(
         val date: String,
-        val commentsCount: Int,
-        val commentsHref: String,
-        val text: String,
-        override val lastWatchedCharIndex: Int = 0,
-        override val readed: Boolean = false
+        val text: String
     ): FanficChapterStable()
+
+    val size: Int
+        get() = when(this) {
+            is SeparateChaptersModel -> chaptersCount
+            is SingleChapterModel -> 1
+        }
 }
 
 @Immutable

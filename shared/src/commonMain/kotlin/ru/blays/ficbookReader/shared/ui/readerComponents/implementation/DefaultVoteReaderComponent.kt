@@ -19,14 +19,10 @@ import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.VoteReaderC
 
 class DefaultVoteReaderComponent(
     componentContext: ComponentContext,
-    chapters: List<FanficChapterStable>,
+    private val chapters: FanficChapterStable,
     private val fanficID: String
 ): VoteReaderComponent, ComponentContext by componentContext {
     private val fanficPageRepo: IFanficPageRepo by getKoin().inject()
-
-    private val separateChapters = chapters.filterIsInstance(
-        FanficChapterStable.SeparateChapterModel::class.java
-    )
 
     private val _state = MutableValue(calculateState())
     override val state: Value<VoteReaderComponent.State>
@@ -84,14 +80,16 @@ class DefaultVoteReaderComponent(
     }
 
     private fun calculateState(): VoteReaderComponent.State {
-        val canVote = separateChapters.isNotEmpty()
+        val canVote = chapters is FanficChapterStable.SeparateChaptersModel
         return VoteReaderComponent.State(
             canVote = canVote
         )
     }
 
     private fun getLastChapterHref(): String {
-        val rawHref = separateChapters.last().href
+        val rawHref = if(chapters is FanficChapterStable.SeparateChaptersModel) {
+            chapters.chapters.last().href
+        } else ""
         return rawHref.substringBefore('#')
     }
     private fun getChapterID(href: String): String {

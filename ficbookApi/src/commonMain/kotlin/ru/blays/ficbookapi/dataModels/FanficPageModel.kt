@@ -19,7 +19,7 @@ data class FanficPageModel(
     val liked: Boolean,
     val subscribed: Boolean,
     val inCollectionsCount: Int,
-    val chapters: List<FanficChapter>,
+    val chapters: FanficChapter,
     val rewards: List<RewardModel>
 ) {
     override fun toString(): String {
@@ -32,7 +32,7 @@ fandom: $fandom
 coverUrl: $coverUrl
 tags: ${tags.joinToString { it.toString() }}
 description: $description
-chapters: ${chapters.joinToString("\n") { it.toString() }}
+chapters: $chapters
 rewards: ${rewards.joinToString("\n") { it.toString() }}
 """.trimIndent()
     }
@@ -41,29 +41,23 @@ rewards: ${rewards.joinToString("\n") { it.toString() }}
 @Serializable
 sealed class FanficChapter {
     @Serializable
-    data class SeparateChapterModel(
-        val href: String,
-        val name: String,
-        val date: String,
-        val commentsCount: Int,
-        val commentsHref: String
+    data class SeparateChaptersModel(
+        val chapters: List<Chapter>,
+       val chaptersCount: Int
     ): FanficChapter() {
-        override fun toString(): String {
-            return """
-                href: $href
-                name: $name
-                date: $date
-                commentsCount: $commentsCount
-                commentsHref: $commentsHref
-            """.trimIndent()
-        }
+        @Serializable
+        data class Chapter(
+            val chapterID: String,
+            val href: String,
+            val name: String,
+            val date: String,
+            val commentsCount: Int
+        )
     }
 
     @Serializable
     data class SingleChapterModel(
         val date: String,
-        val commentsCount: Int,
-        val commentsHref: String,
         val text: String
     ): FanficChapter()
 }

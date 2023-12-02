@@ -34,10 +34,10 @@ interface FanficPageComponent {
         data class Reader(
             val fanficID: String,
             val index: Int,
-            val chapters: List<FanficChapterStable>
+            val chapter: FanficChapterStable
         ): Config()
         @Serializable
-        data class PartComments(val href: String): Config()
+        data class PartComments(val chapterID: String): Config()
         @Serializable
         data class AllComments(val href: String): Config()
     }

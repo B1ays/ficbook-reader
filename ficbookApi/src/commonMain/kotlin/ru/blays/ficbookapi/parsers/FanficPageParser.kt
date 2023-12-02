@@ -12,9 +12,12 @@ import org.jsoup.select.Evaluator
 import ru.blays.ficbookapi.ATTR_HREF
 import ru.blays.ficbookapi.ATTR_SRC
 import ru.blays.ficbookapi.dataModels.*
+import ru.blays.ficbookapi.notNumberRegex
 import java.net.URLDecoder
 
 internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
+    private val chapterTextParser = ChapterTextParser()
+
     override suspend fun parse(data: Document): FanficPageModel = coroutineScope {
         val outputSettings: Document.OutputSettings = Document.OutputSettings()
         outputSettings.prettyPrint(false)
@@ -185,80 +188,57 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             )
             .select(".part")
 
-        val chaptersList = mutableListOf<FanficChapter>()
+        val fanficChapters = if(parts.isNotEmpty()) {
+            val chapters = parts.map { element ->
+                val href = element.select("a").attr(ATTR_HREF)
+                val chapterID = href.substringAfterLast('/').substringBefore('#')
 
-        if(parts.isNotEmpty()) {
-            parts.forEach { part ->
-                val href = part
-                    .select("a")
-                    .attr(ATTR_HREF)
+                val chapterName = element.select(
+                    Evaluator.Class("part-title word-break")
+                ).text()
 
-                val chapterName = part
-                    .select(
-                        Evaluator.Class("part-title word-break")
-                    ).text()
-
-                val partInfo = part.select(
+                val partInfo = element.select(
                     Evaluator.Class("part-info text-muted")
                 )
+
                 val date = partInfo
                     .select("span")
                     .text()
-                val (commentsCount, commentsHref) = partInfo
-                    .select("a")
-                    .run {
-                        (
-                            text().removePrefix("Отзывы: ")
-                                .toIntOrNull()
-                                ?: 0
-                        ) to attr("href")
-                    }
 
-                chaptersList += FanficChapter.SeparateChapterModel(
+                val commentsCount = partInfo.select("a")
+                    .text()
+                    .replace(
+                        regex = notNumberRegex,
+                        replacement = ""
+                    )
+                    .toIntOrNull()
+                    ?: 0
+
+                FanficChapter.SeparateChaptersModel.Chapter(
+                    chapterID = chapterID,
                     href = href,
                     name = chapterName,
                     date = date,
-                    commentsCount = commentsCount,
-                    commentsHref = commentsHref
+                    commentsCount = commentsCount
                 )
             }
+            FanficChapter.SeparateChaptersModel(
+                chapters = chapters,
+                chaptersCount = chapters.size
+            )
         } else {
             val date = data
                 .select(".part-date")
                 .text()
-
-            val (commentsCount, commentsHref) = data
-                .select(
-                    Evaluator.Class("btn btn-primary btn-with-description")
-                )
-                .firstOrNull {
-                    it.select(".description")
-                        .text()
-                        .contains("Отзывы")
-                }
-                ?.run {
-                    (
-                        select("span")
-                            .text()
-                            .trim()
-                            .toIntOrNull()
-                            ?: 0
-                    ) to attr(ATTR_HREF)
-                }
-                ?: (0 to "")
-
-            val chapterTextParser = ChapterTextParser()
 
             val textElements = data.select(
                 Evaluator.Class("js-part-text part_text clearfix js-public-beta-text js-bookmark-area")
             )
             val text = chapterTextParser.parse(textElements)
 
-            chaptersList += FanficChapter.SingleChapterModel(
-                date,
-                commentsCount,
-                commentsHref,
-                text
+            FanficChapter.SingleChapterModel(
+                date = date,
+                text = text
             )
         }
 
@@ -287,7 +267,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
                         val rawString = sizeInfoParts[1]
                         return@run rawString
                             .replace(
-                                regex = "[^0-9]".toRegex(),
+                                regex = notNumberRegex,
                                 replacement = ""
                             )
                             .toIntOrNull()
@@ -297,7 +277,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
                         val rawString = sizeInfoParts[0]
                         return@run rawString
                             .replace(
-                                regex = "[^0-9]".toRegex(),
+                                regex = notNumberRegex,
                                 replacement = ""
                             )
                             .toIntOrNull()
@@ -357,7 +337,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             liked = liked,
             subscribed = subscribed,
             inCollectionsCount = 0,
-            chapters = chaptersList,
+            chapters = fanficChapters,
             rewards = rewardsList,
             pagesCount = pagesCount
         )

@@ -20,7 +20,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -52,7 +51,7 @@ import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
 @Composable
-actual fun LandscapeContent(component: MainReaderComponent) {
+actual fun FanficReaderContent(component: MainReaderComponent) {
     val state = component.state.subscribeAsState()
     val settingsSlot = component.dialog.subscribeAsState()
     val controlEventSource = remember { MutableStateFlow(false) }
@@ -104,9 +103,6 @@ actual fun LandscapeContent(component: MainReaderComponent) {
         )
     }
 }
-
-@Composable
-actual fun PortraitContent(component: MainReaderComponent) = LandscapeContent(component)
 
 private class Reader(
     private val settingsSlot: State<ChildSlot<*, SettingsReaderComponent>>,
@@ -298,9 +294,8 @@ private class Reader(
                 }
 
                 onDispose {
-                    val pagerState = pagerState
-                    if (pagerState != null) {
-                        val absoluteCharIndex = pages.findCharIndexForPageIndex(pagerState.currentPage)
+                    pagerState?.let {
+                        val absoluteCharIndex = pages.findCharIndexForPageIndex(it.currentPage)
                         currentCharIndex = absoluteCharIndex
                         onDispose(absoluteCharIndex)
                     }

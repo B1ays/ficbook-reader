@@ -47,7 +47,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 
 @Composable
-actual fun LandscapeContent(component: MainReaderComponent) {
+actual fun FanficReaderContent(component: MainReaderComponent) {
     val state = component.state.subscribeAsState()
 
     val settingsSlot = component.dialog.subscribeAsState()
@@ -125,9 +125,6 @@ actual fun LandscapeContent(component: MainReaderComponent) {
         )
     }
 }
-
-@Composable
-actual fun PortraitContent(component: MainReaderComponent) = LandscapeContent(component)
 
 private class Reader(
     private val settingsSlot: State<ChildSlot<*, SettingsReaderComponent>>,

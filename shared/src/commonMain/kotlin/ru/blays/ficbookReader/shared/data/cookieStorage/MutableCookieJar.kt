@@ -8,7 +8,7 @@ import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import ru.blays.ficbookReader.shared.data.realm.entity.CookieEntity
-import ru.blays.ficbookReader.shared.di.injectRealm
+import ru.blays.ficbookReader.shared.di.getRealm
 
 
 interface MutableCookieJar: CookieJar {
@@ -26,7 +26,7 @@ class DynamicCookieJar: MutableCookieJar, LocalCookieStorage {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override suspend fun saveInMemory(cookie: Cookie) {
-        val realm = injectRealm(CookieEntity::class)
+        val realm = getRealm(CookieEntity::class)
         realm.write {
             val saved = query(CookieEntity::class).find()
             saved.forEach { savedCookie ->
@@ -43,13 +43,13 @@ class DynamicCookieJar: MutableCookieJar, LocalCookieStorage {
 
     override suspend fun loadFromMemory(): List<Cookie> {
         println("Load cookies from memory")
-        val realm = injectRealm(CookieEntity::class)
+        val realm = getRealm(CookieEntity::class)
         return realm.query(CookieEntity::class).find().map(CookieEntity::toCookie)
     }
 
     override suspend fun clearAll() {
         storage.clear()
-        val realm = injectRealm(CookieEntity::class)
+        val realm = getRealm(CookieEntity::class)
         realm.write {
             val saved = query(CookieEntity::class).find()
             delete(saved)

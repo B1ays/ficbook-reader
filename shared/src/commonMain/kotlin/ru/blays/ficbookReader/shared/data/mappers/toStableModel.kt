@@ -63,7 +63,9 @@ fun ReadBadgeModel.toStableModel() = ReadBadgeModelStable(
     hasUpdate = hasUpdate
 )
 
-fun FanficPageModel.toStableModel() = FanficPageModelStable(
+fun FanficPageModel.toStableModel(
+    chapters: FanficChapterStable
+) = FanficPageModelStable(
     fanficID = id,
     name = name,
     coverUrl = coverUrl.url,
@@ -79,25 +81,28 @@ fun FanficPageModel.toStableModel() = FanficPageModelStable(
     fandoms = fandom.map(FandomModel::toStableModel),
     pairings = pairings.map(PairingModel::toStableModel),
     tags = tags.map(FanficTag::toStableModel),
-    chapters = chapters.map(FanficChapter::toStableModel),
+    chapters = chapters,
     rewards = rewards.map(RewardModel::toStableModel),
 )
 
 fun FanficChapter.toStableModel(): FanficChapterStable = when(this) {
-    is FanficChapter.SeparateChapterModel -> FanficChapterStable.SeparateChapterModel(
-        href = href,
-        name = name,
-        date = date,
-        commentsCount = commentsCount,
-        commentsHref = commentsHref
+    is FanficChapter.SeparateChaptersModel -> FanficChapterStable.SeparateChaptersModel(
+        chapters = chapters.map(FanficChapter.SeparateChaptersModel.Chapter::toStableModel),
+        chaptersCount = chaptersCount
     )
     is FanficChapter.SingleChapterModel -> FanficChapterStable.SingleChapterModel(
         date = date,
-        commentsCount = commentsCount,
-        commentsHref = commentsHref,
         text = text
     )
 }
+
+fun FanficChapter.SeparateChaptersModel.Chapter.toStableModel() = FanficChapterStable.SeparateChaptersModel.Chapter(
+    chapterID = chapterID,
+    href = href,
+    name = name,
+    date = date,
+    commentsCount = commentsCount
+)
 
 fun RewardModel.toStableModel() = RewardModelStable(
     message = message,

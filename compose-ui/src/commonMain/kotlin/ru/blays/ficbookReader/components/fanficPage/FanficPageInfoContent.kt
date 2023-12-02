@@ -176,7 +176,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                             component.onOutput(
                                 FanficPageInfoComponent.Output.OpenLastOrFirstChapter(
                                     fanficID = fanfic.fanficID,
-                                    chapters = fanfic.chapters
+                                    chapter = fanfic.chapters
                                 )
                             )
                         }
@@ -185,23 +185,26 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                 height = (24*(1-sheetProgress)).dp
                             )
                         )
-                        BottomSheetContentOpened(
-                            fanficPage = fanfic,
-                            onChapterClicked = { index ->
-                                component.onOutput(
-                                    FanficPageInfoComponent.Output.OpenChapter(
-                                        fanficID = fanfic.fanficID,
-                                        index = index,
-                                        chapters = fanfic.chapters
+                        val chapters = fanfic.chapters
+                        if(chapters is FanficChapterStable.SeparateChaptersModel) {
+                            BottomSheetContentOpened(
+                                chapters = chapters,
+                                onChapterClicked = { index ->
+                                    component.onOutput(
+                                        FanficPageInfoComponent.Output.OpenChapter(
+                                            fanficID = fanfic.fanficID,
+                                            index = index,
+                                            chapters = fanfic.chapters
+                                        )
                                     )
-                                )
-                            },
-                            onCommentClicked = { href ->
-                                component.onOutput(
-                                    FanficPageInfoComponent.Output.OpenPartComments(href)
-                                )
-                            }
-                        )
+                                },
+                                onCommentClicked = { chapterID ->
+                                    component.onOutput(
+                                        FanficPageInfoComponent.Output.OpenPartComments(chapterID = chapterID)
+                                    )
+                                }
+                            )
+                        }
                     },
                     topBar = {
                         CollapsingsToolbar(
@@ -275,30 +278,36 @@ private fun LandscapeContent(
                     .systemBarsPadding()
                     .fillMaxWidth(0.35F)
             ) {
-                BottomSheetContentClosed(fanfic) {
+                BottomSheetContentClosed(
+                    fanficPage = fanfic,
+                    sheetProgress = 0F
+                ) {
                     component.onOutput(
                         FanficPageInfoComponent.Output.OpenLastOrFirstChapter(
                             fanficID = fanfic.fanficID,
-                            chapters = fanfic.chapters
+                            chapter = fanfic.chapters
                         )
                     )
                 }
-                BottomSheetContentOpened(
-                    modifier = Modifier.padding(end = 4.dp),
-                    fanficPage = fanfic,
-                    onCommentClicked = { href ->
+                val chapters = fanfic.chapters
+                if(chapters is FanficChapterStable.SeparateChaptersModel) {
+                    BottomSheetContentOpened(
+                        modifier = Modifier.padding(end = 4.dp),
+                        chapters = chapters,
+                        onCommentClicked = { chapterID ->
+                            component.onOutput(
+                                FanficPageInfoComponent.Output.OpenPartComments(chapterID = chapterID)
+                            )
+                        }
+                    ) { index ->
                         component.onOutput(
-                            FanficPageInfoComponent.Output.OpenPartComments(href)
+                            FanficPageInfoComponent.Output.OpenChapter(
+                                fanficID = fanfic.fanficID,
+                                index = index,
+                                chapters = fanfic.chapters
+                            )
                         )
                     }
-                ) { index ->
-                    component.onOutput(
-                        FanficPageInfoComponent.Output.OpenChapter(
-                            fanficID = fanfic.fanficID,
-                            index = index,
-                            chapters = fanfic.chapters
-                        )
-                    )
                 }
             }
             BoxWithConstraints(
@@ -724,31 +733,28 @@ private fun BottomSheetContentClosed(
 private
 fun BottomSheetContentOpened(
     modifier: Modifier = Modifier,
-    fanficPage: FanficPageModelStable,
-    onCommentClicked: (href: String) -> Unit,
+    chapters: FanficChapterStable.SeparateChaptersModel,
+    onCommentClicked: (chapterID: String) -> Unit,
     onChapterClicked: (index: Int) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     Box {
         LazyColumn(
-            modifier = modifier
-                .fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             state = lazyListState
         ) {
-            itemsIndexed(fanficPage.chapters) { index, item ->
-                if(item is FanficChapterStable.SeparateChapterModel) {
-                    ChapterItem(
-                        index = index+1,
-                        chapter = item,
-                        isReaded = item.readed,
-                        onCommentsClicked = {
-                            onCommentClicked(item.commentsHref)
-                        },
-                        onClick = {
-                            onChapterClicked(index)
-                        }
-                    )
-                }
+            itemsIndexed(chapters.chapters) { index, item ->
+                ChapterItem(
+                    index = index+1,
+                    chapter = item,
+                    isReaded = item.readed,
+                    onCommentsClicked = {
+                        onCommentClicked(item.chapterID)
+                    },
+                    onClick = {
+                        onChapterClicked(index)
+                    }
+                )
             }
         }
         VerticalScrollbar(
@@ -764,7 +770,7 @@ fun BottomSheetContentOpened(
 @Composable
 private fun ChapterItem(
     index: Int,
-    chapter: FanficChapterStable.SeparateChapterModel,
+    chapter: FanficChapterStable.SeparateChaptersModel.Chapter,
     isReaded: Boolean,
     onCommentsClicked: () -> Unit,
     onClick: () -> Unit
