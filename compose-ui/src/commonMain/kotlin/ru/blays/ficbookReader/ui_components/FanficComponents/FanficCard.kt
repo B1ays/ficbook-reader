@@ -1,5 +1,6 @@
 package ru.blays.ficbookReader.ui_components.FanficComponents
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
@@ -90,9 +93,20 @@ private fun LandscapeContent(
             in 900..1300 -> 0.9F
             else -> 1F
         }
+        val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+        val cardColor = remember {
+            if (fanfic.readInfo?.hasUpdate == true) {
+                lightGreen.copy(alpha = 0.3F).compositeOver(surfaceVariant)
+            } else {
+                surfaceVariant
+            }
+        }
         CardWithDirectionIndicator(
             direction = status.direction,
             modifier = modifier.fillMaxWidth(widthFill),
+            colors = CardDefaults.cardColors(
+                containerColor = cardColor
+            ),
             onClick = onCardClick
         ) {
             Column(
@@ -187,8 +201,19 @@ private fun PortraitContent(
             contentDescription = "Обложка фанфика",
             contentScale = ContentScale.Crop
         )
+        val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+        val cardColor = remember {
+            if (fanfic.readInfo?.hasUpdate == true) {
+                lightGreen.copy(alpha = 0.3F).compositeOver(surfaceVariant)
+            } else {
+                surfaceVariant
+            }
+        }
         CardWithDirectionIndicator(
             direction = status.direction,
+            colors = CardDefaults.cardColors(
+                containerColor = cardColor
+            ),
             modifier = Modifier
                 .fillMaxWidth()
         ) {
@@ -221,6 +246,9 @@ private fun PortraitContent(
 fun CardWithDirectionIndicator(
     direction: FanficDirection,
     modifier: Modifier = Modifier,
+    colors: CardColors = CardDefaults.cardColors(),
+    border: BorderStroke? = null,
+    shape: Shape = CardDefaults.shape,
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
@@ -233,6 +261,10 @@ fun CardWithDirectionIndicator(
                 onClick = onClick
             )
         } else Modifier,
+        onClick = onClick ?: {},
+        colors = colors,
+        border = border,
+        shape = shape
     ) {
         SubcomposeLayout(
             modifier = Modifier.fillMaxWidth()
