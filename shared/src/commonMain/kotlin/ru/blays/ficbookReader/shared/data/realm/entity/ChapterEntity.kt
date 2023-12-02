@@ -23,3 +23,14 @@ class ChapterEntity(
         readed = false
     )
 }
+
+/*
+data object ChapterEntityMigration : AutomaticSchemaMigration {
+    override fun migrate(migrationContext: AutomaticSchemaMigration.MigrationContext) {
+        if(migrationContext.oldRealm.schemaVersion() == 0L) {
+            val oldRealm = migrationContext.oldRealm
+            val newRealm = migrationContext.newRealm
+            val oldChapters = oldRealm.where<ChapterEntity>().findAll()
+            val newChapters = newRealm.where<ChapterEntity>().findAll()
+    }
+}*/

@@ -3,7 +3,6 @@ package ru.blays.ficbookReader.shared.data.repo.implementation
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.data.realm.entity.ChapterEntity
 import ru.blays.ficbookReader.shared.data.repo.declaration.IChaptersRepo
-import ru.blays.ficbookReader.shared.di.getRealm
 import ru.blays.ficbookReader.shared.di.injectRealm
 import ru.blays.ficbookapi.api.ChaptersApi
 import ru.blays.ficbookapi.result.ApiResult
@@ -18,7 +17,7 @@ class ChaptersRepo(
     override suspend fun markAsReaded(
         chapters: FanficChapterStable.SeparateChaptersModel.Chapter
     ): Boolean {
-        val realm = getRealm(ChapterEntity::class)
+        val realm by injectRealm()
 
         return realm.write {
            val findedChapters = query(
@@ -40,7 +39,7 @@ class ChaptersRepo(
         fanficID: String,
         charIndex: Int
     ): Boolean {
-        val realm by injectRealm(ChapterEntity::class)
+        val realm by injectRealm()
         return realm.write {
             val savedChapter = query(
                 clazz = ChapterEntity::class,

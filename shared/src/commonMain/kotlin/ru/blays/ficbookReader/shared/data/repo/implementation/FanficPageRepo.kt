@@ -88,7 +88,7 @@ class FanficPageRepo(
     private suspend fun getSavedChapters(
         fanficID: String
     ): List<ChapterEntity> = coroutineScope {
-        val realm by injectRealm(ChapterEntity::class)
+        val realm by injectRealm()
         return@coroutineScope realm.query(
             clazz = ChapterEntity::class,
             query = "fanficID = $0", fanficID
