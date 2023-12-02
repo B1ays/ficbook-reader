@@ -438,8 +438,8 @@ private class Reader(
         val hasNextChapter = readerState.chapterIndex < readerState.chaptersCount-1
         val hasPreviousChapter = readerState.chapterIndex > 0
 
-        val previousButtonShowed = hasPreviousChapter && !hasPreviousPage
-        val nextButtonShowed = hasNextChapter && !hasNextPage
+        val previousButtonActive = hasPreviousChapter && !hasPreviousPage
+        val nextButtonActive = hasNextChapter && !hasNextPage
 
         val scope = rememberCoroutineScope()
 
@@ -447,11 +447,11 @@ private class Reader(
 
         val shape = CardDefaults.shape
 
-        LaunchedEffect(previousButtonShowed, nextButtonShowed) {
-            if(previousButtonShowed) {
+        LaunchedEffect(previousButtonActive, nextButtonActive, hasNextPage) {
+            if(previousButtonActive || nextButtonActive) {
                 expanded = true
             }
-            if (nextButtonShowed) {
+            if(!hasNextChapter && !hasNextPage) {
                 expanded = true
             }
         }
@@ -625,7 +625,7 @@ private class Reader(
                     ChangeChapterButton(
                         modifier = Modifier.weight(1F / 5F).padding(6.dp),
                         icon = Icons.Rounded.ArrowBack,
-                        enabled = previousButtonShowed,
+                        enabled = previousButtonActive,
                         onClick = openPreviousChapter
                     )
                     Slider(
@@ -643,7 +643,7 @@ private class Reader(
                     ChangeChapterButton(
                         modifier = Modifier.weight(1F / 5F).padding(6.dp),
                         icon = Icons.Rounded.ArrowForward,
-                        enabled = nextButtonShowed,
+                        enabled = nextButtonActive,
                         onClick = openNextChapter
                     )
                 }
