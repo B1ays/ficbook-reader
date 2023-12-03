@@ -10,13 +10,13 @@ internal suspend fun checkPageButtonsExists(document: Document): PageButtonsStat
     )
     val hasPrevious = if(pageNav.isNotEmpty()) {
         val backwardButton = pageNav.select("[class=\"page-arrow page-arrow-prev\"]")
-        !backwardButton.hasClass("disabled")
+        backwardButton.select(".disabled").isEmpty()
     } else {
         false
     }
-    val hasNext =if(pageNav.isNotEmpty()) {
+    val hasNext = if(pageNav.isNotEmpty()) {
         val forwardButton = pageNav.select("[class=\"page-arrow page-arrow-next\"]")
-        !forwardButton.hasClass("disabled")
+        forwardButton.select(".disabled").isEmpty()
     } else {
         false
     }

@@ -13,6 +13,7 @@ import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.repo.declaration.ICollectionsRepo
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponentInternal
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -33,7 +34,7 @@ class DefaultCollectionFanficsListComponent(
             errorMessage = null
         )
     )
-    private val _fanficsList = DefaultFanficsListComponent(
+    private val _fanficsList: FanficsListComponentInternal = DefaultFanficsListComponent(
         componentContext = childContext("fanfics_list"),
         section = initialSection,
         output = output
@@ -42,7 +43,8 @@ class DefaultCollectionFanficsListComponent(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override val state get() = _state
-    override val fanficsListComponent get() = _fanficsList
+    override val fanficsListComponent: FanficsListComponent
+        get() = _fanficsList
 
     private var collectionID = initialSection.path.substringAfterLast('/')
 
@@ -115,10 +117,10 @@ class DefaultCollectionFanficsListComponent(
             _state.update {
                 it.copy(loading = true)
             }
-            val result = collectionsRepo.getCollectionSortParams(collectionID)
-            when(result) {
+            when(
+                val result = collectionsRepo.getCollectionSortParams(collectionID)
+            ) {
                 is ApiResult.Error -> {
-                    println("Fail to load sort params")
                     _state.update {
                         it.copy(
                             loading = false,
@@ -128,7 +130,6 @@ class DefaultCollectionFanficsListComponent(
                     }
                 }
                 is ApiResult.Success -> {
-                    println("Loaded sort params: ${result.value}")
                     _state.update {
                         it.copy(
                             loading = false,

@@ -4,7 +4,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.jsoup.select.Evaluator
@@ -12,23 +12,13 @@ import ru.blays.ficbookapi.ATTR_HREF
 import ru.blays.ficbookapi.dataModels.*
 import java.net.URLDecoder
 
-internal class FanficsListParser: IDataParser<String, Pair<Elements, Boolean>> {
-    override suspend fun parse(data: String): Pair<Elements, Boolean> = coroutineScope {
-        val document = Jsoup.parse(data)
-        val pageNav = document.select(
-            Evaluator.Class("pagenav my-15")
-        )
-        val hasNextPage = if(pageNav.isNotEmpty()) {
-            val forwardButton = pageNav.select("[class=\"page-arrow page-arrow-next\"]")
-            !forwardButton.hasClass("disabled")
-        } else {
-            false
-        }
-        return@coroutineScope document.select(".js-toggle-description") to hasNextPage
+internal class FanficsListParser: IDataParser<Document, Elements> {
+    override suspend fun parse(data: Document): Elements = coroutineScope {
+        return@coroutineScope data.select(".js-toggle-description")
     }
 
-    override fun parseSynchronously(data: String): StateFlow<Pair<Elements, Boolean>?> {
-        val resultFlow = MutableStateFlow<Pair<Elements, Boolean>?>(null)
+    override fun parseSynchronously(data: Document): StateFlow<Elements?> {
+        val resultFlow = MutableStateFlow<Elements?>(null)
         launch {
             resultFlow.value = parse(data)
         }
