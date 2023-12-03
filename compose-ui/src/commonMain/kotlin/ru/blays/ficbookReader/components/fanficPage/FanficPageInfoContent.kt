@@ -154,6 +154,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     containerColor = Color.Transparent,
                     sheetContainerColor = sheetBackgroundAtProgress,
                     sheetShadowElevation = 0.dp,
+                    sheetSwipeEnabled = fanfic.chapters !is FanficChapterStable.SingleChapterModel,
                     sheetContent = {
                         BackHandler(true) {
                             when (bottomSheetState.currentValue) {
