@@ -136,7 +136,7 @@ fun LogInContent(component: UserLogInComponent) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Ошибка авторизации.\nПроверьте правильность логина и пароля.",
+                            text = "Ошибка авторизации.\n${state.reason}",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer,
                             textAlign = TextAlign.Center,
