@@ -214,8 +214,7 @@ private fun PortraitContent(
             colors = CardDefaults.cardColors(
                 containerColor = cardColor
             ),
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column {
                 FanficChips(status)
@@ -256,12 +255,11 @@ fun CardWithDirectionIndicator(
     val indicatorWidthInDp = 10.dp
     val indicatorWidthInPx = with(density) { indicatorWidthInDp.roundToPx() }
     Card(
-        modifier = modifier then if (onClick != null) {
-            Modifier.clickable(
-                onClick = onClick
-            )
-        } else Modifier,
-        onClick = onClick ?: {},
+        modifier = modifier.run {
+            if(onClick != null) {
+                this then clickable(onClick = onClick)
+            } else this
+        },
         colors = colors,
         border = border,
         shape = shape
