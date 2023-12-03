@@ -1,10 +1,13 @@
 @file:Suppress("AnimateAsStateLabel")
+@file:JvmName("ThemeCommonKt")
 
 package ru.blays.ficbookReader.theme
 
+import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 
 @Composable
@@ -29,8 +32,37 @@ class PrimaryRippleTheme(
     override fun defaultColor() = primaryColor
 
     @Composable
-    override fun rippleAlpha() = RippleTheme.defaultRippleAlpha(
-        primaryColor,
-        isDarkTheme()
-    )
+    override fun rippleAlpha() = when {
+        isDarkTheme() -> {
+            DarkThemeRippleAlpha
+        }
+        else -> {
+            if (primaryColor.luminance() > 0.5) {
+                LightThemeHighContrastRippleAlpha
+            } else {
+                LightThemeLowContrastRippleAlpha
+            }
+        }
+    }
 }
+
+private val LightThemeHighContrastRippleAlpha = RippleAlpha(
+    pressedAlpha = 0.64f,
+    focusedAlpha = 0.64f,
+    draggedAlpha = 0.56f,
+    hoveredAlpha = 0.48f
+)
+
+private val LightThemeLowContrastRippleAlpha = RippleAlpha(
+    pressedAlpha = 0.52f,
+    focusedAlpha = 0.52f,
+    draggedAlpha = 0.48f,
+    hoveredAlpha = 0.44f
+)
+
+private val DarkThemeRippleAlpha = RippleAlpha(
+    pressedAlpha = 0.60f,
+    focusedAlpha = 0.62f,
+    draggedAlpha = 0.58f,
+    hoveredAlpha = 0.54f
+)
