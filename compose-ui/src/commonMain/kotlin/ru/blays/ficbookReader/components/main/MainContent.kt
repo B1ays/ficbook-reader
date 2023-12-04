@@ -111,6 +111,7 @@ private fun PortraitContent(
                     actions = {
                         CustomIconButton(
                             onClick = {
+                                throw RuntimeException("Test crash")
                                 // TODO Realize search menu
                             },
                             modifier = Modifier
