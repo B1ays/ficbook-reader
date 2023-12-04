@@ -15,6 +15,7 @@ import ru.blays.ficbookReader.components.collectionContent.CollectionContent
 import ru.blays.ficbookReader.components.fanficPage.FanficPageContent
 import ru.blays.ficbookReader.components.fanficsList.FanficsListScreenContent
 import ru.blays.ficbookReader.components.main.MainContent
+import ru.blays.ficbookReader.components.notifications.NotificationsContent
 import ru.blays.ficbookReader.components.settings.SettingsContent
 import ru.blays.ficbookReader.components.userProfile.UserProfileRootContent
 import ru.blays.ficbookReader.components.users.UsersRootContent
@@ -45,6 +46,7 @@ fun RootContent(component: RootComponent) {
                     is RootComponent.Child.AuthorProfile -> AuthorProfileContent(child.component)
                     is RootComponent.Child.Collection -> CollectionContent(child.component)
                     is RootComponent.Child.Users -> UsersRootContent(child.component)
+                    is RootComponent.Child.Notifications -> NotificationsContent(child.component)
                 }
             }
         }

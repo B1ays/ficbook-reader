@@ -23,54 +23,67 @@ object UrlProcessor {
                 fanficPageChecker(pathSegments)?.let {
                     return it
                 }
+                notificationChecker(pathSegments)?.let {
+                    return it
+                }
             }
         }
         return FicbookUrlAnalyzeResult.NotFicbookUrl
     }
 
     private fun fanficsListChecker(pathSegments: List<String>): FicbookUrlAnalyzeResult.FanficsList? {
-        val fanfictionRootSection = pathSegments[0] == FANFICTION && pathSegments.size == 1
-        val fanfictionChildSection = pathSegments[0] == FANFICTION && pathSegments.size >= 3
-
-        val userSection = pathSegments[0] == HOME && UserSections
-            .default()
-            .all
-            .any { it.path.contains(pathSegments[1]) }
-
-        val popularSection = pathSegments[0] == POPULAR_SECTION
-        val findSection = pathSegments[0] == FIND
-        val collectionsSection = pathSegments[0] == COLLECTIONS
-
-
-        return when {
-            fanfictionRootSection -> FicbookUrlAnalyzeResult.FanficsList(href = pathSegments[1])
-            fanfictionChildSection -> FicbookUrlAnalyzeResult.FanficsList(
-                sectionWithQuery = SectionWithQuery(
-                    paths = pathSegments.toTypedArray()
-                )
+        if(pathSegments[0] == FANFICTION && pathSegments.size == 1) {
+            return FicbookUrlAnalyzeResult.FanficsList(
+                href = pathSegments[1]
             )
-            userSection -> FicbookUrlAnalyzeResult.FanficsList(
-                sectionWithQuery = SectionWithQuery(
-                    paths = pathSegments.toTypedArray()
-                )
-            )
-            popularSection -> FicbookUrlAnalyzeResult.FanficsList(
-                sectionWithQuery = SectionWithQuery(
-                    paths = pathSegments.toTypedArray()
-                )
-            )
-            findSection -> FicbookUrlAnalyzeResult.FanficsList(
-                sectionWithQuery = SectionWithQuery(
-                    paths = pathSegments.toTypedArray()
-                )
-            )
-            collectionsSection -> FicbookUrlAnalyzeResult.FanficsList(
-                sectionWithQuery = SectionWithQuery(
-                    paths = pathSegments.toTypedArray()
-                )
-            )
-            else -> null
         }
+
+        if(pathSegments[0] == FANFICTION && pathSegments.size >= 3) {
+            return FicbookUrlAnalyzeResult.FanficsList(
+                sectionWithQuery = SectionWithQuery(
+                    paths = pathSegments.toTypedArray()
+                )
+            )
+        }
+
+        if(pathSegments[0] == POPULAR_SECTION) {
+            return FicbookUrlAnalyzeResult.FanficsList(
+                sectionWithQuery = SectionWithQuery(
+                    paths = pathSegments.toTypedArray()
+                )
+            )
+        }
+
+        if(pathSegments[0] == FIND) {
+            return FicbookUrlAnalyzeResult.FanficsList(
+                sectionWithQuery = SectionWithQuery(
+                    paths = pathSegments.toTypedArray()
+                )
+            )
+        }
+
+        if(pathSegments[0] == COLLECTIONS) {
+            return FicbookUrlAnalyzeResult.FanficsList(
+                sectionWithQuery = SectionWithQuery(
+                    paths = pathSegments.toTypedArray()
+                )
+            )
+        }
+
+        if(
+            pathSegments[0] == HOME && UserSections
+                .default()
+                .all
+                .any { it.path.contains(pathSegments[1]) }
+        ) {
+            return FicbookUrlAnalyzeResult.FanficsList(
+                sectionWithQuery = SectionWithQuery(
+                    paths = pathSegments.toTypedArray()
+                )
+            )
+        }
+
+        return null
     }
 
     private fun userChecker(pathSegments: List<String>): FicbookUrlAnalyzeResult.User? {
@@ -84,9 +97,14 @@ object UrlProcessor {
 
     private fun fanficPageChecker(pathSegments: List<String>): FicbookUrlAnalyzeResult.Fanfic? {
         return if(pathSegments[0] == READFIC) {
-            FicbookUrlAnalyzeResult.Fanfic(
-                href = pathSegments.joinToString("/")
-            )
+            val href = "${pathSegments[0]}/${pathSegments.getOrElse(1) {""}}"
+            FicbookUrlAnalyzeResult.Fanfic(href = href)
+        } else null
+    }
+
+    private fun notificationChecker(pathSegments: List<String>): FicbookUrlAnalyzeResult.Notifications? {
+        return if(pathSegments[0] == NOTIFICATION) {
+            FicbookUrlAnalyzeResult.Notifications
         } else null
     }
 
@@ -97,6 +115,7 @@ object UrlProcessor {
     private const val FIND = "find-fanfics-846555"
     private const val COLLECTIONS = "collections"
     private const val READFIC = "readfic"
+    private const val NOTIFICATION = "notifications"
 
     sealed class FicbookUrlAnalyzeResult {
         data class FanficsList(val sectionWithQuery: SectionWithQuery) : FicbookUrlAnalyzeResult() {
@@ -110,7 +129,7 @@ object UrlProcessor {
         }
         data class Fanfic(val href: String) : FicbookUrlAnalyzeResult()
         data class User(val href: String) : FicbookUrlAnalyzeResult()
-
+        data object Notifications: FicbookUrlAnalyzeResult()
         data object NotFicbookUrl : FicbookUrlAnalyzeResult()
         data object NotAUrl : FicbookUrlAnalyzeResult()
     }

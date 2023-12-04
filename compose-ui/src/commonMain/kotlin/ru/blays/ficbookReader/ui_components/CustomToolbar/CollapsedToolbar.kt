@@ -120,7 +120,7 @@ fun CollapsingsToolbar(
                         modifier = Modifier
                             .wrapContentSize()
                             .layoutId(CentralContentId)
-                            .alpha(1 - scrollBehavior?.state?.collapsedFraction!!)
+                            .alpha(1 - (scrollBehavior?.state?.collapsedFraction ?: 0F))
                     ) {
                         centralContent()
                     }

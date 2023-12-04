@@ -19,6 +19,8 @@ import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficP
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.implementation.DefaultFanficPageComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultMainScreenComponent
+import ru.blays.ficbookReader.shared.ui.notificationComponents.DefaultNotificationComponent
+import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationComponent
 import ru.blays.ficbookReader.shared.ui.profileComponents.DefaultUserProfileRootComponent
 import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
@@ -30,6 +32,7 @@ import ru.blays.ficbookReader.shared.ui.usersComponent.implementation.DefaultUse
 import ru.blays.ficbookapi.RANDOM_FANFIC
 import ru.blays.ficbookapi.UrlProcessor.UrlProcessor
 import ru.blays.ficbookapi.UrlProcessor.UrlProcessor.analyzeUrl
+import ru.blays.ficbookapi.UrlProcessor.getUrlForHref
 import ru.blays.ficbookapi.data.SectionWithQuery
 
 class DefaultRootComponent private constructor(
@@ -159,11 +162,19 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
-            RootComponent.Config.Users -> {
+            is RootComponent.Config.Users -> {
                 RootComponent.Child.Users(
                     DefaultUsersRootComponent(
                         componentContext = componentContext,
                         output = ::onUsersOutput
+                    )
+                )
+            }
+            is RootComponent.Config.Notifications -> {
+                RootComponent.Child.Notifications(
+                    DefaultNotificationComponent(
+                        componentContext = componentContext,
+                        output = ::onNotificationsOutput
                     )
                 )
             }
@@ -237,6 +248,11 @@ class DefaultRootComponent private constructor(
             is MainScreenComponent.Output.OpenUsersScreen -> {
                 navigation.push(
                     RootComponent.Config.Users
+                )
+            }
+            is MainScreenComponent.Output.OpenNotifications -> {
+                navigation.push(
+                    RootComponent.Config.Notifications
                 )
             }
         }
@@ -328,6 +344,15 @@ class DefaultRootComponent private constructor(
         }
     }
 
+    private fun onNotificationsOutput(output: NotificationComponent.Output) {
+        when(output) {
+            is NotificationComponent.Output.NavigateBack -> navigation.pop()
+            is NotificationComponent.Output.OpenNotificationHref -> navigateToLink(
+                link = getUrlForHref(output.href)
+            )
+        }
+    }
+
     private fun getConfigurationForLink(link: String?): RootComponent.Config {
         if(link == null) return RootComponent.Config.Main
         return when(
@@ -364,13 +389,18 @@ class DefaultRootComponent private constructor(
             }
             is UrlProcessor.FicbookUrlAnalyzeResult.User -> {
                 navigation.push(
-                    RootComponent.Config.UserProfile
+                    RootComponent.Config.AuthorProfile(analyzeResult.href)
                 )
             }
-            UrlProcessor.FicbookUrlAnalyzeResult.NotFicbookUrl -> {
+            is UrlProcessor.FicbookUrlAnalyzeResult.Notifications -> {
+                navigation.push(
+                    RootComponent.Config.Notifications
+                )
+            }
+            is UrlProcessor.FicbookUrlAnalyzeResult.NotFicbookUrl -> {
                 openInBrowser(link)
             }
-            UrlProcessor.FicbookUrlAnalyzeResult.NotAUrl -> {
+            is UrlProcessor.FicbookUrlAnalyzeResult.NotAUrl -> {
                 println("Error, link: $link is incorrect")
             }
         }

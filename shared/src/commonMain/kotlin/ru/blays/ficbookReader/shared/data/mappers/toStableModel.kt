@@ -9,6 +9,7 @@ import ru.blays.ficbookapi.dataModels.FanficCompletionStatus
 import ru.blays.ficbookapi.dataModels.FanficDirection
 import ru.blays.ficbookapi.dataModels.FanficRating
 import ru.blays.ficbookapi.dataModels.FanficShortcut
+import ru.blays.ficbookapi.dataModels.NotificationType
 
 fun CollectionModel.toStableModel() = CollectionModelStable(
     href = href,
@@ -303,4 +304,20 @@ fun AuthorSearchResult.Data.Result.toUserModel() = UserModelStable(
     name = username,
     href = "authors/$id",
     avatarUrl = avatarPath
+)
+
+fun NotificationModel.toStableModel() = NotificationModelStable(
+    href = href,
+    title = title,
+    date = date,
+    text = text,
+    readed = readed,
+    type = type.toStableModel()
+)
+
+fun NotificationType.toStableModel() = ru.blays.ficbookReader.shared.data.dto.NotificationType.valueOf(this.name)
+
+fun NotificationCategory.toStableModel() = NotificationCategoryStable(
+    type = type.toStableModel(),
+    notificationsCount = notificationsCount
 )

@@ -435,6 +435,24 @@ private fun DrawerContent(
         )
         NavigationDrawerItem(
             label = {
+                Text(text = "Уведомления")
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter =  painterResource(Res.image.ic_bell),
+                    contentDescription = "Иконка колокольчика"
+                )
+            },
+            selected = false,
+            onClick = {
+                component.onOutput(
+                    MainScreenComponent.Output.OpenNotifications
+                )
+            }
+        )
+        NavigationDrawerItem(
+            label = {
                 Text(text = "Случайный фанфик")
             },
             icon = {

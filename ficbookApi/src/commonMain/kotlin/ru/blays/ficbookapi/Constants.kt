@@ -12,6 +12,7 @@ const val LOGIN_CHECK = "login_check"
 const val PART_COMMENTS_HREF = "comments/get_fanfic_part_comments"
 const val FAVOURITE_AUTHORS_HREF = "home/favourites/authors"
 const val AUTHOR_SEARCH_HREF = "authors/search"
+const val NOTIFICATIONS_HREF = "notifications"
 
 const val QUERY_PAGE = "p"
 const val QUERY_TAB = "tab"
