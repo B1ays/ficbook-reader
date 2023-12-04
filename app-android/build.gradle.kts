@@ -15,6 +15,7 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.projectVersion.get()
+        versionNameSuffix = libs.versions.versionNameSuffix.get()
 
         proguardFile("proguard-rules.pro")
     }
