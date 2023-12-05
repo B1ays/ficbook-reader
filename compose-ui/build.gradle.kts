@@ -1,6 +1,7 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.compose)
     id("io.github.skeptick.libres")
@@ -8,7 +9,7 @@ plugins {
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
     jvm()
 
     androidTarget {
@@ -31,6 +32,9 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.animation)
                 implementation(compose.runtimeSaveable)
+
+                // KotlinX
+                implementation(libs.kotlinx.serialization.json)
 
                 // Libres compose
                 api(libs.libres.compose)
