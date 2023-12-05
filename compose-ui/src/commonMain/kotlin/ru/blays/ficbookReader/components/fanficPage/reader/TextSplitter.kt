@@ -2,6 +2,7 @@ package ru.blays.ficbookReader.components.fanficPage.reader
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
@@ -102,6 +103,28 @@ fun rememberTwoPanelTextPages(
     }
 
     return pages
+}
+
+suspend fun splitTextToPages(
+    text: String,
+    config: TextSplitterConfig.SinglePanelConfig,
+    textMeasurer: TextMeasurer
+): List<String> = coroutineScope {
+    val list = mutableListOf<String>()
+
+    val measureResult = textMeasurer.measure(
+        text = text,
+        style = config.style,
+        constraints = config.constraints
+    )
+    val maxHeight = config.constraints.maxHeight
+
+    list += calculatePages(
+        measureResult = measureResult,
+        maxHeight = maxHeight,
+        text = text
+    )
+    return@coroutineScope list
 }
 
 private suspend fun calculatePages(

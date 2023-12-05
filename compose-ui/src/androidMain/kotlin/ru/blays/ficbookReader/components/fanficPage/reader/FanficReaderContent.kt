@@ -7,9 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +29,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,6 +52,7 @@ import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.VoteReaderC
 import ru.blays.ficbookReader.theme.ReaderTheme
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
+import ru.blays.ficbookReader.ui_components.pager2.*
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
@@ -61,52 +62,47 @@ actual fun FanficReaderContent(component: MainReaderComponent) {
     val settingsSlot = component.dialog.subscribeAsState()
     val controlEventSource = remember { MutableStateFlow(false) }
 
-    if(!state.value.loading) {
-        val reader = remember(
-            state.value.chapterIndex,
-            state.value.initialCharIndex
-        ) {
-            Reader(
-                settingsSlot = settingsSlot,
-                state = state,
-                onDispose = { charIndex ->
-                    component.sendIntent(
-                        MainReaderComponent.Intent.SaveProgress(
-                            chapterIndex = state.value.chapterIndex,
-                            charIndex = charIndex
-                        )
+    val reader = remember {
+        Reader(
+            settingsSlot = settingsSlot,
+            state = state,
+            onDispose = { charIndex ->
+                component.sendIntent(
+                    MainReaderComponent.Intent.SaveProgress(
+                        chapterIndex = state.value.chapterIndex,
+                        charIndex = charIndex
                     )
-                },
-                onCenterZoneClick = {
-                    controlEventSource.value = !controlEventSource.value
-                },
-                openPreviousChapter = {
-                    component.sendIntent(
-                        MainReaderComponent.Intent.ChangeChapter(
-                            chapterIndex = state.value.chapterIndex - 1
-                        )
+                )
+            },
+            onCenterZoneClick = {
+                controlEventSource.value = !controlEventSource.value
+            },
+            openPreviousChapter = {
+                component.sendIntent(
+                    MainReaderComponent.Intent.ChangeChapter(
+                        chapterIndex = state.value.chapterIndex - 1
                     )
-                },
-                openNextChapter = {
-                    component.sendIntent(
-                        MainReaderComponent.Intent.ChangeChapter(
-                            chapterIndex = state.value.chapterIndex + 1
-                        )
+                )
+            },
+            openNextChapter = {
+                component.sendIntent(
+                    MainReaderComponent.Intent.ChangeChapter(
+                        chapterIndex = state.value.chapterIndex + 1
                     )
-                },
-                openSettings = {
-                    component.sendIntent(
-                        MainReaderComponent.Intent.OpenOrCloseSettings
-                    )
-                }
-            )
-        }
-        reader.Execute(
-            component = component,
-            controlEventSource = controlEventSource,
-            modifier = Modifier.fillMaxSize()
+                )
+            },
+            openSettings = {
+                component.sendIntent(
+                    MainReaderComponent.Intent.OpenOrCloseSettings
+                )
+            }
         )
     }
+    reader.Execute(
+        component = component,
+        controlEventSource = controlEventSource,
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 private class Reader(
@@ -118,7 +114,11 @@ private class Reader(
     private val openNextChapter: () -> Unit,
     private val openSettings: () -> Unit
 ) {
-    var pagerState: PagerState? by mutableStateOf(null)
+    val pagerState: PagerState2<String> = PagerStateImpl2(
+        initialPages = emptyList(),
+        initialPageIndex = 0,
+        initialPageOffsetFraction = 0f
+    )
     var currentCharIndex = state.value.initialCharIndex
 
 
@@ -162,25 +162,21 @@ private class Reader(
                             onCenterZoneClick = onCenterZoneClick
                         )
                     }
-                    pagerState?.let {
-                        Control(
-                            voteComponent = component.voteComponent,
-                            pagerState = it,
-                            readerState = currentState,
-                            eventSource = controlEventSource,
-                            modifier = Modifier,
-                            openPreviousChapter = openPreviousChapter,
-                            openNextChapter = openNextChapter,
-                            openSettings = openSettings
-                        )
-                    }
-                }
-                pagerState?.let {
-                    ReaderBottomContent(
-                        pagerState = it,
-                        modifier = Modifier.weight(0.04F)
+                    Control(
+                        voteComponent = component.voteComponent,
+                        pagerState = pagerState,
+                        readerState = currentState,
+                        eventSource = controlEventSource,
+                        modifier = Modifier,
+                        openPreviousChapter = openPreviousChapter,
+                        openNextChapter = openNextChapter,
+                        openSettings = openSettings
                     )
                 }
+                ReaderBottomContent(
+                    pagerState = pagerState,
+                    modifier = Modifier.weight(0.04F)
+                )
             }
             slotInstance?.let { dialogComponent ->
                 ReaderSettingPopup(
@@ -211,6 +207,7 @@ private class Reader(
             )
         }
         val scope = rememberCoroutineScope()
+        val textMeasurer = rememberTextMeasurer()
         val volumeKeysEventSource = LocalVolumeKeysEventSource.current
         val localView = LocalView.current
 
@@ -219,16 +216,6 @@ private class Reader(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(DefaultPadding.CardDefaultPadding)
         ) {
-            val pages = rememberTextPages(
-                text = text,
-                config = TextSplitterConfig.SinglePanelConfig(
-                    style = style,
-                    constraints = constraints
-                )
-            )
-            pagerState = rememberPagerState {
-                pages.size
-            }
             val config = remember(
                 style,
                 constraints.maxHeight,
@@ -240,12 +227,26 @@ private class Reader(
                 )
             }
 
+            DisposableEffect(text) {
+                val job = scope.launch {
+                    val pages = splitTextToPages(
+                        text = text,
+                        config = config,
+                        textMeasurer = textMeasurer
+                    )
+                    pagerState.updatePages { pages }
+                }
+                onDispose {
+                    job.cancel()
+                }
+            }
+
             TextPager(
-                pagerState = pagerState!!,
+                pagerState = pagerState,
                 onCenterZoneClick = onCenterZoneClick
-            ) { page ->
+            ) { _, page ->
                 Text(
-                    text = pages[page],
+                    text = page,
                     style = config.style,
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.onBackground
@@ -254,26 +255,22 @@ private class Reader(
 
             if(settings.scrollWithVolumeButtons) {
                 DisposableEffect(Unit) {
-                    fun scrollToPage(next: Boolean) {
-                        scope.launch {
-                            pagerState?.let { localPagerState ->
-                                val newPage = (localPagerState.currentPage + if (next) 1 else -1)
-                                    .coerceIn(0 until localPagerState.pageCount)
-                                localPagerState.animateScrollToPage(newPage)
-                            }
-                        }
-                    }
-
                     volumeKeysEventSource.collect { key ->
                         when(key) {
                             VOLUME_UP -> {
-                                scrollToPage(next = true)
+                                scope.launch {
+                                    pagerState.animatedScrollToNextPage()
+                                }
+                                true
                             }
                             VOLUME_DOWN -> {
-                                scrollToPage(next = false)
+                                scope.launch {
+                                    pagerState.animatedScrollToPreviousPage()
+                                }
+                                true
                             }
+                            else -> false
                         }
-                        true
                     }
 
                     onDispose {
@@ -291,32 +288,32 @@ private class Reader(
 
             DisposableEffect(Unit) {
                 scope.launch {
-                    while(pages.isEmpty()) {
+                    val pages = pagerState.pages
+                    while(pagerState.pageCount == 0) {
                         delay(100)
                     }
                     val page = pages.findPageIndexForCharIndex(currentCharIndex)
-                    pagerState?.scrollToPage(page.coerceAtMost(pages.lastIndex))
+                    pagerState.scrollToPage(page.coerceAtMost(pages.lastIndex))
                 }
 
                 onDispose {
-                    pagerState?.let {
-                        val absoluteCharIndex = pages.findCharIndexForPageIndex(it.currentPage)
-                        currentCharIndex = absoluteCharIndex
-                        onDispose(absoluteCharIndex)
-                    }
+                    val pages = pagerState.pages
+                    val absoluteCharIndex = pages.findCharIndexForPageIndex(pagerState.currentPage)
+                    currentCharIndex = absoluteCharIndex
+                    onDispose(absoluteCharIndex)
                 }
             }
         }
     }
 
     @Composable
-    private fun TextPager(
-        pagerState: PagerState,
+    private fun <T: Any> TextPager(
+        pagerState: PagerState2<T>,
         onCenterZoneClick: () -> Unit,
-        pagerContent: @Composable (page: Int) -> Unit
+        pagerContent: @Composable PagerScope.(index: Int, page: T) -> Unit
     ) {
         val scope = rememberCoroutineScope()
-        HorizontalPager(
+        HorizontalPager2(
             state = pagerState,
             modifier = Modifier
                 .pointerInput(Unit) {
@@ -327,25 +324,20 @@ private class Reader(
                         when (it.x) {
                             in firstTapZone -> {
                                 scope.launch {
-                                    pagerState.scrollToPage(
-                                        pagerState.currentPage - 1
-                                    )
+                                    pagerState.scrollToPreviousPage()
                                 }
                             }
                             in midTapZone -> onCenterZoneClick()
                             in secondTapZone -> {
                                 scope.launch {
-                                    pagerState.scrollToPage(
-                                        pagerState.currentPage + 1
-                                    )
+                                    pagerState.scrollToNextPage()
                                 }
                             }
                         }
                     }
-                }
-        ) { page ->
-            pagerContent(page)
-        }
+                },
+            pageContent = pagerContent
+        )
     }
 
 
