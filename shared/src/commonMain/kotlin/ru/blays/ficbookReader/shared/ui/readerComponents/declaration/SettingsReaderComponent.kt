@@ -15,6 +15,7 @@ interface SettingsReaderComponent {
         data class FullscreenModeChanged(val fullscreenMode: Boolean): Intent()
         data class ScrollWithVolumeKeysChanged(val scrollWithVolumeButtons: Boolean): Intent()
         data class KeepScreenOnChanged(val keepScreenOn: Boolean): Intent()
-
+        data class LineHeightChanged(val lineHeight: Int): Intent()
+        data class AutoOpenNextChapterChanged(val autoOpenNextChapter: Boolean): Intent()
     }
 }

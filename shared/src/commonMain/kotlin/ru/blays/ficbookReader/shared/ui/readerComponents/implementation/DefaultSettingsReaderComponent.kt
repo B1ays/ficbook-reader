@@ -53,7 +53,6 @@ class DefaultSettingsReaderComponent(
                     )
                 )
             }
-
             is SettingsReaderComponent.Intent.KeepScreenOnChanged -> {
                 changeState(
                     state.value.copy(
@@ -65,6 +64,20 @@ class DefaultSettingsReaderComponent(
                 changeState(
                     state.value.copy(
                         scrollWithVolumeButtons = intent.scrollWithVolumeButtons
+                    )
+                )
+            }
+            is SettingsReaderComponent.Intent.AutoOpenNextChapterChanged -> {
+                changeState(
+                    state.value.copy(
+                        autoOpenNextChapter = intent.autoOpenNextChapter
+                    )
+                )
+            }
+            is SettingsReaderComponent.Intent.LineHeightChanged -> {
+                changeState(
+                    state.value.copy(
+                        lineHeight = intent.lineHeight
                     )
                 )
             }

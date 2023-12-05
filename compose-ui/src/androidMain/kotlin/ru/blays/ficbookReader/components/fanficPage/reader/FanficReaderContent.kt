@@ -201,7 +201,10 @@ private class Reader(
         onCenterZoneClick: () -> Unit
     ) {
         val baseStyle = MaterialTheme.typography.bodyMedium
-        val style = remember(settings.fontSize) {
+        val style = remember(
+            settings.fontSize,
+            settings.lineHeight
+        ) {
             baseStyle.copy(
                 fontSize = settings.fontSize.sp
             )
@@ -248,6 +251,7 @@ private class Reader(
                 Text(
                     text = page,
                     style = config.style,
+                    lineHeight = settings.lineHeight.sp,
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -259,13 +263,13 @@ private class Reader(
                         when(key) {
                             VOLUME_UP -> {
                                 scope.launch {
-                                    pagerState.animatedScrollToNextPage()
+                                    animatedScrollToNextPageOrChapter()
                                 }
                                 true
                             }
                             VOLUME_DOWN -> {
                                 scope.launch {
-                                    pagerState.animatedScrollToPreviousPage()
+                                    animatedScrollToPreviousPageOrChapter()
                                 }
                                 true
                             }
@@ -324,13 +328,13 @@ private class Reader(
                         when (it.x) {
                             in firstTapZone -> {
                                 scope.launch {
-                                    pagerState.scrollToPreviousPage()
+                                    scrollToPreviousPageOrChapter()
                                 }
                             }
                             in midTapZone -> onCenterZoneClick()
                             in secondTapZone -> {
                                 scope.launch {
-                                    pagerState.scrollToNextPage()
+                                    scrollToNextPageOrChapter()
                                 }
                             }
                         }
@@ -445,11 +449,14 @@ private class Reader(
         val shape = CardDefaults.shape
 
         LaunchedEffect(previousButtonActive, nextButtonActive, hasNextPage) {
-            if(previousButtonActive || nextButtonActive) {
-                expanded = true
-            }
-            if(!hasNextChapter && !hasNextPage) {
-                expanded = true
+            if(!readerState.settings.autoOpenNextChapter) {
+                if(
+                    previousButtonActive ||
+                    nextButtonActive ||
+                    !hasNextChapter && !hasNextPage
+                ) {
+                    expanded = true
+                }
             }
         }
 
@@ -804,6 +811,25 @@ private class Reader(
                         )
                     }
                     Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Автоматически переходить к следующей главе",
+                            modifier = Modifier.fillMaxWidth(0.7F)
+                        )
+                        Switch(
+                            checked = readerSettingsModel.autoOpenNextChapter,
+                            onCheckedChange = {
+                                component.sendIntent(
+                                    SettingsReaderComponent.Intent.AutoOpenNextChapterChanged(it)
+                                )
+                            }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = "Размер шрифта",
                         style = MaterialTheme.typography.titleMedium
@@ -842,6 +868,55 @@ private class Reader(
                                 component.sendIntent(
                                     SettingsReaderComponent.Intent.FontSizeChanged(
                                         (readerSettingsModel.fontSize + 1)
+                                    )
+                                )
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.ArrowForward,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Высота строки",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        CustomIconButton(
+                            shape = CircleShape,
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            containerColor = MaterialTheme.colorScheme.background,
+                            minSize = 30.dp,
+                            onClick = {
+                                component.sendIntent(
+                                    SettingsReaderComponent.Intent.LineHeightChanged(
+                                        readerSettingsModel.lineHeight.minus(1).coerceAtLeast(1)
+                                    )
+                                )
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.ArrowBack,
+                                contentDescription = null
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(text = readerSettingsModel.lineHeight.toString())
+                        Spacer(modifier = Modifier.width(6.dp))
+                        CustomIconButton(
+                            shape = CircleShape,
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            containerColor = MaterialTheme.colorScheme.background,
+                            minSize = 30.dp,
+                            onClick = {
+                                component.sendIntent(
+                                    SettingsReaderComponent.Intent.LineHeightChanged(
+                                        readerSettingsModel.lineHeight.plus(1).coerceAtMost(30)
                                     )
                                 )
                             }
@@ -953,6 +1028,54 @@ private class Reader(
                 }
                 Spacer(modifier = Modifier.height(6.dp))
             }
+        }
+    }
+
+    private suspend fun animatedScrollToNextPageOrChapter() {
+        if(state.value.settings.autoOpenNextChapter) {
+            if(!pagerState.canScrollForward) {
+                openNextChapter()
+            } else {
+                pagerState.animatedScrollToNextPage()
+            }
+        } else {
+            pagerState.animatedScrollToNextPage()
+        }
+    }
+
+    private suspend fun animatedScrollToPreviousPageOrChapter() {
+        if(state.value.settings.autoOpenNextChapter) {
+            if(!pagerState.canScrollBackward) {
+                openPreviousChapter()
+            } else {
+                pagerState.animatedScrollToPreviousPage()
+            }
+        } else {
+            pagerState.animatedScrollToPreviousPage()
+        }
+    }
+
+    private suspend fun scrollToNextPageOrChapter() {
+        if(state.value.settings.autoOpenNextChapter) {
+            if(!pagerState.canScrollForward) {
+                openNextChapter()
+            } else {
+                pagerState.scrollToNextPage()
+            }
+        } else {
+            pagerState.scrollToNextPage()
+        }
+    }
+
+    private suspend fun scrollToPreviousPageOrChapter() {
+        if(state.value.settings.autoOpenNextChapter) {
+            if(!pagerState.canScrollBackward) {
+                openPreviousChapter()
+            } else {
+                pagerState.scrollToPreviousPage()
+            }
+        } else {
+            pagerState.scrollToPreviousPage()
         }
     }
 

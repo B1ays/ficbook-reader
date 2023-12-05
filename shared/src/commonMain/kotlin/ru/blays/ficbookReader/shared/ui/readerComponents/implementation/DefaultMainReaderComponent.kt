@@ -107,7 +107,7 @@ class DefaultMainReaderComponent(
     }
 
     private fun openChapter(index: Int) = coroutineScope.launch {
-        if(chapters is FanficChapterStable.SeparateChaptersModel) {
+        if(chapters is FanficChapterStable.SeparateChaptersModel && index in chapters.chapters.indices) {
             _state.update {
                 it.copy(loading = true)
             }
