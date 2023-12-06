@@ -124,7 +124,6 @@ private class Reader(
         initialPageIndex = 0,
         initialPageOffsetFraction = 0f
     )
-    var currentCharIndex = state.value.initialCharIndex
 
 
     @Composable
@@ -306,20 +305,20 @@ private class Reader(
                 }
             }
 
-            DisposableEffect(Unit) {
+            DisposableEffect(state.value.chapterIndex) {
+                val pages = pagerState.pages
                 scope.launch {
-                    val pages = pagerState.pages
                     while(pagerState.pageCount == 0) {
                         delay(100)
                     }
-                    val page = pages.findPageIndexForCharIndex(currentCharIndex)
-                    pagerState.scrollToPage(page.coerceAtMost(pages.lastIndex))
+                    val page = pages.findPageIndexForCharIndex(
+                        index = state.value.initialCharIndex
+                    )
+                    pagerState.scrollToPage(page.coerceIn(pages.indices))
                 }
 
                 onDispose {
-                    val pages = pagerState.pages
                     val absoluteCharIndex = pages.findCharIndexForPageIndex(pagerState.currentPage)
-                    currentCharIndex = absoluteCharIndex
                     onDispose(absoluteCharIndex)
                 }
             }
