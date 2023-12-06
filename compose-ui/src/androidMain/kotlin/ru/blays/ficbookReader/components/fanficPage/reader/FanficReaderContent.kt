@@ -1,12 +1,14 @@
 package ru.blays.ficbookReader.components.fanficPage.reader
 
-import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
@@ -27,9 +29,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +49,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.platformUtils.FullscreenContainer
+import ru.blays.ficbookReader.platformUtils.rememberBatteryObserver
 import ru.blays.ficbookReader.platformUtils.rememberTimeObserver
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
@@ -144,10 +149,10 @@ private class Reader(
             ) {
                 ReaderTopBarContent(
                     component = component,
-                    modifier = Modifier.weight(0.04F)
+                    modifier = Modifier.requiredHeight(35.dp)
                 )
                 Box(
-                    modifier = Modifier.weight(0.92F),
+                    modifier = Modifier.weight(1F),
                     contentAlignment = Alignment.BottomCenter
                 ) {
                     ReaderTheme(
@@ -175,7 +180,7 @@ private class Reader(
                 }
                 ReaderBottomContent(
                     pagerState = pagerState,
-                    modifier = Modifier.weight(0.04F)
+                    modifier = Modifier.requiredHeight(35.dp)
                 )
             }
             slotInstance?.let { dialogComponent ->
@@ -192,7 +197,6 @@ private class Reader(
         }
     }
 
-    @SuppressLint("ComposableNaming")
     @Composable
     private fun ReaderContent(
         modifier: Modifier = Modifier,
@@ -206,11 +210,13 @@ private class Reader(
             settings.lineHeight
         ) {
             baseStyle.copy(
-                fontSize = settings.fontSize.sp
+                fontSize = settings.fontSize.sp,
+                lineHeight = settings.lineHeight.sp,
             )
         }
         val scope = rememberCoroutineScope()
         val textMeasurer = rememberTextMeasurer()
+        val localConfig = LocalConfiguration.current
         val volumeKeysEventSource = LocalVolumeKeysEventSource.current
         val localView = LocalView.current
 
@@ -230,7 +236,10 @@ private class Reader(
                 )
             }
 
-            DisposableEffect(text) {
+            DisposableEffect(
+                text,
+                config
+            ) {
                 val job = scope.launch {
                     val pages = splitTextToPages(
                         text = text,
@@ -251,7 +260,6 @@ private class Reader(
                 Text(
                     text = page,
                     style = config.style,
-                    lineHeight = settings.lineHeight.sp,
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -263,13 +271,21 @@ private class Reader(
                         when(key) {
                             VOLUME_UP -> {
                                 scope.launch {
-                                    animatedScrollToNextPageOrChapter()
+                                    if(localConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                                        animatedScrollToNextPageOrChapter()
+                                    } else {
+                                        animatedScrollToPreviousPageOrChapter()
+                                    }
                                 }
                                 true
                             }
                             VOLUME_DOWN -> {
                                 scope.launch {
-                                    animatedScrollToPreviousPageOrChapter()
+                                    if(localConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                                        animatedScrollToNextPageOrChapter()
+                                    } else {
+                                        animatedScrollToPreviousPageOrChapter()
+                                    }
                                 }
                                 true
                             }
@@ -387,8 +403,12 @@ private class Reader(
         modifier: Modifier
     ) {
         val time by rememberTimeObserver()
+        val batteryCapacity by rememberBatteryObserver()
 
-        Row(
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            verticalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.Center,
             modifier = modifier
                 .fillMaxSize()
                 .background(
@@ -398,25 +418,35 @@ private class Reader(
                         topEnd = 20.dp
                     )
                 ),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = "${pagerState.currentPage percentageOf pagerState.pageCount}%",
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.width(5.dp))
-            Text(
-                text = "${(pagerState.currentPage)+1}/${pagerState.pageCount}",
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.width(5.dp))
-            Text(
-                text = time,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.width(12.dp))
+            item {
+                Text(
+                    text = "${pagerState.currentPage percentageOf pagerState.pageCount}%",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+            }
+            item {
+                Text(
+                    text = "${(pagerState.currentPage)+1}/${pagerState.pageCount}",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+            }
+            item {
+                Text(
+                    text = time,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+            }
+            item {
+                Text(
+                    text = "$batteryCapacity%",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 
@@ -449,14 +479,13 @@ private class Reader(
         val shape = CardDefaults.shape
 
         LaunchedEffect(previousButtonActive, nextButtonActive, hasNextPage) {
-            if(!readerState.settings.autoOpenNextChapter) {
-                if(
-                    previousButtonActive ||
-                    nextButtonActive ||
-                    !hasNextChapter && !hasNextPage
-                ) {
-                    expanded = true
-                }
+            if(
+                !readerState.settings.autoOpenNextChapter &&
+                (previousButtonActive ||
+                nextButtonActive ||
+                !hasNextChapter && !hasNextPage)
+            ) {
+                expanded = true
             }
         }
 
@@ -722,7 +751,7 @@ private class Reader(
             onDismissRequest = closeDialog,
         ) {
             Card(
-                modifier = Modifier.fillMaxWidth(0.8F)
+                modifier = Modifier.fillMaxWidth(0.9F)
             ) {
                 Column(
                     modifier = Modifier
@@ -734,7 +763,10 @@ private class Reader(
                         text = "Настройки читалки",
                         style = MaterialTheme.typography.titleLarge
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        color = MaterialTheme.colorScheme.background
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
