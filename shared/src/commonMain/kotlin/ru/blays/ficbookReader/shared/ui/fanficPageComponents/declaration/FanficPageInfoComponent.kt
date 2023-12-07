@@ -18,6 +18,8 @@ interface FanficPageInfoComponent {
         data object Share: Intent()
         data object CopyLink: Intent()
         data object OpenInBrowser: Intent()
+
+        data class ChangeChaptersOrder(val reverse: Boolean): Intent()
     }
 
     sealed class Output {
@@ -51,6 +53,7 @@ interface FanficPageInfoComponent {
 
     data class State(
         val fanfic: FanficPageModelStable? = null,
+        val reverseOrderEnabled: Boolean,
         val isLoading: Boolean = true,
         val isError: Boolean = false
     )

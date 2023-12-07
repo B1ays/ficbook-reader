@@ -6,6 +6,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.russhwolf.settings.boolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -15,6 +16,8 @@ import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbookReader.shared.platformUtils.copyToClipboard
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
 import ru.blays.ficbookReader.shared.platformUtils.shareText
+import ru.blays.ficbookReader.shared.preferences.SettingsKeys
+import ru.blays.ficbookReader.shared.preferences.settings
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.InternalFanficPageActionsComponent
@@ -28,7 +31,16 @@ class DefaultFanficPageInfoComponent(
 ): FanficPageInfoComponent, ComponentContext by componentContext {
     private val repository: IFanficPageRepo by getKoin().inject()
 
-    private val _state = MutableValue(FanficPageInfoComponent.State())
+    private var reverseChaptersOrder by settings.boolean(
+        key = SettingsKeys.REVERSE_CHAPTERS_ORDER,
+        defaultValue = false
+    )
+
+    private val _state = MutableValue(
+        FanficPageInfoComponent.State(
+            reverseOrderEnabled = reverseChaptersOrder
+        )
+    )
     override val state: Value<FanficPageInfoComponent.State>
         get() = _state
 
@@ -43,13 +55,6 @@ class DefaultFanficPageInfoComponent(
         get() = _actionsComponent
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-    init {
-        loadPage()
-        lifecycle.doOnDestroy {
-            coroutineScope.cancel()
-        }
-    }
 
     override fun sendIntent(intent: FanficPageInfoComponent.Intent) {
         when(intent) {
@@ -67,6 +72,7 @@ class DefaultFanficPageInfoComponent(
                 val link = getUrlForHref(href = fanficHref)
                 openInBrowser(link)
             }
+            is FanficPageInfoComponent.Intent.ChangeChaptersOrder -> setChaptersOrder(intent.reverse)
         }
     }
 
@@ -82,6 +88,15 @@ class DefaultFanficPageInfoComponent(
                     FanficPageInfoComponent.Output.OpenAllComments(commentsHref)
                 )
             }
+        }
+    }
+
+    private fun setChaptersOrder(reverse: Boolean) {
+        reverseChaptersOrder = reverse
+        _state.update {
+            it.copy(
+                reverseOrderEnabled = reverse,
+            )
         }
     }
 
@@ -114,6 +129,13 @@ class DefaultFanficPageInfoComponent(
                     }
                 }
             }
+        }
+    }
+
+    init {
+        loadPage()
+        lifecycle.doOnDestroy {
+            coroutineScope.cancel()
         }
     }
 }

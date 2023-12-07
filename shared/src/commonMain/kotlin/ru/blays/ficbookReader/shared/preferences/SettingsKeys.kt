@@ -13,6 +13,9 @@ object SettingsKeys {
     // Reader
     const val READER_PREFS_KEY = "ReaderPrefs"
 
+    // Fanfic Page
+    const val REVERSE_CHAPTERS_ORDER = "reverse_chapters_order"
+
     // Common
     const val SUPERFILTER_KEY: String = "superfilter"
     const val AUTO_VOTE_FOR_CONTINUE: String = "auto_vote_for_continue"

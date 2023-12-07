@@ -17,6 +17,7 @@ import androidx.compose.material3.pullrefresh.PullRefreshIndicator
 import androidx.compose.material3.pullrefresh.pullRefresh
 import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -171,6 +172,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                             }
                         }
                         BottomSheetContentClosed(
+                            component = component,
                             fanficPage = fanfic,
                             sheetProgress = sheetProgress
                         ) {
@@ -189,6 +191,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                         val chapters = fanfic.chapters
                         if(chapters is FanficChapterStable.SeparateChaptersModel) {
                             BottomSheetContentOpened(
+                                reversed = state.reverseOrderEnabled,
                                 chapters = chapters,
                                 onChapterClicked = { index ->
                                     component.onOutput(
@@ -280,6 +283,7 @@ private fun LandscapeContent(
                     .fillMaxWidth(0.35F)
             ) {
                 BottomSheetContentClosed(
+                    component = component,
                     fanficPage = fanfic,
                     sheetProgress = 0F
                 ) {
@@ -293,6 +297,7 @@ private fun LandscapeContent(
                 val chapters = fanfic.chapters
                 if(chapters is FanficChapterStable.SeparateChaptersModel) {
                     BottomSheetContentOpened(
+                        reversed = state.reverseOrderEnabled,
                         modifier = Modifier.padding(end = 4.dp),
                         chapters = chapters,
                         onCommentClicked = { chapterID ->
@@ -677,10 +682,13 @@ private fun FanficTags(
 
 @Composable
 private fun BottomSheetContentClosed(
+    component: FanficPageInfoComponent,
     fanficPage: FanficPageModelStable,
     sheetProgress: Float = 1F,
     onReadClicked: () -> Unit
 ) {
+    val state by component.state.subscribeAsState()
+    var menuExpanded by rememberSaveable { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .padding(DefaultPadding.CardDefaultPadding)
@@ -716,8 +724,44 @@ private fun BottomSheetContentClosed(
                     text = "Читать"
                 )
             }
-        }
+        } else {
+            IconButton(
+                onClick = { menuExpanded = !menuExpanded }
+            ) {
+                Icon(
+                    painter = painterResource(Res.image.ic_more_vertical),
+                    contentDescription = "Меню",
+                    modifier = Modifier.size(20.dp)
+                )
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
 
+                    ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text("Обратный порядок глав")
+                        },
+                        trailingIcon = {
+                            Checkbox(
+                                checked = state.reverseOrderEnabled,
+                                onCheckedChange = {
+                                    component.sendIntent(
+                                        FanficPageInfoComponent.Intent.ChangeChaptersOrder(it)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = {
+                            component.sendIntent(
+                                FanficPageInfoComponent.Intent.ChangeChaptersOrder(!state.reverseOrderEnabled)
+                            )
+                        }
+                    )
+                }
+            }
+
+        }
     }
     HorizontalDivider(
         modifier = Modifier
@@ -733,20 +777,28 @@ private fun BottomSheetContentClosed(
 @Composable
 private
 fun BottomSheetContentOpened(
+    reversed: Boolean,
     modifier: Modifier = Modifier,
     chapters: FanficChapterStable.SeparateChaptersModel,
     onCommentClicked: (chapterID: String) -> Unit,
     onChapterClicked: (index: Int) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
+    val reversedList = remember(reversed) {
+        if(reversed) {
+            chapters.chapters.reversed()
+        } else {
+            chapters.chapters
+        }
+    }
     Box {
         LazyColumn(
             modifier = modifier.fillMaxWidth(),
             state = lazyListState
         ) {
-            itemsIndexed(chapters.chapters) { index, item ->
+            itemsIndexed(reversedList) { index, item ->
                 ChapterItem(
-                    index = index+1,
+                    index = if(reversed) reversedList.size - index else index+1,
                     chapter = item,
                     isReaded = item.readed,
                     onCommentsClicked = {
