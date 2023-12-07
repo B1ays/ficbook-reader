@@ -147,7 +147,7 @@ private suspend fun calculatePages(
 
                 currentPage = text
                     .substring(lineStart .. lineEnd)
-                    .run { if(last() == '\n') this else dropLast(1) }
+                    .runCatching { if(last() == '\n') this else dropLast(1) }.getOrElse { "" }
                 currentHeight = measureResult.multiParagraph.getLineHeight(line)
             } else {
                 val lineStart = measureResult.getLineStart(line)
