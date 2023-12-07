@@ -12,8 +12,8 @@ import java.util.*
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-actual fun rememberTimeObserver(
-    timePattern: String
+fun rememberTimeObserver(
+    timePattern: String = "HH:mm"
 ): State<String> {
     val context = LocalContext.current
     val timeFormat = remember {
