@@ -36,6 +36,7 @@ interface MainScreenComponent {
         data object UserProfile: Output()
         data object OpenUsersScreen: Output()
         data object OpenNotifications: Output()
+        data object Search : Output()
     }
 
     data class State(

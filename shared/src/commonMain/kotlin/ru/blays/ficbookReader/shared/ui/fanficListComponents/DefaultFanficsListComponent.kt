@@ -28,6 +28,7 @@ import ru.blays.ficbookapi.result.ApiResult
 class DefaultFanficsListComponent(
     componentContext: ComponentContext,
     section: SectionWithQuery,
+    loadAtCreate: Boolean = true,
     private val output: (output: FanficsListComponent.Output) -> Unit
 ): FanficsListComponentInternal, ComponentContext by componentContext {
     val repository: IFanficsListRepo by getKoin().inject()
@@ -77,7 +78,9 @@ class DefaultFanficsListComponent(
     )
 
     init {
-        refresh()
+        if(loadAtCreate) {
+            refresh()
+        }
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }

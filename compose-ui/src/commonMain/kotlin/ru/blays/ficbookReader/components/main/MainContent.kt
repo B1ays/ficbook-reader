@@ -111,7 +111,9 @@ private fun PortraitContent(
                     actions = {
                         CustomIconButton(
                             onClick = {
-                                // TODO Realize search menu
+                                component.onOutput(
+                                    MainScreenComponent.Output.Search
+                                )
                             },
                             modifier = Modifier
                                 .size(40.dp)
@@ -254,7 +256,9 @@ private fun DrawerLandscape(
             Spacer(modifier = Modifier.width(5.dp))
             CustomIconButton(
                 onClick = {
-                    // TODO Realize search menu
+                    component.onOutput(
+                        MainScreenComponent.Output.Search
+                    )
                 },
                 modifier = Modifier
                     .size(40.dp)

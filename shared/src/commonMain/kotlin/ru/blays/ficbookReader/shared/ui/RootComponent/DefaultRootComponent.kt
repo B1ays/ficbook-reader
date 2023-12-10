@@ -23,6 +23,7 @@ import ru.blays.ficbookReader.shared.ui.notificationComponents.DefaultNotificati
 import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationComponent
 import ru.blays.ficbookReader.shared.ui.profileComponents.DefaultUserProfileRootComponent
 import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
+import ru.blays.ficbookReader.shared.ui.searchComponents.implementation.DefaultSearchComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.implementation.DefaultSettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.DefaultThemeComponent
@@ -178,6 +179,14 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
+            is RootComponent.Config.Search -> {
+                RootComponent.Child.Search(
+                    DefaultSearchComponent(
+                        componentContext = componentContext,
+                        output = ::onFanficsListOutput
+                    )
+                )
+            }
         }
     }
 
@@ -253,6 +262,11 @@ class DefaultRootComponent private constructor(
             is MainScreenComponent.Output.OpenNotifications -> {
                 navigation.push(
                     RootComponent.Config.Notifications
+                )
+            }
+            is MainScreenComponent.Output.Search -> {
+                navigation.push(
+                    RootComponent.Config.Search
                 )
             }
         }

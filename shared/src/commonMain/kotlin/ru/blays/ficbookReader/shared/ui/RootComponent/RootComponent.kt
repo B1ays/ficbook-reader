@@ -10,6 +10,7 @@ import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficP
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationComponent
 import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
+import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
@@ -55,6 +56,9 @@ interface RootComponent {
 
         @Serializable
         data object Notifications: Config()
+
+        @Serializable
+        data object Search: Config()
     }
 
     sealed class Child {
@@ -67,5 +71,6 @@ interface RootComponent {
         data class AuthorProfile(val component: AuthorProfileComponent): Child()
         data class Users(val component: UsersRootComponent): Child()
         data class Notifications(val component: NotificationComponent): Child()
+        data class Search(val component: SearchComponent): Child()
     }
 }
