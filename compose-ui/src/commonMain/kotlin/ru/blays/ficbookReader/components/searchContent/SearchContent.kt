@@ -38,6 +38,10 @@ import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponen
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchFandomsComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchTagsComponent
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberSheetState
 import ru.blays.ficbookReader.ui_components.LazyItems.items
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.CardShape
@@ -128,15 +132,12 @@ private fun LandscapeContent(component: SearchComponent) {
 
 @Composable
 private fun PortraitContent(component: SearchComponent) {
-    val bottomSheetState = rememberModalBottomSheetState(false)
+    val bottomSheetState = rememberSheetState(
+        skipPartiallyExpanded = false,
+        initialValue = SheetValue.Expanded
+    )
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
     val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            bottomSheetState.expand()
-        }
-    }
 
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
