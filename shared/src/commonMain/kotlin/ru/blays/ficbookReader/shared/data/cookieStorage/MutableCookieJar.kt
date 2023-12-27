@@ -63,11 +63,15 @@ class DynamicCookieJar: MutableCookieJar, LocalCookieStorage {
         coroutineScope.launch {
             cookies.forEach { cookie ->
                 if(cookie.name == "PHPSESSID" || cookie.name == "rme") {
-                    if(storage.isNotEmpty()) {
-                        storage.removeIf { it.name == cookie.name }
+                    try {
+                        if(storage.isNotEmpty()) {
+                            storage.removeIf { it.name == cookie.name }
+                        }
+                        storage.add(cookie)
+                        saveInMemory(cookie)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                    storage.add(cookie)
-                    saveInMemory(cookie)
                 }
             }
         }
