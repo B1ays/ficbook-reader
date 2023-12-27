@@ -115,7 +115,9 @@ private fun LandscapeContent(component: SearchComponent) {
                 }
             },
             drawerState = drawerState,
-            modifier = Modifier.padding(top = padding.calculateTopPadding())
+            modifier = Modifier.padding(
+                top = padding.calculateTopPadding()
+            )
         ) {
             FanficsListContent(
                 component = component.fanficsListComponent
@@ -209,7 +211,6 @@ private fun SearchMenu(
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
         ) {
-            CategorySpacer()
             OutlinedTextField(
                 value = state.title,
                 onValueChange = {
@@ -250,8 +251,8 @@ private fun SearchMenu(
                     value = state.fandomsGroup,
                     onValueChange = component::setFandomsGroup
                 )
+                CategorySpacer()
             }
-            CategorySpacer()
             AnimatedVisibility(
                 visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CATEGORY ||
                     state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
@@ -262,8 +263,8 @@ private fun SearchMenu(
                     component = component.searchFandomsComponent,
                     canIncludeFandoms = state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE
                 )
+                CategorySpacer()
             }
-            CategorySpacer()
             TagsSelector(
                 component = component.searchTagsComponent,
             )
