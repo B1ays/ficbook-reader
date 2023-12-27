@@ -7,6 +7,7 @@ import org.jsoup.Jsoup
 import ru.blays.ficbookapi.dataModels.AjaxSimpleResult
 import ru.blays.ficbookapi.dataModels.FanficPageModel
 import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
+import ru.blays.ficbookapi.json
 import ru.blays.ficbookapi.okHttpDsl.*
 import ru.blays.ficbookapi.parsers.FanficPageParser
 import ru.blays.ficbookapi.result.ApiResult
@@ -61,7 +62,7 @@ class FanficPageApiImpl(
                 header("Referer", "https://ficbook.net/readfic/$fanficID")
             }
             val body = response.body.stringOrThrow()
-            val result: AjaxSimpleResult = Json.decodeFromString(body)
+            val result: AjaxSimpleResult = json.decodeFromString(body)
             result.result
         } catch (e: Exception) {
             false
@@ -85,7 +86,7 @@ class FanficPageApiImpl(
                 header("Referer", "https://ficbook.net/readfic/$fanficID")
             }
             val body = response.body.stringOrThrow()
-            val result: AjaxSimpleResult = Json.decodeFromString(body)
+            val result: AjaxSimpleResult = json.decodeFromString(body)
             result.result
         } catch (e: Exception) {
             false
@@ -108,7 +109,7 @@ class FanficPageApiImpl(
                 }
             }
             val body = response.body.stringOrThrow()
-            val result: AjaxSimpleResult = Json.decodeFromString(body)
+            val result: AjaxSimpleResult = json.decodeFromString(body)
             result.result
         } catch (e: Exception) {
             false

@@ -5,7 +5,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform
-import ru.blays.ficbookReader.shared.data.dto.SearchedTagsModel
+import ru.blays.ficbookReader.shared.data.dto.SearchedTagModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.ISearchRepo
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchTagsComponent
 import ru.blays.ficbookapi.result.ApiResult
@@ -33,7 +33,7 @@ class DefaultSearchTagsComponent(
 
     override fun selectTag(
         select: Boolean,
-        tag: SearchedTagsModel.Data.Tag
+        tag: SearchedTagModel
     ) {
         if(select) {
             _state.update {
@@ -52,7 +52,7 @@ class DefaultSearchTagsComponent(
 
     override fun excludeTag(
         exclude: Boolean,
-        tag: SearchedTagsModel.Data.Tag
+        tag: SearchedTagModel
     ) {
         if(exclude) {
             _state.update {
@@ -78,7 +78,7 @@ class DefaultSearchTagsComponent(
         }
         if(name.isNotEmpty()) {
             searchJob = coroutineScope.launch {
-                delay(1.seconds)
+                delay(0.7.seconds)
                 if(searchJob?.isActive == true) {
                     when(
                         val result = repository.findTags(name)
@@ -87,7 +87,7 @@ class DefaultSearchTagsComponent(
                         is ApiResult.Success -> {
                             _state.update {
                                 it.copy(
-                                    searchedTags = result.value.data.tags.toSet()
+                                    searchedTags = result.value.toSet()
                                 )
                             }
                         }

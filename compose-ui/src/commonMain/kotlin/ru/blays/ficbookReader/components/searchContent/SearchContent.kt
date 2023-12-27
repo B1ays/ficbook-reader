@@ -32,8 +32,8 @@ import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.data.dto.IntRangeSimple
 import ru.blays.ficbookReader.shared.data.dto.SearchParams
-import ru.blays.ficbookReader.shared.data.dto.SearchedFandomsModel
-import ru.blays.ficbookReader.shared.data.dto.SearchedTagsModel
+import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
+import ru.blays.ficbookReader.shared.data.dto.SearchedTagModel
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchFandomsComponent
@@ -496,7 +496,7 @@ private fun FandomsSelector(
                         state.selectedFandoms.forEach { fandom ->
                             ItemChip(
                                 title = fandom.title,
-                                subtitle = fandom.secTitle,
+                                subtitle = fandom.description,
                                 expanded = chipExpanded,
                                 excluded = false,
                                 includedColor = includedColor,
@@ -516,7 +516,7 @@ private fun FandomsSelector(
                     state.excludedFandoms.forEach { fandom ->
                         ItemChip(
                             title = fandom.title,
-                            subtitle = fandom.secTitle,
+                            subtitle = fandom.description,
                             expanded = chipExpanded,
                             excluded = true,
                             includedColor = includedColor,
@@ -1237,7 +1237,7 @@ fun RangeSelector(
 private fun FindFandomDialog(
     component: SearchFandomsComponent,
     onDismiss: () -> Unit,
-    onSelected: (SearchedFandomsModel.Data.Result) -> Unit
+    onSelected: (SearchedFandomModel) -> Unit
 ) {
     val state by component.state.subscribeAsState()
     DialogPlatform(
@@ -1302,7 +1302,7 @@ private fun FindFandomDialog(
 private fun FindTagDialog(
     component: SearchTagsComponent,
     onDismiss: () -> Unit,
-    onSelected: (SearchedTagsModel.Data.Tag) -> Unit
+    onSelected: (SearchedTagModel) -> Unit
 ) {
     val state by component.state.subscribeAsState()
     DialogPlatform(
@@ -1365,8 +1365,8 @@ private fun FindTagDialog(
 
 @Composable
 private fun SearchedFandomItem(
-    fandom: SearchedFandomsModel.Data.Result,
-    onSelected: (SearchedFandomsModel.Data.Result) -> Unit
+    fandom: SearchedFandomModel,
+    onSelected: (SearchedFandomModel) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -1376,14 +1376,14 @@ private fun SearchedFandomItem(
             },
     ) {
         Text(
-            text = "${fandom.title} (${fandom.fanficCnt})",
+            text = "${fandom.title} (${fandom.fanficsCount})",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = fandom.secTitle,
+            text = fandom.description,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.labelLarge,
@@ -1394,8 +1394,8 @@ private fun SearchedFandomItem(
 
 @Composable
 private fun SearchedTagItem(
-    tag: SearchedTagsModel.Data.Tag,
-    onSelected: (SearchedTagsModel.Data.Tag) -> Unit
+    tag: SearchedTagModel,
+    onSelected: (SearchedTagModel) -> Unit
 ) {
     Column(
         modifier = Modifier

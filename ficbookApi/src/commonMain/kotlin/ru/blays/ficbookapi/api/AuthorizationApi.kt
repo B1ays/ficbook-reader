@@ -1,7 +1,6 @@
 package ru.blays.ficbookapi.api
 
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okio.IOException
 import org.jsoup.Jsoup
@@ -12,6 +11,7 @@ import ru.blays.ficbookapi.dataModels.AuthorizationResult
 import ru.blays.ficbookapi.dataModels.LoginModel
 import ru.blays.ficbookapi.dataModels.UserModel
 import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
+import ru.blays.ficbookapi.json
 import ru.blays.ficbookapi.okHttpDsl.*
 import ru.blays.ficbookapi.parsers.UserParser
 import ru.blays.ficbookapi.result.ApiResult
@@ -43,7 +43,7 @@ class AuthorizationApiImpl(
                 addHeader("referer", "https://ficbook.net/")
             }
             val body = response.body.stringOrThrow()
-            val resultModel: AuthorizationResponseModel = Json.decodeFromString(body)
+            val resultModel: AuthorizationResponseModel = json.decodeFromString(body)
             val user = checkAuthorization()
             ApiResult.success(
                 AuthorizationResult(

@@ -5,7 +5,11 @@ import okhttp3.OkHttpClient
 import ru.blays.ficbookapi.SEARCH_CHARACTERS_HREF
 import ru.blays.ficbookapi.SEARCH_FANDOMS_HREF
 import ru.blays.ficbookapi.SEARCH_TAGS_HREF
+import ru.blays.ficbookapi.dataModels.SearchedCharactersModel
+import ru.blays.ficbookapi.dataModels.SearchedFandomsModel
+import ru.blays.ficbookapi.dataModels.SearchedTagsModel
 import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
+import ru.blays.ficbookapi.json
 import ru.blays.ficbookapi.okHttpDsl.formBody
 import ru.blays.ficbookapi.okHttpDsl.href
 import ru.blays.ficbookapi.okHttpDsl.post
@@ -13,11 +17,9 @@ import ru.blays.ficbookapi.okHttpDsl.stringOrThrow
 import ru.blays.ficbookapi.result.ApiResult
 
 interface SearchApi {
-    suspend fun findFandoms(query: String): ApiResult<String>
-
-    suspend fun getCharacters(fandomIds: List<String>): ApiResult<String>
-
-    suspend fun findTags(query: String): ApiResult<String>
+    suspend fun findFandoms(query: String): ApiResult<SearchedFandomsModel>
+    suspend fun getCharacters(fandomIds: List<String>): ApiResult<SearchedCharactersModel>
+    suspend fun findTags(query: String): ApiResult<SearchedTagsModel>
 }
 
 class SearchApiImpl(
@@ -25,7 +27,7 @@ class SearchApiImpl(
 ): SearchApi {
     override suspend fun findFandoms(
         query: String
-    ): ApiResult<String> = coroutineScope {
+    ): ApiResult<SearchedFandomsModel> = coroutineScope {
         return@coroutineScope try {
             val response = client.post(
                 url = ficbookUrl {
@@ -40,7 +42,8 @@ class SearchApiImpl(
                 }
             )
             val body = response.body.stringOrThrow()
-            ApiResult.success(body)
+            val result: SearchedFandomsModel = json.decodeFromString(body)
+            ApiResult.success(result)
         } catch (e: Exception) {
             ApiResult.failure(e)
         }
@@ -48,7 +51,7 @@ class SearchApiImpl(
 
     override suspend fun getCharacters(
         fandomIds: List<String>
-    ): ApiResult<String> = coroutineScope {
+    ): ApiResult<SearchedCharactersModel> = coroutineScope {
         return@coroutineScope try {
             val response = client.post(
                 url = ficbookUrl {
@@ -61,7 +64,8 @@ class SearchApiImpl(
                 }
             )
             val body = response.body.stringOrThrow()
-            ApiResult.success(body)
+            val result: SearchedCharactersModel = json.decodeFromString(body)
+            ApiResult.success(result)
         } catch (e: Exception) {
             ApiResult.failure(e)
         }
@@ -69,7 +73,7 @@ class SearchApiImpl(
 
     override suspend fun findTags(
         query: String
-    ): ApiResult<String> = coroutineScope {
+    ): ApiResult<SearchedTagsModel> = coroutineScope {
         return@coroutineScope try {
             val response = client.post(
                 url = ficbookUrl {
@@ -81,7 +85,8 @@ class SearchApiImpl(
                 }
             )
             val body = response.body.stringOrThrow()
-            ApiResult.success(body)
+            val result: SearchedTagsModel = json.decodeFromString(body)
+            ApiResult.success(result)
         } catch (e: Exception) {
             ApiResult.failure(e)
         }

@@ -1,7 +1,6 @@
 package ru.blays.ficbookapi.api
 
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import org.jsoup.Jsoup
 import ru.blays.ficbookapi.AUTHORS_HREF
@@ -12,6 +11,7 @@ import ru.blays.ficbookapi.dataModels.ListResult
 import ru.blays.ficbookapi.dataModels.PopularAuthorModel
 import ru.blays.ficbookapi.dataModels.UserModel
 import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
+import ru.blays.ficbookapi.json
 import ru.blays.ficbookapi.okHttpDsl.*
 import ru.blays.ficbookapi.parsers.FavouriteAuthorsParser
 import ru.blays.ficbookapi.parsers.PopularAuthorsParser
@@ -88,7 +88,7 @@ internal class UsersApiImpl(
                 }
             )
             val body = response.body.stringOrThrow()
-            val result: AuthorSearchResult = Json.decodeFromString(body)
+            val result: AuthorSearchResult = json.decodeFromString(body)
             ApiResult.success(result)
         } catch (e: Exception) {
             ApiResult.failure(e)

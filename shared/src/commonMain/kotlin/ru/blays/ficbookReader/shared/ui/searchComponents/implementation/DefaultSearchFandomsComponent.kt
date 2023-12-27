@@ -6,7 +6,7 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform.getKoin
-import ru.blays.ficbookReader.shared.data.dto.SearchedFandomsModel
+import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.ISearchRepo
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchFandomsComponent
 import ru.blays.ficbookapi.result.ApiResult
@@ -31,7 +31,7 @@ class DefaultSearchFandomsComponent(
 
     override val state: Value<SearchFandomsComponent.State> get() = _state
 
-    override fun selectFandom(select: Boolean, fandom: SearchedFandomsModel.Data.Result) {
+    override fun selectFandom(select: Boolean, fandom: SearchedFandomModel) {
         if(select) {
             _state.update {
                 it.copy(
@@ -47,7 +47,7 @@ class DefaultSearchFandomsComponent(
         }
     }
 
-    override fun excludeFandom(exclude: Boolean, fandom: SearchedFandomsModel.Data.Result) {
+    override fun excludeFandom(exclude: Boolean, fandom: SearchedFandomModel) {
         if(exclude) {
             _state.update {
                 it.copy(
@@ -81,7 +81,7 @@ class DefaultSearchFandomsComponent(
         }
         if(name.isNotEmpty()) {
             searchJob = coroutineScope.launch {
-                delay(1.seconds)
+                delay(0.7.seconds)
                 if(searchJob?.isActive == true) {
                     when(
                         val result = repository.findFandoms(name)
@@ -90,7 +90,7 @@ class DefaultSearchFandomsComponent(
                         is ApiResult.Success -> {
                             _state.update {
                                 it.copy(
-                                    searchedFandoms = result.value.data.result.toSet()
+                                    searchedFandoms = result.value.toSet()
                                 )
                             }
                         }

@@ -321,3 +321,23 @@ fun NotificationCategory.toStableModel() = NotificationCategoryStable(
     type = type.toStableModel(),
     notificationsCount = notificationsCount
 )
+
+fun SearchedFandomsModel.Data.Result.toStableModel() = SearchedFandomModel(
+    title = title,
+    description = secTitle,
+    fanficsCount = fanficCnt,
+    id = id
+)
+
+fun SearchedCharactersModel.SearchedCharactersItem.Char.toStableModel() = SearchedCharacterModel(
+    name = name,
+    id = "$id"
+)
+
+fun SearchedTagsModel.Data.Tag.toStableModel() = SearchedTagModel(
+    title = title,
+    description = description,
+    usageCount = usageCount,
+    isAdult = isAdult,
+    id = id
+)
