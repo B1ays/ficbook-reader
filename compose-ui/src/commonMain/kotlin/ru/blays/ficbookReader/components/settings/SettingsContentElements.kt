@@ -24,11 +24,12 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.compose.Res
-import ru.blays.ficbookReader.ui_components.CustomButton.BackgroundIcon
+import ru.blays.ficbookReader.ui_components.CustomButton.BackgroundedIcon
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
@@ -43,7 +44,10 @@ fun SettingsExpandableCard(
 ) {
     var isCardExpanded by rememberSaveable { mutableStateOf(false) }
 
-    val transition = updateTransition(targetState = isCardExpanded, label = null)
+    val transition = updateTransition(
+        targetState = isCardExpanded,
+        label = null
+    )
     val rotateValue by transition.animateFloat(
         transitionSpec = {
             tween(
@@ -76,7 +80,7 @@ fun SettingsExpandableCard(
                 targetState = icon,
             ) {
                 if(it != null) {
-                    BackgroundIcon(
+                    BackgroundedIcon(
                         modifier = Modifier.padding(horizontal = 6.dp),
                         icon = it,
                         iconScale = 0.8F,
@@ -118,14 +122,12 @@ fun SettingsExpandableCard(
         }
         AnimatedVisibility(
             visible = isCardExpanded,
-            enter = slideInVertically(
-                animationSpec = spring(stiffness = 300F, dampingRatio = .6F),
-                initialOffsetY = { -it / 2 }
-            ) + expandVertically(),
-            exit = slideOutVertically(
-                animationSpec = spring(stiffness = 300F, dampingRatio = .6F),
-                targetOffsetY = { -it / 2 }
-            ) + shrinkVertically()
+            enter = expandVertically(
+                animationSpec = spring(stiffness = 300F, dampingRatio = .6F)
+            ),
+            exit = shrinkVertically(
+                animationSpec = spring(stiffness = 300F, dampingRatio = .6F)
+            )
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -144,7 +146,7 @@ fun SettingsExpandableCard(
 ) = SettingsExpandableCard(
     title = title,
     subtitle = subtitle,
-    icon = icon?.let { androidx.compose.ui.graphics.vector.rememberVectorPainter(it) },
+    icon = icon?.let { rememberVectorPainter(it) },
     content = content
 )
 
@@ -153,14 +155,18 @@ fun SettingsCardWithSwitch(
     title: String,
     subtitle: String,
     icon: Painter? = null,
-    state: Boolean,
+    enabled: Boolean,
     isSwitchEnabled: Boolean = true,
     action: (Boolean) -> Unit
 ) {
     Card(
+        shape = CardShape.CardStandalone,
+        onClick = {
+            action(!enabled)
+        },
         modifier = Modifier
             .padding(DefaultPadding.CardDefaultPadding)
-            .clip(CardShape.CardStandalone)
+            .clip(CardShape.CardStandalone),
     ) {
         Row(
             modifier = Modifier
@@ -169,7 +175,7 @@ fun SettingsCardWithSwitch(
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon?.let {
-                BackgroundIcon(
+                BackgroundedIcon(
                     modifier = Modifier.padding(horizontal = 6.dp),
                     icon = icon,
                     iconScale = 0.8F,
@@ -199,10 +205,9 @@ fun SettingsCardWithSwitch(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-
                 Switch(
-                    checked = state,
-                    onCheckedChange = action,
+                    checked = enabled,
+                    onCheckedChange = null,
                     enabled = isSwitchEnabled
                 )
             }

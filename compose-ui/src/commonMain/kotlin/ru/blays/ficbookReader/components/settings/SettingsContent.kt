@@ -154,7 +154,7 @@ private fun DynamicColorsSetting(component: SettingsUnitComponent<Boolean>) {
         title = "Monet цвета",
         subtitle = "Использовать тему из Monet",
         icon = icon,
-        state = state
+        enabled = state
     ) {
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(it)
@@ -170,7 +170,7 @@ private fun AmoledThemeSetting(component: SettingsUnitComponent<Boolean>) {
         title = "Amoled тема",
         subtitle = "Использовать Amoled тему",
         icon = icon,
-        state = state
+        enabled = state
     ) {
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(it)
@@ -268,7 +268,7 @@ private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
     SettingsCardWithSwitch(
         title = "Авто-голосование",
         subtitle = "Автоматически ставить \"Жду продолжения\"",
-        state = state,
+        enabled = state,
         icon = painterResource(Res.image.ic_vote)
     ) { newValue ->
         component.onIntent(
@@ -283,7 +283,7 @@ private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
     SettingsCardWithSwitch(
         title = "Chrome Custom Tabs",
         subtitle = "Открывать ссылки в Chrome Custom Tabs",
-        state = state,
+        enabled = state,
         icon = painterResource(Res.image.ic_chrome)
     ) { newValue ->
         component.onIntent(
@@ -299,7 +299,7 @@ fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
         title = "Типограф",
         subtitle = "Автоматически исправлять форматирование текста",
         icon = painterResource(Res.image.ic_magic_wand),
-        state = state
+        enabled = state
     ) { newValue ->
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(newValue)

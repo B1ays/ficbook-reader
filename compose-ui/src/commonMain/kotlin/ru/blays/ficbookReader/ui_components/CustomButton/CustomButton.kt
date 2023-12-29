@@ -63,7 +63,7 @@ fun CustomIconButton(
 }
 
 @Composable
-fun BackgroundIcon(
+fun BackgroundedIcon(
     modifier: Modifier = Modifier,
     icon: Painter,
     shape: Shape = ButtonDefaults.shape,
