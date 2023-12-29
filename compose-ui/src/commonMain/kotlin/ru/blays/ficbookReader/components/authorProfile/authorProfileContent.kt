@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
@@ -198,18 +197,16 @@ private fun ProfileHeader(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = CircleShape
                     )
-                    .graphicsLayer(
-                        shape = CircleShape,
-                        clip = true,
-                        shadowElevation = 0F
-                    )
+                    .clip(CircleShape)
                     .padding(5.dp)
             ) {
                 AsyncImage(
                     model = mainInfo.avatarUrl,
                     contentDescription = "Аватарка автора",
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier.clip(CircleShape)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
                 )
             }
         }
