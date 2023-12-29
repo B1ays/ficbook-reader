@@ -31,6 +31,7 @@ import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponen
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficCard
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.DefaultPadding
+import ru.blays.ficbookReader.values.defaultScrollbarPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
@@ -73,11 +74,14 @@ fun FanficsListContent(
                 .then(modifier)
                 .fillMaxSize()
                 .padding(DefaultPadding.CardDefaultPadding)
-                .padding(end = 4.dp),
+                .padding(end = defaultScrollbarPadding),
             state = lazyListState,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(list) { fanfic ->
+            items(
+                items = list,
+                key = { it.href }
+            ) { fanfic ->
                 FanficCard(
                     fanfic = fanfic,
                     onCardClick = {

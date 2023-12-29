@@ -2,6 +2,7 @@ package ru.blays.ficbookReader.values
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object CardShape {
@@ -19,3 +20,5 @@ object DefaultPadding {
     val CardDefaultPaddingLarge = PaddingValues(horizontal = 16.dp, vertical = 7.dp)
     val CardDefaultPaddingSmall = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
 }
+
+expect val defaultScrollbarPadding: Dp

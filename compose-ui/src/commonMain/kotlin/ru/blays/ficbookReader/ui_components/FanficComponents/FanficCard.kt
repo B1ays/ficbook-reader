@@ -1,7 +1,6 @@
 package ru.blays.ficbookReader.ui_components.FanficComponents
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -184,23 +183,24 @@ private fun PortraitContent(
     Column(
         modifier = modifier.clickable(onClick = onCardClick)
     ) {
-        KamelImage(
-            modifier = Modifier
-                .offset(y = 16.dp)
-                .fillMaxWidth()
-                .heightIn(
-                    max = 250.dp
-                )
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 16.dp,
-                        topEnd = 16.dp
-                    )
-                ),
-            resource = asyncPainterResource(fanfic.coverUrl),
-            contentDescription = "Обложка фанфика",
-            contentScale = ContentScale.Crop
-        )
+        if(fanfic.coverUrl.isNotEmpty()) {
+            val resource = asyncPainterResource(fanfic.coverUrl)
+            KamelImage(
+                modifier = Modifier
+                    .offset(y = 16.dp)
+                    .fillMaxWidth()
+                    .heightIn(max = 250.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 16.dp,
+                            topEnd = 16.dp
+                        )
+                    ),
+                resource = resource,
+                contentDescription = "Обложка фанфика",
+                contentScale = ContentScale.Crop
+            )
+        }
         val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
         val cardColor = remember {
             if (fanfic.readInfo?.hasUpdate == true) {
@@ -316,8 +316,7 @@ fun FanficChips(
     status: FanficStatusStable
 ) {
     FlowRow(
-        modifier = Modifier
-            .padding(DefaultPadding.CardDefaultPadding),
+        modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
         verticalArrangement = Arrangement.Center
     ) {
         if (status.rating != FanficRating.UNKNOWN ) {
@@ -412,7 +411,7 @@ fun FanficChips(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FanficHeader(
     fanfic: FanficCardModelStable,
@@ -445,7 +444,7 @@ fun FanficHeader(
                         onAuthorClick(it)
                     }
                 )
-                Spacer(modifier = Modifier.width(2.dp))
+                Spacer(modifier = Modifier.width(4.dp))
             }
         }
         Spacer(modifier = Modifier.height(6.dp))
@@ -455,10 +454,10 @@ fun FanficHeader(
                 painter = painterResource(Res.image.ic_open_book),
                 contentDescription = "Иконка открытая книга"
             )
-            Spacer(modifier = Modifier.width(2.dp))
-            fanfic.fandom.forEach {
+            Spacer(modifier = Modifier.width(4.dp))
+            fanfic.fandom.forEachIndexed { index, it ->
                 Text(
-                    text = it.name + ',',
+                    text = it.name.let { if(index != fanfic.fandom.lastIndex) "$it," else it },
                     style = MaterialTheme.typography.labelLarge,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable {
@@ -488,6 +487,7 @@ fun FanficHeader(
                         } else {
                             Color.Unspecified
                         },
+                        textDecoration = TextDecoration.Underline,
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .padding(2.dp)
@@ -509,16 +509,18 @@ fun FanficHeader(
             }
         }
         Spacer(modifier = Modifier.requiredHeight(2.dp))
-        Text(
-            text = "Тэги:",
-            style = MaterialTheme.typography.labelLarge
-        )
-        FlowRow {
-            fanfic.tags.forEach { tag ->
-                FanficTagChip(tag = tag)
+        if(fanfic.tags.isNotEmpty()) {
+            Text(
+                text = "Тэги:",
+                style = MaterialTheme.typography.labelLarge
+            )
+            FlowRow {
+                fanfic.tags.forEach { tag ->
+                    FanficTagChip(tag = tag)
+                }
             }
+            Spacer(modifier = Modifier.requiredHeight(4.dp))
         }
-        Spacer(modifier = Modifier.requiredHeight(4.dp))
         Text(
             text = "Обновлено: ${fanfic.updateDate}",
             style = MaterialTheme.typography.labelLarge
