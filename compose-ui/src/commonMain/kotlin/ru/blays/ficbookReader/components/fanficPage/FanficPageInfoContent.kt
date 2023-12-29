@@ -807,7 +807,8 @@ fun BottomSheetContentOpened(
                         onCommentClicked(item.chapterID)
                     },
                     onClick = {
-                        onChapterClicked(index)
+                        onChapterClicked(
+                            if(reversed) reversedList.lastIndex - index else index)
                     }
                 )
             }
