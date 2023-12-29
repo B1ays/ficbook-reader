@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -395,7 +396,7 @@ private fun FanficHeader(
     FlowRow {
         fanficPage.authors.forEach { userModel ->
             AuthorItem(
-                userModel = userModel,
+                authorModel = userModel,
                 avatarSize = 40.dp,
                 onAuthorClick = onAuthorClick
             )
@@ -907,31 +908,40 @@ private fun ChapterItem(
 
 @Composable
 private fun AuthorItem(
-    userModel: UserModelStable,
+    authorModel: FanficAuthorModelStable,
     avatarSize: Dp,
     onAuthorClick: (author: UserModelStable) -> Unit
 ) {
+    val user = authorModel.user
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(3.dp)
-            .clip(CircleShape)
+            .padding(5.dp)
             .clickable {
-                onAuthorClick(userModel)
+                onAuthorClick(user)
             }
     ) {
         AsyncImage(
-            model = userModel.avatarUrl,
+            model = user.avatarUrl,
             contentDescription = "Аватар автора",
             modifier = Modifier
                 .size(avatarSize)
                 .clip(CircleShape)
         )
-        Spacer(modifier = Modifier.width(3.dp))
-        Text(
-            text = userModel.name,
-            style = MaterialTheme.typography.labelLarge
-        )
+        Spacer(modifier = Modifier.width(5.dp))
+        Column {
+            Text(
+                text = user.name,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = authorModel.role,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.surfaceTint
+            )
+        }
     }
 }
 

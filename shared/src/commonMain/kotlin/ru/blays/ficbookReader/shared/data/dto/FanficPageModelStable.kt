@@ -8,7 +8,7 @@ data class FanficPageModelStable(
     val fanficID: String,
     val name: String,
     val status: FanficStatusStable,
-    val authors: List<UserModelStable>,
+    val authors: List<FanficAuthorModelStable>,
     val fandoms: List<FandomModelStable>,
     val pairings: List<PairingModelStable>,
     val tags: List<FanficTagStable>,
@@ -63,4 +63,10 @@ data class RewardModelStable(
     val message: String,
     val fromUser: String,
     val awardDate: String
+)
+
+@Immutable
+data class FanficAuthorModelStable(
+    val user: UserModelStable,
+    val role: String
 )

@@ -78,8 +78,8 @@ fun FanficPageModel.toStableModel(
     subscribed = subscribed,
     inCollectionsCount = inCollectionsCount,
     status = status.toStableModel(),
-    authors = author.map(UserModel::toStableModel),
-    fandoms = fandom.map(FandomModel::toStableModel),
+    authors = authors.map(FanficAuthorModel::toStableModel),
+    fandoms = fandoms.map(FandomModel::toStableModel),
     pairings = pairings.map(PairingModel::toStableModel),
     tags = tags.map(FanficTag::toStableModel),
     chapters = chapters,
@@ -341,3 +341,9 @@ fun SearchedTagsModel.Data.Tag.toStableModel() = SearchedTagModel(
     isAdult = isAdult,
     id = id
 )
+
+fun FanficAuthorModel.toStableModel() = FanficAuthorModelStable(
+    user = user.toStableModel(),
+    role = role
+)
+

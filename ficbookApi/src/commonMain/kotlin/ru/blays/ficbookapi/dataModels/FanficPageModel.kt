@@ -7,8 +7,8 @@ data class FanficPageModel(
     val id: String,
     val name: String,
     val status: FanficStatus,
-    val author: List<UserModel>,
-    val fandom: List<FandomModel>,
+    val authors: List<FanficAuthorModel>,
+    val fandoms: List<FandomModel>,
     val pairings: List<PairingModel>,
     val tags: List<FanficTag>,
     val coverUrl: CoverUrl,
@@ -27,8 +27,8 @@ data class FanficPageModel(
 id: $id
 name: $name
 status: $status
-author: $author
-fandom: $fandom
+author: $authors
+fandom: $fandoms
 coverUrl: $coverUrl
 tags: ${tags.joinToString { it.toString() }}
 description: $description
@@ -72,4 +72,10 @@ data class RewardModel(
         return "$message от $fromUser"
     }
 }
+
+@Serializable
+data class FanficAuthorModel(
+    val user: UserModel,
+    val role: String
+)
 

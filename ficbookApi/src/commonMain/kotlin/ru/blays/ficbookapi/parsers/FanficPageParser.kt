@@ -96,7 +96,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             return@run name.ifEmpty { headline }
         } ?: ""
 
-        val fandom: List<FandomModel> = fanficMainInfo
+        val fandoms: List<FandomModel> = fanficMainInfo
             ?.select(".mb-10")
             ?.run {
                 forEach { element ->
@@ -116,15 +116,20 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             ?: emptyList()
 
 
-        val author: List<UserModel> = data
+        val authors: List<FanficAuthorModel> = data
             .select(".hat-creator-container")
             .map { element ->
                 val avatar = element.select("img").attr(ATTR_SRC)
                 val creatorInfo = element.select(".creator-username")
-                UserModel(
+                val role = element.select(Evaluator.Class("small-text text-muted")).text()
+                val user = UserModel(
                     name = creatorInfo.text(),
                     href = creatorInfo.attr(ATTR_HREF),
                     avatarUrl = avatar
+                )
+                FanficAuthorModel(
+                    user = user,
+                    role = role
                 )
             }
 
@@ -323,8 +328,8 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
                 likes = likes,
                 trophies = trophies
             ),
-            author = author,
-            fandom = fandom,
+            authors = authors,
+            fandoms = fandoms,
             pairings = pairings,
             coverUrl = coverUrl,
             tags = genres,
