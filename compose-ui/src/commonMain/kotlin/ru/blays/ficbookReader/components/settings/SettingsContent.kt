@@ -87,6 +87,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                 itemsGroupWithHeader("Общие") {
                     SuperfilterSetting(component.superfilterSetting)
                     AutoVoteSetting(component.autoVoteSetting)
+                    TypografSetting(component.typografSetting)
                     if(component.chromeCustomTabsSetting != null) {
                         CustomTabsSetting(component.chromeCustomTabsSetting!!)
                     }
@@ -284,6 +285,21 @@ private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
         subtitle = "Открывать ссылки в Chrome Custom Tabs",
         state = state,
         icon = painterResource(Res.image.ic_chrome)
+    ) { newValue ->
+        component.onIntent(
+            SettingsUnitComponent.Intent.ChangeValue(newValue)
+        )
+    }
+}
+
+@Composable
+fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
+    val state by component.state.collectAsState()
+    SettingsCardWithSwitch(
+        title = "Типограф",
+        subtitle = "Автоматически исправлять форматирование текста",
+        icon = painterResource(Res.image.ic_magic_wand),
+        state = state
     ) { newValue ->
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(newValue)

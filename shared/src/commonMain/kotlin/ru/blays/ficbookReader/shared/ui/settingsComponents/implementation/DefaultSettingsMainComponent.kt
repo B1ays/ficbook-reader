@@ -57,6 +57,12 @@ class DefaultSettingsMainComponent(
     } else {
         null
     }
+    override val typografSetting = DefaultSettingsUnitComponent(
+        componentContext = childContext("typograf_component"),
+        key = ISettingsRepository.booleanKey(SettingsKeys.TYPOGRAF_KEY),
+        defaultValue = true
+    )
+
 
     override fun onOutput(output: SettingsMainComponent.Output) = this.output(output)
 }

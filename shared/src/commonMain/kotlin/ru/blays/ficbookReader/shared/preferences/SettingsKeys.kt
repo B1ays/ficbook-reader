@@ -12,6 +12,7 @@ object SettingsKeys {
 
     // Reader
     const val READER_PREFS_KEY = "ReaderPrefs"
+    const val TYPOGRAF_KEY = "typograf_enabled"
 
     // Fanfic Page
     const val REVERSE_CHAPTERS_ORDER = "reverse_chapters_order"

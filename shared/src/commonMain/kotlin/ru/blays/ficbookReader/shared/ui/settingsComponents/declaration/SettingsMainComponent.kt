@@ -10,6 +10,7 @@ interface SettingsMainComponent {
     val superfilterSetting: SettingsUnitComponent<String>
     val autoVoteSetting: SettingsUnitComponent<Boolean>
     val chromeCustomTabsSetting: SettingsUnitComponent<Boolean>?
+    val typografSetting: SettingsUnitComponent<Boolean>
 
     fun onOutput(output: Output)
 

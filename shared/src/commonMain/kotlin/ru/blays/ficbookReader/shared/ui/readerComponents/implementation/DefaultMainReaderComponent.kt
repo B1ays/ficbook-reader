@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
+import com.russhwolf.settings.boolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.data.repo.declaration.IChaptersRepo
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsJsonRepository
+import ru.blays.ficbookReader.shared.preferences.settings
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -33,6 +35,11 @@ class DefaultMainReaderComponent(
         serializer = MainReaderComponent.Settings.serializer(),
         defaultValue = MainReaderComponent.Settings(),
         key = SettingsKeys.READER_PREFS_KEY
+    )
+
+    val typografEnabled by settings.boolean(
+        key = SettingsKeys.TYPOGRAF_KEY,
+        defaultValue = true
     )
 
     private val _state = MutableValue(
@@ -124,12 +131,17 @@ class DefaultMainReaderComponent(
                     }
                 }
                 is ApiResult.Success -> {
+                    val text = if(typografEnabled) {
+                        typograf(textResult.value)
+                    } else {
+                        textResult.value
+                    }
                     _state.update {
                         it.copy(
                             chapterIndex = index,
                             initialCharIndex = chapter.lastWatchedCharIndex,
                             chapterName = chapter.name,
-                            text = textResult.value,
+                            text = text,
                             loading = false,
                             error = false
                         )
@@ -162,7 +174,11 @@ class DefaultMainReaderComponent(
                     chapterIndex = 0,
                     initialCharIndex = 0,
                     chapterName = "Глава 1",
-                    text = chapters.text,
+                    text = if(typografEnabled) {
+                        typograf(chapters.text)
+                    } else {
+                        chapters.text
+                    },
                     loading = false,
                     error = false,
                     settings = readerSettings
@@ -184,5 +200,46 @@ class DefaultMainReaderComponent(
                 charIndex = charIndex
             )
         }
+    }
+
+    private fun typograf(input: String): String = try {
+        val lines = input.lines()
+
+        lines.fold(StringBuilder()) { stringBuilder, line ->
+            var clearedLine = line.trim()
+
+            if (clearedLine.contains("\"")) {
+                clearedLine = clearedLine.replace("\"([\\w\\s—.:,!?\\-]+)\"".toRegex(), "«$1»")
+            }
+
+            if (clearedLine.contains('-')) {
+                clearedLine = clearedLine.replace("--", "-")
+                clearedLine = clearedLine.replace(",-", ", —")
+                clearedLine = clearedLine.replace(", -", ", —")
+                clearedLine = clearedLine.replace(".-", ". —")
+                clearedLine = clearedLine.replace(". -", ". —")
+                clearedLine = clearedLine.replace("!-", "! —")
+                clearedLine = clearedLine.replace("! -", "! —")
+                clearedLine = clearedLine.replace("?-", "? —")
+                clearedLine = clearedLine.replace("? -", "? —")
+            }
+
+            if (clearedLine.startsWith("-")) {
+                clearedLine = "—" + clearedLine.substring(1)
+            }
+            if (clearedLine.startsWith("—")) {
+                if (!clearedLine.startsWith("— ")) {
+                    clearedLine = "— " + clearedLine.substring(1)
+                }
+            }
+            stringBuilder.appendLine("$INDENT_SPACES$clearedLine")
+        }.toString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        input
+    }
+
+    companion object {
+        private const val INDENT_SPACES = "\u00A0\u00A0\u00A0\u00A0"
     }
 }
