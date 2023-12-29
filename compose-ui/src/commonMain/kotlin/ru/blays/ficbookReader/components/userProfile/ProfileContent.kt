@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
-import com.valentinilk.shimmer.shimmer
 import io.github.skeptick.libres.compose.painterResource
 import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileComponent
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
@@ -99,11 +98,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                                 contentDescription = "Аватар пользователя",
                                 contentScale = ContentScale.Crop,
                                 loading = {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .shimmer(),
-                                    )
+                                    CircularProgressIndicator()
                                 },
                                 modifier = Modifier
                                     .size(65.dp)
