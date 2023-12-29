@@ -16,7 +16,7 @@ import ru.blays.ficbookapi.notNumberRegex
 import java.net.URLDecoder
 
 internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
-    private val chapterTextParser = ChapterTextParser()
+    private val chapterTextParser = ChapterParser()
 
     override suspend fun parse(data: Document): FanficPageModel = coroutineScope {
         val outputSettings: Document.OutputSettings = Document.OutputSettings()
@@ -231,10 +231,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
                 .select(".part-date")
                 .text()
 
-            val textElements = data.select(
-                Evaluator.Class("js-part-text part_text clearfix js-public-beta-text js-bookmark-area")
-            )
-            val text = chapterTextParser.parse(textElements)
+            val text = chapterTextParser.parse(data)
 
             FanficChapter.SingleChapterModel(
                 date = date,

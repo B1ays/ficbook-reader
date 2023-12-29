@@ -7,7 +7,7 @@ import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
 import ru.blays.ficbookapi.okHttpDsl.get
 import ru.blays.ficbookapi.okHttpDsl.href
 import ru.blays.ficbookapi.okHttpDsl.stringOrThrow
-import ru.blays.ficbookapi.parsers.SeparateChapterParser
+import ru.blays.ficbookapi.parsers.ChapterParser
 import ru.blays.ficbookapi.result.ApiResult
 
 interface ChaptersApi {
@@ -17,7 +17,7 @@ interface ChaptersApi {
 class ChaptersApiImpl(
     private val client: OkHttpClient
 ): ChaptersApi {
-    private val chapterTextParser = SeparateChapterParser()
+    private val chapterTextParser = ChapterParser()
 
     override suspend fun getChapterText(href: String): ApiResult<String> = coroutineScope {
         return@coroutineScope try {
