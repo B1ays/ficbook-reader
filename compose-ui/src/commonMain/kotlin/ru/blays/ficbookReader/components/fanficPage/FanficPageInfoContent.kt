@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.material3.pullrefresh.PullRefreshIndicator
 import androidx.compose.material3.pullrefresh.pullRefresh
@@ -22,11 +24,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
@@ -50,11 +55,12 @@ import ru.blays.ficbookReader.platformUtils.blurSupported
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.shared.platformUtils.shareSupported
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
-import ru.blays.ficbookReader.theme.trophyColor
+import ru.blays.ficbookReader.theme.*
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
+import ru.blays.ficbookReader.ui_components.GradientIcon.GradientIcon
 import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.CardShape
@@ -476,6 +482,10 @@ private fun FanficDescription(
             state = lazyListState
         ) {
             item {
+                FanficInfo(fanfic)
+                Spacer(modifier = Modifier.height(2.dp))
+            }
+            item {
                 FanficHeader(
                     fanficPage = fanfic,
                     coverPainter = coverPainter
@@ -660,6 +670,95 @@ private fun Pairings(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FanficInfo(fanfic: FanficPageModelStable) {
+    val status = fanfic.status
+    FlowRow(
+        verticalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        if(status.direction != FanficDirection.UNKNOWN) {
+            CircleChip(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                minSize = 27.dp
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .size(20.dp)
+                        .scale(1.5F),
+                    painter = getIconForDirection(status.direction),
+                    contentDescription = "Значок направленности",
+                    tint = getColorForDirection(status.direction)
+                )
+            }
+        }
+        if (status.rating != FanficRating.UNKNOWN ) {
+            CircleChip(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                minSize = 27.dp
+            ) {
+                Text(
+                    text = status.rating.rating,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+        }
+        if (status.status != FanficCompletionStatus.UNKNOWN) {
+            CircleChip(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                minSize = 27.dp
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .size(20.dp),
+                    painter = getIconForStatus(status.status),
+                    contentDescription = "Значок статуса",
+                    tint = getColorForStatus(status.status)
+
+                )
+            }
+        }
+        if (status.likes != 0) {
+            CircleChip(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                minSize = 27.dp
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .size(20.dp),
+                    painter = painterResource(Res.image.ic_like_outlined),
+                    contentDescription = "Значок лайка",
+                    tint = likeColor
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(
+                    text = status.likes.toString(),
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+            }
+        }
+        if (status.hot) {
+            CircleChip(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                minSize = 27.dp
+            ) {
+                GradientIcon(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .size(20.dp),
+                    painter = painterResource(Res.image.ic_flame),
+                    contentDescription = "Значок огня",
+                    brush = flameGradient
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -1021,5 +1120,29 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
                 component.sendIntent(FanficPageInfoComponent.Intent.OpenInBrowser)
             }
         )
+    }
+}
+
+@Composable
+fun getIconForDirection(direction: FanficDirection): Painter {
+    return when (direction) {
+        FanficDirection.GEN -> painterResource(Res.image.ic_direction_gen)
+        FanficDirection.HET -> painterResource(Res.image.ic_direction_het)
+        FanficDirection.SLASH -> painterResource(Res.image.ic_direction_slash)
+        FanficDirection.FEMSLASH -> painterResource(Res.image.ic_direction_femslash)
+        FanficDirection.ARTICLE -> painterResource(Res.image.ic_direction_article)
+        FanficDirection.MIXED -> painterResource(Res.image.ic_direction_mixed)
+        FanficDirection.OTHER -> painterResource(Res.image.ic_direction_other)
+        FanficDirection.UNKNOWN -> painterResource(Res.image.ic_direction_other)
+    }
+}
+
+@Composable
+fun getIconForStatus(status: FanficCompletionStatus): Painter {
+    return when(status) {
+        FanficCompletionStatus.IN_PROGRESS -> painterResource(Res.image.ic_clock)
+        FanficCompletionStatus.COMPLETE -> painterResource(Res.image.ic_check)
+        FanficCompletionStatus.FROZEN -> painterResource(Res.image.ic_snowflake)
+        FanficCompletionStatus.UNKNOWN -> rememberVectorPainter(Icons.Rounded.Close)
     }
 }
