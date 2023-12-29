@@ -15,6 +15,7 @@ import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsM
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
+import java.util.*
 
 interface RootComponent {
 
@@ -40,16 +41,28 @@ interface RootComponent {
         data object UserProfile: Config()
 
         @Serializable
-        data class FanficPage(val href: String): Config()
+        data class FanficPage(
+            val href: String,
+            private val uuid: String = UUID.randomUUID().toString()
+        ): Config()
 
         @Serializable
-        data class FanficsList(val section: SectionWithQuery): Config()
+        data class FanficsList(
+            val section: SectionWithQuery,
+            private val uuid: String = UUID.randomUUID().toString()
+        ): Config()
 
         @Serializable
-        data class Collection(val section: SectionWithQuery): Config()
+        data class Collection(
+            val section: SectionWithQuery,
+            private val uuid: String = UUID.randomUUID().toString()
+        ): Config()
 
         @Serializable
-        data class AuthorProfile(val href: String): Config()
+        data class AuthorProfile(
+            val href: String,
+            private val uuid: String = UUID.randomUUID().toString()
+        ): Config()
 
         @Serializable
         data object Users: Config()
