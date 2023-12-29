@@ -26,12 +26,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.CommentModelStable
 import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
@@ -114,7 +113,6 @@ private fun CommentItem(
     onUrlClick: (url: String) -> Unit
 ) {
     val user = comment.user
-    val avatarResource = asyncPainterResource(user.avatarUrl)
     Row(
         modifier = Modifier
             .padding(horizontal = DefaultPadding.CardHorizontalPadding)
@@ -122,15 +120,15 @@ private fun CommentItem(
         verticalAlignment = Alignment.Bottom
     ) {
         if(!hideAvatar) {
-            KamelImage(
-                resource = avatarResource,
+            AsyncImage(
+                model = user.avatarUrl,
                 contentDescription = "Аватарка автора комментария",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .padding(bottom = 4.dp)
                     .size(50.dp)
                     .clip(CircleShape)
-                    .clickable(onClick = onUserClick),
+                    .clickable(onClick = onUserClick)
             )
             Spacer(modifier = Modifier.requiredWidth(9.dp))
         }

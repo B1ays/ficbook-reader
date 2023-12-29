@@ -2,6 +2,7 @@ package ru.blays.ficbookReader.components.fanficPage
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,7 +27,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
@@ -35,12 +35,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
-import io.kamel.core.Resource
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.platformUtils.WindowSize
@@ -50,6 +50,7 @@ import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.shared.platformUtils.shareSupported
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.theme.trophyColor
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
@@ -105,8 +106,8 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
         modifier = Modifier.fillMaxSize()
     ) {
         if(fanfic != null && !isLoading) {
-            val coverPainter: Resource<Painter>? = if(fanfic.coverUrl.isNotEmpty()) {
-                asyncPainterResource(data = fanfic.coverUrl)
+            val coverPainter: AsyncImagePainter? = if(fanfic.coverUrl.isNotEmpty()) {
+                rememberAsyncImagePainter(fanfic.coverUrl)
             } else {
                 null
             }
@@ -117,8 +118,8 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                         Offset(maxWidth.toPx(), maxHeight.toPx()),
                     )
                 }
-                KamelImage(
-                    resource = coverPainter,
+                Image(
+                    painter = coverPainter,
                     contentDescription = "Обложка фанфика",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -149,7 +150,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
             Box(
                 modifier = Modifier.systemBarsPadding()
             ) {
-                ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold(
+                BottomSheetScaffold(
                     scaffoldState = bottomSheetScaffoldState,
                     sheetPeekHeight = 110.dp,
                     containerColor = Color.Transparent,
@@ -239,7 +240,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     FanficDescription(
                         component = component,
                         fanfic = fanfic,
-                        coverResource = coverPainter,
+                        coverPainter = coverPainter,
                         modifier = Modifier
                             .padding(
                                 top = padding.calculateTopPadding(),
@@ -269,8 +270,8 @@ private fun LandscapeContent(
     val isLoading = state.isLoading
 
     if(fanfic != null && !isLoading) {
-        val coverPainter: Resource<Painter>? = if(fanfic.coverUrl.isNotEmpty()) {
-            asyncPainterResource(data = fanfic.coverUrl)
+        val coverPainter: AsyncImagePainter? = if(fanfic.coverUrl.isNotEmpty()) {
+            rememberAsyncImagePainter(fanfic.coverUrl)
         } else {
             null
         }
@@ -326,8 +327,8 @@ private fun LandscapeContent(
                             Offset(maxWidth.toPx(), maxHeight.toPx()),
                         )
                     }
-                    KamelImage(
-                        resource = coverPainter,
+                    Image(
+                        painter = coverPainter,
                         contentDescription = "Обложка фанфика",
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
@@ -373,7 +374,7 @@ private fun LandscapeContent(
                     FanficDescription(
                         component = component,
                         fanfic = fanfic,
-                        coverResource = coverPainter,
+                        coverPainter = coverPainter,
                         modifier = Modifier.padding(
                             top = padding.calculateTopPadding()
                         )
@@ -388,7 +389,7 @@ private fun LandscapeContent(
 @Composable
 private fun FanficHeader(
     fanficPage: FanficPageModelStable,
-    coverResource: Resource<Painter>?,
+    coverPainter: AsyncImagePainter?,
     onAuthorClick: (author: UserModelStable) -> Unit
 ) {
     FlowRow {
@@ -402,7 +403,7 @@ private fun FanficHeader(
     }
     Spacer(modifier = Modifier.height(8.dp))
 
-    if(coverResource != null) {
+    if(coverPainter != null) {
         var isCoverExpanded by remember {
             mutableStateOf(false)
         }
@@ -411,7 +412,10 @@ private fun FanficHeader(
             animationSpec = spring()
         )
 
-        KamelImage(
+        Image(
+            painter = coverPainter,
+            contentDescription = "Обложка фанфика",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .layout { measurable, constraints ->
                     val fullWidth = constraints.maxWidth
@@ -445,10 +449,7 @@ private fun FanficHeader(
                 )
                 .clickable {
                     isCoverExpanded = !isCoverExpanded
-                },
-            resource = coverResource,
-            contentDescription = "Обложка фанфика",
-            contentScale = ContentScale.Crop
+                }
         )
     }
 }
@@ -457,7 +458,7 @@ private fun FanficHeader(
 private fun FanficDescription(
     component: FanficPageInfoComponent,
     fanfic: FanficPageModelStable,
-    coverResource: Resource<Painter>?,
+    coverPainter: AsyncImagePainter?,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -476,7 +477,7 @@ private fun FanficDescription(
             item {
                 FanficHeader(
                     fanficPage = fanfic,
-                    coverResource = coverResource
+                    coverPainter = coverPainter
                 ) { author ->
                     component.onOutput(
                         FanficPageInfoComponent.Output.OpenAuthor(
@@ -910,7 +911,6 @@ private fun AuthorItem(
     avatarSize: Dp,
     onAuthorClick: (author: UserModelStable) -> Unit
 ) {
-    val painter = asyncPainterResource(userModel.avatarUrl)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -920,8 +920,8 @@ private fun AuthorItem(
                 onAuthorClick(userModel)
             }
     ) {
-        KamelImage(
-            resource = painter,
+        AsyncImage(
+            model = userModel.avatarUrl,
             contentDescription = "Аватар автора",
             modifier = Modifier
                 .size(avatarSize)

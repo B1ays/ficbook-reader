@@ -27,9 +27,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.example.myapplication.compose.Res
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.theme.*
@@ -120,7 +119,10 @@ private fun LandscapeContent(
                         .fillMaxWidth()
                 ) {
                     if (fanfic.coverUrl.isNotEmpty()) {
-                        KamelImage(
+                        AsyncImage(
+                            model = fanfic.coverUrl,
+                            contentDescription = "Обложка фанфика",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .layout { measurable, constraints ->
                                     val widthFloat = (constraints.maxWidth * 0.38F).coerceAtMost(300F)
@@ -138,10 +140,7 @@ private fun LandscapeContent(
                                         ).place(0, 0)
                                     }
                                 }
-                                .clip(CardDefaults.shape),
-                            resource = asyncPainterResource(fanfic.coverUrl),
-                            contentDescription = "Обложка фанфика",
-                            contentScale = ContentScale.Crop
+                                .clip(CardDefaults.shape)
                         )
                     }
                     FanficHeader(
@@ -184,8 +183,10 @@ private fun PortraitContent(
         modifier = modifier.clickable(onClick = onCardClick)
     ) {
         if(fanfic.coverUrl.isNotEmpty()) {
-            val resource = asyncPainterResource(fanfic.coverUrl)
-            KamelImage(
+            AsyncImage(
+                model = fanfic.coverUrl,
+                contentDescription = "Обложка фанфика",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .offset(y = 16.dp)
                     .fillMaxWidth()
@@ -195,10 +196,7 @@ private fun PortraitContent(
                             topStart = 16.dp,
                             topEnd = 16.dp
                         )
-                    ),
-                resource = resource,
-                contentDescription = "Обложка фанфика",
-                contentScale = ContentScale.Crop
+                    )
             )
         }
         val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant

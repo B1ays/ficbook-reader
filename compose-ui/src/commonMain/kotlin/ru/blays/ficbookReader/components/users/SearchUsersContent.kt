@@ -12,13 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.SubcomposeAsyncImage
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
 import io.github.skeptick.libres.compose.painterResource
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import ru.blays.ficbookReader.shared.data.dto.UserModelStable
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersSearchComponent
@@ -111,10 +111,15 @@ private fun AuthorItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if(author.avatarUrl.isNotEmpty()) {
-                val resource = asyncPainterResource(author.avatarUrl)
-                KamelImage(
-                    resource = resource,
+                SubcomposeAsyncImage(
+                    model = author.avatarUrl,
                     contentDescription = "Аватар пользователя",
+                    contentScale = ContentScale.Crop,
+                    loading = {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(2.dp)
+                        )
+                    },
                     modifier = Modifier
                         .padding(12.dp)
                         .size(60.dp)

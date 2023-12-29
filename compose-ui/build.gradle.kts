@@ -48,6 +48,9 @@ kotlin {
                 // Color-picker
                 implementation(libs.compose.color.picker)
 
+                // Compose-Shimmer
+                implementation(libs.compose.shimmer)
+
                 //InsetsX
                 implementation(libs.moriatsushi.insetsx)
 

@@ -23,16 +23,14 @@ fun main() {
         )
     }
 
+    initializeSingletonImageLoader()
+
     val lifecycle = LifecycleRegistry()
 
     val root = runOnUiThread {
         DefaultRootComponent(
             componentContext = DefaultComponentContext(lifecycle = lifecycle),
         )
-    }
-
-    Thread.currentThread().setUncaughtExceptionHandler { t, e ->
-        println("Exception: $e on thread ${t.name}")
     }
 
     application {

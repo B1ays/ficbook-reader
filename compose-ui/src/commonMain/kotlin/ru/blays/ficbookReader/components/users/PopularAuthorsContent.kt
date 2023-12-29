@@ -17,9 +17,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import ru.blays.ficbookReader.shared.data.dto.PopularAuthorModelStable
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersPopularComponent
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
@@ -70,9 +69,8 @@ private fun AuthorItem(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val resource = asyncPainterResource(author.user.avatarUrl)
-            KamelImage(
-                resource = resource,
+            AsyncImage(
+                model = author.user.avatarUrl,
                 contentDescription = "Аватар автора ${author.user.name}",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

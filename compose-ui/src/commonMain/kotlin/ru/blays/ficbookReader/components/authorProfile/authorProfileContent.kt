@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
@@ -33,8 +34,6 @@ import com.arkivanov.decompose.value.Value
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.navigationBars
 import io.github.skeptick.libres.compose.painterResource
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import ru.blays.ficbookReader.components.commentsContent.CommentsContent
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.data.dto.AuthorMainInfoStable
@@ -153,8 +152,6 @@ private fun ProfileHeader(
     landscape: Boolean,
     onBack: () -> Unit
 ) {
-    val headerImageResource = asyncPainterResource(mainInfo.profileCoverUrl)
-    val avatarResource = asyncPainterResource(mainInfo.avatarUrl)
     val avatarSize = if(landscape) 125.dp else 100.dp
     val avatarSizePx = with(LocalDensity.current) {
         avatarSize.roundToPx()
@@ -167,8 +164,8 @@ private fun ProfileHeader(
             Box(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                KamelImage(
-                    resource = headerImageResource,
+                AsyncImage(
+                    model = mainInfo.profileCoverUrl,
                     contentDescription = "Фон профиля",
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.TopCenter,
@@ -208,9 +205,9 @@ private fun ProfileHeader(
                     )
                     .padding(5.dp)
             ) {
-                KamelImage(
-                    resource = avatarResource,
-                    contentDescription = "",
+                AsyncImage(
+                    model = mainInfo.avatarUrl,
+                    contentDescription = "Аватарка автора",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.clip(CircleShape)
                 )

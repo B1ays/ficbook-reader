@@ -21,12 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
@@ -506,15 +505,14 @@ fun UserIconButton(
             component.onOutput(MainScreenComponent.Output.UserProfile)
         }
     ) {
-        if (state.authorized) {
-            val resource = asyncPainterResource(state.user?.avatarUrl ?: "")
-            KamelImage(
+        if (state.authorized && state.user != null) {
+            AsyncImage(
+                model = state.user!!.avatarUrl,
+                contentDescription = "Иконка пользователя",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(40.dp)
-                    .padding(2.dp),
-                contentDescription = "Иконка пользователя",
-                resource = resource,
-                contentScale = ContentScale.Crop
+                    .padding(2.dp)
             )
         } else {
             Icon(

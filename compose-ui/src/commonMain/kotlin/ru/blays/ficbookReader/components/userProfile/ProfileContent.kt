@@ -15,11 +15,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.compose.SubcomposeAsyncImage
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
+import com.valentinilk.shimmer.shimmer
 import io.github.skeptick.libres.compose.painterResource
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileComponent
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -94,10 +94,17 @@ fun UserProfileContent(component: UserProfileComponent) {
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            KamelImage(
-                                resource = asyncPainterResource(state?.avatarUrl!!),
+                            SubcomposeAsyncImage(
+                                model = state?.avatarUrl!!,
                                 contentDescription = "Аватар пользователя",
                                 contentScale = ContentScale.Crop,
+                                loading = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .shimmer(),
+                                    )
+                                },
                                 modifier = Modifier
                                     .size(65.dp)
                                     .clip(CircleShape)

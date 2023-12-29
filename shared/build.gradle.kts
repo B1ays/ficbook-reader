@@ -36,6 +36,11 @@ kotlin {
                 // Kamel
                 api(libs.kamel.image)
 
+                // Coil3
+                api("io.coil-kt.coil3:coil:3.0.0-SNAPSHOT")
+                api("io.coil-kt.coil3:coil-compose:3.0.0-SNAPSHOT")
+                api("io.coil-kt.coil3:coil-network:3.0.0-SNAPSHOT")
+
                 // Koin
                 api(libs.koin.core)
 

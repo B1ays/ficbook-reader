@@ -37,6 +37,7 @@ composeColorPickerJvm = "0.7.0"
 haze = "0.3.1"
 insetsx = "0.1.0-alpha10"
 browser = "1.7.0"
+composeShimmer = "1.2.0"
 
 [libraries]
 androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -46,6 +47,7 @@ commons-text = { module = "org.apache.commons:commons-text", version.ref = "comm
 compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }
 compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPickerJvm" }
 compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-color-picker-jvm", version.ref = "composeColorPickerJvm" }
+compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
 decompose-decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensionsComposeJetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "decompose" }
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
