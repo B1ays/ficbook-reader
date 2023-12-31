@@ -1,8 +1,8 @@
 [versions]
 # Project
 projectVersion = "1.0.6"
-versionCode = "7"
-versionNameSuffix = "-beta02"
+versionCode = "8"
+versionNameSuffix = "-beta03"
 kotlin = "1.9.20"
 agp = "8.2.0"
 jvmTarget = "18"
