@@ -8,6 +8,10 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
@@ -35,6 +39,9 @@ import ru.blays.ficbookapi.UrlProcessor.UrlProcessor
 import ru.blays.ficbookapi.UrlProcessor.UrlProcessor.analyzeUrl
 import ru.blays.ficbookapi.UrlProcessor.getUrlForHref
 import ru.blays.ficbookapi.data.SectionWithQuery
+import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
+import ru.blays.ficbookapi.okHttpDsl.href
+import ru.blays.ficbookapi.okHttpDsl.post
 
 class DefaultRootComponent private constructor(
     private val componentContext: ComponentContext,

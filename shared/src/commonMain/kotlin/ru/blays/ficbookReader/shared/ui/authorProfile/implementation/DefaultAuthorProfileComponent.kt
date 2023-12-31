@@ -18,8 +18,8 @@ import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorProfileRepo
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorBlogComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorPresentsComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
-import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
-import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultAllCommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.implementation.DefaultAllCommentsComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookapi.data.SectionWithQuery

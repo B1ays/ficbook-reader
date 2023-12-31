@@ -5,7 +5,8 @@ import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
-import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.implementation.DefaultPartCommentsComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 
 interface FanficPageComponent {
@@ -22,7 +23,7 @@ interface FanficPageComponent {
     sealed class Child {
         data class Info(val component: FanficPageInfoComponent): Child()
         data class Reader(val component: MainReaderComponent): Child()
-        data class PartComments(val component: CommentsComponent): Child()
+        data class PartComments(val component: DefaultPartCommentsComponent): Child()
         data class AllComments(val component: CommentsComponent): Child()
     }
 

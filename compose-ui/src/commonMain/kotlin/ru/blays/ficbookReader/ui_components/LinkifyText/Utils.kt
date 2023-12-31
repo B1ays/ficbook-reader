@@ -18,7 +18,7 @@ fun rememberAnnotatedStringWithLinks(
         )
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(text) {
         val matcher = Patterns.AUTOLINK_WEB_URL.matcher(text)
 
         var normalTextStart = 0
@@ -62,9 +62,7 @@ fun rememberAnnotatedStringWithLinks(
                 }
             }
         } catch (e: Exception) {
-            annotatedString.value = AnnotatedString(
-                text = e.message ?: "Error",
-            )
+            e.printStackTrace()
         }
     }
     return annotatedString

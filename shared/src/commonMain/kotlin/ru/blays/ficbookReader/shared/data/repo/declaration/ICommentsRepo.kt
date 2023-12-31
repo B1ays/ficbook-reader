@@ -7,4 +7,6 @@ import ru.blays.ficbookapi.result.ApiResult
 interface ICommentsRepo {
     suspend fun getForPart(partID: String, page: Int): ApiResult<ListResult<CommentModelStable>>
     suspend fun getAll(href: String, page: Int): ApiResult<ListResult<CommentModelStable>>
+    suspend fun postComment(partID: String, text: String, followType: Int): ApiResult<Boolean>
+    suspend fun delete(commentID: String): ApiResult<Boolean>
 }

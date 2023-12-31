@@ -6,7 +6,9 @@ data class CommentsListResult(
 )
 
 data class CommentModel(
+    val commentID: String,
     val user: UserModel,
+    val isOwnComment: Boolean,
     val date: String,
     val blocks: List<CommentBlockModel>,
     val likes: Int,

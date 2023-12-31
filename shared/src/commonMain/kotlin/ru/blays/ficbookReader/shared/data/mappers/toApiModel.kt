@@ -1,11 +1,10 @@
 package ru.blays.ficbookReader.shared.data.mappers
 
-import ru.blays.ficbookReader.shared.data.dto.CookieModelStable
-import ru.blays.ficbookReader.shared.data.dto.LoginModelStable
-import ru.blays.ficbookReader.shared.data.dto.NotificationType
-import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
+import ru.blays.ficbookReader.shared.data.dto.*
+import ru.blays.ficbookapi.dataModels.CommentBlockModel
 import ru.blays.ficbookapi.dataModels.CookieModel
 import ru.blays.ficbookapi.dataModels.LoginModel
+import ru.blays.ficbookapi.dataModels.QuoteModel
 
 fun LoginModelStable.toApiModel() = LoginModel(
     login = login,
@@ -52,4 +51,17 @@ fun NotificationType.toApiModel() = when(this) {
     NotificationType.COAUTHOR_ADD_NEW_CHAPTER -> ru.blays.ficbookapi.dataModels.NotificationType.COAUTHOR_ADD_NEW_CHAPTER
     NotificationType.NEW_BLOGS -> ru.blays.ficbookapi.dataModels.NotificationType.NEW_BLOGS
     NotificationType.UNKNOWN -> ru.blays.ficbookapi.dataModels.NotificationType.UNKNOWN
+}
+
+fun CommentBlockModelStable.toApiModel() = CommentBlockModel(
+    text = text, quote = quote?.toApiModel()
+)
+
+fun QuoteModelStable.toApiModel(): QuoteModel {
+    val includedQuote = quote?.toApiModel()
+    return QuoteModel(
+        text = text,
+        quote = includedQuote,
+        userName = userName
+    )
 }

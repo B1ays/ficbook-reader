@@ -1,9 +1,11 @@
-package ru.blays.ficbookReader.shared.ui.commentsComponent
+package ru.blays.ficbookReader.shared.ui.commentsComponent.implementation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
+import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
 
 abstract class BaseCommentsComponent(
     componentContext: ComponentContext,
@@ -22,13 +24,7 @@ abstract class BaseCommentsComponent(
     internal val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     internal var hasNextPage: Boolean = true
-    internal var currentPage: Int = 0
-
-    override fun sendIntent(intent: CommentsComponent.Intent) {
-        when(intent) {
-            CommentsComponent.Intent.LoadNextPage -> loadNextPage()
-        }
-    }
+    internal var nextPage: Int = 1
 
     override fun onOutput(output: CommentsComponent.Output) {
         this.output(output)
@@ -36,4 +32,11 @@ abstract class BaseCommentsComponent(
 
     abstract fun loadNextPage()
 
+    fun refresh() {
+        _state.update {
+            it.copy(comments = emptyList())
+        }
+        nextPage = 1
+        loadNextPage()
+    }
 }

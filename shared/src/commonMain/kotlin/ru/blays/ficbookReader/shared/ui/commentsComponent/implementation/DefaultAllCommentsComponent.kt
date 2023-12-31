@@ -1,4 +1,4 @@
-package ru.blays.ficbookReader.shared.ui.commentsComponent
+package ru.blays.ficbookReader.shared.ui.commentsComponent.implementation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.update
@@ -7,17 +7,18 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.repo.declaration.ICommentsRepo
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbookapi.result.ApiResult
 
-class DefaultPartCommentsComponent(
+class DefaultAllCommentsComponent(
     componentContext: ComponentContext,
-    private val partID: String,
+    private val href: String,
     output: (CommentsComponent.Output) -> Unit
 ): BaseCommentsComponent(
     componentContext = componentContext,
     output = output
 ) {
-    val repository: ICommentsRepo = getKoin().get()
+    private val repository: ICommentsRepo by getKoin().inject()
 
     override fun loadNextPage() {
         if(!state.value.loading && hasNextPage) {
@@ -25,12 +26,8 @@ class DefaultPartCommentsComponent(
                 _state.update {
                     it.copy(loading = true)
                 }
-                val nextPage = currentPage + 1
                 when(
-                    val result = repository.getForPart(
-                        partID = partID,
-                        page = nextPage
-                    )
+                    val result = repository.getAll(href, nextPage)
                 ) {
                     is ApiResult.Error -> {
                         _state.update {
@@ -43,7 +40,7 @@ class DefaultPartCommentsComponent(
                     }
                     is ApiResult.Success -> {
                         val value = result.value
-                        currentPage = nextPage
+                        this@DefaultAllCommentsComponent.nextPage += 1
                         hasNextPage = value.hasNextPage
                         _state.update {
                             it.copy(
@@ -58,27 +55,17 @@ class DefaultPartCommentsComponent(
         }
     }
 
-    init {
-        lifecycle.doOnDestroy {
-            coroutineScope.launch {
-                coroutineScope.cancel()
-            }
+    override fun sendIntent(intent: CommentsComponent.Intent) {
+        when(intent) {
+            is CommentsComponent.Intent.AddReply -> {}
+            is CommentsComponent.Intent.LoadNextPage -> loadNextPage()
         }
-        loadNextPage()
     }
 
-    companion object {
-        fun createWithHref(
-            componentContext: ComponentContext,
-            href: String,
-            output: (CommentsComponent.Output) -> Unit
-        ): DefaultPartCommentsComponent {
-            val partID = href.substringAfterLast('/').substringBefore('?')
-            return DefaultPartCommentsComponent(
-                componentContext = componentContext,
-                partID = partID,
-                output = output
-            )
+    init {
+        lifecycle.doOnDestroy {
+            coroutineScope.cancel()
         }
+        loadNextPage()
     }
 }

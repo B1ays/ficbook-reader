@@ -48,4 +48,16 @@ class CommentsRepo(
             }
         }
     }
+
+    override suspend fun postComment(
+        partID: String,
+        text: String,
+        followType: Int
+    ): ApiResult<Boolean> {
+        return api.post(partID, text, followType)
+    }
+
+    override suspend fun delete(commentID: String): ApiResult<Boolean> {
+        return api.delete(commentID)
+    }
 }

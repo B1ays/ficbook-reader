@@ -19,14 +19,23 @@ internal class CommentListParser: IDataParser<Document, Elements> {
     }
 }
 
-internal class CommentParser: IDataParser<Element, CommentModel> {
+class CommentParser: IDataParser<Element, CommentModel> {
     override suspend fun parse(data: Element): CommentModel {
+        val commentID = data.select(
+            Evaluator.Class("mt-5 js quote btn btn-sm btn-link")
+        ).attr("data-comment_id")
+
         val avatarUrl = data.select(".comment-avatar img").attr(ATTR_SRC)
         val (href, userName) = data.select(".author")
             .select("a")
             .let {
                 it.attr(ATTR_HREF) to it.text()
             }
+
+        val isOwnComment = data.select(
+            Evaluator.Class("btn btn-link delete js_delete_comment")
+        ).isNotEmpty()
+
         val commentMessage = data.select(
             Evaluator.Class("comment_message urlize js-comment-message")
         ).first()
@@ -54,11 +63,13 @@ internal class CommentParser: IDataParser<Element, CommentModel> {
         }
 
         return CommentModel(
+            commentID = commentID,
             user = UserModel(
                 name = userName,
                 href = href,
                 avatarUrl = avatarUrl
             ),
+            isOwnComment = isOwnComment,
             date = date,
             blocks = blocks,
             likes = likes,

@@ -17,6 +17,7 @@ const val SEARCH_HREF = "find-fanfics-846555"
 const val SEARCH_FANDOMS_HREF = "fandoms/search"
 const val SEARCH_TAGS_HREF = "tags/search"
 const val SEARCH_CHARACTERS_HREF = "ajax/fandoms/characters"
+const val COMMENT_ADD_HREF = "comment/add"
 
 const val QUERY_PAGE = "p"
 const val QUERY_TAB = "tab"

@@ -239,7 +239,9 @@ fun AuthorCommentPresentModel.toStableModel() = AuthorCommentPresentModelStable(
 )
 
 fun CommentModel.toStableModel() = CommentModelStable(
+    commentID = commentID,
     user = user.toStableModel(),
+    isOwnComment = isOwnComment,
     date = date,
     blocks = blocks.map(CommentBlockModel::toStableModel),
     likes = likes,

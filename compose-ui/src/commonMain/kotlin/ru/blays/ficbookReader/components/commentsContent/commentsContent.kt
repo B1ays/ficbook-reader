@@ -1,7 +1,10 @@
 package ru.blays.ficbookReader.components.commentsContent
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,13 +12,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
@@ -34,10 +36,13 @@ import io.github.skeptick.libres.compose.painterResource
 import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.CommentModelStable
 import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
-import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.WriteCommentComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.implementation.DefaultPartCommentsComponent
 import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.DefaultPadding
+import ru.blays.ficbookReader.values.defaultScrollbarPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 
@@ -45,7 +50,8 @@ import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
 fun CommentsContent(
     component: CommentsComponent,
     hideAvatar: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAddReply: (userName: String, block: CommentBlockModelStable) -> Unit = {userName, block ->}
 ) {
     val state by component.state.subscribeAsState()
     val comments = state.comments
@@ -63,11 +69,13 @@ fun CommentsContent(
         }
     }
 
-    Box {
+    Box(
+        modifier = modifier,
+    ) {
         LazyColumn(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(end = 4.dp),
+                .padding(end = defaultScrollbarPadding),
             state = lazyListState,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -90,7 +98,8 @@ fun CommentsContent(
                         component.onOutput(
                             CommentsComponent.Output.OpenUrl(url)
                         )
-                    }
+                    },
+                    onAddReply = onAddReply
                 )
             }
         }
@@ -110,7 +119,8 @@ private fun CommentItem(
     hideAvatar: Boolean,
     onUserClick: () -> Unit,
     onFanficClick: (href: String) -> Unit,
-    onUrlClick: (url: String) -> Unit
+    onUrlClick: (url: String) -> Unit,
+    onAddReply: (userName: String, block: CommentBlockModelStable) -> Unit
 ) {
     val user = comment.user
     Row(
@@ -164,7 +174,10 @@ private fun CommentItem(
             comment.blocks.forEach { block ->
                 CommentBlockElement(
                     block = block,
-                    onUrlClick = onUrlClick
+                    onUrlClick = onUrlClick,
+                    onReply = {
+                        onAddReply(comment.user.name, block)
+                    }
                 )
             }
             if(comment.forFanfic != null) {
@@ -194,39 +207,71 @@ private fun CommentItem(
 @Composable
 private fun CommentBlockElement(
     block: CommentBlockModelStable,
-    onUrlClick: (url: String) -> Unit
+    onUrlClick: (url: String) -> Unit,
+    onReply: () -> Unit
 ) {
     val quoteContainerColor = MaterialTheme.colorScheme.run {
         primary.compositeOver(surface).copy(0.7F)
     }
     val contentColor = MaterialTheme.colorScheme.onPrimary
-    Column(
-        modifier = Modifier
-            .padding(DefaultPadding.CardDefaultPaddingSmall)
-            .fillMaxWidth()
-            .background(
-            color = quoteContainerColor,
-            shape = CardDefaults.shape
-        ),
+
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    DropdownMenu(
+        expanded = menuExpanded,
+        onDismissRequest = { menuExpanded = false },
     ) {
-        CompositionLocalProvider(LocalContentColor provides contentColor) {
-            if (block.quote != null) {
-                QuoteElement(
-                    quote = block.quote!!,
-                    onUrlClick = onUrlClick
+        DropdownMenuItem(
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(Res.image.ic_reply),
+                    contentDescription = "Иконка ответ",
+                    modifier = Modifier.size(18.dp),
                 )
-                Spacer(modifier = Modifier.requiredHeight(7.dp))
+            },
+            text = {
+                Text("Ответить")
+            },
+            onClick = onReply
+        )
+    }
+
+    Column(
+        modifier = Modifier.combinedClickable(
+            onClick = {},
+            onLongClick = {
+                menuExpanded = true
+            }
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(DefaultPadding.CardDefaultPaddingSmall)
+                .fillMaxWidth()
+                .background(
+                    color = quoteContainerColor,
+                    shape = CardDefaults.shape
+                ),
+        ) {
+            CompositionLocalProvider(LocalContentColor provides contentColor) {
+                block.quote?.let {
+                    QuoteElement(
+                        quote = it,
+                        onUrlClick = onUrlClick
+                    )
+                    Spacer(modifier = Modifier.requiredHeight(7.dp))
+                }
             }
         }
+        TextWithLinks(
+            text = block.text,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
+            onUrlClick = onUrlClick
+        )
     }
-    TextWithLinks(
-        text = block.text,
-        style = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurface
-        ),
-        modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
-        onUrlClick = onUrlClick
-    )
 }
 
 @Composable
@@ -343,6 +388,116 @@ fun CommentsScreenContent(
             modifier = Modifier.padding(top = padding.calculateTopPadding())
         )
     }
+}
+
+@Composable
+fun PartCommentsContent(component: DefaultPartCommentsComponent) {
+    Scaffold(
+        modifier = Modifier
+            .systemBarsPadding()
+            .fillMaxSize(),
+        topBar = {
+            CollapsingsToolbar(
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            component.onOutput(CommentsComponent.Output.NavigateBack)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.image.ic_arrow_back),
+                            contentDescription = "Стрелка назад"
+                        )
+                    }
+                },
+                collapsingTitle = CollapsingTitle.small("Отзывы к главе")
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier.padding(top = padding.calculateTopPadding())
+        ) {
+            CommentsContent(
+                component = component,
+                modifier = Modifier.weight(1F),
+                onAddReply = { userName, block ->
+                    component.sendIntent(
+                        CommentsComponent.Intent.AddReply(userName, block)
+                    )
+                }
+            )
+            WriteCommentContent(component.writeCommentComponent)
+        }
+    }
+}
+
+@Composable
+private fun WriteCommentContent(component: WriteCommentComponent) {
+    val state by component.state.subscribeAsState()
+    Column {
+        AnimatedVisibility(
+            visible = state.text.isNotEmpty() &&
+                state.renderedBlocks.isNotEmpty() &&
+                state.renderedBlocks.any { it.quote != null },
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            Column(
+                modifier = Modifier.heightIn(max = 200.dp)
+            ) {
+                LazyColumn {
+                    items(state.renderedBlocks) { block ->
+                        CommentBlockElement(
+                            block = block,
+                            onUrlClick = {},
+                            onReply = {}
+                        )
+                    }
+                }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+            }
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1F, false),
+        ) {
+            TextField(
+                value = state.text,
+                onValueChange = component::editText,
+                singleLine = false,
+                maxLines = 5,
+                shape = RectangleShape,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent
+                ),
+                placeholder = {
+                    Text("Оставьте свой отзыв")
+                },
+                modifier = Modifier.weight(1F),
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            AnimatedVisibility(
+                visible = state.text.isNotEmpty(),
+                enter = fadeIn(spring()),
+                exit = fadeOut(spring()),
+            ) {
+                IconButton(
+                    onClick = component::post
+                ) {
+                    Icon(
+                        painter = painterResource(Res.image.ic_send),
+                        contentDescription = "Иконка отправки",
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
+            }
+        }
+    }
+
 }
 
 @Suppress("ClassName")

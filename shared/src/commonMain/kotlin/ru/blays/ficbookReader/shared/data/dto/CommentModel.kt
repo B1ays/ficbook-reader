@@ -4,7 +4,9 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class CommentModelStable(
+    val commentID: String,
     val user: UserModelStable,
+    val isOwnComment: Boolean,
     val date: String,
     val blocks: List<CommentBlockModelStable>,
     val likes: Int,

@@ -4,9 +4,9 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
-import ru.blays.ficbookReader.shared.ui.commentsComponent.CommentsComponent
-import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultAllCommentsComponent
-import ru.blays.ficbookReader.shared.ui.commentsComponent.DefaultPartCommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.implementation.DefaultAllCommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.implementation.DefaultPartCommentsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
