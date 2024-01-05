@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
+import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbookReader.shared.platformUtils.copyToClipboard
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
@@ -83,10 +84,17 @@ class DefaultFanficPageInfoComponent(
     private fun onActionsOutput(output: FanficPageActionsComponent.Output) {
         when(output) {
             FanficPageActionsComponent.Output.OpenComments -> {
-                val commentsHref = "$fanficHref/comments"
-                onOutput(
-                    FanficPageInfoComponent.Output.OpenAllComments(commentsHref)
-                )
+                if(state.value.fanfic?.chapters is FanficChapterStable.SeparateChaptersModel) {
+                    val commentsHref = "$fanficHref/comments"
+                    onOutput(
+                        FanficPageInfoComponent.Output.OpenAllComments(commentsHref)
+                    )
+                } else if(state.value.fanfic?.chapters is FanficChapterStable.SingleChapterModel) {
+                    val chapterID = state.value.fanfic?.fanficID ?: return
+                    onOutput(
+                        FanficPageInfoComponent.Output.OpenPartComments(chapterID)
+                    )
+                }
             }
         }
     }

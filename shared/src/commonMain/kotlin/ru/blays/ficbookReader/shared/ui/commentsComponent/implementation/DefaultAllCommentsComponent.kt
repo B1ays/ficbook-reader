@@ -57,8 +57,8 @@ class DefaultAllCommentsComponent(
 
     override fun sendIntent(intent: CommentsComponent.Intent) {
         when(intent) {
-            is CommentsComponent.Intent.AddReply -> {}
             is CommentsComponent.Intent.LoadNextPage -> loadNextPage()
+            else -> Unit
         }
     }
 

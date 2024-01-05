@@ -10,7 +10,7 @@ import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbookReader.shared.data.repo.declaration.ICommentsRepo
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
-import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.WriteCommentComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.ExtendedCommentsComponent
 import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultPartCommentsComponent(
@@ -20,10 +20,10 @@ class DefaultPartCommentsComponent(
 ): BaseCommentsComponent(
     componentContext = componentContext,
     output = output
-) {
+), ExtendedCommentsComponent {
     private val repository: ICommentsRepo = getKoin().get()
 
-    val writeCommentComponent: WriteCommentComponent = DefaultWriteCommentComponent(
+    override val writeCommentComponent = DefaultWriteCommentComponent(
         componentContext = componentContext,
         partID = partID,
         onCommentPosted = ::refresh

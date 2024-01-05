@@ -92,6 +92,7 @@ fun FanficChapter.toStableModel(): FanficChapterStable = when(this) {
         chaptersCount = chaptersCount
     )
     is FanficChapter.SingleChapterModel -> FanficChapterStable.SingleChapterModel(
+        chapterID = chapterID,
         date = date,
         text = text
     )

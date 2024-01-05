@@ -37,8 +37,8 @@ import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.CommentModelStable
 import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
+import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.ExtendedCommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.WriteCommentComponent
-import ru.blays.ficbookReader.shared.ui.commentsComponent.implementation.DefaultPartCommentsComponent
 import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -391,7 +391,7 @@ fun CommentsScreenContent(
 }
 
 @Composable
-fun PartCommentsContent(component: DefaultPartCommentsComponent) {
+fun PartCommentsContent(component: ExtendedCommentsComponent) {
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()

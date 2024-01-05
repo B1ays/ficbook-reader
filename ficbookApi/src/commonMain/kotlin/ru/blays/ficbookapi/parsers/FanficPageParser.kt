@@ -187,6 +187,10 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
 
         val fanficChapters = if(parts.isNotEmpty()) {
             val chapters = parts.map { element ->
+                val partInfo = element.select(
+                    Evaluator.Class("part-info text-muted")
+                )
+
                 val href = element.select("a").attr(ATTR_HREF)
                 val chapterID = href.substringAfterLast('/').substringBefore('#')
 
@@ -194,13 +198,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
                     Evaluator.Class("part-title word-break")
                 ).text()
 
-                val partInfo = element.select(
-                    Evaluator.Class("part-info text-muted")
-                )
-
-                val date = partInfo
-                    .select("span")
-                    .text()
+                val date = partInfo.select("span").text()
 
                 val commentsCount = partInfo.select("a")
                     .text()
@@ -224,6 +222,8 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
                 chaptersCount = chapters.size
             )
         } else {
+            val chapterID = data.select(".form-comments input").attr("value")
+
             val date = data
                 .select(".part-date")
                 .text()
@@ -231,6 +231,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             val text = chapterTextParser.parse(data)
 
             FanficChapter.SingleChapterModel(
+                chapterID = chapterID,
                 date = date,
                 text = text
             )

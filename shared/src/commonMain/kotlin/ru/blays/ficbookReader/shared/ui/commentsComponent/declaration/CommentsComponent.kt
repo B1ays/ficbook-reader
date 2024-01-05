@@ -29,3 +29,7 @@ interface CommentsComponent {
         val comments: List<CommentModelStable>
     )
 }
+
+interface ExtendedCommentsComponent: CommentsComponent {
+    val writeCommentComponent: WriteCommentComponent
+}

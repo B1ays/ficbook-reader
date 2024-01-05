@@ -57,6 +57,7 @@ sealed class FanficChapter {
 
     @Serializable
     data class SingleChapterModel(
+        val chapterID: String,
         val date: String,
         val text: String
     ): FanficChapter()
