@@ -14,9 +14,6 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core.jvm)
                 implementation(libs.kotlinx.serialization.json)
 
-                // Apache
-                implementation(libs.commons.text)
-
                 // JSoup
                 api(libs.jsoup)
 

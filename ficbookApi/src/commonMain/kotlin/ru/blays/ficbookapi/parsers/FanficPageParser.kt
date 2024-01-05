@@ -4,14 +4,13 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import org.apache.commons.text.StringEscapeUtils
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
 import org.jsoup.select.Evaluator
 import ru.blays.ficbookapi.ATTR_HREF
 import ru.blays.ficbookapi.ATTR_SRC
 import ru.blays.ficbookapi.dataModels.*
+import ru.blays.ficbookapi.json
 import ru.blays.ficbookapi.notNumberRegex
 import java.net.URLDecoder
 
@@ -30,8 +29,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         )
         val mb5 = data.select(Evaluator.Class("mb-5"))
 
-        val id = data
-            .select("[data-fanfic-id]")
+        val id = data.select("[data-fanfic-id]")
             .firstOrNull()
             ?.attr("data-fanfic-id")
             ?: ""
@@ -48,10 +46,10 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         val trophies = fanficMainInfo?.select(
             Evaluator.Class("badge-with-icon badge-secondary badge-reward")
         )
-            ?.select(".badge-text")
-            ?.text()
-            ?.toIntOrNull()
-            ?: 0
+        ?.select(".badge-text")
+        ?.text()
+        ?.toIntOrNull()
+        ?: 0
 
         val rating = fanficMainInfo?.run {
             val divs = select("div:not(.fanfic-main-info)")
@@ -115,7 +113,6 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             }
             ?: emptyList()
 
-
         val authors: List<FanficAuthorModel> = data
             .select(".hat-creator-container")
             .map { element ->
@@ -142,8 +139,8 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         }
         .map {
             val character = it.text()
-            val href = it.attr(ATTR_HREF).let {
-                url -> URLDecoder.decode(url, "UTF-8")
+            val href = it.attr(ATTR_HREF).let { url ->
+                URLDecoder.decode(url, "UTF-8")
             }
 
             val isHighlighted = it.className().contains("pairing-highlight")
@@ -172,26 +169,21 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             .attr("src-desktop")
             .let { CoverUrl(it) }
 
+        val tags = mb5
+            .select(".tags")
+            .select("a")
 
-        val genres = mutableListOf<FanficTag>().apply {
-            val tags = mb5
-                .select(".tags")
-                .select("a")
-            tags.forEach {
-                add(
-                    FanficTag(
-                        name = it.text(),
-                        isAdult = it.outerHtml().contains("tag-adult")
-                    )
-                )
-            }
+        val genres = tags.map {
+            FanficTag(
+                name = it.text(),
+                isAdult = it.outerHtml().contains("tag-adult")
+            )
         }
 
-        val parts = data
-            .select(
-                Evaluator.Class("article mb-15")
-            )
-            .select(".part")
+        val parts = data.select(
+            Evaluator.Class("article mb-15")
+        )
+        .select(".part")
 
         val fanficChapters = if(parts.isNotEmpty()) {
             val chapters = parts.map { element ->
@@ -267,34 +259,26 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
                 when (sizeInfoParts.size) {
                     3 -> {
                         val rawString = sizeInfoParts[1]
-                        return@run rawString
-                            .replace(
-                                regex = notNumberRegex,
-                                replacement = ""
-                            )
-                            .toIntOrNull()
-                            ?: 0
+                        return@run rawString.replace(
+                            regex = notNumberRegex,
+                            replacement = ""
+                        )
+                        .toIntOrNull()
+                        ?: 0
                     }
                     2 -> {
                         val rawString = sizeInfoParts[0]
-                        return@run rawString
-                            .replace(
-                                regex = notNumberRegex,
-                                replacement = ""
-                            )
-                            .toIntOrNull()
-                            ?: 0
+                        return@run rawString.replace(
+                            regex = notNumberRegex,
+                            replacement = ""
+                        )
+                        .toIntOrNull()
+                        ?: 0
                     }
-                    else -> {
-                        0
-                    }
+                    else -> 0
                 }
-            } else {
-                0
-            }
+            } else 0
         }
-
-        val rewardsList = mutableListOf<RewardModel>()
 
         val rewardAnswer = data
             .select(
@@ -302,19 +286,19 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             )
             .select("fanfic-reward-list")
             .attr(":initial-fic-rewards-list")
-            .run { StringEscapeUtils.unescapeJava(this) }
 
-        val rewardsSerialized = try {
-            Json.decodeFromString<List<RewardResponseItem>>(rewardAnswer)
+        val rewardsSerialized: List<RewardResponseItem> = try {
+            json.decodeFromString(rewardAnswer)
         } catch (e: Exception) {
             emptyList()
         }
 
-        rewardsSerialized.forEach {
-            val message = it.userText
-            val fromUser = it.username
-            val date = it.dateAdded
-            rewardsList += RewardModel(message, fromUser, date)
+        val rewards = rewardsSerialized.map {
+            RewardModel(
+                message = it.userText,
+                fromUser = it.username,
+                awardDate = it.dateAdded
+            )
         }
 
         return@coroutineScope FanficPageModel(
@@ -340,7 +324,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             subscribed = subscribed,
             inCollectionsCount = 0,
             chapters = fanficChapters,
-            rewards = rewardsList,
+            rewards = rewards,
             pagesCount = pagesCount
         )
     }
@@ -352,5 +336,4 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         }
         return resultFlow
     }
-
 }
