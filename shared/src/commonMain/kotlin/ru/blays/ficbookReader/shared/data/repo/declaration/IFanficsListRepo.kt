@@ -1,7 +1,7 @@
 package ru.blays.ficbookReader.shared.data.repo.declaration
 
 import ru.blays.ficbookReader.shared.data.dto.FanficCardModelStable
-import ru.blays.ficbookapi.data.SectionWithQuery
+import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.ListResult
 import ru.blays.ficbookapi.result.ApiResult
 

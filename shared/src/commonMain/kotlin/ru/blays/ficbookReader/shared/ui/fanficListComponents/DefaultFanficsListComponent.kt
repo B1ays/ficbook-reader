@@ -14,9 +14,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.java.KoinJavaComponent.inject
 import org.koin.mp.KoinPlatform.getKoin
-import ru.blays.ficbookReader.shared.data.dto.FanficCardModelStable
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
-import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficsListRepo
 import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
@@ -34,8 +32,10 @@ class DefaultFanficsListComponent(
     val repository: IFanficsListRepo by getKoin().inject()
 
     private val _state: MutableValue<FanficsListComponent.State> = MutableValue(
-            FanficsListComponent.State(
-            section = section.toStableModel()
+        FanficsListComponent.State(
+            section = section.toStableModel(),
+            list = emptyList(),
+            isLoading = false
         )
     )
 
@@ -48,10 +48,9 @@ class DefaultFanficsListComponent(
     ) { configuration, childContext ->
         FanficsListDialogComponent(
             componentContext = childContext,
-            message = configuration.message
-        ) {
-            navigation.dismiss()
-        }
+            message = configuration.message,
+            onOutput = navigation::dismiss
+        )
     }
 
     override fun setSection(section: SectionWithQuery) {
@@ -63,10 +62,10 @@ class DefaultFanficsListComponent(
         refresh()
     }
 
-    override val state: Value<FanficsListComponent.State>
-        get() = _state
+    override val state get() = _state
 
     private var hasNextPage: Boolean = true
+    private var nextPage: Int = 1
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -100,23 +99,12 @@ class DefaultFanficsListComponent(
 
     private fun refresh() {
         coroutineScope.launch {
+            nextPage = 1
+            hasNextPage = true
             _state.update {
-                it.copy(
-                    list = emptyList(),
-                    isLoading = true
-                )
+                it.copy(list = emptyList())
             }
-            val page = getPage(
-                section = state.value.section.toApiModel(),
-                page = 1
-            )
-            _state.update {
-                it.copy(
-                    list = page,
-                    isLoading = false,
-                    page = 1
-                )
-            }
+            loadNextPage()
         }
     }
 
@@ -124,55 +112,46 @@ class DefaultFanficsListComponent(
         if(!state.value.isLoading && hasNextPage) {
             coroutineScope.launch {
                 _state.update {
-                    it.copy(
-                        isLoading = true
-                    )
+                    it.copy(isLoading = true)
                 }
-                val nextPage = (state.value.page) + 1
-                val page = getPage(
-                    section = state.value.section.toApiModel(),
+                val result = repository.get(
+                    section = state.value.section,
                     page = nextPage
                 )
-                _state.update {
-                    it.copy(
-                        list = it.list + page,
-                        isLoading = false,
-                        page = nextPage
-                    )
-                }
-            }
-        }
-    }
+                when (result) {
+                    is ApiResult.Error -> {
+                        runOnUiThread {
+                            navigation.activate(
+                                FanficsListComponent.DialogConfig(result.exception.message ?: "Unknown error")
+                            )
+                        }
+                        _state.update {
+                            it.copy(isLoading = false)
+                        }
+                    }
+                    is ApiResult.Success -> {
+                        val deniedDirections = superfilterSetting
+                            .removeSuffix(",")
+                            .split(",")
+                            .map(FanficDirection::getForName)
 
-    private suspend fun getPage(
-        section: SectionWithQuery,
-        page: Int
-    ): List<FanficCardModelStable> {
-        val result = repository.get(
-            section = section,
-            page = page
-        )
-        return when (result) {
-            is ApiResult.Error -> {
-                runOnUiThread {
-                    navigation.activate(
-                        FanficsListComponent.DialogConfig(result.exception.message ?: "Unknown error")
-                    )
-                }
-                return emptyList()
-            }
-            is ApiResult.Success -> {
-                val deniedDirections = superfilterSetting
-                    .removeSuffix(",")
-                    .split(",")
-                    .map(FanficDirection::getForName)
+                        val fanfics = result.value.list
+                        val hasNextPage = result.value.hasNextPage
 
-                val (fanfics, hasNextPage) = result.value
+                        this@DefaultFanficsListComponent.nextPage += 1
+                        this@DefaultFanficsListComponent.hasNextPage = hasNextPage
 
-                this.hasNextPage = hasNextPage
+                        val filteredFanfics = fanfics.filterNot {
+                            it.status.direction in deniedDirections
+                        }
 
-                fanfics.filterNot {
-                    it.status.direction in deniedDirections
+                        _state.update {
+                            it.copy(
+                                list = it.list + filteredFanfics,
+                                isLoading = false
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -30,6 +30,7 @@ import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
+import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.shared.data.dto.IntRangeSimple
 import ru.blays.ficbookReader.shared.data.dto.SearchParams
 import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
@@ -64,8 +65,21 @@ fun SearchContent(component: SearchComponent) {
 
 @Composable
 private fun LandscapeContent(component: SearchComponent) {
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Open)
+
+    BackHandler(true) {
+        if(drawerState.currentValue == DrawerValue.Open) {
+            component.fanficsListComponent.onOutput(
+                FanficsListComponent.Output.NavigateBack
+            )
+        } else {
+            coroutineScope.launch {
+                drawerState.open()
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             CollapsingsToolbar(
@@ -86,7 +100,7 @@ private fun LandscapeContent(component: SearchComponent) {
                 actions = {
                     IconButton(
                         onClick = {
-                            scope.launch {
+                            coroutineScope.launch {
                                 if(drawerState.isOpen) {
                                     drawerState.close()
                                 } else {
@@ -138,6 +152,18 @@ private fun PortraitContent(component: SearchComponent) {
     )
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
     val coroutineScope = rememberCoroutineScope()
+
+    BackHandler(true) {
+        if(bottomSheetState.currentValue == SheetValue.Expanded) {
+            component.fanficsListComponent.onOutput(
+                FanficsListComponent.Output.NavigateBack
+            )
+        } else {
+            coroutineScope.launch {
+                bottomSheetState.expand()
+            }
+        }
+    }
 
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),

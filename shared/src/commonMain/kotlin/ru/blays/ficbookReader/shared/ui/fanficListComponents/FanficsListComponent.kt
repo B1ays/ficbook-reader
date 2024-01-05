@@ -31,9 +31,8 @@ interface FanficsListComponent {
 
     data class State(
         val section: SectionWithQuery,
-        val list: List<FanficCardModelStable> = emptyList(),
-        val isLoading: Boolean = true,
-        val page: Int = 1
+        val list: List<FanficCardModelStable>,
+        val isLoading: Boolean
     )
 
     @Serializable
