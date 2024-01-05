@@ -5,8 +5,6 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
-import ru.blays.ficbookReader.shared.data.repo.declaration.ICommentsRepo
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -18,7 +16,6 @@ class DefaultAllCommentsComponent(
     componentContext = componentContext,
     output = output
 ) {
-    private val repository: ICommentsRepo by getKoin().inject()
 
     override fun loadNextPage() {
         if(!state.value.loading && hasNextPage) {

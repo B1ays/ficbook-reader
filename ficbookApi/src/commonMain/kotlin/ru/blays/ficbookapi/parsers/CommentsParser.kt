@@ -156,28 +156,42 @@ class CommentParser: IDataParser<Element, CommentModel> {
         )
     }
 
-    suspend fun blockToText(blockModel: CommentBlockModel): String {
+    suspend fun blockToText(
+        blockModel: CommentBlockModel,
+        initialLevel: Int = 1
+    ): String {
         val stringBuilder = StringBuilder()
         blockModel.quote?.let {
-            stringBuilder.append(quoteToText(it))
+            stringBuilder.append(
+                quoteToText(
+                    quoteModel = it,
+                    level = initialLevel
+                )
+            )
         }
         stringBuilder.append(blockModel.text)
         return stringBuilder.toString()
     }
 
-    private suspend fun quoteToText(quoteModel: QuoteModel, level: Int = 1): String {
+    private suspend fun quoteToText(
+        quoteModel: QuoteModel,
+        level: Int = 1
+    ): String {
         val stringBuilder = StringBuilder()
         val prefix = ">".repeat(level)
         val text = quoteModel.text
         val userName = quoteModel.userName
-        stringBuilder.appendLine("$prefix**$userName**")
+        if(userName.isNotEmpty()) {
+            stringBuilder.appendLine("$prefix**$userName**")
+        }
         quoteModel.quote?.let {
-            stringBuilder.appendLine(quoteToText(it, level + 1))
+            stringBuilder.append(quoteToText(it, level + 1))
         }
         val textLines = text.lines()
         if(textLines.isNotEmpty()) {
             textLines.forEach { line ->
                 stringBuilder.appendLine("$prefix$line")
+                stringBuilder.appendLine('>')
             }
         }
 

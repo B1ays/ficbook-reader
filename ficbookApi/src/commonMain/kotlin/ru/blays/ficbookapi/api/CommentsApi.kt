@@ -41,7 +41,6 @@ class CommentsApiImpl(
                 },
                 url = ficbookUrl {
                     href(PART_COMMENTS_HREF)
-                    page(page)
                 }
             )
             val body: String = response.body.stringOrThrow()

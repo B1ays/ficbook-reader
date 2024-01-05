@@ -30,7 +30,7 @@ class DefaultWriteCommentComponent(
         WriteCommentComponent.State(
             text = "",
             renderedBlocks = emptyList(),
-            followType = 2,
+            followType = 1,
             error = false,
             errorMessage = null
         )
@@ -45,13 +45,18 @@ class DefaultWriteCommentComponent(
         updatePreview()
     }
 
-    override fun addReply(block: CommentBlockModelStable) {
+    override fun addReply(blocks: List<CommentBlockModelStable>) {
         coroutineScope.launch {
-            val convertedModel = commentsParser.blockToText(block.toApiModel())
+            val convertedBlocks = blocks.fold(StringBuilder()) { builder, block ->
+                val converted = commentsParser.blockToText(
+                    blockModel = block.toApiModel()
+                )
+                builder.append(converted)
+            }.toString()
             _state.update {
                 val newText = if(it.text.isNotEmpty()) {
-                    "${it.text}\n$convertedModel"
-                } else convertedModel
+                    "${it.text}\n$convertedBlocks"
+                } else convertedBlocks
                 it.copy(
                     text = newText
                 )

@@ -8,7 +8,7 @@ interface WriteCommentComponent {
 
     fun editText(newText: String)
 
-    fun addReply(block: CommentBlockModelStable)
+    fun addReply(blocks: List<CommentBlockModelStable>)
 
     fun post()
 

@@ -5,12 +5,18 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatform
+import ru.blays.ficbookReader.shared.data.repo.declaration.ICommentsRepo
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
+import ru.blays.ficbookapi.result.ApiResult
 
 abstract class BaseCommentsComponent(
     componentContext: ComponentContext,
     private val output: (CommentsComponent.Output) -> Unit
 ): CommentsComponent, ComponentContext by componentContext {
+    val repository: ICommentsRepo = KoinPlatform.getKoin().get()
+
     internal val _state = MutableValue(
         CommentsComponent.State(
             loading = false,
@@ -32,10 +38,21 @@ abstract class BaseCommentsComponent(
 
     abstract fun loadNextPage()
 
+    fun deleteComment(commentID: String) {
+        coroutineScope.launch {
+            when(repository.delete(commentID)) {
+                is ApiResult.Error -> Unit
+                is ApiResult.Success -> refresh()
+
+            }
+        }
+    }
+
     fun refresh() {
         _state.update {
             it.copy(comments = emptyList())
         }
+        hasNextPage = true
         nextPage = 1
         loadNextPage()
     }

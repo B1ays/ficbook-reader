@@ -5,10 +5,8 @@ import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
-import ru.blays.ficbookReader.shared.data.repo.declaration.ICommentsRepo
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.ExtendedCommentsComponent
 import ru.blays.ficbookapi.result.ApiResult
@@ -21,7 +19,6 @@ class DefaultPartCommentsComponent(
     componentContext = componentContext,
     output = output
 ), ExtendedCommentsComponent {
-    private val repository: ICommentsRepo = getKoin().get()
 
     override val writeCommentComponent = DefaultWriteCommentComponent(
         componentContext = componentContext,
@@ -72,25 +69,36 @@ class DefaultPartCommentsComponent(
             is CommentsComponent.Intent.LoadNextPage -> loadNextPage()
             is CommentsComponent.Intent.AddReply -> addReply(
                 userName = intent.userName,
-                block = intent.block
+                blocks = intent.blocks
             )
+            is CommentsComponent.Intent.DeleteComment -> deleteComment(intent.commentID)
         }
     }
 
     private fun addReply(
         userName: String,
-        block: CommentBlockModelStable
+        blocks: List<CommentBlockModelStable>
     ) {
-        val newQuote = QuoteModelStable(
-            quote = block.quote,
-            userName = userName,
-            text = block.text
-        )
-        val newBlock = CommentBlockModelStable(
-            quote = newQuote,
-            text = ""
-        )
-        writeCommentComponent.addReply(newBlock)
+        val newBlocks = blocks.mapIndexed { index, block ->
+            val newQuote = if(index == 0) {
+                QuoteModelStable(
+                    quote = block.quote,
+                    userName = userName,
+                    text = block.text
+                )
+            } else {
+                QuoteModelStable(
+                    quote = block.quote,
+                    userName = "",
+                    text = block.text
+                )
+            }
+            CommentBlockModelStable(
+                quote = newQuote,
+                text = ""
+            )
+        }
+        writeCommentComponent.addReply(newBlocks)
     }
 
     init {

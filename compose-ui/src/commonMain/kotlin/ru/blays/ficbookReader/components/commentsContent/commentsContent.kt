@@ -2,9 +2,10 @@ package ru.blays.ficbookReader.components.commentsContent
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,13 +21,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
@@ -51,7 +55,7 @@ fun CommentsContent(
     component: CommentsComponent,
     hideAvatar: Boolean = false,
     modifier: Modifier = Modifier,
-    onAddReply: (userName: String, block: CommentBlockModelStable) -> Unit = {userName, block ->}
+    onAddReply: (userName: String, blocks: List<CommentBlockModelStable>) -> Unit = {userName, block ->}
 ) {
     val state by component.state.subscribeAsState()
     val comments = state.comments
@@ -99,7 +103,17 @@ fun CommentsContent(
                             CommentsComponent.Output.OpenUrl(url)
                         )
                     },
-                    onAddReply = onAddReply
+                    onAddReply = {
+                        onAddReply(
+                            comment.user.name,
+                            comment.blocks
+                        )
+                    },
+                    onDelete = {
+                        component.sendIntent(
+                            CommentsComponent.Intent.DeleteComment(comment.commentID)
+                        )
+                    }
                 )
             }
         }
@@ -120,9 +134,16 @@ private fun CommentItem(
     onUserClick: () -> Unit,
     onFanficClick: (href: String) -> Unit,
     onUrlClick: (url: String) -> Unit,
-    onAddReply: (userName: String, block: CommentBlockModelStable) -> Unit
+    onAddReply: () -> Unit,
+    onDelete: () -> Unit = {}
 ) {
     val user = comment.user
+
+    val density = LocalDensity.current
+
+    var menuExpanded by remember { mutableStateOf(false) }
+    var menuOffset by remember { mutableStateOf(DpOffset.Zero) }
+
     Row(
         modifier = Modifier
             .padding(horizontal = DefaultPadding.CardHorizontalPadding)
@@ -142,8 +163,39 @@ private fun CommentItem(
             )
             Spacer(modifier = Modifier.requiredWidth(9.dp))
         }
+        val cardInteractionSource = remember { MutableInteractionSource() }
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(CardDefaults.shape)
+                .indication(
+                    interactionSource = cardInteractionSource,
+                    indication = LocalIndication.current
+                )
+                .hoverable(
+                    interactionSource = cardInteractionSource,
+                    enabled = true
+                )
+                .pointerInput(true) {
+                    detectTapGestures(
+                        onPress = {
+                            val press = PressInteraction.Press(it)
+                            cardInteractionSource.emit(press)
+                            awaitRelease()
+                            cardInteractionSource.emit(PressInteraction.Release(press))
+                        },
+                        onLongPress = {
+                            menuOffset = with(density) {
+                                DpOffset(
+                                    x = it.x.toDp(),
+                                    y = 0.dp
+                                )
+                            }
+                            menuExpanded = true
+                        }
+                    )
+                },
+            shape = CardDefaults.shape
         ) {
             Row(
                 modifier = Modifier
@@ -174,13 +226,10 @@ private fun CommentItem(
             comment.blocks.forEach { block ->
                 CommentBlockElement(
                     block = block,
-                    onUrlClick = onUrlClick,
-                    onReply = {
-                        onAddReply(comment.user.name, block)
-                    }
+                    onUrlClick = onUrlClick
                 )
             }
-            if(comment.forFanfic != null) {
+            comment.forFanfic?.let { fanfic ->
                 Spacer(modifier = Modifier.requiredHeight(2.dp))
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 8.dp),
@@ -190,9 +239,9 @@ private fun CommentItem(
                 ClickableText(
                     modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
                     onClick = {
-                        onFanficClick(comment.forFanfic!!.href)
+                        onFanficClick(fanfic.href)
                     },
-                    text = AnnotatedString(comment.forFanfic!!.name),
+                    text = AnnotatedString(fanfic.name),
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = MaterialTheme.colorScheme.primary
                     ),
@@ -200,50 +249,57 @@ private fun CommentItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
+
+            DropdownMenu(
+                expanded = menuExpanded,
+                offset = menuOffset,
+                onDismissRequest = { menuExpanded = false },
+            ) {
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(Res.image.ic_reply),
+                            contentDescription = "Иконка ответ",
+                            modifier = Modifier.size(18.dp),
+                        )
+                    },
+                    text = {
+                        Text("Ответить")
+                    },
+                    onClick = onAddReply
+                )
+                if(comment.isOwnComment) {
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(Res.image.ic_delete),
+                                contentDescription = "Иконка удалить",
+                                modifier = Modifier.size(18.dp),
+                            )
+                        },
+                        text = {
+                            Text("Удалить")
+                        },
+                        onClick = onDelete
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun CommentBlockElement(
+    modifier: Modifier = Modifier,
     block: CommentBlockModelStable,
-    onUrlClick: (url: String) -> Unit,
-    onReply: () -> Unit
+    onUrlClick: (url: String) -> Unit
 ) {
     val quoteContainerColor = MaterialTheme.colorScheme.run {
         primary.compositeOver(surface).copy(0.7F)
     }
     val contentColor = MaterialTheme.colorScheme.onPrimary
 
-    var menuExpanded by remember { mutableStateOf(false) }
-
-    DropdownMenu(
-        expanded = menuExpanded,
-        onDismissRequest = { menuExpanded = false },
-    ) {
-        DropdownMenuItem(
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(Res.image.ic_reply),
-                    contentDescription = "Иконка ответ",
-                    modifier = Modifier.size(18.dp),
-                )
-            },
-            text = {
-                Text("Ответить")
-            },
-            onClick = onReply
-        )
-    }
-
-    Column(
-        modifier = Modifier.combinedClickable(
-            onClick = {},
-            onLongClick = {
-                menuExpanded = true
-            }
-        )
-    ) {
+    Column(modifier = modifier) {
         Column(
             modifier = Modifier
                 .padding(DefaultPadding.CardDefaultPaddingSmall)
@@ -420,9 +476,9 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
             CommentsContent(
                 component = component,
                 modifier = Modifier.weight(1F),
-                onAddReply = { userName, block ->
+                onAddReply = { userName, blocks ->
                     component.sendIntent(
-                        CommentsComponent.Intent.AddReply(userName, block)
+                        CommentsComponent.Intent.AddReply(userName, blocks)
                     )
                 }
             )
@@ -449,8 +505,7 @@ private fun WriteCommentContent(component: WriteCommentComponent) {
                     items(state.renderedBlocks) { block ->
                         CommentBlockElement(
                             block = block,
-                            onUrlClick = {},
-                            onReply = {}
+                            onUrlClick = {}
                         )
                     }
                 }
@@ -466,7 +521,7 @@ private fun WriteCommentContent(component: WriteCommentComponent) {
                 value = state.text,
                 onValueChange = component::editText,
                 singleLine = false,
-                maxLines = 5,
+                maxLines = 6,
                 shape = RectangleShape,
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Color.Transparent,
