@@ -84,16 +84,22 @@ class DefaultFanficPageInfoComponent(
     private fun onActionsOutput(output: FanficPageActionsComponent.Output) {
         when(output) {
             FanficPageActionsComponent.Output.OpenComments -> {
-                if(state.value.fanfic?.chapters is FanficChapterStable.SeparateChaptersModel) {
-                    val commentsHref = "$fanficHref/comments"
-                    onOutput(
-                        FanficPageInfoComponent.Output.OpenAllComments(commentsHref)
-                    )
-                } else if(state.value.fanfic?.chapters is FanficChapterStable.SingleChapterModel) {
-                    val chapterID = state.value.fanfic?.fanficID ?: return
-                    onOutput(
-                        FanficPageInfoComponent.Output.OpenPartComments(chapterID)
-                    )
+                when (
+                    val chapters = state.value.fanfic?.chapters
+                ) {
+                    is FanficChapterStable.SeparateChaptersModel -> {
+                        val commentsHref = "$fanficHref/comments"
+                        onOutput(
+                            output = FanficPageInfoComponent.Output.OpenAllComments(commentsHref)
+                        )
+                    }
+                    is FanficChapterStable.SingleChapterModel -> {
+                        val chapterID = chapters.chapterID
+                        onOutput(
+                            output = FanficPageInfoComponent.Output.OpenPartComments(chapterID)
+                        )
+                    }
+                    null -> Unit
                 }
             }
         }
