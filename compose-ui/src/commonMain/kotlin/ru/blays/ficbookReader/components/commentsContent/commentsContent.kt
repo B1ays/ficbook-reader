@@ -43,7 +43,7 @@ import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.ExtendedCommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.WriteCommentComponent
-import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
+import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.blays.ficbookReader.values.defaultScrollbarPadding
@@ -319,13 +319,13 @@ private fun CommentBlockElement(
                 }
             }
         }
-        TextWithLinks(
-            text = block.text,
-            style = MaterialTheme.typography.bodyMedium.copy(
+        HyperlinkText(
+            modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
+            fullText = block.text,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface
             ),
-            modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
-            onUrlClick = onUrlClick
+            onLinkClick = onUrlClick
         )
     }
 }
@@ -365,12 +365,13 @@ private fun QuoteElement(
                     )
                 }
                 val text = subcompose(QUOTE_TEXT_SLOTS.TEXT) {
-                    TextWithLinks(
-                        text = quote.text,
-                        style = MaterialTheme.typography.bodyMedium.copy(
+                    HyperlinkText(
+                        modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
+                        fullText = quote.text,
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
                             color = contentColor
                         ),
-                        onUrlClick = onUrlClick
+                        onLinkClick = onUrlClick
                     )
                 }
                 val textHeight = text.fold(0) { acc, it ->

@@ -39,7 +39,7 @@ import ru.blays.ficbookReader.shared.data.dto.AuthorMainInfoStable
 import ru.blays.ficbookReader.shared.data.dto.BlogPostCardModelStable
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.*
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
-import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
+import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbookReader.ui_components.decomposePager.Pages
 import ru.blays.ficbookReader.utils.LocalStackAnimator
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
@@ -421,10 +421,10 @@ private fun ProfileMainInfo(component: AuthorProfileComponent) {
                         modifier = Modifier.padding(start = 4.dp)
                     )
                     Spacer(modifier = Modifier.requiredHeight(3.dp))
-                    TextWithLinks(
-                        text = authorInfo.about,
-                        style = textStyle,
-                        onUrlClick = onUrlClick
+                    HyperlinkText(
+                        fullText = authorInfo.about,
+                        textStyle = textStyle,
+                        onLinkClick = onUrlClick
                     )
                     Spacer(modifier = Modifier.requiredHeight(5.dp))
                 }
@@ -436,10 +436,10 @@ private fun ProfileMainInfo(component: AuthorProfileComponent) {
                         modifier = Modifier.padding(start = 4.dp)
                     )
                     Spacer(modifier = Modifier.requiredHeight(3.dp))
-                    TextWithLinks(
-                        text = authorInfo.contacts,
-                        style = textStyle,
-                        onUrlClick = onUrlClick
+                    HyperlinkText(
+                        fullText = authorInfo.contacts,
+                        textStyle = textStyle,
+                        onLinkClick = onUrlClick
                     )
                     Spacer(modifier = Modifier.requiredHeight(5.dp))
                 }
@@ -451,10 +451,10 @@ private fun ProfileMainInfo(component: AuthorProfileComponent) {
                         modifier = Modifier.padding(start = 4.dp)
                     )
                     Spacer(modifier = Modifier.requiredHeight(3.dp))
-                    TextWithLinks(
-                        text = authorInfo.support,
-                        style = textStyle,
-                        onUrlClick = onUrlClick
+                    HyperlinkText(
+                        fullText = authorInfo.support,
+                        textStyle = textStyle,
+                        onLinkClick = onUrlClick
                     )
                 }
                 Spacer(modifier = Modifier.requiredHeight(30.dp))
@@ -615,14 +615,13 @@ private fun BlogPostPage(
                         )
                     }
                 }
-
                 Spacer(modifier = Modifier.requiredHeight(10.dp))
-                TextWithLinks(
-                    text = post.text,
-                    style = MaterialTheme.typography.bodyMedium.copy(
+                HyperlinkText(
+                    fullText = post.text,
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     ),
-                    onUrlClick = {
+                    onLinkClick = {
                         component.onOutput(
                             AuthorBlogPageComponent.Output.OpenUrl(
                                 url = it

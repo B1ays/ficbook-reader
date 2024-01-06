@@ -33,7 +33,7 @@ import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.theme.*
 import ru.blays.ficbookReader.ui_components.GradientIcon.GradientIcon
-import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
+import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbookReader.values.DefaultPadding
 
 @Composable
@@ -151,16 +151,18 @@ private fun LandscapeContent(
                     )
                 }
                 Spacer(modifier = Modifier.height(3.dp))
-                TextWithLinks(
+                HyperlinkText(
                     modifier = Modifier.padding(horizontal = 4.dp),
-                    text = fanfic.description,
-                    style = MaterialTheme.typography.bodyLarge.copy(
+                    fullText = fanfic.description,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
-                    maxLines = 6,
+                    linkTextColor = MaterialTheme.colorScheme.primary,
+                    linkTextDecoration = TextDecoration.Underline,
                     overflow = TextOverflow.Ellipsis,
-                    onTextClick = onCardClick,
-                    onUrlClick = onUrlClicked
+                    maxLines = 6,
+                    onLinkClick = onUrlClicked,
+                    onClick = onCardClick
                 )
             }
         }
@@ -223,16 +225,18 @@ private fun PortraitContent(
                     onAuthorClick = onAuthorClick
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                TextWithLinks(
+                HyperlinkText(
                     modifier = Modifier.padding(horizontal = 4.dp),
-                    text = fanfic.description,
-                    style = MaterialTheme.typography.bodyLarge.copy(
+                    fullText = fanfic.description,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
-                    maxLines = 6,
+                    linkTextColor = MaterialTheme.colorScheme.primary,
+                    linkTextDecoration = TextDecoration.Underline,
                     overflow = TextOverflow.Ellipsis,
-                    onTextClick = onCardClick,
-                    onUrlClick = onUrlClicked
+                    maxLines = 6,
+                    onLinkClick = onUrlClicked,
+                    onClick = onCardClick
                 )
             }
         }

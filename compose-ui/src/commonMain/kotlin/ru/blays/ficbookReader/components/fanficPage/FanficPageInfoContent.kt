@@ -61,7 +61,7 @@ import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
 import ru.blays.ficbookReader.ui_components.GradientIcon.GradientIcon
-import ru.blays.ficbookReader.ui_components.LinkifyText.TextWithLinks
+import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -545,12 +545,12 @@ private fun FanficDescription(
                     text = "Описание:",
                     style = MaterialTheme.typography.titleMedium
                 )
-                TextWithLinks(
-                    text = fanfic.description,
-                    style = MaterialTheme.typography.bodyLarge.copy(
+                HyperlinkText(
+                    fullText = fanfic.description,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     ),
-                    onUrlClick = { url ->
+                    onLinkClick = { url ->
                         component.onOutput(
                             FanficPageInfoComponent.Output.OpenUrl(url)
                         )
