@@ -61,8 +61,8 @@ abstract class PagerState2 <T: Any> (
     initialPageIndex: Int,
     initialPageOffsetFraction: Float
 ): PagerState(
-    initialPage = initialPageIndex,
-    initialPageOffsetFraction = initialPageOffsetFraction
+    currentPage = initialPageIndex,
+    currentPageOffsetFraction = initialPageOffsetFraction
 ) {
     abstract val pages: List<T>
 

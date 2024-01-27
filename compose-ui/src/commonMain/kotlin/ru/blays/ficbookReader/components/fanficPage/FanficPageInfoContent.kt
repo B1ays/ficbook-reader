@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
 import kotlinx.coroutines.launch

@@ -3,8 +3,8 @@ package ru.blays.ficbookReader.components.userProfile
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
-import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
+import com.arkivanov.decompose.extensions.compose.stack.Children
+import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileRootComponent
 import ru.blays.ficbookReader.utils.LocalStackAnimator
 

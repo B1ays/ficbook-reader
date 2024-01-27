@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.materialkolor.LocalDynamicMaterialThemeSeed
 import com.materialkolor.dynamicColorScheme
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent

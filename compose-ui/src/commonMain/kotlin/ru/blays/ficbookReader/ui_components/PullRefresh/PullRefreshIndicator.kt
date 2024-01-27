@@ -25,15 +25,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.contentColorFor
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -99,11 +94,11 @@ fun PullRefreshIndicator(
                 val spinnerSize = (ArcRadius + StrokeWidth).times(2)
 
                 if (refreshing) {
-                    CircularProgressIndicator(
+                    /*CircularProgressIndicator(
                         color = contentColor,
                         strokeWidth = StrokeWidth,
                         modifier = Modifier.size(spinnerSize),
-                    )
+                    )*/ // TODO: return after bug is fixed
                 } else {
                     CircularArrowIndicator(state, contentColor, Modifier.size(spinnerSize))
                 }
