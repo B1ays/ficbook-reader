@@ -1,5 +1,6 @@
 package ru.blays.ficbookReader.components.userProfile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -10,20 +11,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
-import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileComponent
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import java.io.File
 
 @Composable
 fun UserProfileContent(component: UserProfileComponent) {
@@ -51,101 +53,135 @@ fun UserProfileContent(component: UserProfileComponent) {
         },
         modifier = Modifier.systemBarsPadding(),
     ) { padding ->
-        if(state != null) {
-            BoxWithConstraints(
-                modifier = Modifier
-                    .padding(top = padding.calculateTopPadding())
-                    .fillMaxSize()
-            ) {
-                val widthFill = when(maxWidth) {
-                    in 1500.dp..Dp.Infinity -> 0.5F
-                    in 1200.dp..1500.dp -> 0.6F
-                    in 1000.dp..1200.dp -> 0.7F
-                    in 800.dp..1000.dp -> 0.8F
-                    in 500.dp..800.dp -> 0.9F
-                    else -> 1F
-                }
+        BoxWithConstraints(
+            modifier = Modifier
+                .padding(top = padding.calculateTopPadding())
+                .fillMaxSize()
+        ) {
+            val widthFill = when(maxWidth) {
+                in 1500.dp..Dp.Infinity -> 0.5F
+                in 1200.dp..1500.dp -> 0.6F
+                in 1000.dp..1200.dp -> 0.7F
+                in 800.dp..1000.dp -> 0.8F
+                in 500.dp..800.dp -> 0.9F
+                else -> 1F
+            }
 
-                Card(
-                    onClick = {
+            val avatarPainter = state?.let {
+                rememberAsyncImagePainter(model = File(it.avatarPath))
+            } ?: painterResource(Res.image.ic_incognito)
+
+            Card(
+                onClick = {
+                    state?.let {
                         component.onOutput(
-                            UserProfileComponent.Output.OpenProfile(state?.href!!)
+                            UserProfileComponent.Output.OpenProfile("authors/${it.id}")
                         )
-                    },
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.3F)
-                    ),
-                    modifier = Modifier
-                        .padding(DefaultPadding.CardDefaultPadding)
-                        .padding(
-                            top = 40.dp,
-                            bottom = 100.dp
-                        )
-                        .align(Alignment.TopCenter)
+                    }
+                },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.3F)
+                ),
+                modifier = Modifier
+                    .padding(DefaultPadding.CardDefaultPadding)
+                    .padding(
+                        top = 40.dp,
+                        bottom = 100.dp
+                    )
+                    .align(Alignment.TopCenter)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(widthFill),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(widthFill),
+                        modifier = Modifier.padding(14.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.padding(14.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            SubcomposeAsyncImage(
-                                model = state?.avatarUrl!!,
-                                contentDescription = "Аватар пользователя",
-                                contentScale = ContentScale.Crop,
-                                loading = {
-                                    CircularProgressIndicator()
-                                },
-                                modifier = Modifier
-                                    .size(65.dp)
-                                    .clip(CircleShape)
-                            )
-                            Spacer(modifier = Modifier.requiredWidth(12.dp),)
-                            Text(
-                                modifier = Modifier,
-                                text = state?.name!!,
-                                style = MaterialTheme.typography.titleLarge,
-                                textAlign = TextAlign.Start,
-                            )
-                        }
-                        Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
-                            contentDescription = null,
-                            modifier = Modifier.rotate(180F).padding(10.dp)
+                        Image(
+                            painter = avatarPainter,
+                            contentDescription = "Аватар пользователя",
+                            contentScale = if(state == null) {
+                                ContentScale.Inside
+                            } else ContentScale.Crop,
+                            colorFilter = if(state == null) {
+                                ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                            } else null,
+                            modifier = Modifier
+                                .size(65.dp)
+                                .clip(CircleShape)
+                        )
+                        Spacer(modifier = Modifier.requiredWidth(12.dp))
+                        Text(
+                            modifier = Modifier,
+                            text = state?.name ?: "Анонимный пользователь",
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Start,
                         )
                     }
-                }
-                Button(
-                    onClick = {
-                        component.sendIntent(
-                            UserProfileComponent.Intent.LogOut
-                        )
-                    },
-                    shape = CardDefaults.shape,
-                    modifier = Modifier
-                        .padding(DefaultPadding.CardDefaultPadding)
-                        .padding(bottom = 24.dp)
-                        .fillMaxWidth(widthFill)
-                        .requiredHeight(50.dp)
-                        .align(Alignment.BottomCenter)
-                ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_exit),
+                        painter = painterResource(Res.image.ic_arrow_back),
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.requiredWidth(10.dp))
-                    Text(
-                        text = "Выйти из аккаунта",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        modifier = Modifier.rotate(180F).padding(10.dp)
                     )
                 }
             }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(
+                        bottom = 40.dp,
+                        start = 12.dp,
+                        end = 12.dp
+                    ),
+            ) {
+                Button(
+                    shape = MaterialTheme.shapes.medium,
+                    onClick = {
+                        component.onOutput(
+                            UserProfileComponent.Output.ManageAccounts
+                        )
+                    },
+                    modifier = Modifier
+                        .height(44.dp)
+                        .fillMaxWidth()
+                ) {
+                    Icon(
+                        painter = painterResource(Res.image.ic_replace),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = "Сменить аккаунт"
+                    )
+                }
+                Spacer(modifier = Modifier.height(9.dp))
+                OutlinedButton(
+                    shape = MaterialTheme.shapes.medium,
+                    onClick = {
+                        component.sendIntent(
+                            UserProfileComponent.Intent.EnableIncognito
+                        )
+                    },
+                    modifier = Modifier
+                        .height(44.dp)
+                        .fillMaxWidth()
+                ) {
+                    Icon(
+                        painter = painterResource(Res.image.ic_incognito),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = "Анонимный режим"
+                    )
+                }
+            }
+
         }
     }
 }

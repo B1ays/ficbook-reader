@@ -7,9 +7,10 @@ import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileC
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.CollectionFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
+import ru.blays.ficbookReader.shared.ui.landingScreenComponent.LandingScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationComponent
-import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileRootComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.themeComponents.ThemeComponent
@@ -32,13 +33,16 @@ interface RootComponent {
     @Serializable
     sealed class Config {
         @Serializable
+        data object Landing: Config()
+
+        @Serializable
         data object Main: Config()
 
         @Serializable
         data object Settings: Config()
 
         @Serializable
-        data object UserProfile: Config()
+        data class UserProfile(val initialConfiguration: UserProfileRootComponent.Config): Config()
 
         @Serializable
         data class FanficPage(
@@ -75,6 +79,7 @@ interface RootComponent {
     }
 
     sealed class Child {
+        data class Landing(val component: LandingScreenComponent): Child()
         data class Main(val component: MainScreenComponent): Child()
         data class Settings(val component: SettingsMainComponent): Child()
         data class UserProfile(val component: UserProfileRootComponent): Child()

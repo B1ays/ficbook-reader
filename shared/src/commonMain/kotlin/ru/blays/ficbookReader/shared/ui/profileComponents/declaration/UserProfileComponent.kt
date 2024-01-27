@@ -1,20 +1,22 @@
-package ru.blays.ficbookReader.shared.ui.profileComponents
+package ru.blays.ficbookReader.shared.ui.profileComponents.declaration
 
 import kotlinx.coroutines.flow.StateFlow
-import ru.blays.ficbookReader.shared.data.dto.UserModelStable
+import ru.blays.ficbookReader.shared.data.dto.SavedUserModel
 
 interface UserProfileComponent {
-    val state: StateFlow<UserModelStable?>
+    val state: StateFlow<SavedUserModel?>
 
     fun sendIntent(intent: Intent)
     fun onOutput(output: Output)
 
     sealed class Intent {
-        data object LogOut: Intent()
+        data object EnableIncognito : Intent()
     }
 
     sealed class Output {
         data object NavigateBack: Output()
+        data object ManageAccounts: Output()
         data class OpenProfile(val href: String): Output()
+
     }
 }

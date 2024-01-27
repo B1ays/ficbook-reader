@@ -1,8 +1,11 @@
 package ru.blays.ficbookapi
 
+const val HTTPS_SCHEME = "https"
+
 const val FICBOOK_HOST = "ficbook.net"
 
-const val HTTPS_SCHEME = "https"
+const val FICBOOK_REGISTER_LINK = "https://ficbook.net/register"
+const val FICBOOK_LOGIN_LINK = "https://ficbook.net/login"
 
 const val SETTING_HREF = "home/settings"
 const val RANDOM_FANFIC = "randomfic"

@@ -1,15 +1,14 @@
 package ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration
 
-import com.arkivanov.decompose.value.Value
-import ru.blays.ficbookReader.shared.data.dto.UserModelStable
+import kotlinx.coroutines.flow.StateFlow
+import ru.blays.ficbookReader.shared.data.dto.SavedUserModel
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
-import ru.blays.ficbookReader.shared.data.sections.userSections
-import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserLogInComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 
 interface MainScreenComponent {
     val tabs: Array<TabModel>
-    val state: Value<State>
+    val state: StateFlow<SavedUserModel?>
 
     fun onOutput(output: Output)
 
@@ -38,12 +37,6 @@ interface MainScreenComponent {
         data object OpenNotifications: Output()
         data object Search : Output()
     }
-
-    data class State(
-        val mainFeed: SectionWithQuery = userSections.follow.toApiModel(),
-        val user: UserModelStable? = null,
-        val authorized: Boolean = false,
-    )
 
     data class TabModel(
         val index: Int,

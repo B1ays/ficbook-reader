@@ -1,6 +1,7 @@
 package ru.blays.ficbookReader.shared.preferences
 
 object SettingsKeys {
+
     // Theme
     const val THEME_KEY = "theme_code"
     const val AMOLED_THEME_KEY = "amoled_theme"
@@ -21,4 +22,10 @@ object SettingsKeys {
     const val SUPERFILTER_KEY: String = "superfilter"
     const val AUTO_VOTE_FOR_CONTINUE: String = "auto_vote_for_continue"
     const val CHROME_CUSTOM_TABS_KEY: String = "chrome_custom_tabs"
+    const val ANONYMOUS_MODE_KEY: String = "anonymous_mode"
+    const val ACTIVE_USER_ID_KEY: String = "active_user_id"
+
+    // Internal
+    const val FIRST_START_KEY = "first_start"
+
 }

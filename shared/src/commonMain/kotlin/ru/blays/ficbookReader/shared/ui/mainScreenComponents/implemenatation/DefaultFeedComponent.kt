@@ -77,7 +77,7 @@ class DefaultFeedComponent private constructor(
             Json.decodeFromString(saved)
         } catch (e: Exception) {
             e.printStackTrace()
-            if(authRepository.authorized.value) {
+            if(authRepository.currentUserModel.value != null) {
                 userSections.favourites.toApiModel()
             } else {
                 popularSections.allPopular.toApiModel()

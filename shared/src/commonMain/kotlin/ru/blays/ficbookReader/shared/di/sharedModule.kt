@@ -8,6 +8,6 @@ val sharedModule = module {
         okHttpModule,
         apiModule,
         repositoryModule,
-        realmModule,
+        realmModule
     )
 }

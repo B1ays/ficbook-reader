@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 data class AuthorizationResult(
     val responseResult: AuthorizationResponseModel,
-    val user: UserModel? = null
+    val user: UserModel
 )
 
 @Serializable

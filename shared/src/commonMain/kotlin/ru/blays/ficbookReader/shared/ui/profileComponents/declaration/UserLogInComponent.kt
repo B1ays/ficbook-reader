@@ -1,4 +1,4 @@
-package ru.blays.ficbookReader.shared.ui.profileComponents
+package ru.blays.ficbookReader.shared.ui.profileComponents.declaration
 
 import com.arkivanov.decompose.value.Value
 
@@ -12,11 +12,11 @@ interface UserLogInComponent {
         data class LoginChanged(val login: String): Intent()
         data class PasswordChanged(val password: String): Intent()
         data object LogIn: Intent()
-        data object LogOut: Intent()
     }
 
     sealed class Output {
         data object NavigateBack: Output()
+        data object OpenMainScreen: Output()
     }
 
     data class State(

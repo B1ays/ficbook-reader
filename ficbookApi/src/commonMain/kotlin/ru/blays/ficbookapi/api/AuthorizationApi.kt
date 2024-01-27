@@ -2,8 +2,8 @@ package ru.blays.ficbookapi.api
 
 import kotlinx.coroutines.coroutineScope
 import okhttp3.OkHttpClient
-import okio.IOException
 import org.jsoup.Jsoup
+import ru.blays.ficbookapi.FICBOOK_LOGIN_LINK
 import ru.blays.ficbookapi.LOGIN_CHECK
 import ru.blays.ficbookapi.SETTING_HREF
 import ru.blays.ficbookapi.dataModels.AuthorizationResponseModel
@@ -44,11 +44,11 @@ class AuthorizationApiImpl(
             }
             val body = response.body.stringOrThrow()
             val resultModel: AuthorizationResponseModel = json.decodeFromString(body)
-            val user = checkAuthorization()
+            val user = checkAuthorization().getOrThrow()
             ApiResult.success(
                 AuthorizationResult(
                     responseResult = resultModel,
-                    user = user.getOrNull()
+                    user = user
                 )
             )
         } catch (e: Exception) {
@@ -65,8 +65,8 @@ class AuthorizationApiImpl(
                 }
             }
             val finalUrl = response.request.url.toString()
-            if(finalUrl == "https://ficbook.net/login") throw(
-                IOException("User not authorized")
+            if(finalUrl == FICBOOK_LOGIN_LINK) throw(
+                Exception("User not authorized")
             )
             val body: String = response.body.stringOrThrow()
             val document = Jsoup.parse(body)

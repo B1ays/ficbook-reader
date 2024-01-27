@@ -2,20 +2,16 @@ package ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.value.MutableValue
-import com.arkivanov.decompose.value.Value
-import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.*
-import ru.blays.ficbookReader.shared.ui.profileComponents.DefaultUserLogInComponent
-import ru.blays.ficbookReader.shared.ui.profileComponents.UserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserLogInComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.implementation.DefaultUserLogInComponent
 
 class DefaultMainScreenComponent private constructor(
     componentContext: ComponentContext,
@@ -100,15 +96,7 @@ class DefaultMainScreenComponent private constructor(
         )
     )
 
-    private val _state: MutableValue<MainScreenComponent.State> = MutableValue(
-        MainScreenComponent.State(
-            user = authorizationRepository.currentUser.value,
-            authorized = authorizationRepository.authorized.value
-        )
-    )
-
-    override val state: Value<MainScreenComponent.State>
-        get() = _state
+    override val state = authorizationRepository.currentUserModel
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -209,23 +197,6 @@ class DefaultMainScreenComponent private constructor(
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }
-        coroutineScope.launch {
-            authorizationRepository.currentUser.collect { newUser ->
-                _state.update {
-                    it.copy(user = newUser)
-                }
-            }
-        }
-        coroutineScope.launch {
-            authorizationRepository.authorized.collect { authorized ->
-                _state.update {
-                    it.copy(authorized = authorized)
-                }
-                if(authorized) {
-                    _feedComponent.refresh()
-                    _collectionsComponent.refresh()
-                }
-            }
-        }
+
     }
 }

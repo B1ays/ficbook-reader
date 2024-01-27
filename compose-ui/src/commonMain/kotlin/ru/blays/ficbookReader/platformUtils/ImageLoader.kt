@@ -3,15 +3,14 @@ package ru.blays.ficbookReader.platformUtils
 import coil3.ComponentRegistry
 import coil3.ImageLoader
 import coil3.PlatformContext
-import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
-import coil3.fetch.NetworkFetcher
 import coil3.memory.MemoryCache
+import coil3.network.NetworkFetcher
 import coil3.request.crossfade
 import coil3.util.DebugLogger
+import kotlinx.coroutines.Dispatchers
 import okio.FileSystem
 
-@OptIn(ExperimentalCoilApi::class)
 fun createImageLoader(
     context: PlatformContext,
     debug: Boolean = false,
@@ -30,6 +29,7 @@ fun createImageLoader(
         .diskCache(::newDiskCache)
         // Show a short crossfade when loading images asynchronously.
         .crossfade(true)
+        .dispatcher(Dispatchers.IO)
         // Enable logging if this is a debug build.
         .apply {
             if (debug) {

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
-import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileRootComponent
 import ru.blays.ficbookReader.utils.LocalStackAnimator
 
 @Composable
@@ -20,7 +20,8 @@ fun UserProfileRootContent(component: UserProfileRootComponent) {
             val child = it.instance
         ) {
             is UserProfileRootComponent.Child.Profile -> UserProfileContent(child.component)
-            is UserProfileRootComponent.Child.LogIn -> LogInContent(child.component)
+            is UserProfileRootComponent.Child.AddAccount -> LogInContent(child.component)
+            is UserProfileRootComponent.Child.AccountManaging -> AccountsManagingContent(child.component)
         }
     }
 }

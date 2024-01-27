@@ -8,12 +8,12 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
+import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
+import ru.blays.ficbookReader.shared.preferences.SettingsKeys
+import ru.blays.ficbookReader.shared.preferences.settings
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.DefaultCollectionFanficsListComponent
@@ -21,12 +21,14 @@ import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListC
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.implementation.DefaultFanficPageComponent
+import ru.blays.ficbookReader.shared.ui.landingScreenComponent.DefaultLandingScreenComponent
+import ru.blays.ficbookReader.shared.ui.landingScreenComponent.LandingScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.implemenatation.DefaultMainScreenComponent
 import ru.blays.ficbookReader.shared.ui.notificationComponents.DefaultNotificationComponent
 import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationComponent
-import ru.blays.ficbookReader.shared.ui.profileComponents.DefaultUserProfileRootComponent
-import ru.blays.ficbookReader.shared.ui.profileComponents.UserProfileRootComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileRootComponent
+import ru.blays.ficbookReader.shared.ui.profileComponents.implementation.DefaultUserProfileRootComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.implementation.DefaultSearchComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.implementation.DefaultSettingsMainComponent
@@ -39,9 +41,6 @@ import ru.blays.ficbookapi.UrlProcessor.UrlProcessor
 import ru.blays.ficbookapi.UrlProcessor.UrlProcessor.analyzeUrl
 import ru.blays.ficbookapi.UrlProcessor.getUrlForHref
 import ru.blays.ficbookapi.data.SectionWithQuery
-import ru.blays.ficbookapi.ficbookExtensions.ficbookUrl
-import ru.blays.ficbookapi.okHttpDsl.href
-import ru.blays.ficbookapi.okHttpDsl.post
 
 class DefaultRootComponent private constructor(
     private val componentContext: ComponentContext,
@@ -62,6 +61,7 @@ class DefaultRootComponent private constructor(
     ) -> MainScreenComponent,
     private val userProfile: (
         componentContext: ComponentContext,
+        initialConfiguration: UserProfileRootComponent.Config,
         output: (UserProfileRootComponent.Output) -> Unit
     ) -> UserProfileRootComponent
 ): RootComponent, ComponentContext by componentContext {
@@ -91,9 +91,10 @@ class DefaultRootComponent private constructor(
                 output = output
             )
         },
-        userProfile = { componentContext, output ->
+        userProfile = { componentContext, initialConfiguration, output ->
             DefaultUserProfileRootComponent(
                 componentContext = componentContext,
+                initialConfiguration = initialConfiguration,
                 output = output
             )
         }
@@ -106,10 +107,14 @@ class DefaultRootComponent private constructor(
         deepLink = null
     )
 
+    private val authRepo: IAuthorizationRepo by getKoin().inject()
+
     private val navigation = StackNavigation<RootComponent.Config>()
     override val childStack: Value<ChildStack<*, RootComponent.Child>> = childStack(
         source = navigation,
-        initialConfiguration = getConfigurationForLink(deepLink),
+        initialStack = {
+            createInitialConfiguration(deepLink)
+        },
         serializer = RootComponent.Config.serializer(),
         childFactory = ::childFactory,
         handleBackButton = true
@@ -135,10 +140,13 @@ class DefaultRootComponent private constructor(
         }
     }
 
-    private fun childFactory(configuration: RootComponent.Config, componentContext: ComponentContext): RootComponent.Child {
+    private fun childFactory(
+        configuration: RootComponent.Config,
+        componentContext: ComponentContext
+    ): RootComponent.Child {
         return when(configuration) {
             is RootComponent.Config.UserProfile -> RootComponent.Child.UserProfile(
-                userProfile(componentContext, ::onUserProfileOutput)
+                userProfile(componentContext, configuration.initialConfiguration, ::onUserProfileOutput)
             )
             is RootComponent.Config.Main -> RootComponent.Child.Main(
                 main(componentContext, ::onMainOutput)
@@ -194,6 +202,14 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
+            RootComponent.Config.Landing -> {
+                RootComponent.Child.Landing(
+                    DefaultLandingScreenComponent(
+                        componentContext = componentContext,
+                        onOutput = ::onLandingOutput
+                    )
+                )
+            }
         }
     }
 
@@ -226,7 +242,7 @@ class DefaultRootComponent private constructor(
     private fun onMainOutput(output: MainScreenComponent.Output) {
         when(output) {
             is MainScreenComponent.Output.UserProfile -> navigation.push(
-                RootComponent.Config.UserProfile
+                RootComponent.Config.UserProfile(UserProfileRootComponent.Config.Profile)
             )
             is MainScreenComponent.Output.OpenFanficPage -> {
                 navigation.push(
@@ -287,6 +303,11 @@ class DefaultRootComponent private constructor(
                     href = output.userHref
                 )
             )
+            is UserProfileRootComponent.Output.OpenMainScreen -> {
+                navigation.navigate {
+                    listOf(RootComponent.Config.Main)
+                }
+            }
         }
     }
 
@@ -374,22 +395,44 @@ class DefaultRootComponent private constructor(
         }
     }
 
-    private fun getConfigurationForLink(link: String?): RootComponent.Config {
-        if(link == null) return RootComponent.Config.Main
+    private fun onLandingOutput(output: LandingScreenComponent.Output) {
+        when(output) {
+            LandingScreenComponent.Output.Close -> {
+                navigation.navigate { listOf(RootComponent.Config.Main) }
+            }
+            LandingScreenComponent.Output.OpenLogInScreen -> {
+                navigation.push(
+                    RootComponent.Config.UserProfile(UserProfileRootComponent.Config.LogIn)
+                )
+            }
+        }
+    }
+
+    private fun createInitialConfiguration(link: String?): List<RootComponent.Config> {
+        val firstStart = checkFirstStart()
+        if(firstStart) {
+            return listOf(RootComponent.Config.Landing)
+        }
+        if(!authRepo.anonymousMode && !authRepo.hasSavedAccount) {
+            return listOf(
+                RootComponent.Config.Main,
+                RootComponent.Config.UserProfile(UserProfileRootComponent.Config.Profile)
+            )
+        }
         return when(
-            val analyzeResult = analyzeUrl(link)
+            val analyzeResult = link?.let { analyzeUrl(it) }
         ) {
             is UrlProcessor.FicbookUrlAnalyzeResult.FanficsList -> {
-                RootComponent.Config.FanficsList(analyzeResult.sectionWithQuery)
+                listOf(RootComponent.Config.Main, RootComponent.Config.FanficsList(analyzeResult.sectionWithQuery))
             }
             is UrlProcessor.FicbookUrlAnalyzeResult.Fanfic -> {
-                RootComponent.Config.FanficPage(analyzeResult.href)
+                listOf(RootComponent.Config.Main, RootComponent.Config.FanficPage(analyzeResult.href))
             }
             is UrlProcessor.FicbookUrlAnalyzeResult.User -> {
-                RootComponent.Config.AuthorProfile(analyzeResult.href)
+                listOf(RootComponent.Config.Main, RootComponent.Config.AuthorProfile(analyzeResult.href))
             }
             else -> {
-                RootComponent.Config.Main
+                listOf(RootComponent.Config.Main)
             }
         }
     }
@@ -425,5 +468,12 @@ class DefaultRootComponent private constructor(
                 println("Error, link: $link is incorrect")
             }
         }
+    }
+
+    private fun checkFirstStart(): Boolean {
+        return settings.getBoolean(
+            key = SettingsKeys.FIRST_START_KEY,
+            defaultValue = true
+        )
     }
 }

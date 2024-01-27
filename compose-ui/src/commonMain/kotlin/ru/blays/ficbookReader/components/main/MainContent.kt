@@ -22,7 +22,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
@@ -35,6 +34,7 @@ import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -233,7 +233,7 @@ private fun DrawerLandscape(
     modifier: Modifier = Modifier,
     component: MainScreenComponent
 ) {
-    val state by component.state.subscribeAsState()
+    val currentUser by component.state.collectAsState()
     val scrollState = rememberScrollState()
     ModalDrawerSheet(
         modifier = modifier
@@ -245,10 +245,10 @@ private fun DrawerLandscape(
             verticalAlignment = Alignment.CenterVertically
         ) {
             UserIconButton(component)
-            state.user?.name?.let { userName ->
+            currentUser?.let {
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
-                    text = userName,
+                    text = it.name,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
@@ -303,8 +303,6 @@ private fun DrawerContent(
     component: MainScreenComponent,
     modifier: Modifier = Modifier
 ) {
-    val state by component.state.subscribeAsState()
-    val isAuthorized = remember(state) { state.authorized }
     val userSections = userSections
 
     fun navigateToSection(section: SectionWithQuery) {
@@ -316,101 +314,99 @@ private fun DrawerContent(
     Column(
         modifier = modifier
     ) {
-        if(isAuthorized) {
-            Text(
-                text = "Личные",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.headlineSmall
-            )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-            val favouritesSection = remember { userSections.favourites }
-            NavigationDrawerItem(
-                label = {
-                    Text(text = favouritesSection.name)
-                },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter =  painterResource(Res.image.ic_star_filled),
-                        contentDescription = "Иконка звезда"
-                    )
-                },
-                selected = false,
-                onClick = {
-                    navigateToSection(favouritesSection)
-                }
-            )
-            val likedSection = remember { userSections.liked }
-            NavigationDrawerItem(
-                label = {
-                    Text(text = likedSection.name)
-                },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter =  painterResource(Res.image.ic_like_filled),
-                        contentDescription = "Иконка лайк"
-                    )
-                },
-                selected = false,
-                onClick = {
-                    navigateToSection(likedSection)
-                }
-            )
-            val readedSection = remember { userSections.readed }
-            NavigationDrawerItem(
-                label = {
-                    Text(text = readedSection.name)
-                },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter =  painterResource(Res.image.ic_bookmark_filled),
-                        contentDescription = "Иконка книга с закладкой"
-                    )
-                },
-                selected = false,
-                onClick = {
-                    navigateToSection(readedSection)
-                }
-            )
-            val followSection = remember { userSections.follow }
-            NavigationDrawerItem(
-                label = {
-                    Text(text = followSection.name)
-                },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter = painterResource(Res.image.ic_star_filled),
-                        contentDescription = "Иконка звезда"
-                    )
-                },
-                selected = false,
-                onClick = {
-                    navigateToSection(followSection)
-                }
-            )
-            val visitedSection = remember { userSections.visited }
-            NavigationDrawerItem(
-                label = {
-                    Text(text = visitedSection.name)
-                },
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter =  painterResource(Res.image.ic_eye_filled),
-                        contentDescription = "Иконка глаз"
-                    )
-                },
-                selected = false,
-                onClick = {
-                    navigateToSection(visitedSection)
-                }
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-        }
+        Text(
+            text = "Личные",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.headlineSmall
+        )
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+        val favouritesSection = remember { userSections.favourites }
+        NavigationDrawerItem(
+            label = {
+                Text(text = favouritesSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter =  painterResource(Res.image.ic_star_filled),
+                    contentDescription = "Иконка звезда"
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(favouritesSection)
+            }
+        )
+        val likedSection = remember { userSections.liked }
+        NavigationDrawerItem(
+            label = {
+                Text(text = likedSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter =  painterResource(Res.image.ic_like_filled),
+                    contentDescription = "Иконка лайк"
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(likedSection)
+            }
+        )
+        val readedSection = remember { userSections.readed }
+        NavigationDrawerItem(
+            label = {
+                Text(text = readedSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter =  painterResource(Res.image.ic_bookmark_filled),
+                    contentDescription = "Иконка книга с закладкой"
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(readedSection)
+            }
+        )
+        val followSection = remember { userSections.follow }
+        NavigationDrawerItem(
+            label = {
+                Text(text = followSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.image.ic_star_filled),
+                    contentDescription = "Иконка звезда"
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(followSection)
+            }
+        )
+        val visitedSection = remember { userSections.visited }
+        NavigationDrawerItem(
+            label = {
+                Text(text = visitedSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter =  painterResource(Res.image.ic_eye_filled),
+                    contentDescription = "Иконка глаз"
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(visitedSection)
+            }
+        )
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Стандартные",
             maxLines = 1,
@@ -499,29 +495,27 @@ private fun DrawerContent(
 fun UserIconButton(
     component: MainScreenComponent
 ) {
-    val state by component.state.subscribeAsState()
+    val currentUser by component.state.collectAsState()
     IconButton(
         onClick = {
             component.onOutput(MainScreenComponent.Output.UserProfile)
         }
     ) {
-        if (state.authorized && state.user != null) {
+        currentUser?.let {
             AsyncImage(
-                model = state.user!!.avatarUrl,
+                model = File(it.avatarPath),
                 contentDescription = "Иконка пользователя",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(40.dp)
                     .padding(2.dp)
             )
-        } else {
-            Icon(
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(2.dp),
-                painter = painterResource(Res.image.ic_user),
-                contentDescription = "Заполнитель иконки пользователя"
-            )
-        }
+        } ?: Icon(
+            modifier = Modifier
+                .size(40.dp)
+                .padding(2.dp),
+            painter = painterResource(Res.image.ic_user),
+            contentDescription = "Заполнитель иконки пользователя"
+        )
     }
 }

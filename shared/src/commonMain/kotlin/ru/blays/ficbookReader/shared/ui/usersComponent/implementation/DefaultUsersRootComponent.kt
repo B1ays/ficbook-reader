@@ -23,7 +23,7 @@ class DefaultUsersRootComponent(
         source = navigation,
         initialPages = {
             Pages(
-                items = if(authorizationRepo.authorized.value) listOf(
+                items = if(authorizationRepo.currentUserModel.value != null) listOf(
                     UsersRootComponent.TabConfig.FavouriteAuthors,
                     UsersRootComponent.TabConfig.PopularAuthors,
                     UsersRootComponent.TabConfig.SearchAuthors

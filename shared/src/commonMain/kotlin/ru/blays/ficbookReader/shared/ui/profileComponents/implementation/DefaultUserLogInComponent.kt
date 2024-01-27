@@ -1,4 +1,4 @@
-package ru.blays.ficbookReader.shared.ui.profileComponents
+package ru.blays.ficbookReader.shared.ui.profileComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
@@ -9,6 +9,9 @@ import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent
 import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
+import ru.blays.ficbookReader.shared.preferences.SettingsKeys
+import ru.blays.ficbookReader.shared.preferences.settings
+import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserLogInComponent
 import ru.blays.ficbookapi.dataModels.LoginModel
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -29,7 +32,6 @@ class DefaultUserLogInComponent(
                 login = state.value.login,
                 password = state.value.password
             )
-            is UserLogInComponent.Intent.LogOut -> logOut()
             is UserLogInComponent.Intent.LoginChanged -> {
                 _state.update {
                     it.copy(
@@ -52,7 +54,7 @@ class DefaultUserLogInComponent(
         password: String
     ) {
         coroutineScope.launch {
-            val result = repository.logIn(
+            val result = repository.addNewUser(
                 LoginModel(
                     login = login,
                     password = password,
@@ -70,9 +72,13 @@ class DefaultUserLogInComponent(
                 }
                 is ApiResult.Success -> {
                     if(result.value.responseResult.success) {
+                        settings.putBoolean(
+                            key = SettingsKeys.FIRST_START_KEY,
+                            value = false
+                        )
                         runOnUiThread {
                             onOutput(
-                                UserLogInComponent.Output.NavigateBack
+                                UserLogInComponent.Output.OpenMainScreen
                             )
                         }
                     } else {
@@ -88,9 +94,6 @@ class DefaultUserLogInComponent(
         }
     }
 
-    private fun logOut() = coroutineScope.launch {
-        repository.logOut()
-    }
 
     override fun onOutput(output: UserLogInComponent.Output) {
         this.output.invoke(output)
