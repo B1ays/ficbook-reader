@@ -20,6 +20,8 @@ import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficsListRepo
 import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
+import ru.blays.ficbookReader.shared.ui.snackbarStateHost.SnackbarHost
+import ru.blays.ficbookReader.shared.ui.snackbarStateHost.SnackbarMessageType
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -162,6 +164,12 @@ class DefaultFanficsListComponent(
             key = ISettingsRepository.stringKey(SettingsKeys.FEED_SECTION_KEY),
             value = Json.encodeToString(section)
         )
+        coroutineScope.launch {
+            SnackbarHost.showMessage(
+                message = "Секция ${section.name} установлена как лента",
+                infoType = SnackbarMessageType.INFO
+            )
+        }
     }
 }
 

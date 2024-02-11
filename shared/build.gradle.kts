@@ -29,6 +29,7 @@ kotlin {
                 // Compose
                 implementation(compose.runtime)
                 implementation(compose.ui)
+                implementation(compose.material3)
 
                 // kotlinX
                 implementation(libs.kotlinx.serialization.json)

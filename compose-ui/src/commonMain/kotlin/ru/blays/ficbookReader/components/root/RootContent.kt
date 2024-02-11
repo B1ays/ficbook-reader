@@ -1,8 +1,10 @@
 package ru.blays.ficbookReader.components.root
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
@@ -20,6 +22,8 @@ import ru.blays.ficbookReader.components.userProfile.UserProfileRootContent
 import ru.blays.ficbookReader.components.users.UsersRootContent
 import ru.blays.ficbookReader.shared.platformUtils.blurSupported
 import ru.blays.ficbookReader.shared.ui.RootComponent.RootComponent
+import ru.blays.ficbookReader.shared.ui.snackbarStateHost.DefaultSnackbarVisuals
+import ru.blays.ficbookReader.shared.ui.snackbarStateHost.SnackbarHost.snackbarHostState
 import ru.blays.ficbookReader.utils.BlurConfig
 import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
 import ru.blays.ficbookReader.utils.LocalStackAnimator
@@ -36,8 +40,31 @@ fun RootContent(component: RootComponent) {
         )
     }
 
-    Surface(
-        color = MaterialTheme.colorScheme.background
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                when(
+                    val visuals = data.visuals
+                ) {
+                    is DefaultSnackbarVisuals.SnackbarVisualsWithError -> {
+                        SnackbarVisualsWithError(
+                            message = visuals.message,
+                            onDismiss = data::dismiss
+                        )
+                    }
+                    is DefaultSnackbarVisuals.SnackbarVisualsWithInfo -> {
+                        SnackbarVisualsWithInfo(
+                            message = visuals.message
+                        )
+                    }
+                    else -> {
+                        Snackbar(data)
+                    }
+                }
+            }
+        }
     ) {
         CompositionLocalProvider(
             LocalGlassEffectConfig provides BlurConfig(
@@ -67,4 +94,38 @@ fun RootContent(component: RootComponent) {
             }
         }
     }
+}
+
+
+@Composable
+fun SnackbarVisualsWithError(
+    message: String,
+    onDismiss: () -> Unit
+) = Snackbar(
+    modifier = Modifier.padding(12.dp),
+    containerColor = MaterialTheme.colorScheme.errorContainer,
+    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+    action = {
+        TextButton(onClick = onDismiss) {
+            Text("Ок")
+        }
+    }
+) {
+    Text(
+        text = message,
+        maxLines = 2
+    )
+}
+
+
+@Composable
+fun SnackbarVisualsWithInfo(
+    message: String
+) = Snackbar(
+    modifier = Modifier.padding(12.dp),
+) {
+    Text(
+        text = message,
+        maxLines = 2
+    )
 }
