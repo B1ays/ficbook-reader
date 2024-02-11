@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.compose.Res
 import ru.blays.ficbookReader.ui_components.CustomButton.BackgroundedIcon
+import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
@@ -265,6 +266,79 @@ fun SettingsCheckboxWithTitle(
             onCheckedChange = action,
             enabled = enabled
         )
+    }
+}
+
+@Composable
+fun SettingsSwitchWithTitle(
+    title: String,
+    state: Boolean,
+    enabled: Boolean = true,
+    action: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(
+                vertical = 2.dp,
+                horizontal = 12.dp
+            )
+            .fillMaxWidth()
+            .toggleable(
+                value = state,
+                onValueChange = action,
+                enabled = enabled
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+    )
+    {
+        Text(
+            modifier = Modifier.weight(1F),
+            text = title
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Switch(
+            checked = state,
+            onCheckedChange = null,
+            enabled = enabled
+        )
+    }
+}
+
+@Composable
+fun SettingsSliderWithTitle(
+    title: String,
+    enabled: Boolean,
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float> = Float.MIN_VALUE..Float.MAX_VALUE,
+    onValueChange: (Float) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .padding(
+                vertical = 2.dp,
+                horizontal = 12.dp
+            )
+            .fillMaxWidth()
+    ) {
+        Text(text = title)
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Slider(
+                value = value,
+                valueRange = valueRange,
+                onValueChange = onValueChange,
+                enabled = enabled,
+                colors = SliderDefaults.colors(
+                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.2F)
+                ),
+                modifier = Modifier.weight(1F),
+            )
+            Text(
+                text = String.format("%.2f", value)
+            )
+        }
+
     }
 }
 

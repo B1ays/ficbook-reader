@@ -2,7 +2,9 @@ package ru.blays.ficbookReader.shared.ui.RootComponent
 
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
+import ru.blays.ficbookReader.shared.preferences.json.GlassEffectConfig
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.CollectionFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
@@ -23,6 +25,8 @@ interface RootComponent {
     val childStack: Value<ChildStack<*, Child>>
 
     val themeComponent: ThemeComponent
+
+    val glassEffectConfig: StateFlow<GlassEffectConfig>
 
     sealed class Intent {
         data class NewDeepLink(val deepLink: String): Intent()

@@ -8,6 +8,12 @@ object SettingsKeys {
     const val ACCENT_INDEX_KEY = "accent_index"
     const val DYNAMIC_COLORS_KEY = "dynamic_colors"
 
+    // Glass effect settings
+    const val GLASS_EFFECT_ENABLED_KEY = "glass_effect"
+    const val GLASS_EFFECT_ALPHA_KEY = "glass_effect_alpha"
+    const val GLASS_EFFECT_RADIUS_KEY = "glass_effect_blur_radius"
+    const val GLASS_EFFECT_NOISE_FACTOR_KEY = "glass_effect_noise_factor"
+
     // Feed
     const val FEED_SECTION_KEY = "feed_section"
 

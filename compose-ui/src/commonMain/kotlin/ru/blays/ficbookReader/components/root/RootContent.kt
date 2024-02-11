@@ -1,15 +1,12 @@
 package ru.blays.ficbookReader.components.root
 
-import androidx.compose.animation.core.spring
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.extensions.compose.stack.animation.fade
-import com.arkivanov.decompose.extensions.compose.stack.animation.plus
-import com.arkivanov.decompose.extensions.compose.stack.animation.scale
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
+import dev.chrisbanes.haze.HazeStyle
 import ru.blays.ficbookReader.components.authorProfile.AuthorProfileContent
 import ru.blays.ficbookReader.components.collectionContent.CollectionContent
 import ru.blays.ficbookReader.components.fanficPage.FanficPageContent
@@ -21,21 +18,36 @@ import ru.blays.ficbookReader.components.searchContent.SearchContent
 import ru.blays.ficbookReader.components.settings.SettingsContent
 import ru.blays.ficbookReader.components.userProfile.UserProfileRootContent
 import ru.blays.ficbookReader.components.users.UsersRootContent
+import ru.blays.ficbookReader.shared.platformUtils.blurSupported
 import ru.blays.ficbookReader.shared.ui.RootComponent.RootComponent
+import ru.blays.ficbookReader.utils.BlurConfig
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
 import ru.blays.ficbookReader.utils.LocalStackAnimator
 
 @Composable
 fun RootContent(component: RootComponent) {
+    val glassEffectConfig by component.glassEffectConfig.collectAsState()
+    val backgroundColor = MaterialTheme.colorScheme.background
+    val hazeStyle = remember(glassEffectConfig) {
+        HazeStyle(
+            tint = backgroundColor.copy(alpha = glassEffectConfig.alpha),
+            blurRadius = glassEffectConfig.blurRadius.dp,
+            noiseFactor = glassEffectConfig.noiseFactor
+        )
+    }
+
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
-        val animator = fade(spring()) + scale()
         CompositionLocalProvider(
-            LocalStackAnimator provides animator
+            LocalGlassEffectConfig provides BlurConfig(
+                blurEnabled = blurSupported && glassEffectConfig.enabled,
+                style = hazeStyle
+            )
         ) {
             Children(
                 stack = component.childStack,
-                animation = stackAnimation(animator)
+                animation = stackAnimation(LocalStackAnimator.current)
             ) {
                 when(
                     val child = it.instance

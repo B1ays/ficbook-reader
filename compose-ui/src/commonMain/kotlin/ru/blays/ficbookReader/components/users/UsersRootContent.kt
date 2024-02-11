@@ -25,7 +25,7 @@ import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComp
 import ru.blays.ficbookReader.ui_components.decomposePager.Pages
 import ru.blays.ficbookReader.values.Zero
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Composable
@@ -41,7 +41,7 @@ fun UsersRootContent(component: UsersRootComponent) {
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {

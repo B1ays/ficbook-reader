@@ -20,25 +20,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
-import com.moriatsushi.insetsx.systemBarsPadding
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficCard
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.blays.ficbookReader.values.defaultScrollbarPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
-import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @Composable
 fun FanficsListContent(
     component: FanficsListComponent,
+    contentPadding: PaddingValues? = null,
     modifier: Modifier = Modifier
 ) {
     val state by component.state.subscribeAsState()
@@ -49,7 +53,6 @@ fun FanficsListContent(
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isLoading,
         onRefresh = {
-            println("onRefresh")
             component.sendIntent(FanficsListComponent.Intent.Refresh)
         }
     )
@@ -66,17 +69,17 @@ fun FanficsListContent(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
     ) {
         LazyColumn(
             modifier = Modifier
                 .pullRefresh(pullRefreshState)
-                .then(modifier)
                 .fillMaxSize()
                 .padding(DefaultPadding.CardDefaultPadding)
                 .padding(end = defaultScrollbarPadding),
             state = lazyListState,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = contentPadding ?: PaddingValues(0.dp)
         ) {
             items(
                 items = list,
@@ -147,11 +150,11 @@ fun FanficsListScreenContent(
     component: FanficsListComponent
 ) {
     val state by component.state.subscribeAsState()
-    val scrollBehavior = rememberToolbarScrollBehavior()
+    val hazeState = remember { HazeState() }
+    val blurConfig = LocalGlassEffectConfig.current
     Scaffold(
-        modifier = Modifier.systemBarsPadding(),
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -204,15 +207,30 @@ fun FanficsListScreenContent(
                     }
                 },
                 collapsingTitle = CollapsingTitle.small(state.section.name),
-                scrollBehavior = scrollBehavior
+                insets = WindowInsets.statusBars,
+                containerColor = if(blurConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = blurConfig.style
+                    )
+                }
             )
         }
     ) { padding ->
         FanficsListContent(
             component = component,
-            modifier = Modifier
-                .padding(top = padding.calculateTopPadding())
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
+            contentPadding = padding,
+            modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                haze(
+                    state = hazeState,
+                    style = blurConfig.style
+                )
+            }
         )
     }
 }

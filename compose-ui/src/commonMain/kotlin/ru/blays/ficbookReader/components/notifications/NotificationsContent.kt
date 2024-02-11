@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
-import com.moriatsushi.insetsx.systemBarsPadding
 import io.github.skeptick.libres.compose.painterResource
 import ru.blays.ficbookReader.shared.data.dto.NotificationModelStable
 import ru.blays.ficbookReader.shared.data.dto.NotificationType
@@ -31,7 +30,7 @@ import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @Composable
 fun NotificationsContent(component: NotificationComponent) {
@@ -47,9 +46,7 @@ fun NotificationsContent(component: NotificationComponent) {
         ConfirmDialogContent(slotComponent)
     }
 
-    BoxWithConstraints(
-        modifier = Modifier.systemBarsPadding(),
-    ) {
+    BoxWithConstraints {
         if(maxWidth > 700.dp) {
             LandscapeContent(
                 component = component,
@@ -81,7 +78,7 @@ private fun LandscapeContent(
 
     Scaffold(
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -97,6 +94,7 @@ private fun LandscapeContent(
                     }
                 },
                 collapsingTitle = CollapsingTitle.large("Уведомления"),
+                insets = WindowInsets.statusBars
             )
         }
     ) { padding ->
@@ -179,107 +177,116 @@ fun PortraitContent(
 
     Scaffold(
         topBar = {
-            CollapsingsToolbar(
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            component.onOutput(
-                                NotificationComponent.Output.NavigateBack
-                            )
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
-                        )
-                    }
-                },
-                collapsingTitle = null,
-                centralContent = {
-                    var menuOpened by rememberSaveable { mutableStateOf(false) }
-                    ExposedDropdownMenuBox(
-                        expanded = menuOpened,
-                        onExpandedChange = { menuOpened = it }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor(),
-                        ) {
-                            Text(
-                                text = getCategoryName(state.selectedCategory),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.weight(0.8F, false).animateContentSize(spring()),
-                            )
-                            Spacer(modifier = Modifier.requiredWidth(6.dp))
-                            Icon(
-                                painter = painterResource(Res.image.ic_arrow_down),
-                                contentDescription = "Стрелка вниз",
-                                modifier = Modifier.size(20.dp).weight(0.2F, false),
-                            )
-                        }
-                        ExposedDropdownMenu(
-                            expanded = menuOpened,
-                            onDismissRequest = { menuOpened = false }
-                        ) {
-                            state.availableCategories.forEach { category ->
-                                DropdownMenuItem(
-                                    text = { Text(getCategoryName(category.type)) },
-                                    trailingIcon = {
-                                        Badge(
-                                            containerColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.65f),
-                                            contentColor = MaterialTheme.colorScheme.onSurface
-                                        ) {
-                                            Text("${category.notificationsCount}")
-                                        }
-                                    },
-                                    onClick = {
-                                        component.sendIntent(
-                                            NotificationComponent.Intent.SelectCategory(category.type)
-                                        )
-                                        menuOpened = false
-                                    }
+            Column {
+                CollapsingToolbar(
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                component.onOutput(
+                                    NotificationComponent.Output.NavigateBack
                                 )
                             }
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.image.ic_arrow_back),
+                                contentDescription = "Стрелка назад"
+                            )
                         }
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(top = padding.calculateTopPadding())
-                .padding(DefaultPadding.CardDefaultPadding),
-        ) {
-            Actions(
-                onReadAll = {
-                    component.sendIntent(
-                        NotificationComponent.Intent.ReadAll
-                    )
-                },
-                onDeleteAll = {
-                    component.sendIntent(
-                        NotificationComponent.Intent.DeleteAll
-                    )
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
-            LazyColumn(
-                state = lazyListState
-            ) {
-                items(state.list) { notification ->
-                    NotificationItem(
-                        notification = notification
-                    ) {
-                        component.onOutput(
-                            NotificationComponent.Output.OpenNotificationHref(notification.href)
+                    },
+                    centralContent = {
+                        var menuOpened by rememberSaveable { mutableStateOf(false) }
+                        ExposedDropdownMenuBox(
+                            expanded = menuOpened,
+                            onExpandedChange = { menuOpened = it }
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor(),
+                            ) {
+                                Text(
+                                    text = getCategoryName(state.selectedCategory),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.weight(0.8F, false).animateContentSize(spring()),
+                                )
+                                Spacer(modifier = Modifier.requiredWidth(6.dp))
+                                Icon(
+                                    painter = painterResource(Res.image.ic_arrow_down),
+                                    contentDescription = "Стрелка вниз",
+                                    modifier = Modifier.size(20.dp).weight(0.2F, false),
+                                )
+                            }
+                            ExposedDropdownMenu(
+                                expanded = menuOpened,
+                                onDismissRequest = { menuOpened = false }
+                            ) {
+                                state.availableCategories.forEach { category ->
+                                    DropdownMenuItem(
+                                        text = { Text(getCategoryName(category.type)) },
+                                        trailingIcon = {
+                                            Badge(
+                                                containerColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.65f),
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                            ) {
+                                                Text("${category.notificationsCount}")
+                                            }
+                                        },
+                                        onClick = {
+                                            component.sendIntent(
+                                                NotificationComponent.Intent.SelectCategory(category.type)
+                                            )
+                                            menuOpened = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    collapsingTitle = null,
+                    insets = WindowInsets.statusBars
+                )
+                Actions(
+                    onReadAll = {
+                        component.sendIntent(
+                            NotificationComponent.Intent.ReadAll
                         )
-                    }
-                    Spacer(modifier = Modifier.requiredHeight(6.dp))
+                    },
+                    onDeleteAll = {
+                        component.sendIntent(
+                            NotificationComponent.Intent.DeleteAll
+                        )
+                    },
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.surface
+                        )
+                        .padding(DefaultPadding.CardDefaultPadding),
+                )
+                HorizontalDivider(
+                    modifier = Modifier
+                        .background(color = MaterialTheme.colorScheme.surface)
+                        .padding(vertical = 6.dp)
+                )
+            }
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) { padding ->
+        LazyColumn(
+            state = lazyListState,
+            contentPadding = padding,
+        ) {
+            items(state.list) { notification ->
+                NotificationItem(
+                    notification = notification,
+                    modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
+                ) {
+                    component.onOutput(
+                        NotificationComponent.Output.OpenNotificationHref(notification.href)
+                    )
                 }
+                Spacer(modifier = Modifier.requiredHeight(6.dp))
             }
         }
     }

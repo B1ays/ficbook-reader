@@ -28,7 +28,7 @@ import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserLogInC
 import ru.blays.ficbookReader.ui_components.AutofillTextField.AutofillTextField
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -79,7 +79,7 @@ fun LogInContent(component: UserLogInComponent) {
             .systemBarsPadding()
             .fillMaxSize(),
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {

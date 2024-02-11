@@ -7,6 +7,12 @@ interface SettingsMainComponent {
     val dynamicColorsSetting: SettingsUnitComponent<Boolean>?
     val accentIndexSetting: SettingsUnitComponent<Int>
 
+    // Glass effect settings
+    val glassEffectEnabled: SettingsUnitComponent<Boolean>
+    val blurAlpha: SettingsUnitComponent<Float>
+    val blurRadius: SettingsUnitComponent<Float>
+    val blurNoiseFactor: SettingsUnitComponent<Float>
+
     val superfilterSetting: SettingsUnitComponent<String>
     val autoVoteSetting: SettingsUnitComponent<Boolean>
     val chromeCustomTabsSetting: SettingsUnitComponent<Boolean>?

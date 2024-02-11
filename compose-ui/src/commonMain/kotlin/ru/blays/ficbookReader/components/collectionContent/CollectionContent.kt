@@ -16,22 +16,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
-import com.moriatsushi.insetsx.systemBarsPadding
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import io.github.skeptick.libres.compose.painterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.CollectionFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue.Expanded
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue.PartiallyExpanded
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberSheetState
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @Composable
 fun CollectionContent(component: CollectionFanficsListComponent) {
-    BoxWithConstraints(
-        modifier = Modifier.systemBarsPadding(),
-    ) {
-        if(maxWidth > 500.dp) {
+    BoxWithConstraints {
+        if(maxWidth > 600.dp) {
             LandscapeContent(component)
         } else {
             PortraitContent(component)
@@ -42,13 +49,15 @@ fun CollectionContent(component: CollectionFanficsListComponent) {
 @Composable
 private fun LandscapeContent(component: CollectionFanficsListComponent) {
     val state by component.state.subscribeAsState()
-
     var sortParamsOpened by rememberSaveable { mutableStateOf(false) }
+
+    val glassEffectConfig = LocalGlassEffectConfig.current
+    val hazeState = remember { HazeState() }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -76,13 +85,30 @@ private fun LandscapeContent(component: CollectionFanficsListComponent) {
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.small(state.collectionName)
+                collapsingTitle = CollapsingTitle.small(state.collectionName),
+                containerColor = if(glassEffectConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                insets = WindowInsets.statusBars,
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                },
             )
         }
     ) { padding ->
         Box {
             FanficsListContent(
                 component = component.fanficsListComponent,
+                contentPadding = padding,
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    haze(state = hazeState)
+                }
             )
             AnimatedVisibility(
                 visible = sortParamsOpened,
@@ -95,7 +121,7 @@ private fun LandscapeContent(component: CollectionFanficsListComponent) {
                         shape = DrawerDefaults.shape
                     ),
             ) {
-                SortParamsBottomSheetContent(
+                SortParamContent(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxHeight()
@@ -112,22 +138,29 @@ private fun LandscapeContent(component: CollectionFanficsListComponent) {
 @Composable
 private fun PortraitContent(component: CollectionFanficsListComponent) {
     val state by component.state.subscribeAsState()
-    val bottomSheetState = rememberModalBottomSheetState(false)
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
+    val bottomSheetState = rememberSheetState(
+        skipPartiallyExpanded = false,
+        initialValue = PartiallyExpanded
+    )
+    val bottomSheetScaffoldState =
+        rememberBottomSheetScaffoldState(bottomSheetState)
     val coroutineScope = rememberCoroutineScope()
+
+    val glassEffectConfig = LocalGlassEffectConfig.current
+    val hazeState = remember { HazeState() }
 
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
         sheetPeekHeight = 0.dp,
         sheetContent = {
-            SortParamsBottomSheetContent(component = component) {
+            SortParamContent(component = component) {
                 coroutineScope.launch {
                     bottomSheetState.partialExpand()
                 }
             }
         },
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -146,7 +179,11 @@ private fun PortraitContent(component: CollectionFanficsListComponent) {
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
-                                bottomSheetState.expand()
+                                if(bottomSheetState.currentValue == Expanded) {
+                                    bottomSheetState.partialExpand()
+                                } else {
+                                    bottomSheetState.expand()
+                                }
                             }
                         }
                     ) {
@@ -157,20 +194,36 @@ private fun PortraitContent(component: CollectionFanficsListComponent) {
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.small(state.collectionName)
+                collapsingTitle = CollapsingTitle.small(state.collectionName),
+                containerColor = if(glassEffectConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                insets = WindowInsets.statusBars,
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                },
             )
         },
         scaffoldState = bottomSheetScaffoldState
     ) { padding ->
         FanficsListContent(
             component = component.fanficsListComponent,
-            modifier = Modifier.padding(top = padding.calculateTopPadding()),
+            contentPadding = padding,
+            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                haze(state = hazeState)
+            },
         )
     }
 }
 
 @Composable
-private fun SortParamsBottomSheetContent(
+private fun SortParamContent(
     modifier: Modifier = Modifier,
     component: CollectionFanficsListComponent,
     onDismissRequest: () -> Unit = {},

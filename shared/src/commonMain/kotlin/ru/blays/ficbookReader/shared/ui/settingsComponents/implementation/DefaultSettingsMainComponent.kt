@@ -5,6 +5,7 @@ import com.arkivanov.decompose.childContext
 import ru.blays.ficbookReader.shared.platformUtils.customTabsSupported
 import ru.blays.ficbookReader.shared.platformUtils.dynamicColorSupported
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
+import ru.blays.ficbookReader.shared.preferences.json.GlassEffectConfig
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsUnitComponent
@@ -36,6 +37,28 @@ class DefaultSettingsMainComponent(
         componentContext = childContext("accent_index_component"),
         key = ISettingsRepository.intKey(SettingsKeys.ACCENT_INDEX_KEY),
         defaultValue = 3
+    )
+
+    // Glass effect settings
+    override val glassEffectEnabled = DefaultSettingsUnitComponent(
+        componentContext = childContext(SettingsKeys.GLASS_EFFECT_ENABLED_KEY),
+        key = ISettingsRepository.booleanKey(SettingsKeys.GLASS_EFFECT_ENABLED_KEY),
+        defaultValue = GlassEffectConfig.DEFAULT.enabled
+    )
+    override val blurAlpha = DefaultSettingsUnitComponent(
+        componentContext = childContext(SettingsKeys.GLASS_EFFECT_ALPHA_KEY),
+        key = ISettingsRepository.floatKey(SettingsKeys.GLASS_EFFECT_ALPHA_KEY),
+        defaultValue = GlassEffectConfig.DEFAULT.alpha
+    )
+    override val blurRadius = DefaultSettingsUnitComponent(
+        componentContext = childContext(SettingsKeys.GLASS_EFFECT_RADIUS_KEY),
+        key = ISettingsRepository.floatKey(SettingsKeys.GLASS_EFFECT_RADIUS_KEY),
+        defaultValue = GlassEffectConfig.DEFAULT.blurRadius
+    )
+    override val blurNoiseFactor = DefaultSettingsUnitComponent(
+        componentContext = childContext(SettingsKeys.GLASS_EFFECT_NOISE_FACTOR_KEY),
+        key = ISettingsRepository.floatKey(SettingsKeys.GLASS_EFFECT_NOISE_FACTOR_KEY),
+        defaultValue = GlassEffectConfig.DEFAULT.noiseFactor
     )
 
     override val superfilterSetting = DefaultSettingsUnitComponent(

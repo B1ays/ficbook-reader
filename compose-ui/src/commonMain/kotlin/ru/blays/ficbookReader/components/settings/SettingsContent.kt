@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,18 +16,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.example.myapplication.compose.Res
-import com.moriatsushi.insetsx.systemBarsPadding
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsUnitComponent
 import ru.blays.ficbookReader.theme.defaultAccentColorsList
 import ru.blays.ficbookReader.ui_components.LazyItems.itemsGroupWithHeader
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @Composable
 fun SettingsContent(component: SettingsMainComponent) {
@@ -40,11 +47,12 @@ fun SettingsContent(component: SettingsMainComponent) {
             else -> 1F
         }
     }
+    val blurConfig = LocalGlassEffectConfig.current
+    val hazeState = remember { HazeState() }
 
     Scaffold(
-        modifier = Modifier.systemBarsPadding(),
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -59,21 +67,38 @@ fun SettingsContent(component: SettingsMainComponent) {
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Настройки")
+                collapsingTitle = CollapsingTitle.large("Настройки"),
+                containerColor = if(blurConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
+                insets = WindowInsets.statusBars,
+                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = blurConfig.style
+                    )
+                },
             )
         }
     ) { padding ->
         Box(
             modifier = Modifier
-                .padding(top = padding.calculateTopPadding())
-                .fillMaxSize(),
+                .fillMaxSize()
+                .thenIf(blurConfig.blurEnabled) {
+                    haze(
+                        state = hazeState
+                    )
+                },
             contentAlignment = Alignment.TopCenter
         ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(widthFill)
-                    .fillMaxHeight()
-                    .padding(DefaultPadding.CardDefaultPadding),
+                    .fillMaxHeight(),
+                contentPadding = padding,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 itemsGroupWithHeader("Тема и цвета") {
@@ -83,6 +108,12 @@ fun SettingsContent(component: SettingsMainComponent) {
                     }
                     AmoledThemeSetting(component.amoledSetting)
                     AccentColorSetting(component.accentIndexSetting)
+                    BlurSetting(
+                        enabledComponent = component.glassEffectEnabled,
+                        alphaComponent = component.blurAlpha,
+                        radiusComponent = component.blurRadius,
+                        noiseFactorComponent = component.blurNoiseFactor
+                    )
                 }
                 itemsGroupWithHeader("Общие") {
                     SuperfilterSetting(component.superfilterSetting)
@@ -305,4 +336,74 @@ fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
             SettingsUnitComponent.Intent.ChangeValue(newValue)
         )
     }
+}
+
+@Composable
+fun BlurSetting(
+    enabledComponent: SettingsUnitComponent<Boolean>,
+    alphaComponent: SettingsUnitComponent<Float>,
+    radiusComponent: SettingsUnitComponent<Float>,
+    noiseFactorComponent: SettingsUnitComponent<Float>
+) {
+    SettingsExpandableCard(
+        title = "Эффект стекла",
+        subtitle = "Включает эффект стекла для некоторых элементов интерфейса",
+        icon = painterResource(Res.image.ic_blur),
+    ) {
+        val enabled by enabledComponent.state.collectAsState()
+
+        SettingsSwitchWithTitle(
+            title = "Включено",
+            state = enabled,
+            action = { newValue ->
+                enabledComponent.onIntent(
+                    SettingsUnitComponent.Intent.ChangeValue(newValue)
+                )
+            }
+        )
+        Spacer(modifier = Modifier.height(3.dp))
+        SettingsSliderWithTitle(
+            title = "Прозрачность (альфа)",
+            enabled = enabled,
+            value = alphaComponent.state.collectAsState().value,
+            valueRange = 0F..1F,
+            onValueChange = { newValue ->
+                alphaComponent.onIntent(
+                    SettingsUnitComponent.Intent.ChangeValue(newValue)
+                )
+            }
+        )
+        SettingsSliderWithTitle(
+            title = "Радиус размытия",
+            enabled = enabled,
+            value = radiusComponent.state.collectAsState().value,
+            valueRange = 5F..40F,
+            onValueChange = { newValue ->
+                radiusComponent.onIntent(
+                    SettingsUnitComponent.Intent.ChangeValue(newValue)
+                )
+            }
+        )
+        SettingsSliderWithTitle(
+            title = "Множитель шума",
+            enabled = enabled,
+            value = noiseFactorComponent.state.collectAsState().value,
+            valueRange = 0F..1F,
+            onValueChange = { newValue ->
+                noiseFactorComponent.onIntent(
+                    SettingsUnitComponent.Intent.ChangeValue(newValue)
+                )
+            }
+        )
+    }
+    /*SettingsCardWithSwitch(
+        title = "Эффект стекла",
+        subtitle = "Включает эффект стекла для некоторых элементов интерфейса",
+        icon = painterResource(Res.image.ic_blur),
+        enabled = state
+    ) { newValue ->
+        component.onIntent(
+            SettingsUnitComponent.Intent.ChangeValue(newValue)
+        )
+    }*/
 }

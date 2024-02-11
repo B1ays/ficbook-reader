@@ -35,7 +35,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
-import com.moriatsushi.insetsx.systemBarsPadding
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import io.github.skeptick.libres.compose.painterResource
 import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.CommentModelStable
@@ -45,22 +47,27 @@ import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.ExtendedCo
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.WriteCommentComponent
 import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.blays.ficbookReader.values.defaultScrollbarPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @Composable
 fun CommentsContent(
     component: CommentsComponent,
+    contentPadding: PaddingValues? = null,
     hideAvatar: Boolean = false,
     modifier: Modifier = Modifier,
-    onAddReply: (userName: String, blocks: List<CommentBlockModelStable>) -> Unit = {userName, block ->}
+    onAddReply: (userName: String, blocks: List<CommentBlockModelStable>) -> Unit = { userName, block -> }
 ) {
     val state by component.state.subscribeAsState()
     val comments = state.comments
 
     val lazyListState = rememberLazyListState()
+
+    val blurConfig = LocalGlassEffectConfig.current
 
     val canScrollForward = lazyListState.canScrollForward
     val canScrollBackward = lazyListState.canScrollBackward
@@ -74,14 +81,15 @@ fun CommentsContent(
     }
 
     Box(
-        modifier = modifier,
+        modifier = modifier
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(end = defaultScrollbarPadding),
             state = lazyListState,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = contentPadding ?: PaddingValues(0.dp),
         ) {
             items(comments) { comment ->
                 Spacer(modifier = Modifier.height(7.dp))
@@ -417,12 +425,12 @@ fun CommentsScreenContent(
     component: CommentsComponent,
     hideAvatar: Boolean = false,
 ) {
+    val hazeState = remember { HazeState() }
+    val glassEffectConfig = LocalGlassEffectConfig.current
     Scaffold(
-        modifier = Modifier
-            .systemBarsPadding()
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -435,26 +443,42 @@ fun CommentsScreenContent(
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.small("Отзывы")
+                collapsingTitle = CollapsingTitle.large("Отзывы"),
+                containerColor = if(glassEffectConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                insets = WindowInsets.statusBars,
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                }
             )
         }
     ) { padding ->
         CommentsContent(
             component = component,
             hideAvatar = hideAvatar,
-            modifier = Modifier.padding(top = padding.calculateTopPadding())
+            contentPadding = padding,
+            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                haze(state = hazeState)
+            },
         )
     }
 }
 
 @Composable
 fun PartCommentsContent(component: ExtendedCommentsComponent) {
+    val hazeState = remember { HazeState() }
+    val glassEffectConfig = LocalGlassEffectConfig.current
     Scaffold(
-        modifier = Modifier
-            .systemBarsPadding()
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -467,31 +491,67 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.small("Отзывы к главе")
+                collapsingTitle = CollapsingTitle.large("Отзывы к главе"),
+                containerColor = if(glassEffectConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                insets = WindowInsets.statusBars,
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                },
             )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier.padding(top = padding.calculateTopPadding())
-        ) {
-            CommentsContent(
-                component = component,
-                modifier = Modifier.weight(1F),
-                onAddReply = { userName, blocks ->
-                    component.sendIntent(
-                        CommentsComponent.Intent.AddReply(userName, blocks)
+        },
+        bottomBar = {
+            WriteCommentContent(
+                component = component.writeCommentComponent,
+                containerColor = if(glassEffectConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
                     )
                 }
             )
-            WriteCommentContent(component.writeCommentComponent)
         }
+    ) { padding ->
+        CommentsContent(
+            component = component,
+            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                haze(state = hazeState)
+            },
+            contentPadding = padding,
+            onAddReply = { userName, blocks ->
+                component.sendIntent(
+                    CommentsComponent.Intent.AddReply(userName, blocks)
+                )
+            }
+        )
     }
 }
 
 @Composable
-private fun WriteCommentContent(component: WriteCommentComponent) {
+private fun WriteCommentContent(
+    component: WriteCommentComponent,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    modifier: Modifier = Modifier
+) {
     val state by component.state.subscribeAsState()
-    Column {
+
+    Column(
+        modifier = modifier.background(
+            color = containerColor
+        )
+    ) {
         AnimatedVisibility(
             visible = state.text.isNotEmpty() &&
                 state.renderedBlocks.isNotEmpty() &&
@@ -553,7 +613,6 @@ private fun WriteCommentContent(component: WriteCommentComponent) {
             }
         }
     }
-
 }
 
 @Suppress("ClassName")

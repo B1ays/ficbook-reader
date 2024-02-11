@@ -26,7 +26,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
-import com.moriatsushi.insetsx.systemBarsPadding
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import io.github.skeptick.libres.compose.painterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
@@ -44,17 +46,17 @@ import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberSheetState
 import ru.blays.ficbookReader.ui_components.LazyItems.items
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @Composable
 fun SearchContent(component: SearchComponent) {
-    BoxWithConstraints(
-        modifier = Modifier.systemBarsPadding(),
-    ) {
+    BoxWithConstraints {
         if(maxWidth > 600.dp) {
             LandscapeContent(component)
         } else {
@@ -67,6 +69,9 @@ fun SearchContent(component: SearchComponent) {
 private fun LandscapeContent(component: SearchComponent) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Open)
+
+    val glassEffectConfig = LocalGlassEffectConfig.current
+    val hazeState = remember { HazeState() }
 
     BackHandler(true) {
         if(drawerState.currentValue == DrawerValue.Open) {
@@ -82,7 +87,7 @@ private fun LandscapeContent(component: SearchComponent) {
 
     Scaffold(
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -116,14 +121,31 @@ private fun LandscapeContent(component: SearchComponent) {
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Поиск")
+                collapsingTitle = CollapsingTitle.large("Поиск"),
+                containerColor = if(glassEffectConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                insets = WindowInsets.statusBars,
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                }
             )
         }
     ) { padding ->
         ModalNavigationDrawer(
             gesturesEnabled = false,
             drawerContent = {
-                ModalDrawerSheet {
+                ModalDrawerSheet(
+                    modifier = Modifier.padding(
+                        top = padding.calculateTopPadding()
+                    ),
+                ) {
                     SearchMenu(
                         component = component,
                         modifier = Modifier
@@ -133,12 +155,13 @@ private fun LandscapeContent(component: SearchComponent) {
                 }
             },
             drawerState = drawerState,
-            modifier = Modifier.padding(
-                top = padding.calculateTopPadding()
-            )
+            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                haze(state = hazeState)
+            }
         ) {
             FanficsListContent(
-                component = component.fanficsListComponent
+                component = component.fanficsListComponent,
+                contentPadding = padding
             )
         }
     }
@@ -152,6 +175,9 @@ private fun PortraitContent(component: SearchComponent) {
     )
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
     val coroutineScope = rememberCoroutineScope()
+
+    val glassEffectConfig = LocalGlassEffectConfig.current
+    val hazeState = remember { HazeState() }
 
     BackHandler(true) {
         if(bottomSheetState.currentValue == SheetValue.Expanded) {
@@ -179,7 +205,7 @@ private fun PortraitContent(component: SearchComponent) {
             }
         },
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -209,14 +235,30 @@ private fun PortraitContent(component: SearchComponent) {
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Поиск")
+                collapsingTitle = CollapsingTitle.large("Поиск"),
+                containerColor = if(glassEffectConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                insets = WindowInsets.statusBars,
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                },
             )
         },
-        scaffoldState = bottomSheetScaffoldState
+        scaffoldState = bottomSheetScaffoldState,
     ) { padding ->
         FanficsListContent(
             component = component.fanficsListComponent,
-            modifier = Modifier.padding(top = padding.calculateTopPadding()),
+            contentPadding = padding,
+            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                haze(state = hazeState)
+            },
         )
     }
 }

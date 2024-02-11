@@ -33,7 +33,7 @@ import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScr
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,7 +50,7 @@ fun MainContent(component: MainScreenComponent) {
         }
     )
 
-    if(windowSize.width > 600) {
+    if (windowSize.width > 600) {
         LandscapeContent(
             component = component,
             pagerState = pagerState
@@ -102,63 +102,67 @@ private fun PortraitContent(
             DrawerPortrait(component = component)
         },
         drawerState = drawerState,
-        modifier = Modifier.systemBarsPadding()
+        modifier = Modifier
     ) {
         Scaffold(
             topBar = {
-                CollapsingsToolbar(
-                    actions = {
-                        CustomIconButton(
-                            onClick = {
-                                component.onOutput(
-                                    MainScreenComponent.Output.Search
-                                )
-                            },
-                            modifier = Modifier
-                                .size(40.dp)
-                                .padding(2.dp),
-                            shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        ) {
-                            Icon(
-                                painter = painterResource(Res.image.ic_search),
-                                contentDescription = "Иконка поиска",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.requiredWidth(5.dp))
-                        UserIconButton(component)
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = {
-                                scope.launch {
-                                    drawerState.animateTo(
-                                        targetValue = DrawerValue.Open,
-                                        anim = spring()
+                Column {
+                    CollapsingToolbar(
+                        actions = {
+                            CustomIconButton(
+                                onClick = {
+                                    component.onOutput(
+                                        MainScreenComponent.Output.Search
                                     )
-                                }
+                                },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .padding(2.dp),
+                                shape = CircleShape,
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ) {
+                                Icon(
+                                    painter = painterResource(Res.image.ic_search),
+                                    contentDescription = "Иконка поиска",
+                                    modifier = Modifier.size(24.dp)
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Menu,
-                                contentDescription = "иконка меню"
-                            )
-                        }
-                    },
-                    collapsingTitle = CollapsingTitle.large("Ficbook Reader")
-                )
+                            Spacer(modifier = Modifier.requiredWidth(5.dp))
+                            UserIconButton(component)
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.animateTo(
+                                            targetValue = DrawerValue.Open,
+                                            anim = spring()
+                                        )
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Menu,
+                                    contentDescription = "иконка меню"
+                                )
+                            }
+                        },
+                        collapsingTitle = CollapsingTitle.large("Ficbook Reader"),
+                        insets = WindowInsets.statusBars
+                    )
+                    PagerChips(
+                        tabs = tabs,
+                        pagerState = pagerState
+                    )
+                }
             }
         ) { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding.calculateTopPadding())
-            ) {
-                PagerChips(tabs, pagerState)
-                PagerContent(component, pagerState)
-            }
+            PagerContent(
+                component = component,
+                pagerState = pagerState,
+                contentPadding = padding
+            )
         }
     }
 }
@@ -167,7 +171,8 @@ private fun PortraitContent(
 @Composable
 fun PagerChips(
     tabs: Array<MainScreenComponent.TabModel>,
-    pagerState: PagerState
+    pagerState: PagerState,
+    modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
 
@@ -176,7 +181,7 @@ fun PagerChips(
     }
 
     LazyRow(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 10.dp)
             .fillMaxWidth()
     ) {
@@ -203,13 +208,14 @@ fun PagerChips(
 @Composable
 private fun PagerContent(
     component: MainScreenComponent,
-    pagerState: PagerState
+    pagerState: PagerState,
+    contentPadding: PaddingValues? = null
 ) {
     HorizontalPager(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         state = pagerState,
-        userScrollEnabled = false
+        userScrollEnabled = false,
+        contentPadding = contentPadding ?: PaddingValues(0.dp),
     ) { page ->
         when (page) {
             0 -> {
@@ -273,10 +279,7 @@ private fun DrawerLandscape(
                 )
             }
         }
-        DrawerContent(
-            component = component,
-            modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall)
-        )
+        DrawerContent(component = component)
     }
 }
 
@@ -291,17 +294,13 @@ private fun DrawerPortrait(
             .fillMaxHeight()
             .verticalScroll(scrollState)
     ) {
-        DrawerContent(
-            component = component,
-            modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall)
-        )
+        DrawerContent(component = component)
     }
 }
 
 @Composable
 private fun DrawerContent(
-    component: MainScreenComponent,
-    modifier: Modifier = Modifier
+    component: MainScreenComponent
 ) {
     val userSections = userSections
 
@@ -311,184 +310,180 @@ private fun DrawerContent(
         )
     }
 
-    Column(
-        modifier = modifier
-    ) {
-        Text(
-            text = "Личные",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.headlineSmall
-        )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-        val favouritesSection = remember { userSections.favourites }
-        NavigationDrawerItem(
-            label = {
-                Text(text = favouritesSection.name)
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_star_filled),
-                    contentDescription = "Иконка звезда"
-                )
-            },
-            selected = false,
-            onClick = {
-                navigateToSection(favouritesSection)
-            }
-        )
-        val likedSection = remember { userSections.liked }
-        NavigationDrawerItem(
-            label = {
-                Text(text = likedSection.name)
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_like_filled),
-                    contentDescription = "Иконка лайк"
-                )
-            },
-            selected = false,
-            onClick = {
-                navigateToSection(likedSection)
-            }
-        )
-        val readedSection = remember { userSections.readed }
-        NavigationDrawerItem(
-            label = {
-                Text(text = readedSection.name)
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_bookmark_filled),
-                    contentDescription = "Иконка книга с закладкой"
-                )
-            },
-            selected = false,
-            onClick = {
-                navigateToSection(readedSection)
-            }
-        )
-        val followSection = remember { userSections.follow }
-        NavigationDrawerItem(
-            label = {
-                Text(text = followSection.name)
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(Res.image.ic_star_filled),
-                    contentDescription = "Иконка звезда"
-                )
-            },
-            selected = false,
-            onClick = {
-                navigateToSection(followSection)
-            }
-        )
-        val visitedSection = remember { userSections.visited }
-        NavigationDrawerItem(
-            label = {
-                Text(text = visitedSection.name)
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_eye_filled),
-                    contentDescription = "Иконка глаз"
-                )
-            },
-            selected = false,
-            onClick = {
-                navigateToSection(visitedSection)
-            }
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "Стандартные",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.headlineSmall
-        )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-        NavigationDrawerItem(
-            label = {
-                Text(text = "Авторы")
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_users),
-                    contentDescription = "Иконка пользователи"
-                )
-            },
-            selected = false,
-            onClick = {
-                component.onOutput(
-                    MainScreenComponent.Output.OpenUsersScreen
-                )
-            }
-        )
-        NavigationDrawerItem(
-            label = {
-                Text(text = "Уведомления")
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_bell),
-                    contentDescription = "Иконка колокольчика"
-                )
-            },
-            selected = false,
-            onClick = {
-                component.onOutput(
-                    MainScreenComponent.Output.OpenNotifications
-                )
-            }
-        )
-        NavigationDrawerItem(
-            label = {
-                Text(text = "Случайный фанфик")
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_dice),
-                    contentDescription = "Иконка игральные кости"
-                )
-            },
-            selected = false,
-            onClick = {
-                component.onOutput(
-                    MainScreenComponent.Output.OpenRandomFanficPage
-                )
-            }
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-        NavigationDrawerItem(
-            label = {
-                Text(text = "Настройки")
-            },
-            icon = {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter =  painterResource(Res.image.ic_settings),
-                    contentDescription = "Иконка настройки"
-                )
-            },
-            selected = false,
-            onClick = {
-                component.onOutput(
-                    MainScreenComponent.Output.OpenSettings
-                )
-            }
-        )
-    }
+    Text(
+        text = "Личные",
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        style = MaterialTheme.typography.headlineSmall
+    )
+    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+    val favouritesSection = remember { userSections.favourites }
+    NavigationDrawerItem(
+        label = {
+            Text(text = favouritesSection.name)
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_star_filled),
+                contentDescription = "Иконка звезда"
+            )
+        },
+        selected = false,
+        onClick = {
+            navigateToSection(favouritesSection)
+        }
+    )
+    val likedSection = remember { userSections.liked }
+    NavigationDrawerItem(
+        label = {
+            Text(text = likedSection.name)
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_like_filled),
+                contentDescription = "Иконка лайк"
+            )
+        },
+        selected = false,
+        onClick = {
+            navigateToSection(likedSection)
+        }
+    )
+    val readedSection = remember { userSections.readed }
+    NavigationDrawerItem(
+        label = {
+            Text(text = readedSection.name)
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_bookmark_filled),
+                contentDescription = "Иконка книга с закладкой"
+            )
+        },
+        selected = false,
+        onClick = {
+            navigateToSection(readedSection)
+        }
+    )
+    val followSection = remember { userSections.follow }
+    NavigationDrawerItem(
+        label = {
+            Text(text = followSection.name)
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_star_filled),
+                contentDescription = "Иконка звезда"
+            )
+        },
+        selected = false,
+        onClick = {
+            navigateToSection(followSection)
+        }
+    )
+    val visitedSection = remember { userSections.visited }
+    NavigationDrawerItem(
+        label = {
+            Text(text = visitedSection.name)
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_eye_filled),
+                contentDescription = "Иконка глаз"
+            )
+        },
+        selected = false,
+        onClick = {
+            navigateToSection(visitedSection)
+        }
+    )
+    Spacer(modifier = Modifier.height(4.dp))
+    Text(
+        text = "Стандартные",
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        style = MaterialTheme.typography.headlineSmall
+    )
+    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+    NavigationDrawerItem(
+        label = {
+            Text(text = "Авторы")
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_users),
+                contentDescription = "Иконка пользователи"
+            )
+        },
+        selected = false,
+        onClick = {
+            component.onOutput(
+                MainScreenComponent.Output.OpenUsersScreen
+            )
+        }
+    )
+    NavigationDrawerItem(
+        label = {
+            Text(text = "Уведомления")
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_bell),
+                contentDescription = "Иконка колокольчика"
+            )
+        },
+        selected = false,
+        onClick = {
+            component.onOutput(
+                MainScreenComponent.Output.OpenNotifications
+            )
+        }
+    )
+    NavigationDrawerItem(
+        label = {
+            Text(text = "Случайный фанфик")
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_dice),
+                contentDescription = "Иконка игральные кости"
+            )
+        },
+        selected = false,
+        onClick = {
+            component.onOutput(
+                MainScreenComponent.Output.OpenRandomFanficPage
+            )
+        }
+    )
+    Spacer(modifier = Modifier.height(4.dp))
+    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+    NavigationDrawerItem(
+        label = {
+            Text(text = "Настройки")
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.image.ic_settings),
+                contentDescription = "Иконка настройки"
+            )
+        },
+        selected = false,
+        onClick = {
+            component.onOutput(
+                MainScreenComponent.Output.OpenSettings
+            )
+        }
+    )
 }
 
 @Composable

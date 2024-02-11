@@ -26,8 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
@@ -35,7 +33,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -47,53 +44,68 @@ import coil3.compose.rememberAsyncImagePainter
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.platformUtils.WindowSize
-import ru.blays.ficbookReader.platformUtils.blurPlatform
-import ru.blays.ficbookReader.platformUtils.blurSupported
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.shared.platformUtils.shareSupported
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbookReader.theme.*
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
+import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberStandardBottomSheetState
 import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
 import ru.blays.ficbookReader.ui_components.GradientIcon.GradientIcon
 import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
+import ru.blays.ficbookReader.utils.LocalHazeState
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
 
 @Composable
 fun FanficPageInfoContent(component: FanficPageInfoComponent) {
     val windowSize = WindowSize()
+    val hazeState = remember { HazeState() }
 
-    if(windowSize.width > 600) {
-        LandscapeContent(component)
-    } else {
-        PortraitContent(component)
+    CompositionLocalProvider(
+        LocalHazeState provides hazeState
+    ) {
+        if(windowSize.width > 600) {
+            LandscapeContent(component)
+        } else {
+            PortraitContent(component)
+        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
 private fun PortraitContent(component: FanficPageInfoComponent) {
     val state by component.state.subscribeAsState()
-    val fanfic = remember(state) { state.fanfic }
-    val isLoading = remember(state) { state.isLoading }
+    val fanfic = state.fanfic
+    val isLoading = state.isLoading
+
+    val hazeState = remember { HazeState() }
+    val glassEffectConfig = LocalGlassEffectConfig.current
 
     val bottomSheetState =
-        ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberStandardBottomSheetState(
+        rememberStandardBottomSheetState(
             initialValue = SheetValue.PartiallyExpanded
         )
     val snackbarHostState = remember { SnackbarHostState() }
     val bottomSheetScaffoldState =
-        ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState(
+        rememberBottomSheetScaffoldState(
             bottomSheetState = bottomSheetState,
             snackbarHostState = snackbarHostState
         )
@@ -118,28 +130,17 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
             } else {
                 null
             }
-            if (coverPainter != null && blurSupported) {
-                val bounds = with(LocalDensity.current) {
-                    Rect(
-                        Offset(0f, 0f),
-                        Offset(maxWidth.toPx(), maxHeight.toPx()),
-                    )
-                }
+            if (
+                coverPainter != null &&
+                glassEffectConfig.blurEnabled
+            ) {
                 Image(
                     painter = coverPainter,
                     contentDescription = "Обложка фанфика",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .blurPlatform(
-                            areas = arrayOf(bounds),
-                            backgroundColor = MaterialTheme.colorScheme.background,
-                            tint = MaterialTheme.colorScheme.surfaceVariant.copy(
-                                alpha = 0.4F
-                            ),
-                            blurRadius = 14.dp,
-                            noiseFactor = 0.08F
-                        )
+                        .haze(state = hazeState)
                 )
             }
             val sheetProgress = remember(bottomSheetState.offset) {
@@ -155,7 +156,12 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                 )
             }
             Box(
-                modifier = Modifier.systemBarsPadding()
+                modifier = Modifier
+                    .hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                    .systemBarsPadding()
             ) {
                 BottomSheetScaffold(
                     scaffoldState = bottomSheetScaffoldState,
@@ -219,7 +225,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                         }
                     },
                     topBar = {
-                        CollapsingsToolbar(
+                        CollapsingToolbar(
                             scrollBehavior = scrollBehavior,
                             containerColor = Color.Transparent,
                             collapsedElevation = 0.dp,
@@ -268,6 +274,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
     }
 }
 
+@OptIn(ExperimentalHazeMaterialsApi::class)
 @Composable
 private fun LandscapeContent(
     component: FanficPageInfoComponent
@@ -275,6 +282,8 @@ private fun LandscapeContent(
     val state by component.state.subscribeAsState()
     val fanfic = state.fanfic
     val isLoading = state.isLoading
+    val hazeState = remember { HazeState() }
+    val glassEffectConfig = LocalGlassEffectConfig.current
 
     if(fanfic != null && !isLoading) {
         val coverPainter: AsyncImagePainter? = if(fanfic.coverUrl.isNotEmpty()) {
@@ -327,34 +336,30 @@ private fun LandscapeContent(
             BoxWithConstraints(
                 modifier = Modifier.fillMaxSize()
             ) {
-                if (coverPainter != null && blurSupported) {
-                    val bounds = with(LocalDensity.current) {
-                        Rect(
-                            Offset(0f, 0f),
-                            Offset(maxWidth.toPx(), maxHeight.toPx()),
-                        )
-                    }
+                if (
+                    coverPainter != null &&
+                    glassEffectConfig.blurEnabled
+                ) {
                     Image(
                         painter = coverPainter,
                         contentDescription = "Обложка фанфика",
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .fillMaxSize()
-                            .blurPlatform(
-                                arrayOf(bounds),
-                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                                tint = MaterialTheme.colorScheme.surfaceVariant.copy(
-                                    alpha = 0.4F
-                                ),
-                                blurRadius = 12.dp,
-                                noiseFactor = 0.08F
+                            .haze(
+                                state = hazeState,
                             )
                     )
                 }
                 Scaffold(
-                    modifier = Modifier.systemBarsPadding(),
+                    modifier = Modifier
+                        .systemBarsPadding()
+                        .hazeChild(
+                            state = hazeState,
+                            style = glassEffectConfig.style
+                        ),
                     topBar = {
-                        CollapsingsToolbar(
+                        CollapsingToolbar(
                             containerColor = Color.Transparent,
                             navigationIcon = {
                                 IconButton(
@@ -376,7 +381,7 @@ private fun LandscapeContent(
                             collapsingTitle = CollapsingTitle.small(fanfic.name)
                         )
                     },
-                    containerColor = Color.Transparent
+                    containerColor = Color.Transparent,
                 ) { padding ->
                     FanficDescription(
                         component = component,
@@ -469,7 +474,8 @@ private fun FanficDescription(
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
-
+    val hazeState = LocalHazeState.current
+    val blurConfig = LocalGlassEffectConfig.current
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -478,7 +484,13 @@ private fun FanficDescription(
                 .align(Alignment.TopStart)
                 .padding(DefaultPadding.CardDefaultPadding)
                 .padding(end = 4.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .thenIf(blurConfig.blurEnabled) {
+                    haze(
+                        state = hazeState,
+                        style = blurConfig.style
+                    )
+                },
             state = lazyListState
         ) {
             item {
@@ -499,7 +511,7 @@ private fun FanficDescription(
                 Spacer(modifier = Modifier.height(8.dp))
             }
             item {
-                FanficActionsContent(component.actionsComponent)
+                FanficActionsContent(component = component.actionsComponent)
                 Spacer(modifier = Modifier.height(8.dp))
             }
             item {

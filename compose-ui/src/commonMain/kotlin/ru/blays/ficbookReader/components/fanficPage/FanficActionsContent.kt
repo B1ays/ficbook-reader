@@ -21,11 +21,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
+import dev.chrisbanes.haze.hazeChild
 import ru.blays.ficbookReader.shared.data.dto.AvailableCollectionsModel
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageCollectionsComponent
 import ru.blays.ficbookReader.theme.lockColor
 import ru.blays.ficbookReader.theme.unlockColor
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
+import ru.blays.ficbookReader.utils.LocalHazeState
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
@@ -115,6 +119,8 @@ fun FanficActionsContent(
     childSlot.child?.instance?.let { slotComponent ->
         val slotState by slotComponent.state.subscribeAsState()
         val availableCollections = slotState.availableCollections?.data?.collections
+        val blurConfig = LocalGlassEffectConfig.current
+        val hazeState = LocalHazeState.current
         if(!slotState.loading) {
             Dialog(
                 onDismissRequest = {
@@ -124,9 +130,19 @@ fun FanficActionsContent(
                 }
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    )
+                    colors = if(blurConfig.blurEnabled) {
+                        CardDefaults.cardColors(
+                            containerColor = Color.Transparent,
+                        )
+                    } else {
+                        CardDefaults.cardColors()
+                    },
+                    modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                        hazeChild(
+                            state = hazeState,
+                            shape = CardDefaults.shape
+                        )
+                    },
                 ) {
                     Text(
                         text = "Добавить работу в сборник",
@@ -140,6 +156,22 @@ fun FanficActionsContent(
                         ) {
                             items(availableCollections) { collection ->
                                 CollectionItem(
+                                    modifier = Modifier
+                                        .background(
+                                            color = if(blurConfig.blurEnabled) {
+                                                MaterialTheme.colorScheme.surfaceVariant.copy(0.3F)
+                                            } else {
+                                                MaterialTheme.colorScheme.surfaceVariant
+                                            },
+                                            shape = CardDefaults.shape
+                                        )
+                                        .clip(CardDefaults.shape)
+                                        .thenIf(blurConfig.blurEnabled) {
+                                            hazeChild(
+                                                state = hazeState,
+                                                shape = CardDefaults.shape
+                                            )
+                                        },
                                     collection = collection,
                                     selected = collection.isInThisCollection == AvailableCollectionsModel.Data.Collection.IN_COLLECTION,
                                     onSelect = { add ->
@@ -200,6 +232,7 @@ private fun FanficActionItem(
 
 @Composable
 private fun CollectionItem(
+    modifier: Modifier = Modifier,
     collection: AvailableCollectionsModel.Data.Collection,
     selected: Boolean,
     onSelect: (select: Boolean) -> Unit
@@ -216,22 +249,18 @@ private fun CollectionItem(
         modifier = Modifier
             .padding(DefaultPadding.CardDefaultPadding)
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = CardDefaults.shape
-            )
-            .clip(CardDefaults.shape)
-            .let {
-                if(selected) it.border(
+            .thenIf(selected) {
+                border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.outline,
                     shape = CardDefaults.shape
-                ) else it
+                )
             }
             .toggleable(
                 value = selected,
                 onValueChange = onSelect
-            ),
+            )
+            .then(modifier),
     ) {
         Row(
             modifier = Modifier.padding(10.dp).fillMaxWidth(),

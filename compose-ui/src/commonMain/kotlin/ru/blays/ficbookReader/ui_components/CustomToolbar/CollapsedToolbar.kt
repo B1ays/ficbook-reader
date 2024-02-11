@@ -20,11 +20,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.blays.ficbookReader.values.Zero
 import kotlin.math.max
 import kotlin.math.roundToInt
 
 @Composable
-fun CollapsingsToolbar(
+fun CollapsingToolbar(
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = LocalContentColor.current,
@@ -35,6 +36,7 @@ fun CollapsingsToolbar(
     collapsingTitle: CollapsingTitle? = null,
     scrollBehavior: CustomToolbarScrollBehavior? = null,
     collapsedElevation: Dp = DefaultCollapsedElevation,
+    insets: WindowInsets? = null
 ) {
     val collapsedFraction = when {
         scrollBehavior != null && centralContent == null -> scrollBehavior.state.collapsedFraction
@@ -59,7 +61,7 @@ fun CollapsingsToolbar(
     val elevationState = animateDpAsState(if (showElevation) collapsedElevation else 0.dp)
 
     Surface(
-        modifier = modifier,
+        modifier = Modifier,
         shadowElevation = elevationState.value,
         color = containerColor,
         contentColor = contentColor
@@ -136,7 +138,11 @@ fun CollapsingsToolbar(
                     }
                 }
             },
-            modifier = modifier.then(Modifier.heightIn(min = MinCollapsedHeight))
+            modifier = modifier
+                .heightIn(min = MinCollapsedHeight)
+                .windowInsetsPadding(
+                    insets = insets ?: WindowInsets.Zero
+                )
         ) { measurables, constraints ->
             val horizontalPaddingPx = HorizontalPadding.toPx()
             val expandedTitleBottomPaddingPx = ExpandedTitleBottomPadding.toPx()
@@ -285,7 +291,6 @@ fun CollapsingsToolbar(
                 )
             }
         }
-
     }
 }
 

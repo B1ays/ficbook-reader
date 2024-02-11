@@ -44,6 +44,7 @@ kotlin {
 
                 // Haze
                 implementation(libs.haze)
+                implementation(libs.haze.materials)
 
                 // Color-picker
                 implementation(libs.compose.color.picker)

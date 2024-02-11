@@ -5,14 +5,22 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.coroutines.getBooleanFlow
+import com.russhwolf.settings.coroutines.getFloatFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.mappers.toApiModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbookReader.shared.platformUtils.openInBrowser
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
+import ru.blays.ficbookReader.shared.preferences.json.GlassEffectConfig
 import ru.blays.ficbookReader.shared.preferences.settings
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
@@ -42,6 +50,7 @@ import ru.blays.ficbookapi.UrlProcessor.UrlProcessor.analyzeUrl
 import ru.blays.ficbookapi.UrlProcessor.getUrlForHref
 import ru.blays.ficbookapi.data.SectionWithQuery
 
+@OptIn(ExperimentalSettingsApi::class)
 class DefaultRootComponent private constructor(
     private val componentContext: ComponentContext,
     private val deepLink: String? = null,
@@ -109,6 +118,8 @@ class DefaultRootComponent private constructor(
 
     private val authRepo: IAuthorizationRepo by getKoin().inject()
 
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
     private val navigation = StackNavigation<RootComponent.Config>()
     override val childStack: Value<ChildStack<*, RootComponent.Child>> = childStack(
         source = navigation,
@@ -124,7 +135,7 @@ class DefaultRootComponent private constructor(
         childContext("theme_component")
     )
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    override val glassEffectConfig: StateFlow<GlassEffectConfig> = getGlassEffectConfigFlow()
 
     init {
         lifecycle.doOnDestroy {
@@ -474,6 +485,43 @@ class DefaultRootComponent private constructor(
         return settings.getBoolean(
             key = SettingsKeys.FIRST_START_KEY,
             defaultValue = true
+        )
+    }
+
+    private fun getGlassEffectConfigFlow(): StateFlow<GlassEffectConfig> {
+        val defaultValue = GlassEffectConfig()
+        val enabledFlow = settings.getBooleanFlow(
+            SettingsKeys.GLASS_EFFECT_ENABLED_KEY,
+            defaultValue.enabled
+        )
+        val alphaFlow = settings.getFloatFlow(
+            SettingsKeys.GLASS_EFFECT_ALPHA_KEY,
+            defaultValue.alpha
+        )
+        val radiusFlow = settings.getFloatFlow(
+            SettingsKeys.GLASS_EFFECT_RADIUS_KEY,
+            defaultValue.blurRadius
+        )
+        val noiseFactor = settings.getFloatFlow(
+            SettingsKeys.GLASS_EFFECT_NOISE_FACTOR_KEY,
+            defaultValue.noiseFactor
+        )
+        return combine(
+            enabledFlow,
+            alphaFlow,
+            radiusFlow,
+            noiseFactor
+        ) { enabled, alpha, radius, noise ->
+            GlassEffectConfig(
+                enabled = enabled,
+                alpha = alpha,
+                blurRadius = radius,
+                noiseFactor = noise
+            )
+        }.stateIn(
+            scope = coroutineScope,
+            initialValue = defaultValue,
+            started = SharingStarted.WhileSubscribed(100)
         )
     }
 }

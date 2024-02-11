@@ -24,7 +24,7 @@ import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
-import ru.hh.toolbar.custom_toolbar.CollapsingsToolbar
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 import java.io.File
 
 @Composable
@@ -33,7 +33,7 @@ fun AccountsManagingContent(component: UserProfileManagingComponent) {
 
     Scaffold(
         topBar = {
-            CollapsingsToolbar(
+            CollapsingToolbar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
