@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-
 package ru.blays.ficbookReader.components.main
 
 import androidx.compose.foundation.background
@@ -8,14 +6,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
-import androidx.compose.material3.pullrefresh.PullRefreshIndicator
-import androidx.compose.material3.pullrefresh.pullRefresh
-import androidx.compose.material3.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -26,6 +24,7 @@ import ru.blays.ficbookReader.shared.data.dto.CollectionModelStable
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.CollectionsComponent
 import ru.blays.ficbookReader.theme.lockColor
 import ru.blays.ficbookReader.theme.unlockColor
+import ru.blays.ficbookReader.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
@@ -35,14 +34,25 @@ fun CollectionsComponent(component: CollectionsComponent) {
     val list = remember(state) { state.list }
     val isLoading = remember(state) { state.isLoading }
 
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isLoading,
-        onRefresh = {
+    val pullRefreshState = rememberPullToRefreshState()
+
+    LaunchedEffect(isLoading) {
+        when {
+            isLoading && !pullRefreshState.isRefreshing -> {
+                pullRefreshState.startRefresh()
+            }
+            !isLoading && pullRefreshState.isRefreshing -> {
+                pullRefreshState.endRefresh()
+            }
+        }
+    }
+    LaunchedEffect(pullRefreshState.isRefreshing) {
+        if(pullRefreshState.isRefreshing) {
             component.sendIntent(
                 CollectionsComponent.Intent.Refresh
             )
         }
-    )
+    }
 
     BoxWithConstraints {
         LazyVerticalGrid(
@@ -56,7 +66,7 @@ fun CollectionsComponent(component: CollectionsComponent) {
             modifier = Modifier
                 .padding(DefaultPadding.CardDefaultPadding)
                 .fillMaxSize()
-                .pullRefresh(state = pullRefreshState),
+                .nestedScroll(pullRefreshState.nestedScrollConnection),
             verticalArrangement = Arrangement.spacedBy(6.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
@@ -71,10 +81,10 @@ fun CollectionsComponent(component: CollectionsComponent) {
                 }
             }
         }
-        PullRefreshIndicator(
-            modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = isLoading,
-            state = pullRefreshState
+        PullToRefreshContainer(
+            state = pullRefreshState,
+            contentColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.align(Alignment.TopCenter)
         )
     }
 }

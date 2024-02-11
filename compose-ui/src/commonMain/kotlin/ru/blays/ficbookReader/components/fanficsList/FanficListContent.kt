@@ -12,15 +12,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.pullrefresh.PullRefreshIndicator
-import androidx.compose.material3.pullrefresh.pullRefresh
-import androidx.compose.material3.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -31,6 +30,7 @@ import dev.chrisbanes.haze.hazeChild
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficCard
+import ru.blays.ficbookReader.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
 import ru.blays.ficbookReader.utils.thenIf
@@ -50,12 +50,25 @@ fun FanficsListContent(
     val isLoading = state.isLoading
 
     val lazyListState = rememberLazyListState()
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isLoading,
-        onRefresh = {
-            component.sendIntent(FanficsListComponent.Intent.Refresh)
+    val pullRefreshState = rememberPullToRefreshState()
+
+    LaunchedEffect(isLoading) {
+        when {
+            isLoading && !pullRefreshState.isRefreshing -> {
+                pullRefreshState.startRefresh()
+            }
+            !isLoading && pullRefreshState.isRefreshing -> {
+                pullRefreshState.endRefresh()
+            }
         }
-    )
+    }
+    LaunchedEffect(pullRefreshState.isRefreshing) {
+        if(pullRefreshState.isRefreshing) {
+            component.sendIntent(
+                FanficsListComponent.Intent.Refresh
+            )
+        }
+    }
 
     val canScrollForward = lazyListState.canScrollForward
     val canScrollBackward = lazyListState.canScrollBackward
@@ -69,11 +82,10 @@ fun FanficsListContent(
     }
 
     Box(
-        modifier = modifier
+        modifier = modifier.nestedScroll(pullRefreshState.nestedScrollConnection),
     ) {
         LazyColumn(
             modifier = Modifier
-                .pullRefresh(pullRefreshState)
                 .fillMaxSize()
                 .padding(DefaultPadding.CardDefaultPadding)
                 .padding(end = defaultScrollbarPadding),
@@ -83,7 +95,7 @@ fun FanficsListContent(
         ) {
             items(
                 items = list,
-                key = { it.href }
+                key = { it.href } // TODO Remove key
             ) { fanfic ->
                 FanficCard(
                     fanfic = fanfic,
@@ -112,7 +124,7 @@ fun FanficsListContent(
                             )
                         )
                     },
-                    onAuthorClick = { author ->  
+                    onAuthorClick = { author ->
                         component.onOutput(
                             FanficsListComponent.Output.OpenAuthor(
                                 href = author.href
@@ -128,12 +140,12 @@ fun FanficsListContent(
                 Spacer(modifier = Modifier.height(7.dp))
             }
         }
-        PullRefreshIndicator(
-            refreshing = isLoading,
+        PullToRefreshContainer(
             state = pullRefreshState,
             contentColor = MaterialTheme.colorScheme.primary,
-            scale = true,
-            modifier = Modifier.align(Alignment.TopCenter)
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = contentPadding?.calculateTopPadding() ?: 0.dp),
         )
         VerticalScrollbar(
             modifier = Modifier

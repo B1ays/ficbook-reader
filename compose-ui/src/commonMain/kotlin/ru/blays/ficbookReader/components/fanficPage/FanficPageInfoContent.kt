@@ -16,9 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
-import androidx.compose.material3.pullrefresh.PullRefreshIndicator
-import androidx.compose.material3.pullrefresh.pullRefresh
-import androidx.compose.material3.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -63,6 +61,7 @@ import ru.blays.ficbookReader.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficTagChip
 import ru.blays.ficbookReader.ui_components.GradientIcon.GradientIcon
 import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
+import ru.blays.ficbookReader.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
 import ru.blays.ficbookReader.utils.LocalHazeState
@@ -109,17 +108,28 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
             bottomSheetState = bottomSheetState,
             snackbarHostState = snackbarHostState
         )
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isLoading,
-        onRefresh = {
+    val pullRefreshState = rememberPullToRefreshState()
+    val scrollBehavior = rememberToolbarScrollBehavior()
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(isLoading) {
+        when {
+            isLoading && !pullRefreshState.isRefreshing -> {
+                pullRefreshState.startRefresh()
+            }
+            !isLoading && pullRefreshState.isRefreshing -> {
+                pullRefreshState.endRefresh()
+            }
+        }
+    }
+    LaunchedEffect(pullRefreshState.isRefreshing) {
+        if(pullRefreshState.isRefreshing) {
             component.sendIntent(
                 FanficPageInfoComponent.Intent.Refresh
             )
         }
-    )
-    val scrollBehavior = rememberToolbarScrollBehavior()
-
-    val scope = rememberCoroutineScope()
+    }
 
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize()
@@ -259,14 +269,13 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                 top = padding.calculateTopPadding(),
                                 bottom = 110.dp
                             )
-                            .pullRefresh(state = pullRefreshState)
+                            .nestedScroll(pullRefreshState.nestedScrollConnection)
                             .nestedScroll(scrollBehavior.nestedScrollConnection)
                     )
                 }
             }
         }
-        PullRefreshIndicator(
-            refreshing = isLoading,
+        PullToRefreshContainer(
             state = pullRefreshState,
             contentColor = MaterialTheme.colorScheme.primary,
             modifier = Modifier.align(Alignment.TopCenter)
