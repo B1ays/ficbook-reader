@@ -16,17 +16,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import io.github.skeptick.libres.compose.painterResource
 import ru.blays.ficbookReader.shared.data.dto.NotificationModelStable
 import ru.blays.ficbookReader.shared.data.dto.NotificationType
 import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationComponent
 import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationConfirmDialogComponent
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -175,9 +181,19 @@ fun PortraitContent(
 ) {
     val state by component.state.subscribeAsState()
 
+    val glassEffectConfig = LocalGlassEffectConfig.current
+    val hazeState = remember { HazeState() }
+
     Scaffold(
         topBar = {
-            Column {
+            Column(
+                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                }
+            ) {
                 CollapsingToolbar(
                     navigationIcon = {
                         IconButton(
@@ -245,7 +261,13 @@ fun PortraitContent(
                         }
                     },
                     collapsingTitle = null,
-                    insets = WindowInsets.statusBars
+                    insets = WindowInsets.statusBars,
+                    containerColor = if(glassEffectConfig.blurEnabled) {
+                        Color.Transparent
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+                    collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
                 )
                 Actions(
                     onReadAll = {
@@ -260,13 +282,23 @@ fun PortraitContent(
                     },
                     modifier = Modifier
                         .background(
-                            color = MaterialTheme.colorScheme.surface
+                            color = if(glassEffectConfig.blurEnabled) {
+                                Color.Transparent
+                            } else {
+                                MaterialTheme.colorScheme.surface
+                            }
                         )
                         .padding(DefaultPadding.CardDefaultPadding),
                 )
                 HorizontalDivider(
                     modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.surface)
+                        .background(
+                            color = if(glassEffectConfig.blurEnabled) {
+                                Color.Transparent
+                            } else {
+                                MaterialTheme.colorScheme.surface
+                            }
+                        )
                         .padding(vertical = 6.dp)
                 )
             }
@@ -276,6 +308,9 @@ fun PortraitContent(
         LazyColumn(
             state = lazyListState,
             contentPadding = padding,
+            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                haze(state = hazeState,)
+            }
         ) {
             items(state.list) { notification ->
                 NotificationItem(
@@ -286,7 +321,6 @@ fun PortraitContent(
                         NotificationComponent.Output.OpenNotificationHref(notification.href)
                     )
                 }
-                Spacer(modifier = Modifier.requiredHeight(6.dp))
             }
         }
     }
@@ -305,7 +339,12 @@ private fun Actions(
     ) {
         OutlinedButton(
             onClick = onReadAll,
-            shape = CardShape.CardStandalone
+            shape = CardShape.CardStandalone,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface.copy(
+                    alpha = 0.4F
+                )
+            )
         ) {
             Icon(
                 painter = painterResource(Res.image.ic_check_variant),
@@ -318,7 +357,12 @@ private fun Actions(
         Spacer(modifier = Modifier.requiredWidth(10.dp))
         OutlinedButton(
             onClick = onDeleteAll,
-            shape = CardShape.CardStandalone
+            shape = CardShape.CardStandalone,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.surface.copy(
+                    alpha = 0.4F
+                )
+            )
         ) {
             Icon(
                 painter = painterResource(Res.image.ic_delete),
