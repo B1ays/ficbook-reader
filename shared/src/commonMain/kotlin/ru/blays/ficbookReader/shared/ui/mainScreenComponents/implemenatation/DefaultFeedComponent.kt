@@ -42,7 +42,8 @@ class DefaultFeedComponent private constructor(
             DefaultFanficsListComponent(
                 componentContext = childContext,
                 section = initialSection,
-                output = output
+                output = output,
+                loadAtCreate = false
             )
         },
         output = onOutput
@@ -106,7 +107,6 @@ class DefaultFeedComponent private constructor(
         }
         coroutineScope.launch {
             feedSettingsFlow.collect { rawJson ->
-                //println("New section from flow: $rawJson")
                 val section: SectionWithQuery? = Json.decodeFromString(rawJson)
                 section?.let { _fanficListComponent.setSection(it) }
             }

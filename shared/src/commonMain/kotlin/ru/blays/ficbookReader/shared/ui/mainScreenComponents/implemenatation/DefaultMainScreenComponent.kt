@@ -6,6 +6,7 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
@@ -197,6 +198,13 @@ class DefaultMainScreenComponent private constructor(
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }
-
+        coroutineScope.launch {
+            authorizationRepository.currentUserModel.collect { user ->
+                if(user != null) {
+                    _feedComponent.refresh()
+                    _collectionsComponent.refresh()
+                }
+            }
+        }
     }
 }
