@@ -28,7 +28,7 @@ import ru.blays.ficbookReader.utils.LocalStackAnimator
 fun RootContent(component: RootComponent) {
     val glassEffectConfig by component.glassEffectConfig.collectAsState()
     val backgroundColor = MaterialTheme.colorScheme.background
-    val hazeStyle = remember(glassEffectConfig) {
+    val hazeStyle = remember(glassEffectConfig, backgroundColor) {
         HazeStyle(
             tint = backgroundColor.copy(alpha = glassEffectConfig.alpha),
             blurRadius = glassEffectConfig.blurRadius.dp,
