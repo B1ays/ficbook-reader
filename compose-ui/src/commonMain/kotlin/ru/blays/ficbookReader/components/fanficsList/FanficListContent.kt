@@ -95,8 +95,7 @@ fun FanficsListContent(
             contentPadding = contentPadding ?: PaddingValues(0.dp)
         ) {
             items(
-                items = list,
-                key = { it.href } // TODO Remove key
+                items = list
             ) { fanfic ->
                 FanficCard(
                     fanfic = fanfic,
