@@ -36,7 +36,7 @@ actual fun AppTheme(
     val monetTheme = state.dynamicColors
 
     val isSystemInDarkTheme = isSystemInDarkTheme()
-    val darkTheme = remember(key1 = themeIndex) {
+    val darkTheme = remember(themeIndex) {
         when(themeIndex) {
             0 -> isSystemInDarkTheme
             1 -> true
@@ -44,7 +44,6 @@ actual fun AppTheme(
             else -> isSystemInDarkTheme
         }
     }
-
 
     val primaryColor = remember(colorAccentIndex) {
         defaultAccentColorsList.getOrElse(colorAccentIndex) {
@@ -71,7 +70,7 @@ actual fun AppTheme(
                     background = Color.Black,
                     surface = Color.Black,
                     surfaceVariant = Color.Black,
-                    //surfaceContainer = Color.Black,
+                    surfaceContainer = Color.Black,
                     surfaceTint = Color.Black
                 ) else this
             }
@@ -136,20 +135,17 @@ actual fun AppTheme(
         )
     }
 
-
     MaterialTheme(
         colorScheme = animatedColorScheme,
         content = {
             CompositionLocalProvider(
                 LocalRippleTheme provides rippleTheme,
-                LocalDynamicMaterialThemeSeed provides primaryColor
-            ) {
-                content()
-            }
+                LocalDynamicMaterialThemeSeed provides primaryColor,
+                content = content
+            )
         },
         typography = Typography
     )
-
 }
 
 @Composable
