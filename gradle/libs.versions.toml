@@ -3,7 +3,7 @@
 projectVersion = "1.0.6"
 versionCode = "8"
 versionNameSuffix = "-beta03"
-kotlin = "1.9.20"
+kotlin = "1.9.22"
 agp = "8.2.2"
 jvmTarget = "18"
 
@@ -21,21 +21,20 @@ koin = "3.5.3"
 koinCompose = "1.1.2"
 kotlinx-coroutines-core-jvm = "1.7.3"
 kotlinx-serialization-json = "1.6.2"
-ktor = "2.3.6"
 ktxCore = "1.12.0"
 libres = "1.2.2"
-materialKolor = "1.4.0-alpha02"
+materialKolor = "1.4.0-alpha07"
 multiplatform-settings = "1.1.1"
 okhttp = "4.12.0"
 realm = "1.13.0"
-compose-jetbrains = "1.6.0-beta01"
+compose-jetbrains = "1.6.0-beta02"
 androidx-activityCompose = "1.8.2"
 composeColorPicker = "0.7.0"
 composeColorPickerJvm = "0.7.0"
 haze = "0.5.1"
 insetsx = "0.1.0-alpha10"
 browser = "1.7.0"
-coil = "3.0.0-SNAPSHOT"
+coil = "3.0.0-alpha04"
 capturable = "1.0.3"
 
 [libraries]
@@ -45,7 +44,7 @@ androidx-core = { module = "androidx.core:core", version.ref = "ktxCore" }
 capturable = { module = "dev.shreyaspatil:capturable", version.ref = "capturable" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
-coil-network = { module = "io.coil-kt.coil3:coil-network", version.ref = "coil" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }
 compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPickerJvm" }
 compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-color-picker-jvm", version.ref = "composeColorPickerJvm" }
@@ -60,7 +59,6 @@ koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComp
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core-jvm" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
-ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 libres-compose = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
 libres-plugin = { module = "io.github.skeptick.libres:gradle-plugin", version.ref = "libres" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
