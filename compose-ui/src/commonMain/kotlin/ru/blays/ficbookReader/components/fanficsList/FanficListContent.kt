@@ -38,6 +38,7 @@ import ru.blays.ficbookReader.values.DefaultPadding
 import ru.blays.ficbookReader.values.defaultScrollbarPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
+import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
 
 @Composable
 fun FanficsListContent(
@@ -82,10 +83,10 @@ fun FanficsListContent(
     }
 
     Box(
-        modifier = modifier.nestedScroll(pullRefreshState.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(pullRefreshState.nestedScrollConnection),
     ) {
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(DefaultPadding.CardDefaultPadding)
                 .padding(end = defaultScrollbarPadding),
@@ -162,6 +163,7 @@ fun FanficsListScreenContent(
     component: FanficsListComponent
 ) {
     val state by component.state.subscribeAsState()
+    val scrollBehavior = rememberToolbarScrollBehavior()
     val hazeState = remember { HazeState() }
     val blurConfig = LocalGlassEffectConfig.current
     Scaffold(
@@ -219,12 +221,14 @@ fun FanficsListScreenContent(
                     }
                 },
                 collapsingTitle = CollapsingTitle.small(state.section.name),
+                scrollBehavior = scrollBehavior,
                 insets = WindowInsets.statusBars,
                 containerColor = if(blurConfig.blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
+                collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
                 modifier = Modifier.thenIf(blurConfig.blurEnabled) {
                     hazeChild(
                         state = hazeState,
@@ -237,7 +241,9 @@ fun FanficsListScreenContent(
         FanficsListContent(
             component = component,
             contentPadding = padding,
-            modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .thenIf(blurConfig.blurEnabled) {
                 haze(
                     state = hazeState,
                     style = blurConfig.style

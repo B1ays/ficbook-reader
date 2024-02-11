@@ -88,7 +88,7 @@ fun FanficPageInfoContent(component: FanficPageInfoComponent) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PortraitContent(component: FanficPageInfoComponent) {
     val state by component.state.subscribeAsState()

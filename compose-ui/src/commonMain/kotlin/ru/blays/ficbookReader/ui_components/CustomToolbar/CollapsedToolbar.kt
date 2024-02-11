@@ -61,7 +61,7 @@ fun CollapsingToolbar(
     val elevationState = animateDpAsState(if (showElevation) collapsedElevation else 0.dp)
 
     Surface(
-        modifier = Modifier,
+        modifier = modifier,
         shadowElevation = elevationState.value,
         color = containerColor,
         contentColor = contentColor
@@ -138,7 +138,7 @@ fun CollapsingToolbar(
                     }
                 }
             },
-            modifier = modifier
+            modifier = Modifier
                 .heightIn(min = MinCollapsedHeight)
                 .windowInsetsPadding(
                     insets = insets ?: WindowInsets.Zero

@@ -67,7 +67,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Настройки"),
+                collapsingTitle = CollapsingTitle.small("Настройки"),
                 containerColor = if(blurConfig.blurEnabled) {
                     Color.Transparent
                 } else {
@@ -86,18 +86,18 @@ fun SettingsContent(component: SettingsMainComponent) {
     ) { padding ->
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .thenIf(blurConfig.blurEnabled) {
-                    haze(
-                        state = hazeState
-                    )
-                },
+                .fillMaxSize(),
             contentAlignment = Alignment.TopCenter
         ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(widthFill)
-                    .fillMaxHeight(),
+                    .fillMaxHeight()
+                    .thenIf(blurConfig.blurEnabled) {
+                        haze(
+                            state = hazeState
+                        )
+                    },
                 contentPadding = padding,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

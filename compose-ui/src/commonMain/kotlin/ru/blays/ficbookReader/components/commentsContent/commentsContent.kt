@@ -60,14 +60,15 @@ fun CommentsContent(
     contentPadding: PaddingValues? = null,
     hideAvatar: Boolean = false,
     modifier: Modifier = Modifier,
-    onAddReply: (userName: String, blocks: List<CommentBlockModelStable>) -> Unit = { userName, block -> }
+    onAddReply: (
+        userName: String,
+        blocks: List<CommentBlockModelStable>
+    ) -> Unit = { userName, block -> }
 ) {
     val state by component.state.subscribeAsState()
     val comments = state.comments
 
     val lazyListState = rememberLazyListState()
-
-    val blurConfig = LocalGlassEffectConfig.current
 
     val canScrollForward = lazyListState.canScrollForward
     val canScrollBackward = lazyListState.canScrollBackward
@@ -80,11 +81,9 @@ fun CommentsContent(
         }
     }
 
-    Box(
-        modifier = modifier
-    ) {
+    Box {
         LazyColumn(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(end = defaultScrollbarPadding),
             state = lazyListState,
