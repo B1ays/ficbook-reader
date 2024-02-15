@@ -113,9 +113,18 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
             )
         }
 
-        val author = data
-            .select(Evaluator.Class("author word-break"))
-            .map {
+        val authors = data.select(Evaluator.Class("author word-break"))
+
+        val author = authors.firstOrNull()
+            .let {
+                UserModel(
+                    name = it?.text() ?: "",
+                    href = it?.select("a")?.attr(ATTR_HREF) ?: ""
+                )
+            }
+
+        val originalAuthor = authors.getOrNull(1)
+            ?.let {
                 UserModel(
                     name = it.text(),
                     href = it.select("a").attr(ATTR_HREF)
@@ -231,6 +240,7 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
                 trophies = trophies
             ),
             author = author,
+            originalAuthor = originalAuthor,
             fandom = fandom,
             pairings = pairings,
             updateDate = updateDate,

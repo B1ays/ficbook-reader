@@ -430,23 +430,35 @@ fun FanficHeader(
             style = MaterialTheme.typography.titleLarge
         )
         Spacer(modifier = Modifier.height(6.dp))
-        FlowRow() {
+        FlowRow(verticalArrangement = Arrangement.Center) {
             Icon(
                 modifier = Modifier.size(16.dp),
                 painter = painterResource(Res.image.ic_user),
                 contentDescription = "Иконка человек"
             )
             Spacer(modifier = Modifier.width(2.dp))
-            fanfic.author.forEach {
+            Text(
+                text = fanfic.author.name,
+                style = MaterialTheme.typography.labelLarge,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.clickable {
+                    onAuthorClick(fanfic.author)
+                }
+            )
+            fanfic.originalAuthor?.let { originalAuthor ->
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(Res.image.ic_globe),
+                    contentDescription = "Иконка глобус"
+                )
+                Spacer(modifier = Modifier.width(2.dp))
                 Text(
-                    text = it.name + ',',
+                    text = originalAuthor.name,
                     style = MaterialTheme.typography.labelLarge,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable {
-                        onAuthorClick(it)
-                    }
+                    modifier = Modifier.clickable {}
                 )
-                Spacer(modifier = Modifier.width(4.dp))
             }
         }
         Spacer(modifier = Modifier.height(6.dp))
