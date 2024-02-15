@@ -64,7 +64,7 @@ fun FanficsListContent(
         }
     }
     LaunchedEffect(pullRefreshState.isRefreshing) {
-        if(pullRefreshState.isRefreshing) {
+        if(pullRefreshState.isRefreshing && !isLoading) {
             component.sendIntent(
                 FanficsListComponent.Intent.Refresh
             )

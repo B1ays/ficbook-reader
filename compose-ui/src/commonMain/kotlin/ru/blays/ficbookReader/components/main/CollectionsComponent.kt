@@ -47,7 +47,7 @@ fun CollectionsComponent(component: CollectionsComponent) {
         }
     }
     LaunchedEffect(pullRefreshState.isRefreshing) {
-        if(pullRefreshState.isRefreshing) {
+        if(pullRefreshState.isRefreshing && !isLoading) {
             component.sendIntent(
                 CollectionsComponent.Intent.Refresh
             )

@@ -124,7 +124,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
         }
     }
     LaunchedEffect(pullRefreshState.isRefreshing) {
-        if(pullRefreshState.isRefreshing) {
+        if(pullRefreshState.isRefreshing && !isLoading) {
             component.sendIntent(
                 FanficPageInfoComponent.Intent.Refresh
             )
