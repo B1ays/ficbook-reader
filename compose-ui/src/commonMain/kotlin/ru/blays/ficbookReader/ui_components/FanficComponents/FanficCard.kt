@@ -34,6 +34,7 @@ import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.theme.*
 import ru.blays.ficbookReader.ui_components.GradientIcon.GradientIcon
 import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.DefaultPadding
 
 @Composable
@@ -257,10 +258,8 @@ fun CardWithDirectionIndicator(
     val indicatorWidthInDp = 10.dp
     val indicatorWidthInPx = with(density) { indicatorWidthInDp.roundToPx() }
     Card(
-        modifier = modifier.run {
-            if(onClick != null) {
-                this then clickable(onClick = onClick)
-            } else this
+        modifier = modifier.thenIf(onClick != null) {
+            clickable(onClick = onClick!!)
         },
         colors = colors,
         border = border,
