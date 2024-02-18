@@ -2,10 +2,9 @@ package ru.blays.ficbookReader.components.commentsContent
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,16 +20,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -45,6 +41,9 @@ import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.ExtendedCommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.WriteCommentComponent
+import ru.blays.ficbookReader.ui_components.ContextMenu.ContextMenu
+import ru.blays.ficbookReader.ui_components.ContextMenu.contextMenuAnchor
+import ru.blays.ficbookReader.ui_components.ContextMenu.rememberContextMenuState
 import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
@@ -127,7 +126,7 @@ fun CommentsContent(
         VerticalScrollbar(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 4.dp)
+                .padding(end = defaultScrollbarPadding)
                 .fillMaxHeight(),
             lazyListState = lazyListState
         )
@@ -146,10 +145,7 @@ private fun CommentItem(
 ) {
     val user = comment.user
 
-    val density = LocalDensity.current
-
-    var menuExpanded by remember { mutableStateOf(false) }
-    var menuOffset by remember { mutableStateOf(DpOffset.Zero) }
+    val contextMenuState = rememberContextMenuState()
 
     Row(
         modifier = Modifier
@@ -170,38 +166,15 @@ private fun CommentItem(
             )
             Spacer(modifier = Modifier.requiredWidth(9.dp))
         }
-        val cardInteractionSource = remember { MutableInteractionSource() }
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(CardDefaults.shape)
-                .indication(
-                    interactionSource = cardInteractionSource,
-                    indication = LocalIndication.current
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = contextMenuState::show
                 )
-                .hoverable(
-                    interactionSource = cardInteractionSource,
-                    enabled = true
-                )
-                .pointerInput(true) {
-                    detectTapGestures(
-                        onPress = {
-                            val press = PressInteraction.Press(it)
-                            cardInteractionSource.emit(press)
-                            awaitRelease()
-                            cardInteractionSource.emit(PressInteraction.Release(press))
-                        },
-                        onLongPress = {
-                            menuOffset = with(density) {
-                                DpOffset(
-                                    x = it.x.toDp(),
-                                    y = 0.dp
-                                )
-                            }
-                            menuExpanded = true
-                        }
-                    )
-                },
+                .contextMenuAnchor(contextMenuState),
             shape = CardDefaults.shape
         ) {
             Row(
@@ -257,11 +230,7 @@ private fun CommentItem(
                 )
             }
 
-            DropdownMenu(
-                expanded = menuExpanded,
-                offset = menuOffset,
-                onDismissRequest = { menuExpanded = false },
-            ) {
+            ContextMenu(state = contextMenuState) {
                 DropdownMenuItem(
                     leadingIcon = {
                         Icon(
