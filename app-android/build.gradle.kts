@@ -26,19 +26,19 @@ android {
         }
     }
 
+    //noinspection ChromeOsAbiSupport
     buildTypes {
         release {
-            /*
-            TODO Configure Proguard
+            //TODO Configure Proguard
             isMinifyEnabled = true
             isShrinkResources = true
-            */
             ndk {
-                abiFilters += setOf("arm64-v8a")
+                abiFilters += setOf("armeabi-v7a")
             }
         }
         debug {
             ndk {
+
                 abiFilters += setOf("arm64-v8a", "x86")
             }
             isMinifyEnabled = false

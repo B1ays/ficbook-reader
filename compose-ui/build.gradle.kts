@@ -43,10 +43,7 @@ kotlin {
                 implementation(libs.materialKolor)
 
                 // Haze
-                //implementation(libs.haze)
-                implementation(libs.haze.materials)
                 implementation(projects.haze.haze)
-                //implementation(projects.haze.hazeMaterials)
 
                 // Color-picker
                 implementation(libs.compose.color.picker)
@@ -103,6 +100,8 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        proguardFile("proguard-rules.pro")
     }
 
     compileOptions {

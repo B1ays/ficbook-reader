@@ -31,7 +31,7 @@ class MainActivity: ComponentActivity() {
         rootComponent = retainedComponent { componentContext ->
             DefaultRootComponent(
                 componentContext = componentContext,
-                deepLink = deepLinkData.toString()
+                deepLink = deepLinkData?.toString()
             )
         }
 

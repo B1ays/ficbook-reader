@@ -45,7 +45,6 @@ import com.moriatsushi.insetsx.systemBarsPadding
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.platformUtils.WindowSize
@@ -283,7 +282,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
     }
 }
 
-@OptIn(ExperimentalHazeMaterialsApi::class)
+
 @Composable
 private fun LandscapeContent(
     component: FanficPageInfoComponent

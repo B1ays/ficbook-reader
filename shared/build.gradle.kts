@@ -81,6 +81,8 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        proguardFile("proguard-rules.pro")
     }
 
     compileOptions {
