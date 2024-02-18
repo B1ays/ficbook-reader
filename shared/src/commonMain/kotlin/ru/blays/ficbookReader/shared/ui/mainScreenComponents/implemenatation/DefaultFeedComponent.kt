@@ -17,9 +17,9 @@ import ru.blays.ficbookReader.shared.data.sections.popularSections
 import ru.blays.ficbookReader.shared.data.sections.userSections
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponentInternal
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponentInternal
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.FeedComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.FeedComponentInternal
 import ru.blays.ficbookapi.data.SectionWithQuery

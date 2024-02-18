@@ -2,7 +2,7 @@ package ru.blays.ficbookReader.shared.ui.collectionSortComponent
 
 import com.arkivanov.decompose.value.Value
 import ru.blays.ficbookReader.shared.data.dto.CollectionSortParamsStable
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 
 interface CollectionFanficsListComponent {
     val state: Value<State>

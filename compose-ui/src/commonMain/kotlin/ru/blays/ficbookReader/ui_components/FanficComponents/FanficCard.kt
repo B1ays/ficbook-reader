@@ -3,6 +3,7 @@ package ru.blays.ficbookReader.ui_components.FanficComponents
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,7 +42,8 @@ import ru.blays.ficbookReader.values.DefaultPadding
 fun FanficCard(
     fanfic: FanficCardModelStable,
     modifier: Modifier = Modifier,
-    onCardClick: () -> Unit,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
     onPairingClick: (pairing: PairingModelStable) -> Unit,
     onFandomClick: (fandom: FandomModelStable) -> Unit,
     onAuthorClick: (author: UserModelStable) -> Unit,
@@ -53,7 +55,8 @@ fun FanficCard(
         LandscapeContent(
             modifier = modifier,
             fanfic = fanfic,
-            onCardClick = onCardClick,
+            onClick = onClick,
+            onLongClick = onLongClick,
             onPairingClick = onPairingClick,
             onFandomClick = onFandomClick,
             onAuthorClick = onAuthorClick,
@@ -63,7 +66,8 @@ fun FanficCard(
         PortraitContent(
             modifier = modifier,
             fanfic = fanfic,
-            onCardClick = onCardClick,
+            onClick = onClick,
+            onLongClick = onLongClick,
             onPairingClick = onPairingClick,
             onFandomClick = onFandomClick,
             onAuthorClick = onAuthorClick,
@@ -76,7 +80,8 @@ fun FanficCard(
 private fun LandscapeContent(
     modifier: Modifier = Modifier,
     fanfic: FanficCardModelStable,
-    onCardClick: () -> Unit,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
     onPairingClick: (pairing: PairingModelStable) -> Unit,
     onFandomClick: (fandom: FandomModelStable) -> Unit,
     onAuthorClick: (author: UserModelStable) -> Unit,
@@ -106,7 +111,8 @@ private fun LandscapeContent(
             colors = CardDefaults.cardColors(
                 containerColor = cardColor
             ),
-            onClick = onCardClick
+            onClick = onClick,
+            onLongClick = onLongClick
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(widthFill)
@@ -163,7 +169,7 @@ private fun LandscapeContent(
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 6,
                     onLinkClick = onUrlClicked,
-                    onClick = onCardClick
+                    onClick = onClick
                 )
             }
         }
@@ -174,7 +180,8 @@ private fun LandscapeContent(
 private fun PortraitContent(
     modifier: Modifier = Modifier,
     fanfic: FanficCardModelStable,
-    onCardClick: () -> Unit,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
     onPairingClick: (pairing: PairingModelStable) -> Unit,
     onFandomClick: (fandom: FandomModelStable) -> Unit,
     onAuthorClick: (author: UserModelStable) -> Unit,
@@ -183,7 +190,10 @@ private fun PortraitContent(
     val status = fanfic.status
 
     Column(
-        modifier = modifier.clickable(onClick = onCardClick)
+        modifier = modifier.combinedClickable(
+            onClick = onClick,
+            onLongClick = onLongClick
+        )
     ) {
         if(fanfic.coverUrl.isNotEmpty()) {
             AsyncImage(
@@ -212,10 +222,10 @@ private fun PortraitContent(
         }
         CardWithDirectionIndicator(
             direction = status.direction,
+            modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = cardColor
             ),
-            modifier = Modifier.fillMaxWidth()
         ) {
             Column {
                 FanficChips(status)
@@ -237,7 +247,7 @@ private fun PortraitContent(
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 6,
                     onLinkClick = onUrlClicked,
-                    onClick = onCardClick
+                    onClick = onClick
                 )
             }
         }
@@ -252,14 +262,20 @@ fun CardWithDirectionIndicator(
     border: BorderStroke? = null,
     shape: Shape = CardDefaults.shape,
     onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val density = LocalDensity.current
     val indicatorWidthInDp = 10.dp
     val indicatorWidthInPx = with(density) { indicatorWidthInDp.roundToPx() }
     Card(
-        modifier = modifier.thenIf(onClick != null) {
-            clickable(onClick = onClick!!)
+        modifier = modifier.thenIf(
+            onClick != null || onLongClick != null
+        ) {
+            combinedClickable(
+                onClick = onClick ?: {},
+                onLongClick = onLongClick ?: {}
+            )
         },
         colors = colors,
         border = border,

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import ru.blays.ficbookReader.shared.preferences.json.GlassEffectConfig
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.CollectionFanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbookReader.shared.ui.landingScreenComponent.LandingScreenComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent

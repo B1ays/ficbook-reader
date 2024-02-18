@@ -25,8 +25,8 @@ import ru.blays.ficbookReader.shared.preferences.settings
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.authorProfile.implementation.DefaultAuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.DefaultCollectionFanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.implementation.DefaultFanficPageComponent
 import ru.blays.ficbookReader.shared.ui.landingScreenComponent.DefaultLandingScreenComponent

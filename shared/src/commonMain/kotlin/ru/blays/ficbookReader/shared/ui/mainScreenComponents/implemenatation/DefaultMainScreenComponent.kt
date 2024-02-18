@@ -9,7 +9,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.repo.declaration.IAuthorizationRepo
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.*
 import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserLogInComponent
 import ru.blays.ficbookReader.shared.ui.profileComponents.implementation.DefaultUserLogInComponent

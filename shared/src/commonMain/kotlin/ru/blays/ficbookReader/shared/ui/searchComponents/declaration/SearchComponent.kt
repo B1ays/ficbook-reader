@@ -3,7 +3,7 @@ package ru.blays.ficbookReader.shared.ui.searchComponents.declaration
 import com.arkivanov.decompose.value.Value
 import ru.blays.ficbookReader.shared.data.dto.IntRangeSimple
 import ru.blays.ficbookReader.shared.data.dto.SearchParams
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 
 interface SearchComponent {
     val state: Value<SearchParams>

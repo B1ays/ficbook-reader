@@ -44,6 +44,8 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
             Pair(clearedHref, name)
         }
 
+        val id = fanficMainInfo?.select(".side-section")?.select("fanfic-more-dropdown")?.attr(":fanfic-id") ?: ""
+
         val likes = fanficMainInfo
             ?.select(
                 Evaluator.Class("badge-with-icon badge-secondary badge-like")
@@ -230,6 +232,7 @@ internal class FanficCardParser: IDataParser<Element, FanficCardModel> {
 
         return@coroutineScope FanficCardModel(
             href = href,
+            id = id,
             title = title,
             status = FanficStatus(
                 direction = direction,

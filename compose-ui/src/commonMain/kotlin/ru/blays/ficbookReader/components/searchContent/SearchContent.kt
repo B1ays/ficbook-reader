@@ -39,7 +39,7 @@ import ru.blays.ficbookReader.shared.data.dto.IntRangeSimple
 import ru.blays.ficbookReader.shared.data.dto.SearchParams
 import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
 import ru.blays.ficbookReader.shared.data.dto.SearchedTagModel
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchFandomsComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchTagsComponent

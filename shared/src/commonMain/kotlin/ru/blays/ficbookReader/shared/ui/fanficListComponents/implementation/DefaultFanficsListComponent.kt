@@ -1,6 +1,7 @@
-package ru.blays.ficbookReader.shared.ui.fanficListComponents
+package ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.slot.*
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
@@ -20,6 +21,9 @@ import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficsListRepo
 import ru.blays.ficbookReader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
 import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficQuickActionsComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponentInternal
 import ru.blays.ficbookReader.shared.ui.snackbarStateHost.SnackbarHost
 import ru.blays.ficbookReader.shared.ui.snackbarStateHost.SnackbarMessageType
 import ru.blays.ficbookapi.data.SectionWithQuery
@@ -32,6 +36,8 @@ class DefaultFanficsListComponent(
     private val output: (output: FanficsListComponent.Output) -> Unit
 ): FanficsListComponentInternal, ComponentContext by componentContext {
     val repository: IFanficsListRepo by getKoin().inject()
+
+    private val _quickActionComponents: MutableMap<String, FanficQuickActionsComponent> = mutableMapOf()
 
     private val _state: MutableValue<FanficsListComponent.State> = MutableValue(
         FanficsListComponent.State(
@@ -97,6 +103,16 @@ class DefaultFanficsListComponent(
 
     override fun onOutput(output: FanficsListComponent.Output) {
         this.output.invoke(output)
+    }
+
+    override fun getQuickActionsComponent(fanficID: String): FanficQuickActionsComponent {
+        return _quickActionComponents.getOrPut(key = fanficID) {
+            println("New component created for $fanficID")
+            DefaultFanficQuickActionsComponent(
+                componentContext = childContext(key = "QuickActions-$fanficID"),
+                fanficID = fanficID
+            )
+        }
     }
 
     private fun refresh() {

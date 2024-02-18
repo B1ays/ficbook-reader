@@ -587,7 +587,7 @@ private class Reader(
                             )
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_book),
+                                painter = painterResource(Res.image.ic_book_outlined),
                                 contentDescription = "Прочитанно",
                                 tint = contentColor,
                                 modifier = Modifier

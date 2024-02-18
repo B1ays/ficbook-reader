@@ -6,8 +6,8 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import ru.blays.ficbookReader.shared.data.dto.IntRangeSimple
 import ru.blays.ficbookReader.shared.data.dto.SearchParams
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
 import ru.blays.ficbookapi.SEARCH_HREF
 import ru.blays.ficbookapi.data.SectionWithQuery

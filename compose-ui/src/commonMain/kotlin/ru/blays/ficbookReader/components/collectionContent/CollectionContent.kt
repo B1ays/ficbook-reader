@@ -23,7 +23,7 @@ import io.github.skeptick.libres.compose.painterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.CollectionFanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue.Expanded
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue.PartiallyExpanded

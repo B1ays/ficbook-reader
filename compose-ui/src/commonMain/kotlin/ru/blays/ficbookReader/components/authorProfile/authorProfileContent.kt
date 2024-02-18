@@ -711,10 +711,10 @@ private fun getIconForTab(tab: AuthorProfileComponent.TabConfig): Painter {
         is AuthorProfileComponent.TabConfig.Main -> painterResource(Res.image.ic_user)
         is AuthorProfileComponent.TabConfig.Blog -> painterResource(Res.image.ic_blog)
         is AuthorProfileComponent.TabConfig.Presents -> painterResource(Res.image.ic_present)
-        is AuthorProfileComponent.TabConfig.Works -> painterResource(Res.image.ic_book)
-        is AuthorProfileComponent.TabConfig.WorksAsBeta -> painterResource(Res.image.ic_book)
-        is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> painterResource(Res.image.ic_book)
-        is AuthorProfileComponent.TabConfig.WorksAsGamma -> painterResource(Res.image.ic_book)
+        is AuthorProfileComponent.TabConfig.Works -> painterResource(Res.image.ic_book_outlined)
+        is AuthorProfileComponent.TabConfig.WorksAsBeta -> painterResource(Res.image.ic_book_outlined)
+        is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> painterResource(Res.image.ic_book_outlined)
+        is AuthorProfileComponent.TabConfig.WorksAsGamma -> painterResource(Res.image.ic_book_outlined)
         is AuthorProfileComponent.TabConfig.Comments -> painterResource(Res.image.ic_comment)
     }
 }

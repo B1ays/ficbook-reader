@@ -20,8 +20,8 @@ import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorPresents
 import ru.blays.ficbookReader.shared.ui.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbookReader.shared.ui.commentsComponent.implementation.DefaultAllCommentsComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.dataModels.AuthorProfileTabs
 import ru.blays.ficbookapi.result.ApiResult

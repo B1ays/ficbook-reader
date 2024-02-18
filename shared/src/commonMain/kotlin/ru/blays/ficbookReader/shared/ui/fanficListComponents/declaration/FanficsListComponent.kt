@@ -1,10 +1,11 @@
-package ru.blays.ficbookReader.shared.ui.fanficListComponents
+package ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration
 
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbookReader.shared.data.dto.FanficCardModelStable
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.FanficsListDialogComponent
 
 interface FanficsListComponent {
 
@@ -14,6 +15,8 @@ interface FanficsListComponent {
 
     fun sendIntent(intent: Intent)
     fun onOutput(output: Output)
+
+    fun getQuickActionsComponent(fanficID: String): FanficQuickActionsComponent
 
     sealed class Intent {
         data object Refresh: Intent()

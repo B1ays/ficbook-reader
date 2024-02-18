@@ -8,10 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,7 +25,12 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficQuickActionsComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbookReader.ui_components.ContextMenu.ContextMenu
+import ru.blays.ficbookReader.ui_components.ContextMenu.ContextMenuState
+import ru.blays.ficbookReader.ui_components.ContextMenu.contextMenuAnchor
+import ru.blays.ficbookReader.ui_components.ContextMenu.rememberContextMenuState
 import ru.blays.ficbookReader.ui_components.FanficComponents.FanficCard
 import ru.blays.ficbookReader.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
@@ -97,12 +99,25 @@ fun FanficsListContent(
             items(
                 items = list
             ) { fanfic ->
+                val contextMenuState = rememberContextMenuState()
+
+                FanficQuickActions(
+                    contextMenuState = contextMenuState,
+                    componentFactory = {
+                        component.getQuickActionsComponent(fanficID = fanfic.id)
+                    }
+                )
+
                 FanficCard(
+                    modifier = Modifier.contextMenuAnchor(contextMenuState),
                     fanfic = fanfic,
-                    onCardClick = {
+                    onClick = {
                         component.onOutput(
                             FanficsListComponent.Output.OpenFanfic(fanfic.href)
                         )
+                    },
+                    onLongClick = {
+                        contextMenuState.show()
                     },
                     onPairingClick = { pairing ->
                         component.onOutput(
@@ -249,5 +264,119 @@ fun FanficsListScreenContent(
                 )
             }
         )
+    }
+}
+
+@Composable
+fun FanficQuickActions(
+    contextMenuState: ContextMenuState,
+    componentFactory: () -> FanficQuickActionsComponent
+) {
+    ContextMenu(
+        state = contextMenuState
+    ) {
+        val component = componentFactory()
+        val state by component.state.subscribeAsState()
+
+        LaunchedEffect(Unit) {
+            component.sendIntent(
+                FanficQuickActionsComponent.Intent.Initialize
+            )
+        }
+
+        if(!state.loading && !state.error) {
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Лайк")
+                },
+                leadingIcon = {
+                    val icon = if(state.liked) {
+                        painterResource(Res.image.ic_like_filled)
+                    } else {
+                        painterResource(Res.image.ic_like_outlined)
+                    }
+                    Icon(
+                        painter = icon,
+                        contentDescription = "Лайк",
+                        modifier = Modifier.size(20.dp),
+                    )
+                },
+                onClick = {
+                    component.sendIntent(
+                        FanficQuickActionsComponent.Intent.Like
+                    )
+                },
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Подписка")
+                },
+                leadingIcon = {
+                    val icon = if(state.subscribed) {
+                        painterResource(Res.image.ic_star_filled)
+                    } else {
+                        painterResource(Res.image.ic_star_outlined)
+                    }
+                    Icon(
+                        painter = icon,
+                        contentDescription = "Подписка",
+                        modifier = Modifier.size(20.dp),
+                    )
+                },
+                onClick = {
+                    component.sendIntent(
+                        FanficQuickActionsComponent.Intent.Subscribe
+                    )
+                },
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Прочитано")
+                },
+                leadingIcon = {
+                    val icon = if(state.readed) {
+                        painterResource(Res.image.ic_book_filled)
+                    } else {
+                        painterResource(Res.image.ic_book_outlined)
+                    }
+                    Icon(
+                        painter = icon,
+                        contentDescription = "Прочитано",
+                        modifier = Modifier.size(20.dp),
+                    )
+                },
+                onClick = {
+                    component.sendIntent(
+                        FanficQuickActionsComponent.Intent.Read
+                    )
+                },
+            )
+        } else if (state.error) {
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Ошибка")
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(Res.image.ic_error),
+                        contentDescription = "Ошибка",
+                        modifier = Modifier.size(20.dp),
+                    )
+                },
+                onClick = {}
+            )
+        } else {
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Загрузка...")
+                },
+                leadingIcon = {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                    )
+                },
+                onClick = {}
+            )
+        }
     }
 }

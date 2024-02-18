@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class FanficCardModelStable(
     val href: String,
+    val id: String,
     val title: String,
     val status: FanficStatusStable,
     val author: UserModelStable,

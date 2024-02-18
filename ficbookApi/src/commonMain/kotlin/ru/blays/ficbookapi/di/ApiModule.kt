@@ -16,4 +16,5 @@ val apiModule = module {
     factoryOf(::UsersApiImpl) bind UsersApi::class
     factoryOf(::NotificationsApiImpl) bind NotificationsApi::class
     factoryOf(::SearchApiImpl) bind SearchApi::class
+    factoryOf(::FanficQuickActionsApiImpl) bind FanficQuickActionsApi::class
 }

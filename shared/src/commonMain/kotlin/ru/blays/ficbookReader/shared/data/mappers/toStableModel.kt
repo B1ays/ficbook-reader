@@ -31,6 +31,7 @@ fun FandomModel.toStableModel() = FandomModelStable(
 
 fun FanficCardModel.toStableModel() = FanficCardModelStable(
     href = href,
+    id = id,
     title = title,
     status = status.toStableModel(),
     author = author.toStableModel(),
@@ -351,3 +352,8 @@ fun FanficAuthorModel.toStableModel() = FanficAuthorModelStable(
     role = role
 )
 
+fun FanficQuickActionsModel.Data.toStableModel() = FanficQuickActionsInfoModel(
+    liked = isLiked,
+    subscribed = isFollowed,
+    readed = isFullyRead
+)

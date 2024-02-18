@@ -6,7 +6,7 @@ import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbookReader.shared.data.dto.AuthorProfileModelStable
 import ru.blays.ficbookReader.shared.ui.commentsComponent.declaration.CommentsComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 
 @OptIn(ExperimentalDecomposeApi::class)

@@ -11,9 +11,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.repo.declaration.ICollectionsRepo
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.DefaultFanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponentInternal
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponentInternal
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.result.ApiResult
 

@@ -1,6 +1,6 @@
 package ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration
 
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 
 interface FeedComponent {

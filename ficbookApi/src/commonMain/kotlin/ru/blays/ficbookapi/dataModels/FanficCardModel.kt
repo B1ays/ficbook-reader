@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FanficCardModel(
     val href: String,
+    val id: String,
     val title: String,
     val status: FanficStatus,
     val author: UserModel,
