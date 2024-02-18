@@ -51,9 +51,6 @@ kotlin {
                 // Color-picker
                 implementation(libs.compose.color.picker)
 
-                // Capturable
-                implementation(libs.capturable)
-
                 //InsetsX
                 implementation(libs.moriatsushi.insetsx)
 
