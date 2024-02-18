@@ -1,18 +1,17 @@
 package ru.blays.ficbookReader.components.searchContent
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,9 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.example.myapplication.compose.Res
@@ -47,7 +49,6 @@ import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberBo
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberSheetState
 import ru.blays.ficbookReader.ui_components.LazyItems.items
 import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
-import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -57,7 +58,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 @Composable
 fun SearchContent(component: SearchComponent) {
     BoxWithConstraints {
-        if(maxWidth > 600.dp) {
+        if (maxWidth > 600.dp) {
             LandscapeContent(component)
         } else {
             PortraitContent(component)
@@ -74,7 +75,7 @@ private fun LandscapeContent(component: SearchComponent) {
     val hazeState = remember { HazeState() }
 
     BackHandler(true) {
-        if(drawerState.currentValue == DrawerValue.Open) {
+        if (drawerState.currentValue == DrawerValue.Open) {
             component.fanficsListComponent.onOutput(
                 FanficsListComponent.Output.NavigateBack
             )
@@ -106,7 +107,7 @@ private fun LandscapeContent(component: SearchComponent) {
                     IconButton(
                         onClick = {
                             coroutineScope.launch {
-                                if(drawerState.isOpen) {
+                                if (drawerState.isOpen) {
                                     drawerState.close()
                                 } else {
                                     drawerState.open()
@@ -122,12 +123,12 @@ private fun LandscapeContent(component: SearchComponent) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.large("Поиск"),
-                containerColor = if(glassEffectConfig.blurEnabled) {
+                containerColor = if (glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
                 modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
                     hazeChild(
@@ -180,7 +181,7 @@ private fun PortraitContent(component: SearchComponent) {
     val hazeState = remember { HazeState() }
 
     BackHandler(true) {
-        if(bottomSheetState.currentValue == SheetValue.Expanded) {
+        if (bottomSheetState.currentValue == SheetValue.Expanded) {
             component.fanficsListComponent.onOutput(
                 FanficsListComponent.Output.NavigateBack
             )
@@ -236,12 +237,12 @@ private fun PortraitContent(component: SearchComponent) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.large("Поиск"),
-                containerColor = if(glassEffectConfig.blurEnabled) {
+                containerColor = if (glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
                 modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
                     hazeChild(
@@ -324,7 +325,7 @@ private fun SearchMenu(
             }
             AnimatedVisibility(
                 visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CATEGORY ||
-                    state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
+                        state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
                 enter = expandVertically(spring()),
                 exit = shrinkVertically(spring())
             ) {
@@ -530,7 +531,7 @@ fun FandomGroupSelector(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+
 @Composable
 private fun FandomsSelector(
     component: SearchFandomsComponent,
@@ -540,9 +541,8 @@ private fun FandomsSelector(
 
     var chipExpanded by rememberSaveable { mutableStateOf(false) }
 
-    val excludedColor = MaterialTheme.colorScheme.surfaceVariant
-    val includedColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.45F)
-    val contentColor = MaterialTheme.colorScheme.onBackground
+    var selectIncludedFandomDialogVisible by remember { mutableStateOf(false) }
+    var selectExcludedFandomDialogVisible by remember { mutableStateOf(false) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -554,126 +554,114 @@ private fun FandomsSelector(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Column(
-                modifier = Modifier.padding(5.dp),
-            ) {
-                if (canIncludeFandoms) {
-                    FlowRow {
-                        state.selectedFandoms.forEach { fandom ->
-                            ItemChip(
-                                title = fandom.title,
-                                subtitle = fandom.description,
-                                expanded = chipExpanded,
-                                excluded = false,
-                                includedColor = includedColor,
-                                excludedColor = excludedColor,
-                                contentColor = contentColor,
-                                onRemove = {
-                                    component.selectFandom(
-                                        select = false,
-                                        fandom = fandom
-                                    )
-                                }
-                            )
-                        }
-                    }
+        if (canIncludeFandoms) {
+            OutlinedCardWithCornerButton(
+                modifier = Modifier.animateContentSize(spring()),
+                outlineColor = MaterialTheme.colorScheme.outline,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                iconColor = MaterialTheme.colorScheme.surface,
+                label = "Добавить фэндом",
+                icon = painterResource(Res.image.ic_plus),
+                onClick = {
+                    selectIncludedFandomDialogVisible = true
                 }
-                FlowRow {
-                    state.excludedFandoms.forEach { fandom ->
+            ) {
+                if (state.selectedFandoms.isNotEmpty()) {
+                    state.selectedFandoms.forEach { fandom ->
                         ItemChip(
+                            modifier = Modifier
+                                .padding(horizontal = DefaultPadding.CardHorizontalPadding)
+                                .animateContentSize(),
                             title = fandom.title,
                             subtitle = fandom.description,
                             expanded = chipExpanded,
-                            excluded = true,
-                            includedColor = includedColor,
-                            excludedColor = excludedColor,
-                            contentColor = contentColor,
                             onRemove = {
-                                component.excludeFandom(
-                                    exclude = false,
+                                component.selectFandom(
+                                    select = false,
                                     fandom = fandom
                                 )
+                            },
+                            onClick = {
+                                chipExpanded = !chipExpanded
                             }
                         )
                     }
-                }
-                Spacer(modifier = Modifier.height(3.dp))
-                var selectIncludedFandomDialogVisible by remember { mutableStateOf(false) }
-                var selectExcludedFandomDialogVisible by remember { mutableStateOf(false) }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(spaceBetweenItems)
-                ) {
-                    if (canIncludeFandoms) {
-                        OutlinedButton(
-                            onClick = {
-                                selectIncludedFandomDialogVisible = true
-                            },
-                            modifier = Modifier.weight(0.5F)
-                        ) {
-                            Icon(
-                                painter = painterResource(Res.image.ic_plus),
-                                contentDescription = "Исконка плюс",
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.requiredWidth(6.dp))
-                            Text("Добавить")
-                        }
-                        Spacer(Modifier.requiredWidth(6.dp))
-                    }
-                    OutlinedButton(
-                        onClick = {
-                            selectExcludedFandomDialogVisible = true
-                        },
-                        modifier = Modifier.weight(0.5F)
-                    ) {
-                        Icon(
-                            painter = painterResource(Res.image.ic_cross),
-                            contentDescription = "Иконка крест",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.requiredWidth(6.dp))
-                        Text("Исключить")
-                    }
-                }
-
-                if (selectIncludedFandomDialogVisible) {
-                    FindFandomDialog(
-                        component = component,
-                        onDismiss = {
-                            selectIncludedFandomDialogVisible = false
-                        },
-                        onSelected = { fandom ->
-                            component.selectFandom(
-                                select = true,
-                                fandom = fandom
-                            )
-                        }
-                    )
-                }
-                if (selectExcludedFandomDialogVisible) {
-                    FindFandomDialog(
-                        component = component,
-                        onDismiss = {
-                            selectExcludedFandomDialogVisible = false
-                        },
-                        onSelected = { fandom ->
-                            component.excludeFandom(
-                                exclude = true,
-                                fandom = fandom
-                            )
-                        }
-                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                } else {
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }
+
+        OutlinedCardWithCornerButton(
+            modifier = Modifier.animateContentSize(spring()),
+            outlineColor = MaterialTheme.colorScheme.outline,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            iconColor = MaterialTheme.colorScheme.surface,
+            label = "Исключить фэндом",
+            icon = painterResource(Res.image.ic_minus),
+            onClick = {
+                selectExcludedFandomDialogVisible = true
+            }
+        ) {
+            if (state.excludedFandoms.isNotEmpty()) {
+                state.excludedFandoms.forEach { fandom ->
+                    ItemChip(
+                        modifier = Modifier
+                            .padding(horizontal = DefaultPadding.CardHorizontalPadding)
+                            .animateContentSize(),
+                        title = fandom.title,
+                        subtitle = fandom.description,
+                        expanded = chipExpanded,
+                        onRemove = {
+                            component.excludeFandom(
+                                exclude = false,
+                                fandom = fandom
+                            )
+                        },
+                        onClick = {
+                            chipExpanded = !chipExpanded
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+            } else {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+    }
+
+    if (selectIncludedFandomDialogVisible) {
+        FindFandomDialog(
+            component = component,
+            onDismiss = {
+                selectIncludedFandomDialogVisible = false
+            },
+            onSelected = { fandom ->
+                component.selectFandom(
+                    select = true,
+                    fandom = fandom
+                )
+            }
+        )
+    }
+    if (selectExcludedFandomDialogVisible) {
+        FindFandomDialog(
+            component = component,
+            onDismiss = {
+                selectExcludedFandomDialogVisible = false
+            },
+            onSelected = { fandom ->
+                component.excludeFandom(
+                    exclude = true,
+                    fandom = fandom
+                )
+            }
+        )
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TagsSelector(
     component: SearchTagsComponent
@@ -682,9 +670,8 @@ private fun TagsSelector(
 
     var chipExpanded by rememberSaveable { mutableStateOf(false) }
 
-    val excludedColor = MaterialTheme.colorScheme.surfaceVariant
-    val includedColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.45F)
-    val contentColor = MaterialTheme.colorScheme.onBackground
+    var selectIncludedTagDialogVisible by remember { mutableStateOf(false) }
+    var selectExcludedTagDialogVisible by remember { mutableStateOf(false) }
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
@@ -695,118 +682,175 @@ private fun TagsSelector(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Card(
-            modifier = Modifier.fillMaxWidth(),
+        OutlinedCardWithCornerButton(
+            modifier = Modifier.animateContentSize(spring()),
+            outlineColor = MaterialTheme.colorScheme.outline,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            iconColor = MaterialTheme.colorScheme.surface,
+            label = "Добавить метку",
+            icon = painterResource(Res.image.ic_plus),
+            onClick = {
+                selectIncludedTagDialogVisible = true
+            }
         ) {
-            Column(
-                modifier = Modifier.padding(5.dp),
-            ) {
-                FlowRow {
-                    state.selectedTags.forEach { tag ->
-                        ItemChip(
-                            title = tag.title,
-                            subtitle = tag.description,
-                            expanded = chipExpanded,
-                            excluded = false,
-                            includedColor = includedColor,
-                            excludedColor = excludedColor,
-                            contentColor = contentColor,
-                            onRemove = {
-                                component.selectTag(
-                                    select = false,
-                                    tag = tag
-                                )
-                            }
-                        )
-                    }
-                }
-                FlowRow {
-                    state.excludedTags.forEach { tag ->
-                        ItemChip(
-                            title = tag.title,
-                            subtitle = tag.description,
-                            expanded = chipExpanded,
-                            excluded = true,
-                            includedColor = includedColor,
-                            excludedColor = excludedColor,
-                            contentColor = contentColor,
-                            onRemove = {
-                                component.excludeTag(
-                                    exclude = false,
-                                    tag = tag
-                                )
-                            },
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(3.dp))
-                var selectIncludedTagDialogVisible by remember { mutableStateOf(false) }
-                var selectExcludedTagDialogVisible by remember { mutableStateOf(false) }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(spaceBetweenItems)
-                ) {
-                    OutlinedButton(
-                        onClick = {
-                            selectIncludedTagDialogVisible = true
-                        },
-                        modifier = Modifier.weight(0.5F)
-                    ) {
-                        Icon(
-                            painter = painterResource(Res.image.ic_plus),
-                            contentDescription = "Исконка плюс",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.requiredWidth(6.dp))
-                        Text("Добавить")
-                    }
-                    Spacer(Modifier.requiredWidth(6.dp))
-                    OutlinedButton(
-                        onClick = {
-                            selectExcludedTagDialogVisible = true
-                        },
-                        modifier = Modifier.weight(0.5F)
-                    ) {
-                        Icon(
-                            painter = painterResource(Res.image.ic_cross),
-                            contentDescription = "Иконка крест",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.requiredWidth(6.dp))
-                        Text("Исключить")
-                    }
-                }
-
-                if (selectIncludedTagDialogVisible) {
-                    FindTagDialog(
-                        component = component,
-                        onDismiss = {
-                            selectIncludedTagDialogVisible = false
-                        },
-                        onSelected = { tag ->
+            if (state.selectedTags.isNotEmpty()) {
+                state.selectedTags.forEach { tag ->
+                    ItemChip(
+                        modifier = Modifier
+                            .padding(horizontal = DefaultPadding.CardHorizontalPadding)
+                            .animateContentSize(),
+                        title = tag.title,
+                        subtitle = tag.description,
+                        expanded = chipExpanded,
+                        onRemove = {
                             component.selectTag(
-                                select = true,
+                                select = false,
                                 tag = tag
                             )
-                        }
-                    )
-                }
-                if (selectExcludedTagDialogVisible) {
-                    FindTagDialog(
-                        component = component,
-                        onDismiss = {
-                            selectExcludedTagDialogVisible = false
                         },
-                        onSelected = { tag ->
-                            component.excludeTag(
-                                exclude = true,
-                                tag = tag
-                            )
+                        onClick = {
+                            chipExpanded = !chipExpanded
                         }
                     )
                 }
+                Spacer(modifier = Modifier.height(6.dp))
+            } else {
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
+
+
+        OutlinedCardWithCornerButton(
+            modifier = Modifier.animateContentSize(spring()),
+            outlineColor = MaterialTheme.colorScheme.outline,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            iconColor = MaterialTheme.colorScheme.surface,
+            label = "Исключить метку",
+            icon = painterResource(Res.image.ic_minus),
+            onClick = {
+                selectExcludedTagDialogVisible = true
+            }
+        ) {
+            if (state.excludedTags.isNotEmpty()) {
+                state.excludedTags.forEach { tag ->
+                    ItemChip(
+                        modifier = Modifier
+                            .padding(horizontal = DefaultPadding.CardHorizontalPadding)
+                            .animateContentSize(),
+                        title = tag.title,
+                        subtitle = tag.description,
+                        expanded = chipExpanded,
+                        onRemove = {
+                            component.excludeTag(
+                                exclude = false,
+                                tag = tag
+                            )
+                        },
+                        onClick = {
+                            chipExpanded = !chipExpanded
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+            } else {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+    }
+    if (selectIncludedTagDialogVisible) {
+        FindTagDialog(
+            component = component,
+            onDismiss = {
+                selectIncludedTagDialogVisible = false
+            },
+            onSelected = { tag ->
+                component.selectTag(
+                    select = true,
+                    tag = tag
+                )
+            }
+        )
+    }
+    if (selectExcludedTagDialogVisible) {
+        FindTagDialog(
+            component = component,
+            onDismiss = {
+                selectExcludedTagDialogVisible = false
+            },
+            onSelected = { tag ->
+                component.excludeTag(
+                    exclude = true,
+                    tag = tag
+                )
+            }
+        )
+    }
+}
+
+@Composable
+fun OutlinedCardWithCornerButton(
+    modifier: Modifier = Modifier,
+    outlineColor: Color = MaterialTheme.colorScheme.outline,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    iconColor: Color = MaterialTheme.colorScheme.surface,
+    shape: Shape = CardDefaults.outlinedShape,
+    borderWidth: Dp = 1.dp,
+    label: String,
+    icon: Painter,
+    onClick: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    OutlinedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = Color.Transparent,
+            contentColor = contentColor
+        ),
+        shape = shape,
+        border = BorderStroke(
+            width = borderWidth,
+            color = outlineColor
+        )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val buttonShape = remember {
+                RoundedCornerShape(
+                    bottomEnd = 16.dp
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = outlineColor,
+                        shape = buttonShape
+                    )
+                    .clip(buttonShape)
+                    .clickable(onClick = onClick),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = icon,
+                    contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier.fillMaxSize(0.5F),
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.titleMedium,
+                color = outlineColor
+            )
+        }
+        Spacer(modifier = Modifier.height(3.dp))
+        content()
     }
 }
 
@@ -830,10 +874,9 @@ private fun StatusSelector(
             title = "В процессе",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.STATUS_IN_PROGRESS
-                    }
-                    else {
+                    } else {
                         value - SearchParams.STATUS_IN_PROGRESS
                     }
                 )
@@ -844,10 +887,9 @@ private fun StatusSelector(
             title = "Завершён",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.STATUS_COMPLETED
-                    }
-                    else {
+                    } else {
                         value - SearchParams.STATUS_COMPLETED
                     }
                 )
@@ -858,10 +900,9 @@ private fun StatusSelector(
             title = "Заморожен",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.STATUS_FROZEN
-                    }
-                    else {
+                    } else {
                         value - SearchParams.STATUS_FROZEN
                     }
                 )
@@ -890,10 +931,9 @@ private fun RatingSelector(
             title = "G",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.RATING_G
-                    }
-                    else {
+                    } else {
                         value - SearchParams.RATING_G
                     }
                 )
@@ -904,10 +944,9 @@ private fun RatingSelector(
             title = "PG-13",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.RATING_PG13
-                    }
-                    else {
+                    } else {
                         value - SearchParams.RATING_PG13
                     }
                 )
@@ -918,10 +957,9 @@ private fun RatingSelector(
             title = "R",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.RATING_R
-                    }
-                    else {
+                    } else {
                         value - SearchParams.RATING_R
                     }
                 )
@@ -932,10 +970,9 @@ private fun RatingSelector(
             title = "NC-17",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.RATING_NC17
-                    }
-                    else {
+                    } else {
                         value - SearchParams.RATING_NC17
                     }
                 )
@@ -946,10 +983,9 @@ private fun RatingSelector(
             title = "NC-21",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.RATING_NC21
-                    }
-                    else {
+                    } else {
                         value - SearchParams.RATING_NC21
                     }
                 )
@@ -978,10 +1014,9 @@ private fun DirectionSelector(
             title = "Джен",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.DIRECTION_GEN
-                    }
-                    else {
+                    } else {
                         value - SearchParams.DIRECTION_GEN
                     }
                 )
@@ -992,10 +1027,9 @@ private fun DirectionSelector(
             title = "Гет",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.DIRECTION_HET
-                    }
-                    else {
+                    } else {
                         value - SearchParams.DIRECTION_HET
                     }
                 )
@@ -1006,10 +1040,9 @@ private fun DirectionSelector(
             title = "Слэш",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.DIRECTION_SLASH
-                    }
-                    else {
+                    } else {
                         value - SearchParams.DIRECTION_SLASH
                     }
                 )
@@ -1020,10 +1053,9 @@ private fun DirectionSelector(
             title = "Фемслэш",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.DIRECTION_FEMSLASH
-                    }
-                    else {
+                    } else {
                         value - SearchParams.DIRECTION_FEMSLASH
                     }
                 )
@@ -1034,10 +1066,9 @@ private fun DirectionSelector(
             title = "Другие виды отношений",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.DIRECTION_OTHER
-                    }
-                    else {
+                    } else {
                         value - SearchParams.DIRECTION_OTHER
                     }
                 )
@@ -1048,10 +1079,9 @@ private fun DirectionSelector(
             title = "Смешанная",
             onClick = {
                 onSelect(
-                    if(it) {
+                    if (it) {
                         value + SearchParams.DIRECTION_MIXED
-                    }
-                    else {
+                    } else {
                         value - SearchParams.DIRECTION_MIXED
                     }
                 )
@@ -1172,7 +1202,7 @@ fun RewardsCountSelector(
             overflow = TextOverflow.Ellipsis
         )
         OutlinedTextField(
-            value = if(value == 0) "" else "$value",
+            value = if (value == 0) "" else "$value",
             onValueChange = {
                 onSelect(it.toIntOrNull() ?: 0)
             },
@@ -1265,7 +1295,7 @@ fun RangeSelector(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         OutlinedTextField(
-            value = if(value.start == 0) "" else "${value.start}",
+            value = if (value.start == 0) "" else "${value.start}",
             onValueChange = {
                 println(it)
                 onSelect(
@@ -1283,7 +1313,7 @@ fun RangeSelector(
             modifier = Modifier.weight(0.4F)
         )
         OutlinedTextField(
-            value = if(value.end == 0) "" else "${value.end}",
+            value = if (value.end == 0) "" else "${value.end}",
             onValueChange = {
                 onSelect(
                     value.copy(
@@ -1482,7 +1512,7 @@ private fun SearchedTagItem(
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.titleMedium
             )
-            if(tag.isAdult) {
+            if (tag.isAdult) {
                 Spacer(modifier = Modifier.width(spaceBetweenItems))
                 Icon(
                     painter = painterResource(Res.image.ic_18),
@@ -1505,50 +1535,47 @@ private fun SearchedTagItem(
 
 @Composable
 private fun ItemChip(
+    modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
-    excluded: Boolean,
-    includedColor: Color,
-    excludedColor: Color,
-    contentColor: Color,
+    expanded: Boolean,
     onRemove: () -> Unit,
-    expanded: Boolean
+    onClick: () -> Unit,
 ) {
     InputChip(
-        selected = !excluded,
-        onClick = onRemove,
+        modifier = modifier,
+        selected = false,
+        onClick = onClick,
         label = {
             Column {
                 Text(
                     text = title,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.titleMedium
                 )
-                if (expanded) {
+                if(expanded) {
                     Text(
                         text = subtitle,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.labelMedium
                     )
                 }
             }
         },
         trailingIcon = {
-            Icon(
-                painter = painterResource(Res.image.ic_cancel),
-                contentDescription = null,
-                modifier = Modifier.size(21.dp).padding(2.dp)
-            )
-        },
-        colors = InputChipDefaults.inputChipColors(
-            containerColor = excludedColor,
-            selectedContainerColor = includedColor,
-            labelColor = contentColor,
-            selectedLabelColor = contentColor,
-            trailingIconColor = contentColor,
-            selectedTrailingIconColor = contentColor
-        ),
-        modifier = Modifier.padding(2.dp)
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier.size(24.dp),
+            ) {
+                Icon(
+                    painter = painterResource(Res.image.ic_cancel),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
     )
 }
 
@@ -1619,7 +1646,7 @@ private fun CheckboxWithTitle(
 }
 
 @Composable
-private fun <T: Any> ExposedMenuSelector(
+private fun <T : Any> ExposedMenuSelector(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     selectedItemName: String,
