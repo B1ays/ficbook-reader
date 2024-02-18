@@ -1129,7 +1129,7 @@ private class Reader(
         for (i in 0 until index) {
             currentIndex += get(i).length
         }
-        currentIndex += ((get(index).length)/2)
+        currentIndex += ((getOrNull(index)?.length ?: 0)/2)
         return currentIndex
     }
 }
