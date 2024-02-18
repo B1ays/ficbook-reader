@@ -11,4 +11,4 @@ actual const val customTabsSupported = true
 actual val dynamicColorSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
 @ChecksSdkIntAtLeast
-actual val blurSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+actual val blurSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2
