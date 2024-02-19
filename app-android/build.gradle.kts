@@ -26,22 +26,41 @@ android {
         }
     }
 
+    flavorDimensions += listOf("abi")
+
     //noinspection ChromeOsAbiSupport
     buildTypes {
         release {
-            //TODO Configure Proguard
             isMinifyEnabled = true
             isShrinkResources = true
+        }
+        debug {
+            ndk {
+                abiFilters += setOf("arm64-v8a", "x86")
+            }
+            isMinifyEnabled = false
+        }
+    }
+
+    //noinspection ChromeOsAbiSupport
+    productFlavors {
+        create("arm7") {
+            dimension = "abi"
             ndk {
                 abiFilters += setOf("armeabi-v7a")
             }
         }
-        debug {
+        create("arm64") {
+            dimension = "abi"
             ndk {
-
-                abiFilters += setOf("arm64-v8a", "x86")
+                abiFilters += setOf("arm64-v8a")
             }
-            isMinifyEnabled = false
+        }
+        create("x86") {
+            dimension = "abi"
+            ndk {
+                abiFilters += setOf("x86")
+            }
         }
     }
 
