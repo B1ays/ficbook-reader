@@ -19,15 +19,16 @@ essenty = "2.0.0-alpha03"
 jsoup = "1.17.2"
 koin = "3.5.3"
 koinCompose = "1.1.2"
-kotlinx-coroutines-core-jvm = "1.8.0"
+kotlinx-coroutines-core = "1.8.0"
 kotlinx-serialization-json = "1.6.2"
 ktxCore = "1.12.0"
+appcompat = "1.6.1"
 libres = "1.2.2"
-materialKolor = "1.4.0-alpha07"
+materialKolor = "1.4.0-alpha08"
 multiplatform-settings = "1.1.1"
 okhttp = "4.12.0"
 realm = "1.13.0"
-compose-jetbrains = "1.6.0-rc02"
+compose-jetbrains = "1.6.0-rc03"
 androidx-activityCompose = "1.8.2"
 composeColorPicker = "0.7.0"
 composeColorPickerJvm = "0.7.0"
@@ -35,11 +36,14 @@ haze = "0.5.1"
 insetsx = "0.1.0-alpha10"
 browser = "1.7.0"
 coil = "3.0.0-alpha04"
+cache-fix = "3.0.1"
+lwjgl = "3.3.3"
 
 [libraries]
 androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-core = { module = "androidx.core:core", version.ref = "ktxCore" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
@@ -55,7 +59,10 @@ jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core-jvm" }
+kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-core-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-core-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines-core" }
+
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 libres-compose = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
 libres-plugin = { module = "io.github.skeptick.libres:gradle-plugin", version.ref = "libres" }
@@ -66,6 +73,7 @@ multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-sett
 multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 realm-library-base = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
+realm-gradle-plugin = { module = "io.realm.kotlin:gradle-plugin", version.ref = "realm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -79,3 +87,4 @@ libres = { id = "io.github.skeptick.libres", version.ref = "libres" }
 nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.1"
 realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+gradle-cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cache-fix" }
