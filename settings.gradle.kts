@@ -1,3 +1,5 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google()
@@ -32,5 +34,6 @@ include(":haze:haze", ":haze:haze-materials")
 project(":haze:haze").projectDir = file("${rootDir}/haze/haze")
 project(":haze:haze-materials").projectDir = file("${rootDir}/haze/haze-materials")
 
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
+include("features")
+include("features:fileDownloadFeature")
+include("features:mpfilepicker")
