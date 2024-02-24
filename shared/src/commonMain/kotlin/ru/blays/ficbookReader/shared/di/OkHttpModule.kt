@@ -37,4 +37,4 @@ class UserAgentInterceptor(private val userAgent: String) : Interceptor {
     }
 }
 
-private const val USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3346.8 Safari/537.36"
+private const val USER_AGENT = "AppleWebKit/605.1"/*"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3346.8 Safari/537.36"*/

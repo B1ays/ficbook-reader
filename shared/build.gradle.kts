@@ -52,6 +52,10 @@ kotlin {
 
                 // Ficbook api
                 implementation(projects.ficbookApi)
+
+                // features
+                api(projects.features.fileDownloadFeature)
+                api(projects.features.mpfilepicker)
             }
         }
         val jvmMain by getting {

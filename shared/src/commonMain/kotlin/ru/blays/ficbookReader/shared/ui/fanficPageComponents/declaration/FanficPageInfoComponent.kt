@@ -8,6 +8,8 @@ import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 interface FanficPageInfoComponent {
     val state: Value<State>
 
+    val fanficHref: String
+
     val actionsComponent: FanficPageActionsComponent
 
     fun sendIntent(intent: Intent)
@@ -49,6 +51,7 @@ interface FanficPageInfoComponent {
         }
         data class OpenUrl(val url: String): Output()
         data class OpenAuthor(val href: String) : Output()
+        data class DownloadFanfic(val fanficID: String, val fanficName: String): Output()
     }
 
     data class State(

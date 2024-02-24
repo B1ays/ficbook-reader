@@ -2,12 +2,15 @@ package ru.blays.ficbookReader.android
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.retainedComponent
@@ -76,6 +79,17 @@ class MainActivity: ComponentActivity() {
                 volumeKeyEventSource.onEvent(KeyEvent.KEYCODE_VOLUME_UP)
             }
             else -> super.dispatchKeyEvent(event)
+        }
+    }
+
+    // Function to check and request permission.
+    private fun checkPermission(
+        permission: String,
+        requestCode: Int
+    ) {
+        if (ContextCompat.checkSelfPermission(this@MainActivity, permission) == PackageManager.PERMISSION_DENIED) {
+            // Requesting the permission
+            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(permission), requestCode)
         }
     }
 }

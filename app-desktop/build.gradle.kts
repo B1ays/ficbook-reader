@@ -22,6 +22,7 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(libs.decompose.extensionsComposeJetbrains)
 
+                implementation(libs.kotlinx.coroutines.core.swing)
             }
         }
     }

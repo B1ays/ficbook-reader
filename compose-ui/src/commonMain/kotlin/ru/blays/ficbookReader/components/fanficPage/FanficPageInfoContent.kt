@@ -1087,9 +1087,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
         if(shareSupported) {
             DropdownMenuItem(
                 text = {
-                    Text(
-                        text = "Поделиться",
-                    )
+                    Text(text = "Поделиться")
                 },
                 leadingIcon = {
                     Icon(
@@ -1106,9 +1104,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
         }
         DropdownMenuItem(
             text = {
-                Text(
-                    text = "Копировать ccылку",
-                )
+                Text(text = "Копировать ccылку")
             },
             leadingIcon = {
                 Icon(
@@ -1124,9 +1120,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
         )
         DropdownMenuItem(
             text = {
-                Text(
-                    text = "Открыть в браузере",
-                )
+                Text(text = "Открыть в браузере")
             },
             leadingIcon = {
                 Icon(
@@ -1140,6 +1134,29 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
                 component.sendIntent(FanficPageInfoComponent.Intent.OpenInBrowser)
             }
         )
+        component.state.value.fanfic?.let {
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Скачать")
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(Res.image.ic_download),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                onClick = {
+                    dropDownMenuState = false
+                    component.onOutput(
+                        FanficPageInfoComponent.Output.DownloadFanfic(
+                            fanficID = component.fanficHref.substringAfterLast('/'),
+                            fanficName = it.name
+                        )
+                    )
+                }
+            )
+        }
     }
 }
 

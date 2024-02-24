@@ -12,6 +12,7 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import org.koin.core.context.startKoin
+import ru.blays.ficbook.feature.fileDownload.downloadFeatureModule
 import ru.blays.ficbookReader.components.root.RootContent
 import ru.blays.ficbookReader.platformUtils.createImageLoader
 import ru.blays.ficbookReader.shared.di.sharedModule
@@ -22,7 +23,8 @@ import ru.blays.ficbookReader.theme.AppTheme
 fun main() {
     startKoin {
         modules(
-            sharedModule
+            sharedModule,
+            downloadFeatureModule
         )
     }
 

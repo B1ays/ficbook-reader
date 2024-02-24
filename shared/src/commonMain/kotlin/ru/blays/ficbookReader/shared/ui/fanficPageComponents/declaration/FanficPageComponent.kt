@@ -17,7 +17,7 @@ interface FanficPageComponent {
         data class OpenUrl(val url: String): Output()
         data class OpenSection(val section: SectionWithQuery) : Output()
         data class OpenAuthor(val href: String) : Output()
-        class OpenAnotherFanfic(val href: String) : Output()
+        data class OpenAnotherFanfic(val href: String) : Output()
     }
 
     sealed class Child {
@@ -25,6 +25,7 @@ interface FanficPageComponent {
         data class Reader(val component: MainReaderComponent): Child()
         data class PartComments(val component: DefaultPartCommentsComponent): Child()
         data class AllComments(val component: CommentsComponent): Child()
+        data class DownloadFanfic(val component: DownloadFanficComponent): Child()
     }
 
     @Serializable
@@ -41,5 +42,7 @@ interface FanficPageComponent {
         data class PartComments(val chapterID: String): Config()
         @Serializable
         data class AllComments(val href: String): Config()
+        @Serializable
+        data class DownloadFanfic(val fanficID: String, val fanficName: String): Config()
     }
 }

@@ -63,6 +63,16 @@ class DefaultFanficPageComponent(
                     )
                 )
             }
+            is FanficPageComponent.Config.DownloadFanfic -> {
+                FanficPageComponent.Child.DownloadFanfic(
+                    DefaultDownloadFanficComponent(
+                        componentContext = childContext,
+                        fanficID = configuration.fanficID,
+                        fanficName = configuration.fanficName,
+                        close = navigation::pop
+                    )
+                )
+            }
         }
     }
 
@@ -115,6 +125,14 @@ class DefaultFanficPageComponent(
             is FanficPageInfoComponent.Output.OpenAuthor -> {
                 onOutput(
                     FanficPageComponent.Output.OpenAuthor(output.href)
+                )
+            }
+            is FanficPageInfoComponent.Output.DownloadFanfic -> {
+                navigation.push(
+                    FanficPageComponent.Config.DownloadFanfic(
+                        fanficID = output.fanficID,
+                        fanficName = output.fanficName
+                    )
                 )
             }
         }

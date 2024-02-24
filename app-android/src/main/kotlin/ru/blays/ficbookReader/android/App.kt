@@ -7,6 +7,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import ru.blays.ficbook.feature.fileDownload.downloadFeatureModule
 import ru.blays.ficbookReader.platformUtils.createImageLoader
 import ru.blays.ficbookReader.shared.di.sharedModule
 import java.io.PrintWriter
@@ -31,7 +32,8 @@ class App: Application(), SingletonImageLoader.Factory {
         startKoin {
             androidContext(this@App)
             modules(
-                sharedModule
+                sharedModule,
+                downloadFeatureModule
             )
         }
     }

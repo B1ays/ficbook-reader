@@ -17,13 +17,14 @@ fun FanficPageContent(component: FanficPageComponent) {
     Children(
         stack = component.childStack,
         modifier = Modifier.fillMaxSize(),
-        animation = animator?.let { stackAnimation(it) }
+        animation = stackAnimation(animator)
     ) {
         when(val child = it.instance) {
             is FanficPageComponent.Child.Info -> FanficPageInfoContent(child.component)
             is FanficPageComponent.Child.Reader -> FanficReaderContent(child.component)
             is FanficPageComponent.Child.PartComments -> PartCommentsContent(child.component)
             is FanficPageComponent.Child.AllComments -> CommentsScreenContent(child.component)
+            is FanficPageComponent.Child.DownloadFanfic -> FanficDownloadContent(child.component)
         }
     }
 }

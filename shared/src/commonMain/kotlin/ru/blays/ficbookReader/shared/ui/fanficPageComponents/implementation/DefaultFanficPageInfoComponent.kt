@@ -27,7 +27,7 @@ import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultFanficPageInfoComponent(
     componentContext: ComponentContext,
-    private val fanficHref: String,
+    override val fanficHref: String,
     private val onOutput: (FanficPageInfoComponent.Output) -> Unit
 ): FanficPageInfoComponent, ComponentContext by componentContext {
     private val repository: IFanficPageRepo by getKoin().inject()
