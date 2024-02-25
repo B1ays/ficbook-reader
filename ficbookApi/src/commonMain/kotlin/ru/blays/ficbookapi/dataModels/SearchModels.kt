@@ -42,9 +42,15 @@ data class SearchedFandomsModel(
     }
 }
 
-class SearchedCharactersModel : ArrayList<SearchedCharactersModel.SearchedCharactersItem>(){
+@Serializable
+data class SearchedCharactersModel(
+    @SerialName("data")
+    val data: List<Data>,
+    @SerialName("result")
+    val result: Boolean
+) {
     @Serializable
-    data class SearchedCharactersItem(
+    data class Data(
         @SerialName("chars")
         val chars: List<Char>,
         @SerialName("date_added")

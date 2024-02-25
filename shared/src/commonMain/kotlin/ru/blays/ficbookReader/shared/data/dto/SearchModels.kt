@@ -3,8 +3,8 @@ package ru.blays.ficbookReader.shared.data.dto
 data class SearchParams(
     val fandomsFilter: String,
     val fandomsGroup: Int,
-    val pairings: Set<SearchedCharacterModel>,
-    val excludedPairings: Set<SearchedCharacterModel>,
+    val pairings: Set<SearchedPairingModel>,
+    val excludedPairings: Set<SearchedPairingModel>,
     val pagesCountRange: IntRangeSimple,
     val withStatus: List<Int>,
     val withRating: List<Int>,
@@ -19,7 +19,6 @@ data class SearchParams(
     val sort: Int
 ) {
     companion object {
-
         /**
         * Fandom filter flags
         **/
@@ -120,10 +119,28 @@ data class SearchedFandomModel(
     val id: String
 )
 
-data class SearchedCharacterModel(
-    val name: String,
-    val id: String
+data class SearchedCharactersGroup(
+    val fandomName: String,
+    val characters: List<SearchedCharacterModel>
 )
+
+data class SearchedCharacterModel(
+    val fandomId: String,
+    val id: String,
+    val name: String,
+    val aliases: List<String>,
+)
+
+data class SearchedPairingModel(
+    val characters: Set<Character>
+) {
+    data class Character(
+        val fandomId: String,
+        val id: String,
+        val name: String,
+        val modifier: String = ""
+    )
+}
 
 data class SearchedTagModel(
     val title: String,
