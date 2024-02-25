@@ -334,9 +334,18 @@ fun SearchedFandomsModel.Data.Result.toStableModel() = SearchedFandomModel(
     id = id
 )
 
-fun SearchedCharactersModel.SearchedCharactersItem.Char.toStableModel() = SearchedCharacterModel(
+fun SearchedCharactersModel.Data.toStableModel() = SearchedCharactersGroup(
+    fandomName = title,
+    characters = chars.map {
+        it.toStableModel("$id")
+    }
+)
+
+fun SearchedCharactersModel.Data.Char.toStableModel(fandomId: String) = SearchedCharacterModel(
+    fandomId = fandomId,
+    id = "$id",
     name = name,
-    id = "$id"
+    aliases = aliases
 )
 
 fun SearchedTagsModel.Data.Tag.toStableModel() = SearchedTagModel(

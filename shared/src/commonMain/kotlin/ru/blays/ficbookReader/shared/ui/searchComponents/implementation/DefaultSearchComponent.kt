@@ -6,8 +6,9 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import ru.blays.ficbookReader.shared.data.dto.IntRangeSimple
 import ru.blays.ficbookReader.shared.data.dto.SearchParams
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
 import ru.blays.ficbookapi.SEARCH_HREF
 import ru.blays.ficbookapi.data.SectionWithQuery
@@ -22,19 +23,22 @@ class DefaultSearchComponent(
         loadAtCreate = false,
         output = output
     )
+    private val _searchPairingsComponent = DefaultSearchPairingsComponent(
+        componentContext = childContext("SearchPairingsComponent")
+    )
 
     private val _state = MutableValue(SearchParams.default)
 
     override val state get() = _state
 
-    override val fanficsListComponent = _fanficsListComponent
+    override val fanficsListComponent get() = _fanficsListComponent
     override val searchFandomsComponent = DefaultSearchFandomsComponent(
         componentContext = childContext("SearchFandomsComponent")
     )
-
     override val searchTagsComponent = DefaultSearchTagsComponent(
         componentContext = childContext("SearchTagsComponent")
     )
+    override val searchCharactersComponent get() = _searchPairingsComponent
 
     override fun search() {
         _fanficsListComponent.setSection(
@@ -126,8 +130,6 @@ class DefaultSearchComponent(
         }
     }
 
-    fun getSection(): SectionWithQuery = buildSection() //TODO Remove after all tests
-
     private fun buildSection(): SectionWithQuery {
         val queryParams = mutableListOf<Pair<String, String>>()
 
@@ -148,6 +150,37 @@ class DefaultSearchComponent(
                     }
                     fandomsState.excludedFandoms.forEach { fandom ->
                         queryParams.add("fandom_exclude_ids[]" to fandom.id)
+                    }
+
+                    val pairingsState = _searchPairingsComponent.state.value
+                    pairingsState.selectedPairings.forEachIndexed { index, pairing ->
+                        pairing.characters.forEach { character ->
+                            queryParams.add(
+                                "pairings[$index][chars][]" to character.id
+                            )
+                        }
+                        if(pairing.characters.isNotEmpty()) {
+                            queryParams.add(
+                                "pairings[$index][pairing]" to pairing.characters.joinToString("---") {
+                                    "${if(it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
+                                }
+                            )
+                        }
+
+                    }
+                    pairingsState.excludedPairings.forEachIndexed { index, pairing ->
+                        pairing.characters.forEach { character ->
+                            queryParams.add(
+                                "pairings_exclude[$index][chars][]" to character.id
+                            )
+                        }
+                        if(pairing.characters.isNotEmpty()) {
+                            queryParams.add(
+                                "pairings_exclude[$index][pairing]" to pairing.characters.joinToString("---") {
+                                    "${if(it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -199,5 +232,26 @@ class DefaultSearchComponent(
             path = SEARCH_HREF
         )
         return section
+    }
+
+    private fun observeFandomsChange() {
+        var previousIds: List<String> = emptyList()
+        searchFandomsComponent.state.subscribe { state ->
+            if(state.selectedFandoms.isNotEmpty()) {
+                val fandomsIds = state.selectedFandoms.map(SearchedFandomModel::id)
+                if(previousIds != fandomsIds) {
+                    _searchPairingsComponent.excludeNotLinkedPairings(fandomsIds)
+                    _searchPairingsComponent.update(fandomsIds)
+                    previousIds = fandomsIds
+                }
+            } else {
+                _searchPairingsComponent.clean()
+                previousIds = emptyList()
+            }
+        }
+    }
+
+    init {
+        observeFandomsChange()
     }
 }

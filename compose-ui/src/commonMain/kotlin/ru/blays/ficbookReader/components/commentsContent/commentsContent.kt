@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
@@ -337,7 +336,6 @@ private fun QuoteElement(
                     VerticalDivider(
                         color = contentColor,
                         thickness = 2.dp,
-                        cap = StrokeCap.Round
                     )
                 }
                 val text = subcompose(QUOTE_TEXT_SLOTS.TEXT) {

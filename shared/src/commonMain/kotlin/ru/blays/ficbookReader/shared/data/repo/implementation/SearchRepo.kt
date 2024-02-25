@@ -1,11 +1,12 @@
 package ru.blays.ficbookReader.shared.data.repo.implementation
 
-import ru.blays.ficbookReader.shared.data.dto.SearchedCharacterModel
+import ru.blays.ficbookReader.shared.data.dto.SearchedCharactersGroup
 import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
 import ru.blays.ficbookReader.shared.data.dto.SearchedTagModel
 import ru.blays.ficbookReader.shared.data.mappers.toStableModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.ISearchRepo
 import ru.blays.ficbookapi.api.SearchApi
+import ru.blays.ficbookapi.dataModels.SearchedCharactersModel
 import ru.blays.ficbookapi.dataModels.SearchedFandomsModel
 import ru.blays.ficbookapi.dataModels.SearchedTagsModel
 import ru.blays.ficbookapi.result.ApiResult
@@ -26,18 +27,13 @@ class SearchRepo(
         }
     }
 
-    override suspend fun getCharacters(fandomIds: List<String>): ApiResult<List<SearchedCharacterModel>> {
+    override suspend fun getCharacters(fandomIds: List<String>): ApiResult<List<SearchedCharactersGroup>> {
         return when(
             val result = api.getCharacters(fandomIds)
         ) {
             is ApiResult.Success -> {
-                val model = listOf(
-                    SearchedCharacterModel(
-                        name = "",
-                        id = ""
-                    )
-                )
-                ApiResult.Success(model)
+                val groups = result.value.data.map(SearchedCharactersModel.Data::toStableModel)
+                ApiResult.Success(groups)
             }
             is ApiResult.Error -> ApiResult.Error(result.exception)
         }

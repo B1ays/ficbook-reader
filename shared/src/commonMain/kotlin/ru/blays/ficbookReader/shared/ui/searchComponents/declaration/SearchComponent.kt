@@ -11,6 +11,7 @@ interface SearchComponent {
     val fanficsListComponent: FanficsListComponent
     val searchFandomsComponent: SearchFandomsComponent
     val searchTagsComponent: SearchTagsComponent
+    val searchCharactersComponent: SearchPairingsComponent
 
     fun search()
     fun clear()

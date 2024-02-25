@@ -1,13 +1,11 @@
 package ru.blays.ficbookReader.components.searchContent
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
@@ -35,13 +34,11 @@ import io.github.skeptick.libres.compose.painterResource
 import kotlinx.coroutines.launch
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.platformUtils.BackHandler
-import ru.blays.ficbookReader.shared.data.dto.IntRangeSimple
-import ru.blays.ficbookReader.shared.data.dto.SearchParams
-import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
-import ru.blays.ficbookReader.shared.data.dto.SearchedTagModel
+import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchFandomsComponent
+import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchPairingsComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchTagsComponent
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
@@ -306,12 +303,12 @@ private fun SearchMenu(
                 shape = CardDefaults.shape,
                 modifier = Modifier.fillMaxWidth(),
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             FandomFilter(
                 value = state.fandomsFilter,
                 onValueChange = component::setFandomsFilter
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             AnimatedVisibility(
                 visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CATEGORY,
                 enter = expandVertically(spring()),
@@ -321,11 +318,11 @@ private fun SearchMenu(
                     value = state.fandomsGroup,
                     onValueChange = component::setFandomsGroup
                 )
-                CategorySpacer()
+                VerticalCategorySpacer()
             }
             AnimatedVisibility(
                 visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CATEGORY ||
-                        state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
+                    state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
                 enter = expandVertically(spring()),
                 exit = shrinkVertically(spring())
             ) {
@@ -333,27 +330,35 @@ private fun SearchMenu(
                     component = component.searchFandomsComponent,
                     canIncludeFandoms = state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE
                 )
-                CategorySpacer()
+                VerticalCategorySpacer()
+            }
+            AnimatedVisibility(
+                visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
+                enter = expandVertically(spring()),
+                exit = shrinkVertically(spring())
+            ) {
+                PairingSelector(component.searchCharactersComponent)
+                VerticalCategorySpacer()
             }
             TagsSelector(
                 component = component.searchTagsComponent,
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             PagesRangeSelector(
                 value = state.pagesCountRange,
                 onSelect = component::setPagesCountRange
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             StatusSelector(
                 value = state.withStatus,
                 onSelect = component::setStatus
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             RatingSelector(
                 value = state.withRating,
                 onSelect = component::setRating
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             DirectionSelector(
                 value = state.withDirection,
                 onSelect = component::setDirection
@@ -362,34 +367,34 @@ private fun SearchMenu(
                 value = state.translate,
                 onSelect = component::setTranslate
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             CheckboxWithTitle(
                 checked = state.onlyPremium,
                 title = "Фанфики из раздела «Горячие работы»",
                 onClick = component::setOnlyPremium
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             LikesRangeSelector(
                 value = state.likesRange,
                 onSelect = component::setLikesRange
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             RewardsCountSelector(
                 value = state.minRewards,
                 onSelect = component::setMinRewards
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             CheckboxWithTitle(
                 checked = state.filterReaded,
                 title = "Не показывать прочитанное",
                 onClick = component::setFilterReaded
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
             SortTypeSelector(
                 value = state.sort,
                 onSelect = component::setSort
             )
-            CategorySpacer()
+            VerticalCategorySpacer()
         }
         Button(
             onClick = {
@@ -658,6 +663,264 @@ private fun FandomsSelector(
                     fandom = fandom
                 )
             }
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun PairingSelector(component: SearchPairingsComponent) {
+    val state by component.state.subscribeAsState()
+
+    var selectCharacterDialogVisible by remember { mutableStateOf(false) }
+    Column(
+        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
+    ) {
+        Text(
+            text = "Выбрать пейринги или персонажей",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            if(state.buildedPairing?.characters?.isNotEmpty() == true) {
+                FlowRow(
+                    modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
+                ) {
+                    state.buildedPairing?.characters?.forEach { character ->
+                        CharacterItem(
+                            character = character,
+                            defaultModifiers = component.defaultCharacterModifiers,
+                            onModifierChange = { modifier ->
+                                component.changeCharacterModifier(
+                                    character = character,
+                                    modifier = modifier
+                                )
+                            }
+                        )
+                    }
+                }
+            } else {
+                Spacer(modifier = Modifier.height(DefaultPadding.CardHorizontalPadding))
+            }
+            Row(
+                modifier = Modifier.padding(horizontal = DefaultPadding.CardHorizontalPadding)
+            ) {
+                Button(
+                    onClick = { selectCharacterDialogVisible = true },
+                    shape = MaterialTheme.shapes.small,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.surfaceTint
+                    ),
+                    contentPadding = PaddingValues(
+                        horizontal = 8.dp,
+                        vertical = 3.dp
+                    ),
+                    modifier = Modifier.height(30.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(Res.image.ic_plus),
+                        contentDescription = "Иконка плюс",
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Добавить персонажа"
+                    )
+                }
+                AnimatedVisibility(
+                    visible = state.buildedPairing != null,
+                    enter = expandHorizontally(spring()) + fadeIn(),
+                    exit = shrinkHorizontally(spring()) + fadeOut()
+                ) {
+                    Row {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Button(
+                            onClick = component::clearBuildedPairing,
+                            shape = MaterialTheme.shapes.small,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.surfaceTint
+                            ),
+                            contentPadding = PaddingValues(
+                                horizontal = 8.dp,
+                                vertical = 3.dp
+                            ),
+                            modifier = Modifier.height(30.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.image.ic_cross),
+                                contentDescription = "Иконка плюс",
+                                modifier = Modifier.size(20.dp),
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Очистить"
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(DefaultPadding.CardHorizontalPadding))
+            AnimatedVisibility(
+                visible = state.buildedPairing != null,
+                enter = expandVertically(spring()),
+                exit = shrinkVertically(spring())
+            ) {
+                Column {
+                    HorizontalDivider(
+                        thickness = 2.dp,
+                        color = MaterialTheme.colorScheme.surface
+                    )
+                    Row {
+                        Button(
+                            onClick = {
+                                state.buildedPairing?.let {
+                                    component.selectPairing(
+                                        select = true,
+                                        pairing = it
+                                    )
+                                }
+                            },
+                            shape = MaterialTheme.shapes.small,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.surfaceTint
+                            ),
+                            modifier = Modifier
+                                .padding(start = 12.dp)
+                                .padding(vertical = 3.dp)
+                                .weight(0.45F),
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.image.ic_plus),
+                                contentDescription = "Иконка плюс",
+                                modifier = Modifier.size(20.dp),
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "Добавить")
+                        }
+                        Spacer(modifier = Modifier.weight(0.10F))
+                        Button(
+                            onClick = {
+                                state.buildedPairing?.let {
+                                    component.excludePairing(
+                                        exclude = true,
+                                        pairing = it
+                                    )
+                                }
+                            },
+                            shape = MaterialTheme.shapes.small,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                contentColor = MaterialTheme.colorScheme.surfaceTint
+                            ),
+                            modifier = Modifier
+                                .padding(end = 12.dp)
+                                .padding(vertical = 3.dp)
+                                .weight(0.45F),
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.image.ic_minus),
+                                contentDescription = "Иконка минус",
+                                modifier = Modifier.size(20.dp),
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Исключить"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        OutlinedCard(
+            modifier = Modifier.fillMaxWidth(),
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline
+            ),
+            colors = CardDefaults.outlinedCardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Пейринги",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(horizontal = 12.dp),
+            )
+            if (state.selectedPairings.isNotEmpty()) {
+                state.selectedPairings.forEach { pairing ->
+                    ItemChip(
+                        modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
+                        title = pairing.characters.joinToString("/") {
+                            "${if(it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
+                        },
+                        expanded = false,
+                        maxLines = Int.MAX_VALUE,
+                        onRemove = {
+                            component.selectPairing(
+                                select = false,
+                                pairing = pairing
+                            )
+                        },
+                        onClick = {}
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+        }
+        OutlinedCard(
+            modifier = Modifier.fillMaxWidth(),
+            border = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline
+            ),
+            colors = CardDefaults.outlinedCardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Исключённые пейринги",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+            if(state.excludedPairings.isNotEmpty()) {
+                state.excludedPairings.forEach { pairing ->
+                    ItemChip(
+                        modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
+                        title = pairing.characters.joinToString("/") {
+                            "${if(it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
+                        },
+                        expanded = false,
+                        maxLines = Int.MAX_VALUE,
+                        onRemove = {
+                            component.excludePairing(
+                                exclude = false,
+                                pairing = pairing
+                            )
+                        },
+                        onClick = {}
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+        }
+    }
+    if(selectCharacterDialogVisible) {
+        SelectCharacterDialog(
+            component = component,
+            onDismiss = { selectCharacterDialogVisible = false }
         )
     }
 }
@@ -1368,7 +1631,7 @@ private fun FindFandomDialog(
                     shape = CardDefaults.shape,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                CategorySpacer()
+                VerticalCategorySpacer()
                 LazyColumn(
                     modifier = Modifier.weight(1F),
                 ) {
@@ -1433,7 +1696,7 @@ private fun FindTagDialog(
                     shape = CardDefaults.shape,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                CategorySpacer()
+                VerticalCategorySpacer()
                 LazyColumn(
                     modifier = Modifier.weight(1F),
                 ) {
@@ -1445,6 +1708,94 @@ private fun FindTagDialog(
                                 onDismiss()
                             }
                         )
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    OutlinedButton(
+                        onClick = onDismiss
+                    ) {
+                        Text("Отмена")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectCharacterDialog(
+    component: SearchPairingsComponent,
+    onDismiss: () -> Unit
+) {
+    val state by component.state.subscribeAsState()
+    var searchedName by remember { mutableStateOf("") }
+
+    val filteredList = remember(searchedName) {
+        if(searchedName.isEmpty()) state.searchedCharacters
+        else state.searchedCharacters.map { group ->
+            group.copy(
+                characters = group.characters.filter { character ->
+                    character.name.contains(searchedName, ignoreCase = true) ||
+                    character.aliases.any { it.contains(searchedName, ignoreCase = true) }
+                }
+            )
+        }
+    }
+
+    DialogPlatform(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.fillMaxHeight(0.6F)
+    ) {
+        Card {
+            Column(
+                modifier = Modifier.padding(6.dp)
+            ) {
+                OutlinedTextField(
+                    value = searchedName,
+                    onValueChange = { searchedName = it },
+                    label = {
+                        Text(text = "Поиск по названию")
+                    },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { searchedName = "" }
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.image.ic_cancel),
+                                contentDescription = "Очистить поиск",
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    },
+                    singleLine = true,
+                    shape = CardDefaults.shape,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                VerticalCategorySpacer()
+                LazyColumn(
+                    modifier = Modifier.weight(1F),
+                ) {
+                    filteredList.forEach { group ->
+                        item {
+                            Text(
+                                text = group.fandomName,
+                                modifier = Modifier.padding(6.dp),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                        items(group.characters) { character ->
+                            SearchedCharacterItem(
+                                character = character,
+                                onClick = {
+                                    component.addCharacterToPairing(character)
+                                    onDismiss()
+                                }
+                            )
+                        }
                     }
                 }
                 Row(
@@ -1534,11 +1885,196 @@ private fun SearchedTagItem(
 }
 
 @Composable
+private fun SearchedCharacterItem(
+    character: SearchedCharacterModel,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .padding(6.dp)
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+    ) {
+        Text(
+            text = character.name,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        if(character.aliases.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = character.aliases.joinToString(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun CharacterItem(
+    character: SearchedPairingModel.Character,
+    defaultModifiers: Array<String>,
+    onModifierChange: (modifier: String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier.padding(vertical = 3.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .height(30.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = MaterialTheme.shapes.small
+                )
+                .clip(MaterialTheme.shapes.small)
+                .weight(1F, false),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = {
+                    expanded = it
+                }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .menuAnchor()
+                        .padding(horizontal = 4.dp)
+                        .animateContentSize(spring()),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if(character.modifier.isNotEmpty()) {
+                        Text(
+                            text = character.modifier,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.width(16.dp))
+                    }
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Icon(
+                        painter = painterResource(Res.image.ic_arrow_down),
+                        contentDescription = "Иконка стрелка вниз",
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
+                        expanded = false
+                    },
+                    modifier = Modifier
+                        .exposedDropdownSize(false)
+                        .fillMaxWidth(),
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onModifierChange("")
+                            expanded = false
+                        },
+                        text = {}
+                    )
+                    defaultModifiers.forEach {
+                        DropdownMenuItem(
+                            onClick = {
+                                onModifierChange(it)
+                                expanded = false
+                            },
+                            text = {
+                                Text(text = "$it!")
+                            }
+                        )
+                    }
+                    var textFieldValue by remember { mutableStateOf("") }
+                    DropdownMenuItem(
+                        onClick = {
+                            onModifierChange(textFieldValue)
+                            expanded = false
+                        },
+                        text = {
+                            TextField(
+                                value = textFieldValue,
+                                onValueChange = {
+                                    textFieldValue = it
+                                },
+                                placeholder = {
+                                    Text("Добавить свой")
+                                },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            onModifierChange(textFieldValue)
+                                            expanded = false
+                                        }
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(Res.image.ic_check),
+                                            contentDescription = "Иконка галочка",
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                },
+                                singleLine = true,
+                                shape = RectangleShape,
+                                colors = TextFieldDefaults.colors(
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent
+                                ),
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    )
+                }
+            }
+            VerticalDivider(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                thickness = 2.dp
+            )
+            Text(
+                text = character.name,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
+        }
+        Spacer(modifier = Modifier.width(6.dp))
+        Box(
+            modifier = Modifier
+                .size(30.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = MaterialTheme.shapes.small
+                )
+                .clip(MaterialTheme.shapes.small),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "/",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.surfaceTint
+            )
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+    }
+}
+
+@Composable
 private fun ItemChip(
     modifier: Modifier = Modifier,
     title: String,
-    subtitle: String,
+    subtitle: String? = null,
     expanded: Boolean,
+    maxLines: Int = 1,
     onRemove: () -> Unit,
     onClick: () -> Unit,
 ) {
@@ -1550,11 +2086,11 @@ private fun ItemChip(
             Column {
                 Text(
                     text = title,
-                    maxLines = 1,
+                    maxLines = maxLines,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium
                 )
-                if(expanded) {
+                if(expanded && subtitle != null) {
                     Text(
                         text = subtitle,
                         maxLines = 2,
@@ -1702,8 +2238,7 @@ private fun <T : Any> ExposedMenuSelector(
 }
 
 @Composable
-private fun CategorySpacer() =
-    Spacer(modifier = Modifier.height(spaceBetweenCategories))
+private fun VerticalCategorySpacer() = Spacer(modifier = Modifier.height(spaceBetweenCategories))
 
 private val spaceBetweenCategories = 8.dp
 private val spaceBetweenItems = 6.dp
