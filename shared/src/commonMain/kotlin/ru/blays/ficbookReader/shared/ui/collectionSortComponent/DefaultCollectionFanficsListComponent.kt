@@ -5,15 +5,18 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.russhwolf.settings.nullableString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.repo.declaration.ICollectionsRepo
-import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbookReader.shared.preferences.SettingsKeys
+import ru.blays.ficbookReader.shared.preferences.settings
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponentInternal
+import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
 import ru.blays.ficbookapi.data.SectionWithQuery
 import ru.blays.ficbookapi.result.ApiResult
 
@@ -24,11 +27,17 @@ class DefaultCollectionFanficsListComponent(
 ): CollectionFanficsListComponent, ComponentContext by componentContext {
     private val collectionsRepo: ICollectionsRepo by getKoin().inject()
 
+    private var sortTypeSetting by settings.nullableString(
+        key = SettingsKeys.COLLECTION_SORT_TYPE_KEY
+    )
+
     private val _state = MutableValue(
         CollectionFanficsListComponent.State(
             collectionName = initialSection.name,
             availableParams = null,
-            currentParams = CollectionFanficsListComponent.SelectedSortParams(),
+            currentParams = CollectionFanficsListComponent.SelectedSortParams(
+                sort = getSavedSortParameter()
+            ),
             loading = true,
             error = false,
             errorMessage = null
@@ -36,7 +45,7 @@ class DefaultCollectionFanficsListComponent(
     )
     private val _fanficsList: FanficsListComponentInternal = DefaultFanficsListComponent(
         componentContext = childContext("fanfics_list"),
-        section = initialSection,
+        section = createSection(),
         output = output
     )
 
@@ -85,16 +94,11 @@ class DefaultCollectionFanficsListComponent(
                         )
                     )
                 }
+                sortTypeSetting = intent.sortTypeCode.let { "${it.first}|${it.second}" }
             }
             is CollectionFanficsListComponent.Intent.Search -> {
                 _fanficsList.setSection(
-                    SectionWithQuery(
-                        path = initialSection.path,
-                        name = initialSection.name,
-                        queryParameters = buildSortParams(
-                            state.value.currentParams
-                        )
-                    )
+                    section = createSection()
                 )
             }
             is CollectionFanficsListComponent.Intent.Refresh -> {
@@ -151,6 +155,27 @@ class DefaultCollectionFanficsListComponent(
         list += Pair("direction", params.direction?.second ?: "")
         list += Pair("sort", params.sort?.second ?: "6")
         return list
+    }
+
+    private fun getSavedSortParameter(): Pair<String, String>? {
+        return sortTypeSetting?.let {
+            val splitted = it.split('|')
+            if (splitted.size == 2) {
+                Pair(splitted[0], splitted[1])
+            } else {
+                null
+            }
+        }
+    }
+
+    private fun createSection(): SectionWithQuery {
+        return SectionWithQuery(
+            path = initialSection.path,
+            name = initialSection.name,
+            queryParameters = buildSortParams(
+                _state.value.currentParams
+            )
+        )
     }
 
     init {
