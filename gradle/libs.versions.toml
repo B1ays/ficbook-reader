@@ -1,8 +1,8 @@
 [versions]
 # Project
 projectVersion = "1.0.6"
-versionCode = "9"
-versionNameSuffix = "-beta04"
+versionCode = "10"
+versionNameSuffix = "-beta05"
 kotlin = "1.9.22"
 agp = "8.2.2"
 jvmTarget = "18"
@@ -32,7 +32,6 @@ compose-jetbrains = "1.6.0-rc03"
 androidx-activityCompose = "1.8.2"
 composeColorPicker = "0.7.0"
 composeColorPickerJvm = "0.7.0"
-haze = "0.5.1"
 insetsx = "0.1.0-alpha10"
 browser = "1.7.0"
 coil = "3.0.0-alpha04"
@@ -53,8 +52,6 @@ compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-c
 decompose-decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensionsComposeJetbrains = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
-haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
-haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
@@ -73,7 +70,6 @@ multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-sett
 multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 realm-library-base = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
-realm-gradle-plugin = { module = "io.realm.kotlin:gradle-plugin", version.ref = "realm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
