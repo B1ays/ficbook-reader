@@ -17,6 +17,9 @@ object SettingsKeys {
     // Feed
     const val FEED_SECTION_KEY = "feed_section"
 
+    // Collection
+    const val COLLECTION_SORT_TYPE_KEY = "collection_sort"
+
     // Reader
     const val READER_PREFS_KEY = "ReaderPrefs"
     const val TYPOGRAF_KEY = "typograf_enabled"
