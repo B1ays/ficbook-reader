@@ -6,6 +6,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,15 +38,16 @@ import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
-import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
-import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchFandomsComponent
-import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchPairingsComponent
-import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchTagsComponent
+import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.*
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
 import ru.blays.ficbookReader.ui_components.CustomBottomSheetScaffold.rememberSheetState
+import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.ui_components.LazyItems.items
+import ru.blays.ficbookReader.ui_components.Tabs.CustomTab
+import ru.blays.ficbookReader.ui_components.Tabs.CustomTabIndicator
+import ru.blays.ficbookReader.ui_components.Tabs.CustomTabRow
 import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
 import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.CardShape
@@ -144,7 +147,7 @@ private fun LandscapeContent(component: SearchComponent) {
                         top = padding.calculateTopPadding()
                     ),
                 ) {
-                    SearchMenu(
+                    SearchMenuRoot(
                         component = component,
                         modifier = Modifier
                             .padding(DefaultPadding.CardDefaultPadding)
@@ -193,7 +196,7 @@ private fun PortraitContent(component: SearchComponent) {
         modifier = Modifier.fillMaxSize(),
         sheetPeekHeight = 0.dp,
         sheetContent = {
-            SearchMenu(
+            SearchMenuRoot(
                 component = component,
                 modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
             ) {
@@ -262,13 +265,89 @@ private fun PortraitContent(component: SearchComponent) {
 }
 
 @Composable
-private fun SearchMenu(
+private fun SearchMenuRoot(
+    component: SearchComponent,
+    modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit = {},
+) {
+    val pagerState = rememberPagerState(0) { 2 }
+    val scope = rememberCoroutineScope()
+
+    Column {
+        CustomTabRow(
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 5.dp)
+                .fillMaxWidth(),
+            selectedTabIndex = pagerState.currentPage,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            shape = CircleShape,
+            indicator = {
+                CustomTabIndicator(
+                    currentPagePosition = it[pagerState.currentPage],
+                    shape = CircleShape,
+                    padding = 4.dp
+                )
+            }
+        ) {
+            CustomTab(
+                selected = pagerState.currentPage == 0,
+                selectedContentColor = MaterialTheme.colorScheme.surface,
+                unselectedContentColor = MaterialTheme.colorScheme.primary,
+                minHeight = 45.dp,
+                onClick = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(0)
+                    }
+                }
+            ) {
+                Text(text = "Параметры")
+            }
+            CustomTab(
+                selected = pagerState.currentPage == 1,
+                selectedContentColor = MaterialTheme.colorScheme.surface,
+                unselectedContentColor = MaterialTheme.colorScheme.primary,
+                minHeight = 45.dp,
+                onClick = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(1)
+                    }
+                }
+            ) {
+                Text(text = "Сохранённые")
+            }
+        }
+        HorizontalPager(
+            state = pagerState,
+            userScrollEnabled = false
+        ) { page ->
+            when(page) {
+                0 -> {
+                    SearchParamsSelector(
+                        component = component,
+                        modifier = modifier,
+                        onDismissRequest = onDismissRequest
+                    )
+                }
+                1 -> {
+                    SavedSearches(
+                        modifier = modifier,
+                        component = component.savedSearchesComponent
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchParamsSelector(
     component: SearchComponent,
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit = {},
 ) {
     val state by component.state.subscribeAsState()
     val scrollState = rememberScrollState()
+
     Column(
         modifier = modifier
     ) {
@@ -322,7 +401,7 @@ private fun SearchMenu(
             }
             AnimatedVisibility(
                 visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CATEGORY ||
-                    state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
+                        state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
                 enter = expandVertically(spring()),
                 exit = shrinkVertically(spring())
             ) {
@@ -396,22 +475,201 @@ private fun SearchMenu(
             )
             VerticalCategorySpacer()
         }
-        Button(
-            onClick = {
+        BottomButtonContent(
+            component = component.savedSearchesComponent,
+            onSearchClick = {
                 component.search()
                 onDismissRequest()
-            },
-            shape = CardShape.CardMid,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(DefaultPadding.CardDefaultPadding),
+            }
+        )
+    }
+}
+
+@Composable
+private fun SavedSearches(
+    modifier: Modifier,
+    component: SearchSaveComponent
+) {
+    val state by component.state.subscribeAsState()
+    Column {
+        LazyColumn(
+            modifier = modifier,
         ) {
-            Text(
-                text = "Найти",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
-            )
+            items(state.saved) { shortcut ->
+                SavedSearchItem(
+                    shortcut = shortcut,
+                    onSelect = {
+                        component.select(shortcut)
+                    },
+                    onDelete = {
+                        component.delete(shortcut)
+                    },
+                    onUpdate = { name, description, updateParams ->
+                        component.update(
+                            shortcut,
+                            name,
+                            description,
+                            updateParams
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+        }
+        Spacer(modifier = Modifier.weight(1F))
+    }
+}
+
+@Composable
+private fun SavedSearchItem(
+    shortcut: SearchParamsEntityShortcut,
+    onSelect: () -> Unit,
+    onDelete: () -> Unit,
+    onUpdate: (name: String, description: String, updateParams: Boolean) -> Unit
+) {
+    var editing by rememberSaveable { mutableStateOf(false) }
+
+    var name by remember { mutableStateOf(shortcut.name) }
+    var description by remember { mutableStateOf(shortcut.description) }
+    var updateParams by rememberSaveable { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+       onClick = if (editing) {{}} else onSelect
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(
+                    horizontal = DefaultPadding.CardHorizontalPadding,
+                    vertical = 5.dp
+                )
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1F),
+            ) {
+                AnimatedContent(
+                    targetState = editing,
+                    transitionSpec = {
+                        fadeIn() togetherWith fadeOut()
+                    }
+                ) {
+                    if(it) {
+                        OutlinedTextField(
+                            value = name,
+                            onValueChange = { name = it },
+                            label = {
+                                Text(text = "Название")
+                            },
+                            singleLine = true,
+                            shape = CardDefaults.shape,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    } else {
+                        Text(
+                            text = shortcut.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 2,
+                            softWrap = true,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                AnimatedContent(
+                    targetState = editing,
+                    transitionSpec = {
+                        fadeIn() togetherWith fadeOut()
+                    }
+                ) {
+                    if(it) {
+                        OutlinedTextField(
+                            value = description,
+                            onValueChange = { description = it },
+                            label = {
+                                Text(text = "Описание")
+                            },
+                            maxLines = 5,
+                            shape = CardDefaults.shape,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    } else {
+                        if(shortcut.description.isNotEmpty()) {
+                            Text(
+                                text = shortcut.description,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                softWrap = true
+                            )
+                        }
+                    }
+                }
+                AnimatedVisibility(
+                    visible = editing,
+                    enter = expandVertically(spring()),
+                    exit = shrinkVertically(spring())
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        CheckboxWithTitle(
+                            checked = updateParams,
+                            title = "Обновить параметры",
+                            onClick = { updateParams = !updateParams }
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row {
+                            Button(
+                                onClick = {
+                                    onUpdate(name, description, updateParams)
+                                    editing = false
+                                }
+                            ) {
+                                Text(text = "Сохранить")
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            OutlinedButton(
+                                onClick = { editing = false }
+                            ) {
+                                Text(text = "Отмена")
+                            }
+                        }
+                    }
+                }
+            }
+            AnimatedVisibility(
+                visible = !editing,
+                enter = expandHorizontally(spring()),
+                exit = shrinkHorizontally(spring())
+            ) {
+                Row {
+                    Spacer(modifier = Modifier.width(6.dp))
+                    CustomIconButton(
+                        onClick = { editing = true },
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.image.ic_edit),
+                            contentDescription = "Иконка редактирования",
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    CustomIconButton(
+                        onClick = onDelete,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.image.ic_delete),
+                            contentDescription = "Иконка удаления",
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -686,7 +944,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
         Card(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            if(state.buildedPairing?.characters?.isNotEmpty() == true) {
+            if (state.buildedPairing?.characters?.isNotEmpty() == true) {
                 FlowRow(
                     modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
                 ) {
@@ -860,7 +1118,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                     ItemChip(
                         modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
                         title = pairing.characters.joinToString("/") {
-                            "${if(it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
+                            "${if (it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
                         },
                         expanded = false,
                         maxLines = Int.MAX_VALUE,
@@ -894,12 +1152,12 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(horizontal = 12.dp)
             )
-            if(state.excludedPairings.isNotEmpty()) {
+            if (state.excludedPairings.isNotEmpty()) {
                 state.excludedPairings.forEach { pairing ->
                     ItemChip(
                         modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
                         title = pairing.characters.joinToString("/") {
-                            "${if(it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
+                            "${if (it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
                         },
                         expanded = false,
                         maxLines = Int.MAX_VALUE,
@@ -917,7 +1175,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
             }
         }
     }
-    if(selectCharacterDialogVisible) {
+    if (selectCharacterDialogVisible) {
         SelectCharacterDialog(
             component = component,
             onDismiss = { selectCharacterDialogVisible = false }
@@ -1734,12 +1992,12 @@ fun SelectCharacterDialog(
     var searchedName by remember { mutableStateOf("") }
 
     val filteredList = remember(searchedName) {
-        if(searchedName.isEmpty()) state.searchedCharacters
+        if (searchedName.isEmpty()) state.searchedCharacters
         else state.searchedCharacters.map { group ->
             group.copy(
                 characters = group.characters.filter { character ->
                     character.name.contains(searchedName, ignoreCase = true) ||
-                    character.aliases.any { it.contains(searchedName, ignoreCase = true) }
+                            character.aliases.any { it.contains(searchedName, ignoreCase = true) }
                 }
             )
         }
@@ -1902,7 +2160,7 @@ private fun SearchedCharacterItem(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
-        if(character.aliases.isNotEmpty()) {
+        if (character.aliases.isNotEmpty()) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = character.aliases.joinToString(),
@@ -1950,7 +2208,7 @@ private fun CharacterItem(
                         .animateContentSize(spring()),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if(character.modifier.isNotEmpty()) {
+                    if (character.modifier.isNotEmpty()) {
                         Text(
                             text = character.modifier,
                             style = MaterialTheme.typography.labelLarge
@@ -2090,7 +2348,7 @@ private fun ItemChip(
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium
                 )
-                if(expanded && subtitle != null) {
+                if (expanded && subtitle != null) {
                     Text(
                         text = subtitle,
                         maxLines = 2,
@@ -2182,56 +2440,124 @@ private fun CheckboxWithTitle(
 }
 
 @Composable
-private fun <T : Any> ExposedMenuSelector(
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    selectedItemName: String,
-    items: List<Pair<String, T>>,
-    onItemClicked: (T) -> Unit,
-    modifier: Modifier = Modifier
+private fun BottomButtonContent(
+    component: SearchSaveComponent,
+    onSearchClick: () -> Unit
 ) {
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = onExpandedChange,
-        modifier = modifier
+    var saveMenuExpanded by rememberSaveable { mutableStateOf(false) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    AnimatedVisibility(
+        visible = saveMenuExpanded,
+        enter = expandVertically(),
+        exit = shrinkVertically()
     ) {
-        Row(
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = CardDefaults.shape
-                ),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.padding(vertical = 3.dp),
         ) {
             Text(
-                text = selectedItemName,
-                modifier = Modifier.padding(12.dp),
+                text = "Сохранить поиск",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text(text = "Название") },
+                singleLine = true,
+                shape = CardDefaults.shape,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            VerticalCategorySpacer()
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text(text = "Описание") },
+                maxLines = 5,
+                shape = CardDefaults.shape,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateContentSize(spring()),
             )
         }
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                onExpandedChange(false)
-            }
+    }
+    Row(
+        modifier = Modifier.padding(vertical = 3.dp)
+    ) {
+        Button(
+            onClick = {
+                if(saveMenuExpanded) {
+                    component.save(name, description)
+                    saveMenuExpanded = false
+                } else {
+                    onSearchClick()
+                }
+            },
+            shape = CardShape.CardMid,
+            enabled = if(saveMenuExpanded) name.isNotEmpty() else true,
+            modifier = Modifier
+                .height(50.dp)
+                .weight(1F)
         ) {
-            items.forEach { pair ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = pair.first,
-                            maxLines = 1
-                        )
-                    },
-                    onClick = {
-                        onItemClicked(pair.second)
-                        onExpandedChange(false)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            AnimatedContent(
+                targetState = saveMenuExpanded,
+                transitionSpec = {
+                    fadeIn() + scaleIn() togetherWith
+                        fadeOut() + scaleOut()
+                },
+                contentAlignment = Alignment.Center
+            ) { expanded ->
+                if (expanded) {
+                    Text(
+                        text = "Сохранить",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                } else {
+                    Text(
+                        text = "Найти",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.width(6.dp))
+        Button(
+            onClick = {
+                if(saveMenuExpanded) {
+                    saveMenuExpanded = false
+                } else {
+                    saveMenuExpanded = true
+                }
+            },
+            shape = CardShape.CardMid,
+            contentPadding = PaddingValues(2.dp),
+            modifier = Modifier.size(50.dp),
+        ) {
+            AnimatedContent(
+                targetState = saveMenuExpanded,
+                transitionSpec = {
+                    fadeIn() + scaleIn() togetherWith
+                        fadeOut() + scaleOut()
+                },
+                contentAlignment = Alignment.Center
+            ) { expanded ->
+                if (expanded) {
+                    Icon(
+                        painter = painterResource(Res.image.ic_cancel),
+                        contentDescription = "Иконка звёздочка",
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(Res.image.ic_star_outlined),
+                        contentDescription = "Иконка звёздочка",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }

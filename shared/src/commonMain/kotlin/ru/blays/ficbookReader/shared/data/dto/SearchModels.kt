@@ -3,8 +3,6 @@ package ru.blays.ficbookReader.shared.data.dto
 data class SearchParams(
     val fandomsFilter: String,
     val fandomsGroup: Int,
-    val pairings: Set<SearchedPairingModel>,
-    val excludedPairings: Set<SearchedPairingModel>,
     val pagesCountRange: IntRangeSimple,
     val withStatus: List<Int>,
     val withRating: List<Int>,
@@ -88,8 +86,6 @@ data class SearchParams(
         val default get() = SearchParams(
             fandomsFilter = FANDOM_FILTER_ALL,
             fandomsGroup = FANDOM_GROUP_ANIME_AND_MANGA,
-            pairings = emptySet(),
-            excludedPairings = emptySet(),
             pagesCountRange = IntRangeSimple.EMPTY,
             withStatus = emptyList(),
             withRating = listOf(
@@ -158,3 +154,9 @@ data class IntRangeSimple(
         val EMPTY = IntRangeSimple(0, 0)
     }
 }
+
+data class SearchParamsEntityShortcut(
+    val idHex: String,
+    val name: String,
+    val description: String
+)

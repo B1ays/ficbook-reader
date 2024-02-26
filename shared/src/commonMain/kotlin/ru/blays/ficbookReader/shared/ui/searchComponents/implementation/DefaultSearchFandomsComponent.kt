@@ -8,13 +8,16 @@ import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.ISearchRepo
+import ru.blays.ficbookReader.shared.ui.Utils.ExternalStateUpdatable
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchFandomsComponent
 import ru.blays.ficbookapi.result.ApiResult
 import kotlin.time.Duration.Companion.seconds
 
 class DefaultSearchFandomsComponent(
     componentContext: ComponentContext
-): SearchFandomsComponent, ComponentContext by componentContext {
+): SearchFandomsComponent,
+    ExternalStateUpdatable<SearchFandomsComponent.State>,
+    ComponentContext by componentContext {
     private val repository: ISearchRepo by getKoin().inject()
 
     private val _state = MutableValue(
@@ -72,6 +75,10 @@ class DefaultSearchFandomsComponent(
                 searchedFandoms = emptySet(),
             )
         }
+    }
+
+    override fun updateState(block: (SearchFandomsComponent.State) -> SearchFandomsComponent.State) {
+        _state.update(block)
     }
 
     private fun search(name: String) {

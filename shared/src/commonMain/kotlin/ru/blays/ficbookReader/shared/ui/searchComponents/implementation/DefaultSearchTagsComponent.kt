@@ -7,13 +7,16 @@ import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform
 import ru.blays.ficbookReader.shared.data.dto.SearchedTagModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.ISearchRepo
+import ru.blays.ficbookReader.shared.ui.Utils.ExternalStateUpdatable
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchTagsComponent
 import ru.blays.ficbookapi.result.ApiResult
 import kotlin.time.Duration.Companion.seconds
 
 class DefaultSearchTagsComponent(
     componentContext: ComponentContext
-): SearchTagsComponent, ComponentContext by componentContext {
+): SearchTagsComponent,
+    ExternalStateUpdatable<SearchTagsComponent.State>,
+    ComponentContext by componentContext {
     private val repository: ISearchRepo by KoinPlatform.getKoin().inject()
 
     private val _state = MutableValue(
@@ -71,6 +74,19 @@ class DefaultSearchTagsComponent(
 
     override fun changeSearchedName(name: String) = search(name)
 
+    override fun clear() {
+        _state.update {
+            it.copy(
+                searchedName = "",
+                searchedTags = emptySet()
+            )
+        }
+    }
+
+    override fun updateState(block: (SearchTagsComponent.State) -> SearchTagsComponent.State) {
+        _state.update(block)
+    }
+
     private fun search(name: String) {
         searchJob?.cancel()
         _state.update {
@@ -94,15 +110,6 @@ class DefaultSearchTagsComponent(
                     }
                 }
             }
-        }
-    }
-
-    override fun clear() {
-        _state.update {
-            it.copy(
-                searchedName = "",
-                searchedTags = emptySet()
-            )
         }
     }
 }

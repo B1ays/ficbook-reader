@@ -12,6 +12,7 @@ interface SearchComponent {
     val searchFandomsComponent: SearchFandomsComponent
     val searchTagsComponent: SearchTagsComponent
     val searchCharactersComponent: SearchPairingsComponent
+    val savedSearchesComponent: SearchSaveComponent
 
     fun search()
     fun clear()
