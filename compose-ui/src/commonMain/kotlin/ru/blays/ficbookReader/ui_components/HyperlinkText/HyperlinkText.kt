@@ -46,7 +46,7 @@ fun HyperlinkText(
             append(fullText)
 
             for(link in links){
-                val startIndex = fullText.indexOf(link)
+                val startIndex = fullText.indexOf(link).coerceAtLeast(0)
                 val endIndex = startIndex + link.length
                 addStyle(
                     style = linkStyle,
