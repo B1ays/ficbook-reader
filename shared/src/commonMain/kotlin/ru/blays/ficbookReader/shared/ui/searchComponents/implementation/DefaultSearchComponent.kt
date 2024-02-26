@@ -7,6 +7,7 @@ import com.arkivanov.decompose.value.update
 import ru.blays.ficbookReader.shared.data.dto.IntRangeSimple
 import ru.blays.ficbookReader.shared.data.dto.SearchParams
 import ru.blays.ficbookReader.shared.data.dto.SearchedFandomModel
+import ru.blays.ficbookReader.shared.data.realm.entity.*
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchComponent
@@ -23,8 +24,14 @@ class DefaultSearchComponent(
         loadAtCreate = false,
         output = output
     )
+    private val _searchFandomsComponent = DefaultSearchFandomsComponent(
+    componentContext = childContext("SearchFandomsComponent")
+    )
     private val _searchPairingsComponent = DefaultSearchPairingsComponent(
         componentContext = childContext("SearchPairingsComponent")
+    )
+    private val _searchTagsComponent = DefaultSearchTagsComponent(
+        componentContext = childContext("SearchTagsComponent")
     )
 
     private val _state = MutableValue(SearchParams.default)
@@ -32,13 +39,14 @@ class DefaultSearchComponent(
     override val state get() = _state
 
     override val fanficsListComponent get() = _fanficsListComponent
-    override val searchFandomsComponent = DefaultSearchFandomsComponent(
-        componentContext = childContext("SearchFandomsComponent")
-    )
-    override val searchTagsComponent = DefaultSearchTagsComponent(
-        componentContext = childContext("SearchTagsComponent")
-    )
+    override val searchFandomsComponent get() = _searchFandomsComponent
     override val searchCharactersComponent get() = _searchPairingsComponent
+    override val searchTagsComponent get() = _searchTagsComponent
+    override val savedSearchesComponent = DefaultSearchSaveComponent(
+        componentContext = childContext("SavedSearchesComponent"),
+        onSelect = ::onSavedSearchSelected,
+        createEntity = ::createSearchParamsEntity
+    )
 
     override fun search() {
         _fanficsListComponent.setSection(
@@ -234,16 +242,78 @@ class DefaultSearchComponent(
         return section
     }
 
+    private fun onSavedSearchSelected(searchParamsEntity: SearchParamsEntity) {
+        val searchParams = SearchParams(
+            fandomsFilter = searchParamsEntity.fandomsFilter,
+            fandomsGroup = searchParamsEntity.fandomsGroup,
+            pagesCountRange = searchParamsEntity.pagesCountRange?.let {
+                IntRangeSimple(it.start , it.end)
+            } ?: IntRangeSimple.EMPTY,
+            withStatus = searchParamsEntity.withStatus,
+            withRating = searchParamsEntity.withRating,
+            withDirection = searchParamsEntity.withDirection,
+            translate = searchParamsEntity.translate,
+            onlyPremium = searchParamsEntity.onlyPremium,
+            likesRange = searchParamsEntity.likesRange?.let {
+                IntRangeSimple(it.start, it.end)
+            } ?: IntRangeSimple.EMPTY,
+            minRewards = searchParamsEntity.minRewards,
+            dateRange = searchParamsEntity.dateRange?.let {
+                it.start..it.end
+            } ?: LongRange.EMPTY,
+            title = searchParamsEntity.title,
+            filterReaded = searchParamsEntity.filterReaded,
+            sort = searchParamsEntity.sort,
+        )
+        _state.value = searchParams
+        _searchFandomsComponent.updateState {
+            it.copy(
+                selectedFandoms = searchParamsEntity.includedFandoms.mapTo(mutableSetOf(), FandomEntity::toDtoModel),
+                excludedFandoms = searchParamsEntity.excludedFandoms.mapTo(mutableSetOf(), FandomEntity::toDtoModel)
+            )
+        }
+        _searchPairingsComponent.updateState {
+            it.copy(
+                selectedPairings = searchParamsEntity.includedPairings.mapTo(mutableSetOf(), PairingEntity::toDtoModel),
+                excludedPairings = searchParamsEntity.excludedPairings.mapTo(mutableSetOf(), PairingEntity::toDtoModel)
+            )
+        }
+        _searchTagsComponent.updateState {
+            it.copy(
+                selectedTags = searchParamsEntity.includedTags.mapTo(mutableSetOf(), TagEntity::toDtoModel),
+                excludedTags = searchParamsEntity.excludedTags.mapTo(mutableSetOf(), TagEntity::toDtoModel)
+            )
+        }
+    }
+
+    private fun createSearchParamsEntity(
+        name: String,
+        description: String
+    ): SearchParamsEntity {
+        return SearchParamsEntity(
+            name = name,
+            description = description,
+            searchParams = state.value,
+            includedFandoms = searchFandomsComponent.state.value.selectedFandoms,
+            excludedFandoms = searchFandomsComponent.state.value.excludedFandoms,
+            includedPairings = searchCharactersComponent.state.value.selectedPairings,
+            excludedPairings = searchCharactersComponent.state.value.excludedPairings,
+            includedTags = searchTagsComponent.state.value.selectedTags,
+            excludedTags = searchTagsComponent.state.value.excludedTags
+        )
+    }
+
     private fun observeFandomsChange() {
         var previousIds: List<String> = emptyList()
         searchFandomsComponent.state.subscribe { state ->
             if(state.selectedFandoms.isNotEmpty()) {
                 val fandomsIds = state.selectedFandoms.map(SearchedFandomModel::id)
-                if(previousIds != fandomsIds) {
+                if(!fandomsIds.containsAll(previousIds) || previousIds.isEmpty()) {
                     _searchPairingsComponent.excludeNotLinkedPairings(fandomsIds)
                     _searchPairingsComponent.update(fandomsIds)
-                    previousIds = fandomsIds
+                    println("Update searched characters")
                 }
+                previousIds = fandomsIds
             } else {
                 _searchPairingsComponent.clean()
                 previousIds = emptyList()

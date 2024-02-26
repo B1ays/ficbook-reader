@@ -10,13 +10,16 @@ import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.dto.SearchedCharacterModel
 import ru.blays.ficbookReader.shared.data.dto.SearchedPairingModel
 import ru.blays.ficbookReader.shared.data.repo.declaration.ISearchRepo
+import ru.blays.ficbookReader.shared.ui.Utils.ExternalStateUpdatable
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.InternalSearchPairingsComponent
 import ru.blays.ficbookReader.shared.ui.searchComponents.declaration.SearchPairingsComponent
 import ru.blays.ficbookapi.result.ApiResult
 
 class DefaultSearchPairingsComponent(
     componentContext: ComponentContext,
-): InternalSearchPairingsComponent, ComponentContext by componentContext {
+): InternalSearchPairingsComponent,
+    ExternalStateUpdatable<SearchPairingsComponent.State>,
+    ComponentContext by componentContext {
     private val repository: ISearchRepo by getKoin().inject()
 
     private val _state = MutableValue(
@@ -184,6 +187,10 @@ class DefaultSearchPairingsComponent(
                 buildedPairing = filteredBuildedPairing
             )
         }
+    }
+
+    override fun updateState(block: (SearchPairingsComponent.State) -> SearchPairingsComponent.State) {
+        _state.update(block)
     }
 
     private fun getDefaultModifiers(): Array<String> = arrayOf(
