@@ -19,21 +19,20 @@ essenty = "2.0.0-alpha03"
 jsoup = "1.17.2"
 koin = "3.5.3"
 koinCompose = "1.1.2"
-kotlinx-coroutines-core = "1.8.0"
-kotlinx-serialization-json = "1.6.2"
+kotlinx-coroutines = "1.8.0"
+kotlinx-serialization = "1.6.3"
 ktxCore = "1.12.0"
 appcompat = "1.6.1"
 libres = "1.2.2"
-materialKolor = "1.4.0-alpha08"
+materialKolor = "1.4.0"
 multiplatform-settings = "1.1.1"
 okhttp = "4.12.0"
 realm = "1.13.0"
-compose-jetbrains = "1.6.0-rc03"
+compose-jetbrains = "1.6.0"
 androidx-activityCompose = "1.8.2"
 composeColorPicker = "0.7.0"
-composeColorPickerJvm = "0.7.0"
 insetsx = "0.1.0-alpha10"
-browser = "1.7.0"
+browser = "1.8.0-rc01"
 coil = "3.0.0-alpha04"
 cache-fix = "3.0.1"
 lwjgl = "3.3.3"
@@ -47,8 +46,8 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }
-compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPickerJvm" }
-compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-color-picker-jvm", version.ref = "composeColorPickerJvm" }
+compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPicker" }
+compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-color-picker-jvm", version.ref = "composeColorPicker" }
 decompose-decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensionsComposeJetbrains = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
@@ -56,11 +55,11 @@ jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines-core" }
-kotlinx-coroutines-core-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines-core" }
-kotlinx-coroutines-core-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines-core" }
+kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 libres-compose = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
 libres-plugin = { module = "io.github.skeptick.libres:gradle-plugin", version.ref = "libres" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
