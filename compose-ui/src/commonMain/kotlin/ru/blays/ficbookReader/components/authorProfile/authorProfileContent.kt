@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.authorProfile
 
 import androidx.compose.foundation.background
@@ -30,9 +32,10 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
-import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.navigationBars
-import io.github.skeptick.libres.compose.painterResource
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.components.commentsContent.CommentsContent
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.data.dto.AuthorMainInfoStable
@@ -182,7 +185,7 @@ private fun ProfileHeader(
                         .align(Alignment.TopStart)
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_arrow_back),
+                        painter = painterResource(Res.drawable.ic_arrow_back),
                         contentDescription = "Иконка назад"
                     )
                 }
@@ -502,7 +505,7 @@ private fun BlogPostsList(component: AuthorBlogPostsComponent) {
                 modifier = Modifier.align(Alignment.Center)
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_sad),
+                    painter = painterResource(Res.drawable.ic_sad),
                     contentDescription = "Иконка грустный смайлик",
                     tint = MaterialTheme.colorScheme.surfaceTint,
                     modifier = Modifier.fillMaxWidth(0.4F)
@@ -560,7 +563,7 @@ private fun BlogPostPage(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_sad),
+                    painter = painterResource(Res.drawable.ic_sad),
                     contentDescription = "Иконка грустный смайлик",
                     tint = MaterialTheme.colorScheme.surfaceTint,
                     modifier = Modifier.fillMaxWidth(0.4F)
@@ -593,7 +596,7 @@ private fun BlogPostPage(
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_cancel),
+                            painter = painterResource(Res.drawable.ic_cancel),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp)
                         )
@@ -708,14 +711,14 @@ private fun getTitleForTab(tab: AuthorProfileComponent.TabConfig): String {
 @Composable
 private fun getIconForTab(tab: AuthorProfileComponent.TabConfig): Painter {
     return when(tab) {
-        is AuthorProfileComponent.TabConfig.Main -> painterResource(Res.image.ic_user)
-        is AuthorProfileComponent.TabConfig.Blog -> painterResource(Res.image.ic_blog)
-        is AuthorProfileComponent.TabConfig.Presents -> painterResource(Res.image.ic_present)
-        is AuthorProfileComponent.TabConfig.Works -> painterResource(Res.image.ic_book_outlined)
-        is AuthorProfileComponent.TabConfig.WorksAsBeta -> painterResource(Res.image.ic_book_outlined)
-        is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> painterResource(Res.image.ic_book_outlined)
-        is AuthorProfileComponent.TabConfig.WorksAsGamma -> painterResource(Res.image.ic_book_outlined)
-        is AuthorProfileComponent.TabConfig.Comments -> painterResource(Res.image.ic_comment)
+        is AuthorProfileComponent.TabConfig.Main -> painterResource(Res.drawable.ic_user)
+        is AuthorProfileComponent.TabConfig.Blog -> painterResource(Res.drawable.ic_blog)
+        is AuthorProfileComponent.TabConfig.Presents -> painterResource(Res.drawable.ic_present)
+        is AuthorProfileComponent.TabConfig.Works -> painterResource(Res.drawable.ic_book_outlined)
+        is AuthorProfileComponent.TabConfig.WorksAsBeta -> painterResource(Res.drawable.ic_book_outlined)
+        is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> painterResource(Res.drawable.ic_book_outlined)
+        is AuthorProfileComponent.TabConfig.WorksAsGamma -> painterResource(Res.drawable.ic_book_outlined)
+        is AuthorProfileComponent.TabConfig.Comments -> painterResource(Res.drawable.ic_comment)
     }
 }
 

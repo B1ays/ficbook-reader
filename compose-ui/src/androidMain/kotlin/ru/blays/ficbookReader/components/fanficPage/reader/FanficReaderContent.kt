@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.fanficPage.reader
 
 import android.content.res.Configuration
@@ -17,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.*
@@ -31,7 +35,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
@@ -48,6 +52,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.platformUtils.FullscreenContainer
 import ru.blays.ficbookReader.platformUtils.rememberBatteryObserver
 import ru.blays.ficbookReader.platformUtils.rememberTimeObserver
@@ -542,7 +547,7 @@ private class Reader(
                                 )
                             ) {
                                 Icon(
-                                    painter = painterResource(Res.image.ic_clock),
+                                    painter = painterResource(Res.drawable.ic_clock),
                                     contentDescription = "Проголосовать за продолжение",
                                     tint = contentColor,
                                     modifier = Modifier
@@ -587,7 +592,7 @@ private class Reader(
                             )
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_book_outlined),
+                                painter = painterResource(Res.drawable.ic_book_outlined),
                                 contentDescription = "Прочитанно",
                                 tint = contentColor,
                                 modifier = Modifier
@@ -625,7 +630,7 @@ private class Reader(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_settings),
+                            painter = painterResource(Res.drawable.ic_settings),
                             contentDescription = "Иконка настроек",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp),
@@ -656,7 +661,7 @@ private class Reader(
                 ) {
                     ChangeChapterButton(
                         modifier = Modifier.weight(1F / 5F).padding(6.dp),
-                        icon = Icons.Rounded.ArrowBack,
+                        icon = Icons.AutoMirrored.Rounded.ArrowBack,
                         enabled = previousButtonActive,
                         onClick = openPreviousChapter
                     )
@@ -674,7 +679,7 @@ private class Reader(
                     )
                     ChangeChapterButton(
                         modifier = Modifier.weight(1F / 5F).padding(6.dp),
-                        icon = Icons.Rounded.ArrowForward,
+                        icon = Icons.AutoMirrored.Rounded.ArrowForward,
                         enabled = nextButtonActive,
                         onClick = openNextChapter
                     )
@@ -739,6 +744,7 @@ private class Reader(
         }
     }
 
+    @Suppress("DEPRECATION")
     @Composable
     private fun ReaderSettingPopup(
         component: SettingsReaderComponent,
@@ -1052,7 +1058,7 @@ private class Reader(
                     Text("Выбрать")
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
-                        painter = painterResource(id = Res.image.ic_dropper),
+                        painter = painterResource(Res.drawable.ic_dropper),
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                     )

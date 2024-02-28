@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.fanficPage.reader
 
 import androidx.compose.animation.*
@@ -10,6 +12,8 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.*
@@ -34,12 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.VoteReaderComponent
@@ -67,7 +72,7 @@ actual fun FanficReaderContent(component: MainReaderComponent) {
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = "Иконка стрелка назад"
                         )
                     }
@@ -81,7 +86,7 @@ actual fun FanficReaderContent(component: MainReaderComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_settings),
+                            painter = painterResource(Res.drawable.ic_settings),
                             contentDescription = "Иконка настроек",
                             modifier = Modifier.size(24.dp)
                         )
@@ -546,7 +551,7 @@ private class Reader(
             ) {
                 ChangeChapterButton(
                     visible = !hasPreviousPage && hasPreviousChapter,
-                    icon = Icons.Rounded.ArrowBack,
+                    icon = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = "Кнопка предыдущая глава",
                     onClick = openPreviousChapter
                 )
@@ -586,7 +591,7 @@ private class Reader(
             ) {
                 ChangeChapterButton(
                     visible = !hasNextPage && hasNextChapter,
-                    icon = Icons.Rounded.ArrowForward,
+                    icon = Icons.AutoMirrored.Rounded.ArrowForward,
                     contentDescription = "Кнопка следующая глава",
                     onClick = openNextChapter
                 )
@@ -816,7 +821,7 @@ private class Reader(
                     Text("Выбрать")
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
-                        painter = painterResource(Res.image.ic_dropper),
+                        painter = painterResource(Res.drawable.ic_dropper),
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                     )

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.collectionContent
 
 import androidx.compose.animation.AnimatedVisibility
@@ -15,12 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.CollectionFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
@@ -67,7 +70,7 @@ private fun LandscapeContent(component: CollectionFanficsListComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -79,7 +82,7 @@ private fun LandscapeContent(component: CollectionFanficsListComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_sort),
+                            painter = painterResource(Res.drawable.ic_sort),
                             contentDescription = "Сортировка",
                             modifier = Modifier.size(20.dp),
                         )
@@ -170,7 +173,7 @@ private fun PortraitContent(component: CollectionFanficsListComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -188,7 +191,7 @@ private fun PortraitContent(component: CollectionFanficsListComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_sort),
+                            painter = painterResource(Res.drawable.ic_sort),
                             contentDescription = "Сортировка",
                             modifier = Modifier.size(20.dp),
                         )
@@ -256,7 +259,7 @@ private fun SortParamContent(
                     }
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_cancel),
+                        painter = painterResource(Res.drawable.ic_cancel),
                         contentDescription = "Очистить поиск",
                         modifier = Modifier.size(20.dp),
                     )
@@ -332,7 +335,7 @@ private fun SortParamContent(
                 }
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_cross),
+                    painter = painterResource(Res.drawable.ic_cross),
                     contentDescription = "Иконка очистки",
                     modifier = Modifier.size(16.dp)
                 )
@@ -351,7 +354,7 @@ private fun SortParamContent(
                 }
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_search),
+                    painter = painterResource(Res.drawable.ic_search),
                     contentDescription = "Иконка поиска",
                     modifier = Modifier.size(20.dp)
                 )

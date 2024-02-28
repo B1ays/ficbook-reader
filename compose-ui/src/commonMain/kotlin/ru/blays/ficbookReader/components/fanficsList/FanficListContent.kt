@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class, ExperimentalResourceApi::class, ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.fanficsList
 
 import androidx.compose.animation.core.animateFloat
@@ -17,13 +19,14 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficQuickActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
@@ -192,7 +195,7 @@ fun FanficsListScreenContent(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -225,7 +228,7 @@ fun FanficsListScreenContent(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_star_filled),
+                            painter = painterResource(Res.drawable.ic_star_filled),
                             contentDescription = "Иконка добавить в избранное",
                             modifier = Modifier
                                 .size(24.dp)
@@ -291,9 +294,9 @@ fun FanficQuickActions(
                 },
                 leadingIcon = {
                     val icon = if(state.liked) {
-                        painterResource(Res.image.ic_like_filled)
+                        painterResource(Res.drawable.ic_like_filled)
                     } else {
-                        painterResource(Res.image.ic_like_outlined)
+                        painterResource(Res.drawable.ic_like_outlined)
                     }
                     Icon(
                         painter = icon,
@@ -313,9 +316,9 @@ fun FanficQuickActions(
                 },
                 leadingIcon = {
                     val icon = if(state.subscribed) {
-                        painterResource(Res.image.ic_star_filled)
+                        painterResource(Res.drawable.ic_star_filled)
                     } else {
-                        painterResource(Res.image.ic_star_outlined)
+                        painterResource(Res.drawable.ic_star_outlined)
                     }
                     Icon(
                         painter = icon,
@@ -335,9 +338,9 @@ fun FanficQuickActions(
                 },
                 leadingIcon = {
                     val icon = if(state.readed) {
-                        painterResource(Res.image.ic_book_filled)
+                        painterResource(Res.drawable.ic_book_filled)
                     } else {
-                        painterResource(Res.image.ic_book_outlined)
+                        painterResource(Res.drawable.ic_book_outlined)
                     }
                     Icon(
                         painter = icon,
@@ -358,7 +361,7 @@ fun FanficQuickActions(
                 },
                 leadingIcon = {
                     Icon(
-                        painter = painterResource(Res.image.ic_error),
+                        painter = painterResource(Res.drawable.ic_error),
                         contentDescription = "Ошибка",
                         modifier = Modifier.size(20.dp),
                     )

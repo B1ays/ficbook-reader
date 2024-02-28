@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.fanficPage
 
 import androidx.compose.foundation.background
@@ -14,14 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
 import dev.chrisbanes.haze.hazeChild
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.data.dto.AvailableCollectionsModel
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageCollectionsComponent
@@ -44,17 +47,17 @@ fun FanficActionsContent(
     val childSlot by component.slot.subscribeAsState()
 
     val likeItemIcon = if (mark) {
-        painterResource(Res.image.ic_like_filled)
+        painterResource(Res.drawable.ic_like_filled)
     } else {
-        painterResource(Res.image.ic_like_outlined)
+        painterResource(Res.drawable.ic_like_outlined)
     }
     val subscribeItemIcon = if (follow) {
-        painterResource(Res.image.ic_star_filled)
+        painterResource(Res.drawable.ic_star_filled)
     } else {
-        painterResource(Res.image.ic_star_outlined)
+        painterResource(Res.drawable.ic_star_outlined)
     }
-    val collectionsItemIcon = painterResource(Res.image.ic_bookmark_outlined)
-    val commentsItemIcon = painterResource(Res.image.ic_comment)
+    val collectionsItemIcon = painterResource(Res.drawable.ic_bookmark_outlined)
+    val commentsItemIcon = painterResource(Res.drawable.ic_comment)
 
     Row(
         modifier = Modifier
@@ -238,10 +241,10 @@ private fun CollectionItem(
     onSelect: (select: Boolean) -> Unit
 ) {
     val indicatorIcon = if(collection.isPublic) {
-        painterResource(Res.image.ic_unlock)
+        painterResource(Res.drawable.ic_unlock)
 
     } else {
-        painterResource(Res.image.ic_lock)
+        painterResource(Res.drawable.ic_lock)
     }
     val indicatorIconColor = if(collection.isPublic) unlockColor else lockColor
 

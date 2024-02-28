@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.fanficPage
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -31,7 +33,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
@@ -40,12 +42,13 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.*
@@ -247,7 +250,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                     }
                                 ) {
                                     Icon(
-                                        painter = painterResource(Res.image.ic_arrow_back),
+                                        painter = painterResource(Res.drawable.ic_arrow_back),
                                         contentDescription = "Стрелка назад"
                                     )
                                 }
@@ -378,7 +381,7 @@ private fun LandscapeContent(
                                     }
                                 ) {
                                     Icon(
-                                        painter = painterResource(Res.image.ic_arrow_back),
+                                        painter = painterResource(Res.drawable.ic_arrow_back),
                                         contentDescription = "Стрелка назад"
                                     )
                                 }
@@ -586,7 +589,7 @@ private fun FanficDescription(
                         modifier = Modifier
                             .padding(3.dp)
                             .size(18.dp),
-                        painter = painterResource(Res.image.ic_trophy),
+                        painter = painterResource(Res.drawable.ic_trophy),
                         contentDescription = "Значок награды",
                         tint = trophyColor
                     )
@@ -750,7 +753,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                     modifier = Modifier
                         .padding(3.dp)
                         .size(20.dp),
-                    painter = painterResource(Res.image.ic_like_outlined),
+                    painter = painterResource(Res.drawable.ic_like_outlined),
                     contentDescription = "Значок лайка",
                     tint = likeColor
                 )
@@ -771,7 +774,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                     modifier = Modifier
                         .padding(3.dp)
                         .size(20.dp),
-                    painter = painterResource(Res.image.ic_flame),
+                    painter = painterResource(Res.drawable.ic_flame),
                     contentDescription = "Значок огня",
                     brush = flameGradient
                 )
@@ -837,7 +840,7 @@ private fun BottomSheetContentClosed(
             ) {
                 Icon(
                     modifier = Modifier.size(14.dp),
-                    painter = painterResource(Res.image.ic_open_book),
+                    painter = painterResource(Res.drawable.ic_open_book),
                     contentDescription = "Иконка книги"
                 )
                 Spacer(modifier = Modifier.width(5.dp))
@@ -850,7 +853,7 @@ private fun BottomSheetContentClosed(
                 onClick = { menuExpanded = !menuExpanded }
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_more_vertical),
+                    painter = painterResource(Res.drawable.ic_more_vertical),
                     contentDescription = "Меню",
                     modifier = Modifier.size(20.dp)
                 )
@@ -1012,7 +1015,7 @@ private fun ChapterItem(
             ) {
                 Spacer(modifier = Modifier.width(2.dp))
                 Icon(
-                    painter = painterResource(Res.image.ic_comment),
+                    painter = painterResource(Res.drawable.ic_comment),
                     contentDescription = "Иконка комментария",
                     modifier = Modifier
                         .padding(4.dp)
@@ -1073,7 +1076,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
         }
     ) {
         Icon(
-            painter = painterResource(Res.image.ic_more_vertical),
+            painter = painterResource(Res.drawable.ic_more_vertical),
             contentDescription = null,
             modifier = Modifier.size(20.dp)
         )
@@ -1091,7 +1094,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
                 },
                 leadingIcon = {
                     Icon(
-                        painter = painterResource(Res.image.ic_share),
+                        painter = painterResource(Res.drawable.ic_share),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp)
                     )
@@ -1108,7 +1111,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
             },
             leadingIcon = {
                 Icon(
-                    painter = painterResource(Res.image.ic_link),
+                    painter = painterResource(Res.drawable.ic_link),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
@@ -1124,7 +1127,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
             },
             leadingIcon = {
                 Icon(
-                    painter = painterResource(Res.image.ic_globe),
+                    painter = painterResource(Res.drawable.ic_globe),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
@@ -1141,7 +1144,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
                 },
                 leadingIcon = {
                     Icon(
-                        painter = painterResource(Res.image.ic_download),
+                        painter = painterResource(Res.drawable.ic_download),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp)
                     )
@@ -1163,23 +1166,23 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
 @Composable
 fun getIconForDirection(direction: FanficDirection): Painter {
     return when (direction) {
-        FanficDirection.GEN -> painterResource(Res.image.ic_direction_gen)
-        FanficDirection.HET -> painterResource(Res.image.ic_direction_het)
-        FanficDirection.SLASH -> painterResource(Res.image.ic_direction_slash)
-        FanficDirection.FEMSLASH -> painterResource(Res.image.ic_direction_femslash)
-        FanficDirection.ARTICLE -> painterResource(Res.image.ic_direction_article)
-        FanficDirection.MIXED -> painterResource(Res.image.ic_direction_mixed)
-        FanficDirection.OTHER -> painterResource(Res.image.ic_direction_other)
-        FanficDirection.UNKNOWN -> painterResource(Res.image.ic_direction_other)
+        FanficDirection.GEN -> painterResource(Res.drawable.ic_direction_gen)
+        FanficDirection.HET -> painterResource(Res.drawable.ic_direction_het)
+        FanficDirection.SLASH -> painterResource(Res.drawable.ic_direction_slash)
+        FanficDirection.FEMSLASH -> painterResource(Res.drawable.ic_direction_femslash)
+        FanficDirection.ARTICLE -> painterResource(Res.drawable.ic_direction_article)
+        FanficDirection.MIXED -> painterResource(Res.drawable.ic_direction_mixed)
+        FanficDirection.OTHER -> painterResource(Res.drawable.ic_direction_other)
+        FanficDirection.UNKNOWN -> painterResource(Res.drawable.ic_direction_other)
     }
 }
 
 @Composable
 fun getIconForStatus(status: FanficCompletionStatus): Painter {
     return when(status) {
-        FanficCompletionStatus.IN_PROGRESS -> painterResource(Res.image.ic_clock)
-        FanficCompletionStatus.COMPLETE -> painterResource(Res.image.ic_check)
-        FanficCompletionStatus.FROZEN -> painterResource(Res.image.ic_snowflake)
+        FanficCompletionStatus.IN_PROGRESS -> painterResource(Res.drawable.ic_clock)
+        FanficCompletionStatus.COMPLETE -> painterResource(Res.drawable.ic_check)
+        FanficCompletionStatus.FROZEN -> painterResource(Res.drawable.ic_snowflake)
         FanficCompletionStatus.UNKNOWN -> rememberVectorPainter(Icons.Rounded.Close)
     }
 }

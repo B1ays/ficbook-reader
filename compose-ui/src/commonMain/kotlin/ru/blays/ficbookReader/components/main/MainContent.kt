@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.main
 
 import androidx.compose.animation.core.spring
@@ -22,10 +24,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.data.sections.userSections
@@ -123,7 +126,7 @@ private fun PortraitContent(
                                 contentColor = MaterialTheme.colorScheme.onSurface
                             ) {
                                 Icon(
-                                    painter = painterResource(Res.image.ic_search),
+                                    painter = painterResource(Res.drawable.ic_search),
                                     contentDescription = "Иконка поиска",
                                     modifier = Modifier.size(24.dp)
                                 )
@@ -273,7 +276,7 @@ private fun DrawerLandscape(
                 contentColor = MaterialTheme.colorScheme.onSurface
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_search),
+                    painter = painterResource(Res.drawable.ic_search),
                     contentDescription = "Иконка поиска",
                     modifier = Modifier.size(24.dp)
                 )
@@ -325,7 +328,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_star_filled),
+                painter = painterResource(Res.drawable.ic_star_filled),
                 contentDescription = "Иконка звезда"
             )
         },
@@ -342,7 +345,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_like_filled),
+                painter = painterResource(Res.drawable.ic_like_filled),
                 contentDescription = "Иконка лайк"
             )
         },
@@ -359,7 +362,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_bookmark_filled),
+                painter = painterResource(Res.drawable.ic_bookmark_filled),
                 contentDescription = "Иконка книга с закладкой"
             )
         },
@@ -376,7 +379,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_star_filled),
+                painter = painterResource(Res.drawable.ic_star_filled),
                 contentDescription = "Иконка звезда"
             )
         },
@@ -393,7 +396,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_eye_filled),
+                painter = painterResource(Res.drawable.ic_eye_filled),
                 contentDescription = "Иконка глаз"
             )
         },
@@ -417,7 +420,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_users),
+                painter = painterResource(Res.drawable.ic_users),
                 contentDescription = "Иконка пользователи"
             )
         },
@@ -435,7 +438,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_bell),
+                painter = painterResource(Res.drawable.ic_bell),
                 contentDescription = "Иконка колокольчика"
             )
         },
@@ -453,7 +456,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_dice),
+                painter = painterResource(Res.drawable.ic_dice),
                 contentDescription = "Иконка игральные кости"
             )
         },
@@ -473,7 +476,7 @@ private fun DrawerContent(
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.image.ic_settings),
+                painter = painterResource(Res.drawable.ic_settings),
                 contentDescription = "Иконка настройки"
             )
         },
@@ -509,7 +512,7 @@ fun UserIconButton(
             modifier = Modifier
                 .size(40.dp)
                 .padding(2.dp),
-            painter = painterResource(Res.image.ic_user),
+            painter = painterResource(Res.drawable.ic_user),
             contentDescription = "Заполнитель иконки пользователя"
         )
     }

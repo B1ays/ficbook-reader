@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.fanficPage
 
 import androidx.compose.foundation.background
@@ -9,12 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.darkrockstudios.libraries.mpfilepicker.FileSaver
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.statusBars
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.DownloadFanficComponent
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -35,7 +39,7 @@ fun FanficDownloadContent(component: DownloadFanficComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -110,7 +114,7 @@ fun FormatItem(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_download),
+                    painter = painterResource(Res.drawable.ic_download),
                     contentDescription = "Иконка скачать",
                     tint = MaterialTheme.colorScheme.surfaceTint,
                     modifier = Modifier.size(30.dp),

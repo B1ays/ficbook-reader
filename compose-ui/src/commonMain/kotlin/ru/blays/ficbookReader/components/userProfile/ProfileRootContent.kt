@@ -14,7 +14,7 @@ fun UserProfileRootContent(component: UserProfileRootComponent) {
     Children(
         stack = component.childStack,
         modifier = Modifier.fillMaxSize(),
-        animation = animator?.let { stackAnimation(it) }
+        animation = stackAnimation(animator)
     ) {
         when(
             val child = it.instance

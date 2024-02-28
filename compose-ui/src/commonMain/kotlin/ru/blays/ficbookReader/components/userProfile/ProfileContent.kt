@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.userProfile
 
 import androidx.compose.foundation.Image
@@ -17,9 +19,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileComponent
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -43,7 +46,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -69,7 +72,7 @@ fun UserProfileContent(component: UserProfileComponent) {
 
             val avatarPainter = state?.let {
                 rememberAsyncImagePainter(model = File(it.avatarPath))
-            } ?: painterResource(Res.image.ic_incognito)
+            } ?: painterResource(Res.drawable.ic_incognito)
 
             Card(
                 onClick = {
@@ -122,7 +125,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                         )
                     }
                     Icon(
-                        painter = painterResource(Res.image.ic_arrow_back),
+                        painter = painterResource(Res.drawable.ic_arrow_back),
                         contentDescription = null,
                         modifier = Modifier.rotate(180F).padding(10.dp)
                     )
@@ -149,7 +152,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                         .fillMaxWidth()
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_replace),
+                        painter = painterResource(Res.drawable.ic_replace),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
@@ -171,7 +174,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                         .fillMaxWidth()
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_incognito),
+                        painter = painterResource(Res.drawable.ic_incognito),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
