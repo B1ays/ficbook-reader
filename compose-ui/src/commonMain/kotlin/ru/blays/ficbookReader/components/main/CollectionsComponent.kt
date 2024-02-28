@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.main
 
 import androidx.compose.foundation.background
@@ -14,12 +16,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.shared.data.dto.CollectionModelStable
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.CollectionsComponent
 import ru.blays.ficbookReader.theme.lockColor
@@ -96,9 +99,9 @@ fun CollectionItem(
     onClick: () -> Unit
 ) {
     val indicatorIcon = if(collectionModel.private) {
-        painterResource(Res.image.ic_lock)
+        painterResource(Res.drawable.ic_lock)
     } else {
-        painterResource(Res.image.ic_unlock)
+        painterResource(Res.drawable.ic_unlock)
     }
     val indicatorIconColor = if(collectionModel.private) lockColor else unlockColor
 
@@ -137,7 +140,7 @@ fun CollectionItem(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_user),
+                            painter = painterResource(Res.drawable.ic_user),
                             contentDescription = "иконка пользователь",
                             modifier = Modifier.size(16.dp)
                         )

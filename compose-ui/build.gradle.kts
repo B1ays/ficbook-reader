@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.compose)
-    id("io.github.skeptick.libres")
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -32,12 +31,10 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.animation)
                 implementation(compose.runtimeSaveable)
+                implementation(compose.components.resources)
 
                 // KotlinX
                 implementation(libs.kotlinx.serialization.json)
-
-                // Libres compose
-                api(libs.libres.compose)
 
                 // materialKolor
                 implementation(libs.materialKolor)
@@ -73,7 +70,6 @@ kotlin {
                 implementation(libs.androidx.activity.activityCompose)
 
                 implementation(libs.compose.color.picker.android)
-
             }
         }
 
@@ -108,10 +104,4 @@ android {
         sourceCompatibility = JavaVersion.VERSION_18
         targetCompatibility = JavaVersion.VERSION_18
     }
-}
-
-libres {
-    generatedClassName = "Res" // "Res" by default
-    generateNamedArguments = true // false by default
-    baseLocaleLanguageCode = "ru" // "en" by default
 }

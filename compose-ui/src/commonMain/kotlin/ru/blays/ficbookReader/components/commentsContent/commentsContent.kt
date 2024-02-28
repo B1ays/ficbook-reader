@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.commentsContent
 
 import androidx.compose.animation.*
@@ -29,11 +31,12 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.CommentModelStable
 import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
@@ -233,7 +236,7 @@ private fun CommentItem(
                 DropdownMenuItem(
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(Res.image.ic_reply),
+                            painter = painterResource(Res.drawable.ic_reply),
                             contentDescription = "Иконка ответ",
                             modifier = Modifier.size(18.dp),
                         )
@@ -247,7 +250,7 @@ private fun CommentItem(
                     DropdownMenuItem(
                         leadingIcon = {
                             Icon(
-                                painter = painterResource(Res.image.ic_delete),
+                                painter = painterResource(Res.drawable.ic_delete),
                                 contentDescription = "Иконка удалить",
                                 modifier = Modifier.size(18.dp),
                             )
@@ -404,7 +407,7 @@ fun CommentsScreenContent(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -452,7 +455,7 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -571,7 +574,7 @@ private fun WriteCommentContent(
                     onClick = component::post
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_send),
+                        painter = painterResource(Res.drawable.ic_send),
                         contentDescription = "Иконка отправки",
                         modifier = Modifier.size(22.dp),
                     )

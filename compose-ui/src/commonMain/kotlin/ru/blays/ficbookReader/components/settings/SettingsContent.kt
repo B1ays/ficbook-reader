@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.settings
 
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -17,12 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.compose.Res
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
@@ -34,6 +37,7 @@ import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
+
 
 @Composable
 fun SettingsContent(component: SettingsMainComponent) {
@@ -62,7 +66,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -131,8 +135,8 @@ fun SettingsContent(component: SettingsMainComponent) {
 private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
     val state by component.state.collectAsState()
     val darkTheme = isSystemInDarkTheme()
-    val sunIcon = painterResource(Res.image.ic_sun)
-    val moonIcon = painterResource(Res.image.ic_moon)
+    val sunIcon = painterResource(Res.drawable.ic_sun)
+    val moonIcon = painterResource(Res.drawable.ic_moon)
     val icon = remember(state, darkTheme) {
         when {
             state == 0 && darkTheme -> moonIcon
@@ -179,7 +183,7 @@ private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
 @Composable
 private fun DynamicColorsSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
-    val icon = painterResource(Res.image.color_swatches)
+    val icon = painterResource(Res.drawable.ic_color_swatches)
     SettingsCardWithSwitch(
         title = "Monet цвета",
         subtitle = "Использовать тему из Monet",
@@ -195,7 +199,7 @@ private fun DynamicColorsSetting(component: SettingsUnitComponent<Boolean>) {
 @Composable
 private fun AmoledThemeSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
-    val icon = painterResource(Res.image.ic_eclipse)
+    val icon = painterResource(Res.drawable.ic_eclipse)
     SettingsCardWithSwitch(
         title = "Amoled тема",
         subtitle = "Использовать Amoled тему",
@@ -211,7 +215,7 @@ private fun AmoledThemeSetting(component: SettingsUnitComponent<Boolean>) {
 @Composable
 private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
     val state by component.state.collectAsState()
-    val icon = painterResource(Res.image.ic_brush)
+    val icon = painterResource(Res.drawable.ic_brush)
     val lazyListState = rememberLazyListState()
     SettingsExpandableCard(
         title = "Цвет акцента",
@@ -244,7 +248,7 @@ private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
 @Composable
 private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
     val state by component.state.collectAsState()
-    val icon = painterResource(Res.image.ic_filter_outlined)
+    val icon = painterResource(Res.drawable.ic_filter_outlined)
     val selectedDirections: List<FanficDirection> = remember(state) {
         val directionNames = state
             .removeSuffix(",")
@@ -299,7 +303,7 @@ private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
         title = "Авто-голосование",
         subtitle = "Автоматически ставить \"Жду продолжения\"",
         enabled = state,
-        icon = painterResource(Res.image.ic_vote)
+        icon = painterResource(Res.drawable.ic_vote)
     ) { newValue ->
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(newValue)
@@ -314,7 +318,7 @@ private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
         title = "Chrome Custom Tabs",
         subtitle = "Открывать ссылки в Chrome Custom Tabs",
         enabled = state,
-        icon = painterResource(Res.image.ic_chrome)
+        icon = painterResource(Res.drawable.ic_chrome)
     ) { newValue ->
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(newValue)
@@ -328,7 +332,7 @@ fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
     SettingsCardWithSwitch(
         title = "Типограф",
         subtitle = "Автоматически исправлять форматирование текста",
-        icon = painterResource(Res.image.ic_magic_wand),
+        icon = painterResource(Res.drawable.ic_magic_wand),
         enabled = state
     ) { newValue ->
         component.onIntent(
@@ -347,7 +351,7 @@ fun BlurSetting(
     SettingsExpandableCard(
         title = "Эффект стекла",
         subtitle = "Включает эффект стекла для некоторых элементов интерфейса",
-        icon = painterResource(Res.image.ic_blur),
+        icon = painterResource(Res.drawable.ic_blur),
     ) {
         val enabled by enabledComponent.state.collectAsState()
 
@@ -398,7 +402,7 @@ fun BlurSetting(
     /*SettingsCardWithSwitch(
         title = "Эффект стекла",
         subtitle = "Включает эффект стекла для некоторых элементов интерфейса",
-        icon = painterResource(Res.image.ic_blur),
+        icon = painterResource(Res.drawable.ic_blur),
         enabled = state
     ) { newValue ->
         component.onIntent(

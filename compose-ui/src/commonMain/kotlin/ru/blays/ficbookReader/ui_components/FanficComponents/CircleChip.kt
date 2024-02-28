@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.ui_components.FanficComponents
 
 import androidx.compose.foundation.background
@@ -12,10 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.shared.data.dto.FanficTagStable
 
 @Composable
@@ -81,7 +84,7 @@ fun FanficTagChip(
             Spacer(modifier = Modifier.width(3.dp))
             Icon(
                 modifier = Modifier.size(16.dp),
-                painter = painterResource(Res.image.ic_18),
+                painter = painterResource(Res.drawable.ic_18),
                 contentDescription = "Иконка 18+",
                 tint = MaterialTheme.colorScheme.onPrimary
             )

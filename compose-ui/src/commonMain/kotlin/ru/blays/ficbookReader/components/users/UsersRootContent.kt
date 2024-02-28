@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.users
 
 import androidx.compose.foundation.layout.*
@@ -18,9 +20,10 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbookReader.ui_components.decomposePager.Pages
 import ru.blays.ficbookReader.values.Zero
@@ -51,7 +54,7 @@ fun UsersRootContent(component: UsersRootComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -218,9 +221,9 @@ fun RailTabs(
 @Composable
 private fun getIconForTab(tabs: UsersRootComponent.TabConfig): Painter {
     return when(tabs) {
-        UsersRootComponent.TabConfig.FavouriteAuthors -> painterResource(Res.image.ic_star_outlined)
-        UsersRootComponent.TabConfig.PopularAuthors -> painterResource(Res.image.ic_flame)
-        UsersRootComponent.TabConfig.SearchAuthors -> painterResource(Res.image.ic_search)
+        UsersRootComponent.TabConfig.FavouriteAuthors -> painterResource(Res.drawable.ic_star_outlined)
+        UsersRootComponent.TabConfig.PopularAuthors -> painterResource(Res.drawable.ic_flame)
+        UsersRootComponent.TabConfig.SearchAuthors -> painterResource(Res.drawable.ic_search)
     }
 }
 

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.ui_components.LogView
 
 import androidx.compose.foundation.layout.*
@@ -12,8 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.compose.Res
-import io.github.skeptick.libres.compose.painterResource
+import ficbook_reader.`compose-ui`.generated.resources.Res
+import ficbook_reader.`compose-ui`.generated.resources.ic_copy
+import ficbook_reader.`compose-ui`.generated.resources.ic_share
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 
@@ -62,7 +67,7 @@ fun LogView(
                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_copy),
+                    painter = painterResource(Res.drawable.ic_copy),
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                 )
@@ -77,7 +82,7 @@ fun LogView(
                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_share),
+                    painter = painterResource(Res.drawable.ic_share),
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                 )

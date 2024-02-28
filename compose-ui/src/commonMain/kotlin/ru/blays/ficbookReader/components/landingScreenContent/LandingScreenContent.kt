@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.landingScreenContent
 
 import androidx.compose.foundation.layout.*
@@ -8,9 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
-import io.github.skeptick.libres.compose.painterResource
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.shared.ui.landingScreenComponent.ConfirmDialogComponent
 import ru.blays.ficbookReader.shared.ui.landingScreenComponent.ConfirmDialogConfig
 import ru.blays.ficbookReader.shared.ui.landingScreenComponent.LandingScreenComponent
@@ -63,7 +66,7 @@ fun LandingScreenContent(component: LandingScreenComponent) {
                         .fillMaxWidth()
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_user_add),
+                        painter = painterResource(Res.drawable.ic_user_add),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
@@ -85,7 +88,7 @@ fun LandingScreenContent(component: LandingScreenComponent) {
                         .fillMaxWidth()
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_user_edit),
+                        painter = painterResource(Res.drawable.ic_user_edit),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
@@ -107,7 +110,7 @@ fun LandingScreenContent(component: LandingScreenComponent) {
                         .fillMaxWidth()
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_incognito),
+                        painter = painterResource(Res.drawable.ic_incognito),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )

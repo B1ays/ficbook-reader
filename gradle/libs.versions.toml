@@ -60,8 +60,6 @@ kotlinx-coroutines-core-android = { module = "org.jetbrains.kotlinx:kotlinx-coro
 kotlinx-coroutines-core-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-libres-compose = { module = "io.github.skeptick.libres:libres-compose", version.ref = "libres" }
-libres-plugin = { module = "io.github.skeptick.libres:gradle-plugin", version.ref = "libres" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 moriatsushi-insetsx = { module = "com.moriatsushi.insetsx:insetsx", version.ref = "insetsx" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
@@ -78,7 +76,6 @@ jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-jetbr
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-libres = { id = "io.github.skeptick.libres", version.ref = "libres" }
 nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.1"
 realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

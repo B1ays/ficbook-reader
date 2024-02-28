@@ -17,9 +17,6 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath(libs.libres.plugin)
-    }
 }
 
 tasks.register("clean", Delete::class) {

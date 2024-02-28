@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.userProfile
 
 import androidx.compose.foundation.layout.*
@@ -15,9 +17,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.data.dto.SavedUserModel
 import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileManagingComponent
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
@@ -43,7 +46,7 @@ fun AccountsManagingContent(component: UserProfileManagingComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -92,7 +95,7 @@ fun AccountsManagingContent(component: UserProfileManagingComponent) {
                     .align(Alignment.CenterHorizontally)
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_plus),
+                    painter = painterResource(Res.drawable.ic_plus),
                     contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )
@@ -184,7 +187,7 @@ fun UserCardContent(
             containerColor = MaterialTheme.colorScheme.background
         ) {
             Icon(
-                painter = painterResource(Res.image.ic_delete),
+                painter = painterResource(Res.drawable.ic_delete),
                 contentDescription = "Иконка: удалить",
                 modifier = Modifier.size(32.dp),
             )

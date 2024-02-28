@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.settings
 
 import androidx.compose.animation.*
@@ -25,10 +27,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.ui_components.CustomButton.BackgroundedIcon
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.CardShape
@@ -116,7 +119,7 @@ fun SettingsExpandableCard(
                     modifier = Modifier
                         .size(24.dp)
                         .rotate(rotateValue),
-                    painter = painterResource(Res.image.ic_arrow_down),
+                    painter = painterResource(Res.drawable.ic_arrow_down),
                     contentDescription = null
                 )
             }

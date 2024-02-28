@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.notifications
 
 import androidx.compose.animation.animateContentSize
@@ -21,11 +23,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.data.dto.NotificationModelStable
 import ru.blays.ficbookReader.shared.data.dto.NotificationType
 import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationComponent
@@ -94,7 +97,7 @@ private fun LandscapeContent(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -204,7 +207,7 @@ fun PortraitContent(
                             }
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_arrow_back),
+                                painter = painterResource(Res.drawable.ic_arrow_back),
                                 contentDescription = "Стрелка назад"
                             )
                         }
@@ -229,7 +232,7 @@ fun PortraitContent(
                                 )
                                 Spacer(modifier = Modifier.requiredWidth(6.dp))
                                 Icon(
-                                    painter = painterResource(Res.image.ic_arrow_down),
+                                    painter = painterResource(Res.drawable.ic_arrow_down),
                                     contentDescription = "Стрелка вниз",
                                     modifier = Modifier.size(20.dp).weight(0.2F, false),
                                 )
@@ -347,7 +350,7 @@ private fun Actions(
             )
         ) {
             Icon(
-                painter = painterResource(Res.image.ic_check_variant),
+                painter = painterResource(Res.drawable.ic_check_variant),
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
             )
@@ -365,7 +368,7 @@ private fun Actions(
             )
         ) {
             Icon(
-                painter = painterResource(Res.image.ic_delete),
+                painter = painterResource(Res.drawable.ic_delete),
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
             )
@@ -525,12 +528,12 @@ private fun getCategoryName(category: NotificationType): String {
 @Composable
 private fun getCategoryIcon(category: NotificationType): Painter {
     return when(category) {
-        NotificationType.ALL_NOTIFICATIONS -> painterResource(Res.image.ic_bell)
-        NotificationType.DISCUSSION_IN_COMMENTS -> painterResource(Res.image.ic_comment)
-        NotificationType.UPDATES_FROM_SUBSCRIBED_AUTHORS -> painterResource(Res.image.ic_star_outlined)
-        NotificationType.NEW_WORKS_IN_COLLECTIONS -> painterResource(Res.image.ic_stack_plus)
-        NotificationType.UPDATES_IN_FANFICS -> painterResource(Res.image.ic_stack_star)
-        NotificationType.NEW_BLOGS -> painterResource(Res.image.ic_blog)
-        else -> painterResource(Res.image.ic_dot)
+        NotificationType.ALL_NOTIFICATIONS -> painterResource(Res.drawable.ic_bell)
+        NotificationType.DISCUSSION_IN_COMMENTS -> painterResource(Res.drawable.ic_comment)
+        NotificationType.UPDATES_FROM_SUBSCRIBED_AUTHORS -> painterResource(Res.drawable.ic_star_outlined)
+        NotificationType.NEW_WORKS_IN_COLLECTIONS -> painterResource(Res.drawable.ic_stack_plus)
+        NotificationType.UPDATES_IN_FANFICS -> painterResource(Res.drawable.ic_stack_star)
+        NotificationType.NEW_BLOGS -> painterResource(Res.drawable.ic_blog)
+        else -> painterResource(Res.drawable.ic_dot)
     }
 }

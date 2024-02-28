@@ -4,6 +4,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+@Suppress("DEPRECATION")
 @Composable
 actual fun DialogPlatform(
     modifier: Modifier,

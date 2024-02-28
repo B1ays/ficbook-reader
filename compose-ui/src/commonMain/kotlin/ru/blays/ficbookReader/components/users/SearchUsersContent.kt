@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.users
 
 import androidx.compose.foundation.background
@@ -17,8 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
-import io.github.skeptick.libres.compose.painterResource
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.shared.data.dto.UserModelStable
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersSearchComponent
@@ -58,7 +61,7 @@ fun SearchUsersContent(component: UsersSearchComponent) {
                             }
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_cancel),
+                                painter = painterResource(Res.drawable.ic_cancel),
                                 contentDescription = "Очистить поиск",
                                 modifier = Modifier.size(20.dp),
                             )

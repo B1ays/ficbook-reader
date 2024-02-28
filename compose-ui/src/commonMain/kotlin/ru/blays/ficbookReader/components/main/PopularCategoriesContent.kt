@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.main
 
 import androidx.compose.animation.animateColorAsState
@@ -21,10 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.platformUtils.onPointerEventPlatform
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
@@ -198,13 +201,13 @@ private fun CategoryGridItem(
 private val iconForDirection: @Composable (direction: FanficDirection) -> Painter
     @Composable get() = { direction ->
         when (direction) {
-            FanficDirection.GEN -> painterResource(Res.image.ic_direction_gen)
-            FanficDirection.HET -> painterResource(Res.image.ic_direction_het)
-            FanficDirection.SLASH -> painterResource(Res.image.ic_direction_slash)
-            FanficDirection.FEMSLASH -> painterResource(Res.image.ic_direction_femslash)
-            FanficDirection.ARTICLE -> painterResource(Res.image.ic_direction_article)
-            FanficDirection.MIXED -> painterResource(Res.image.ic_direction_mixed)
-            FanficDirection.OTHER -> painterResource(Res.image.ic_direction_other)
-            FanficDirection.UNKNOWN -> painterResource(Res.image.ic_direction_other)
+            FanficDirection.GEN -> painterResource(Res.drawable.ic_direction_gen)
+            FanficDirection.HET -> painterResource(Res.drawable.ic_direction_het)
+            FanficDirection.SLASH -> painterResource(Res.drawable.ic_direction_slash)
+            FanficDirection.FEMSLASH -> painterResource(Res.drawable.ic_direction_femslash)
+            FanficDirection.ARTICLE -> painterResource(Res.drawable.ic_direction_article)
+            FanficDirection.MIXED -> painterResource(Res.drawable.ic_direction_mixed)
+            FanficDirection.OTHER -> painterResource(Res.drawable.ic_direction_other)
+            FanficDirection.UNKNOWN -> painterResource(Res.drawable.ic_direction_other)
         }
     }

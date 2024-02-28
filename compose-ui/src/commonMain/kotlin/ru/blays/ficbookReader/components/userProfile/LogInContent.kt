@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.userProfile
 
 import androidx.compose.animation.*
@@ -19,9 +21,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
 import com.moriatsushi.insetsx.systemBarsPadding
-import io.github.skeptick.libres.compose.painterResource
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.platformUtils.landscapeModeWidth
 import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserLogInComponent
@@ -89,7 +92,7 @@ fun LogInContent(component: UserLogInComponent) {
                         }
                     ) {
                         Icon(
-                            painter = androidx.compose.ui.res.painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -151,7 +154,7 @@ fun LogInContent(component: UserLogInComponent) {
                             }
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_cancel),
+                                painter = painterResource(Res.drawable.ic_cancel),
                                 contentDescription = "Иконка отмены",
                                 tint = MaterialTheme.colorScheme.onErrorContainer,
                                 modifier = Modifier.size(24.dp)
@@ -201,7 +204,7 @@ fun LogInContent(component: UserLogInComponent) {
                            }
                        ) {
                            AnimatedContent(
-                               targetState = if(passwordHided) Res.image.ic_eye_crossed else Res.image.ic_eye_filled
+                               targetState = if(passwordHided) Res.drawable.ic_eye_crossed else Res.drawable.ic_eye_filled
                            ) {
                                Icon(
                                    painter = painterResource(it),

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.ui_components.FanficComponents
 
 import androidx.compose.foundation.BorderStroke
@@ -22,14 +24,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.theme.*
@@ -357,9 +360,9 @@ fun FanficChips(
                         .padding(3.dp)
                         .size(20.dp),
                     painter = when(status.status) {
-                        FanficCompletionStatus.IN_PROGRESS -> painterResource(Res.image.ic_clock)
-                        FanficCompletionStatus.COMPLETE -> painterResource(Res.image.ic_check)
-                        FanficCompletionStatus.FROZEN -> painterResource(Res.image.ic_snowflake)
+                        FanficCompletionStatus.IN_PROGRESS -> painterResource(Res.drawable.ic_clock)
+                        FanficCompletionStatus.COMPLETE -> painterResource(Res.drawable.ic_check)
+                        FanficCompletionStatus.FROZEN -> painterResource(Res.drawable.ic_snowflake)
                         FanficCompletionStatus.UNKNOWN -> rememberVectorPainter(Icons.Rounded.Close)
                     },
                     contentDescription = "Значок статуса",
@@ -377,7 +380,7 @@ fun FanficChips(
                     modifier = Modifier
                         .padding(3.dp)
                         .size(20.dp),
-                    painter = painterResource(Res.image.ic_like_outlined),
+                    painter = painterResource(Res.drawable.ic_like_outlined),
                     contentDescription = "Значок лайка",
                     tint = likeColor
                 )
@@ -398,7 +401,7 @@ fun FanficChips(
                     modifier = Modifier
                         .padding(3.dp)
                         .size(20.dp),
-                    painter = painterResource(Res.image.ic_trophy),
+                    painter = painterResource(Res.drawable.ic_trophy),
                     contentDescription = "Значок награды",
                     tint = trophyColor
                 )
@@ -419,7 +422,7 @@ fun FanficChips(
                     modifier = Modifier
                         .padding(3.dp)
                         .size(20.dp),
-                    painter = painterResource(Res.image.ic_flame),
+                    painter = painterResource(Res.drawable.ic_flame),
                     contentDescription = "Значок огня",
                     brush = flameGradient
                 )
@@ -448,7 +451,7 @@ fun FanficHeader(
         FlowRow(verticalArrangement = Arrangement.Center) {
             Icon(
                 modifier = Modifier.size(16.dp),
-                painter = painterResource(Res.image.ic_user),
+                painter = painterResource(Res.drawable.ic_user),
                 contentDescription = "Иконка человек"
             )
             Spacer(modifier = Modifier.width(2.dp))
@@ -464,7 +467,7 @@ fun FanficHeader(
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    painter = painterResource(Res.image.ic_globe),
+                    painter = painterResource(Res.drawable.ic_globe),
                     contentDescription = "Иконка глобус"
                 )
                 Spacer(modifier = Modifier.width(2.dp))
@@ -480,7 +483,7 @@ fun FanficHeader(
         FlowRow {
             Icon(
                 modifier = Modifier.size(16.dp),
-                painter = painterResource(Res.image.ic_open_book),
+                painter = painterResource(Res.drawable.ic_open_book),
                 contentDescription = "Иконка открытая книга"
             )
             Spacer(modifier = Modifier.width(4.dp))

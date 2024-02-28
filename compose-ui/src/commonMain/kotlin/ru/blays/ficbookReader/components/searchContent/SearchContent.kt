@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package ru.blays.ficbookReader.components.searchContent
 
 import androidx.compose.animation.*
@@ -28,12 +30,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.example.myapplication.compose.Res
+import ficbook_reader.`compose-ui`.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import io.github.skeptick.libres.compose.painterResource
+import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.shared.data.dto.*
@@ -98,7 +101,7 @@ private fun LandscapeContent(component: SearchComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -116,7 +119,7 @@ private fun LandscapeContent(component: SearchComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_filter_outlined),
+                            painter = painterResource(Res.drawable.ic_filter_outlined),
                             contentDescription = "Иконка фильтр",
                             modifier = Modifier.size(20.dp),
                         )
@@ -216,7 +219,7 @@ private fun PortraitContent(component: SearchComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_arrow_back),
+                            painter = painterResource(Res.drawable.ic_arrow_back),
                             contentDescription = "Стрелка назад"
                         )
                     }
@@ -230,7 +233,7 @@ private fun PortraitContent(component: SearchComponent) {
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_filter_outlined),
+                            painter = painterResource(Res.drawable.ic_filter_outlined),
                             contentDescription = "Иконка фильтр",
                             modifier = Modifier.size(20.dp),
                         )
@@ -372,7 +375,7 @@ fun SearchParamsSelector(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_cancel),
+                            painter = painterResource(Res.drawable.ic_cancel),
                             contentDescription = "Очистить поиск",
                             modifier = Modifier.size(20.dp),
                         )
@@ -651,7 +654,7 @@ private fun SavedSearchItem(
                         contentColor = MaterialTheme.colorScheme.primary
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_edit),
+                            painter = painterResource(Res.drawable.ic_edit),
                             contentDescription = "Иконка редактирования",
                             modifier = Modifier.size(24.dp),
                         )
@@ -663,7 +666,7 @@ private fun SavedSearchItem(
                         contentColor = MaterialTheme.colorScheme.primary
                     ) {
                         Icon(
-                            painter = painterResource(Res.image.ic_delete),
+                            painter = painterResource(Res.drawable.ic_delete),
                             contentDescription = "Иконка удаления",
                             modifier = Modifier.size(24.dp),
                         )
@@ -824,7 +827,7 @@ private fun FandomsSelector(
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 iconColor = MaterialTheme.colorScheme.surface,
                 label = "Добавить фэндом",
-                icon = painterResource(Res.image.ic_plus),
+                icon = painterResource(Res.drawable.ic_plus),
                 onClick = {
                     selectIncludedFandomDialogVisible = true
                 }
@@ -862,7 +865,7 @@ private fun FandomsSelector(
             contentColor = MaterialTheme.colorScheme.onSurface,
             iconColor = MaterialTheme.colorScheme.surface,
             label = "Исключить фэндом",
-            icon = painterResource(Res.image.ic_minus),
+            icon = painterResource(Res.drawable.ic_minus),
             onClick = {
                 selectExcludedFandomDialogVisible = true
             }
@@ -981,7 +984,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                     modifier = Modifier.height(30.dp)
                 ) {
                     Icon(
-                        painter = painterResource(Res.image.ic_plus),
+                        painter = painterResource(Res.drawable.ic_plus),
                         contentDescription = "Иконка плюс",
                         modifier = Modifier.size(20.dp),
                     )
@@ -1011,7 +1014,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                             modifier = Modifier.height(30.dp)
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_cross),
+                                painter = painterResource(Res.drawable.ic_cross),
                                 contentDescription = "Иконка плюс",
                                 modifier = Modifier.size(20.dp),
                             )
@@ -1055,7 +1058,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                                 .weight(0.45F),
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_plus),
+                                painter = painterResource(Res.drawable.ic_plus),
                                 contentDescription = "Иконка плюс",
                                 modifier = Modifier.size(20.dp),
                             )
@@ -1083,7 +1086,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                                 .weight(0.45F),
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_minus),
+                                painter = painterResource(Res.drawable.ic_minus),
                                 contentDescription = "Иконка минус",
                                 modifier = Modifier.size(20.dp),
                             )
@@ -1209,7 +1212,7 @@ private fun TagsSelector(
             contentColor = MaterialTheme.colorScheme.onSurface,
             iconColor = MaterialTheme.colorScheme.surface,
             label = "Добавить метку",
-            icon = painterResource(Res.image.ic_plus),
+            icon = painterResource(Res.drawable.ic_plus),
             onClick = {
                 selectIncludedTagDialogVisible = true
             }
@@ -1247,7 +1250,7 @@ private fun TagsSelector(
             contentColor = MaterialTheme.colorScheme.onSurface,
             iconColor = MaterialTheme.colorScheme.surface,
             label = "Исключить метку",
-            icon = painterResource(Res.image.ic_minus),
+            icon = painterResource(Res.drawable.ic_minus),
             onClick = {
                 selectExcludedTagDialogVisible = true
             }
@@ -1879,7 +1882,7 @@ private fun FindFandomDialog(
                             onClick = component::clear
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_cancel),
+                                painter = painterResource(Res.drawable.ic_cancel),
                                 contentDescription = "Очистить поиск",
                                 modifier = Modifier.size(20.dp),
                             )
@@ -1944,7 +1947,7 @@ private fun FindTagDialog(
                             onClick = component::clear
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_cancel),
+                                painter = painterResource(Res.drawable.ic_cancel),
                                 contentDescription = "Очистить поиск",
                                 modifier = Modifier.size(20.dp),
                             )
@@ -2022,7 +2025,7 @@ fun SelectCharacterDialog(
                             onClick = { searchedName = "" }
                         ) {
                             Icon(
-                                painter = painterResource(Res.image.ic_cancel),
+                                painter = painterResource(Res.drawable.ic_cancel),
                                 contentDescription = "Очистить поиск",
                                 modifier = Modifier.size(20.dp),
                             )
@@ -2124,7 +2127,7 @@ private fun SearchedTagItem(
             if (tag.isAdult) {
                 Spacer(modifier = Modifier.width(spaceBetweenItems))
                 Icon(
-                    painter = painterResource(Res.image.ic_18),
+                    painter = painterResource(Res.drawable.ic_18),
                     contentDescription = "Иконка 18+",
                     modifier = Modifier.size(16.dp)
                 )
@@ -2218,7 +2221,7 @@ private fun CharacterItem(
                     }
                     Spacer(modifier = Modifier.width(3.dp))
                     Icon(
-                        painter = painterResource(Res.image.ic_arrow_down),
+                        painter = painterResource(Res.drawable.ic_arrow_down),
                         contentDescription = "Иконка стрелка вниз",
                         modifier = Modifier.size(20.dp),
                     )
@@ -2273,7 +2276,7 @@ private fun CharacterItem(
                                         }
                                     ) {
                                         Icon(
-                                            painter = painterResource(Res.image.ic_check),
+                                            painter = painterResource(Res.drawable.ic_check),
                                             contentDescription = "Иконка галочка",
                                             modifier = Modifier.size(20.dp)
                                         )
@@ -2364,7 +2367,7 @@ private fun ItemChip(
                 modifier = Modifier.size(24.dp),
             ) {
                 Icon(
-                    painter = painterResource(Res.image.ic_cancel),
+                    painter = painterResource(Res.drawable.ic_cancel),
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
@@ -2547,13 +2550,13 @@ private fun BottomButtonContent(
             ) { expanded ->
                 if (expanded) {
                     Icon(
-                        painter = painterResource(Res.image.ic_cancel),
+                        painter = painterResource(Res.drawable.ic_cancel),
                         contentDescription = "Иконка звёздочка",
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
                     Icon(
-                        painter = painterResource(Res.image.ic_star_outlined),
+                        painter = painterResource(Res.drawable.ic_star_outlined),
                         contentDescription = "Иконка звёздочка",
                         modifier = Modifier.size(24.dp)
                     )
