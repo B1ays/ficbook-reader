@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.userProfile
 
 import androidx.compose.foundation.Image
@@ -19,10 +17,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
-import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
+import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileComponent
 import ru.blays.ficbookReader.utils.surfaceColorAtAlpha
 import ru.blays.ficbookReader.values.DefaultPadding
@@ -30,6 +29,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 import java.io.File
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun UserProfileContent(component: UserProfileComponent) {
     val state by component.state.collectAsState()
@@ -47,11 +47,11 @@ fun UserProfileContent(component: UserProfileComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Профиль")
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_profile))
             )
         },
         modifier = Modifier.systemBarsPadding(),
@@ -78,7 +78,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                 onClick = {
                     state?.let {
                         component.onOutput(
-                            UserProfileComponent.Output.OpenProfile("authors/${it.id}")
+                            UserProfileComponent.Output.OpenProfile("authors/${it.id}") // TODO - remove href generation from ui
                         )
                     }
                 },
@@ -105,7 +105,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                     ) {
                         Image(
                             painter = avatarPainter,
-                            contentDescription = "Аватар пользователя",
+                            contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
                             contentScale = if(state == null) {
                                 ContentScale.Inside
                             } else ContentScale.Crop,
@@ -119,7 +119,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                         Spacer(modifier = Modifier.requiredWidth(12.dp))
                         Text(
                             modifier = Modifier,
-                            text = state?.name ?: "Анонимный пользователь",
+                            text = state?.name ?: stringResource(Res.string.anonymous_user),
                             style = MaterialTheme.typography.titleLarge,
                             textAlign = TextAlign.Start,
                         )
@@ -158,7 +158,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Сменить аккаунт"
+                        text = stringResource(Res.string.action_change_account)
                     )
                 }
                 Spacer(modifier = Modifier.height(9.dp))
@@ -180,7 +180,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Анонимный режим"
+                        text = stringResource(Res.string.anonymous_mode)
                     )
                 }
             }

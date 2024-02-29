@@ -31,12 +31,13 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ficbook_reader.`compose-ui`.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbookReader.shared.data.dto.CommentModelStable
 import ru.blays.ficbookReader.shared.data.dto.QuoteModelStable
@@ -135,6 +136,7 @@ fun CommentsContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CommentItem(
     comment: CommentModelStable,
@@ -158,7 +160,7 @@ private fun CommentItem(
         if(!hideAvatar) {
             AsyncImage(
                 model = user.avatarUrl,
-                contentDescription = "Аватарка автора комментария",
+                contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .padding(bottom = 4.dp)
@@ -237,12 +239,12 @@ private fun CommentItem(
                     leadingIcon = {
                         Icon(
                             painter = painterResource(Res.drawable.ic_reply),
-                            contentDescription = "Иконка ответ",
+                            contentDescription = stringResource(Res.string.content_description_icon_reply),
                             modifier = Modifier.size(18.dp),
                         )
                     },
                     text = {
-                        Text("Ответить")
+                        Text(text = stringResource(Res.string.reply))
                     },
                     onClick = onAddReply
                 )
@@ -251,12 +253,12 @@ private fun CommentItem(
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_delete),
-                                contentDescription = "Иконка удалить",
+                                contentDescription = stringResource(Res.string.content_description_icon_delete),
                                 modifier = Modifier.size(18.dp),
                             )
                         },
                         text = {
-                            Text("Удалить")
+                            Text(text = stringResource(Res.string.delete))
                         },
                         onClick = onDelete
                     )
@@ -389,6 +391,7 @@ private fun QuoteElement(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun CommentsScreenContent(
     component: CommentsComponent,
@@ -408,11 +411,11 @@ fun CommentsScreenContent(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Отзывы"),
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_comments)),
                 containerColor = if(glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
@@ -456,11 +459,11 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Отзывы к главе"),
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_chapter_comments)),
                 containerColor = if(glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
@@ -508,6 +511,7 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun WriteCommentContent(
     component: WriteCommentComponent,
@@ -560,7 +564,7 @@ private fun WriteCommentContent(
                     unfocusedContainerColor = Color.Transparent
                 ),
                 placeholder = {
-                    Text("Оставьте свой отзыв")
+                    Text(text = stringResource(Res.string.comments_textfield_placeholder))
                 },
                 modifier = Modifier.weight(1F),
             )
@@ -575,7 +579,7 @@ private fun WriteCommentContent(
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_send),
-                        contentDescription = "Иконка отправки",
+                        contentDescription = stringResource(Res.string.content_description_icon_send),
                         modifier = Modifier.size(22.dp),
                     )
                 }

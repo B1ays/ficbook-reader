@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.notifications
 
 import androidx.compose.animation.animateContentSize
@@ -23,12 +21,13 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ficbook_reader.`compose-ui`.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.data.dto.NotificationModelStable
 import ru.blays.ficbookReader.shared.data.dto.NotificationType
 import ru.blays.ficbookReader.shared.ui.notificationComponents.NotificationComponent
@@ -43,7 +42,6 @@ import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @Composable
 fun NotificationsContent(component: NotificationComponent) {
-
     val lazyListState = rememberLazyListState()
 
     val canScrollBackward = lazyListState.canScrollBackward
@@ -78,6 +76,7 @@ fun NotificationsContent(component: NotificationComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(
     component: NotificationComponent,
@@ -98,11 +97,11 @@ private fun LandscapeContent(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Уведомления"),
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.notifications)),
                 insets = WindowInsets.statusBars
             )
         }
@@ -177,6 +176,7 @@ private fun LandscapeContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PortraitContent(
     component: NotificationComponent,
@@ -208,7 +208,7 @@ fun PortraitContent(
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_arrow_back),
-                                contentDescription = "Стрелка назад"
+                                contentDescription = stringResource(Res.string.content_description_icon_back)
                             )
                         }
                     },
@@ -233,7 +233,7 @@ fun PortraitContent(
                                 Spacer(modifier = Modifier.requiredWidth(6.dp))
                                 Icon(
                                     painter = painterResource(Res.drawable.ic_arrow_down),
-                                    contentDescription = "Стрелка вниз",
+                                    contentDescription = stringResource(Res.string.content_description_icon_down),
                                     modifier = Modifier.size(20.dp).weight(0.2F, false),
                                 )
                             }
@@ -329,6 +329,7 @@ fun PortraitContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun Actions(
     modifier: Modifier = Modifier,
@@ -355,7 +356,7 @@ private fun Actions(
                 modifier = Modifier.size(20.dp),
             )
             Spacer(modifier = Modifier.requiredWidth(6.dp))
-            Text("Всё прочтитано")
+            Text(text = stringResource(Res.string.notifications_action_read_all))
         }
         Spacer(modifier = Modifier.requiredWidth(10.dp))
         OutlinedButton(
@@ -373,11 +374,12 @@ private fun Actions(
                 modifier = Modifier.size(20.dp),
             )
             Spacer(modifier = Modifier.requiredWidth(6.dp))
-            Text("Удалить всё")
+            Text(text = stringResource(Res.string.notifications_action_delete_all))
         }
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun NotificationItem(
     modifier: Modifier = Modifier,
@@ -408,7 +410,7 @@ fun NotificationItem(
             }
             Icon(
                 painter = getCategoryIcon(notification.type),
-                contentDescription = "Иконка категории",
+                contentDescription = stringResource(Res.string.content_description_icon_category),
                 tint = iconColor,
                 modifier = Modifier.size(24.dp)
             )
@@ -454,6 +456,7 @@ fun NotificationItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ConfirmDialogContent(component: NotificationConfirmDialogComponent) {
     AlertDialog(
@@ -470,7 +473,7 @@ fun ConfirmDialogContent(component: NotificationConfirmDialogComponent) {
                     )
                 }
             ) {
-                Text("Да")
+                Text(text = stringResource(Res.string.yes))
             }
         },
         dismissButton = {
@@ -481,50 +484,53 @@ fun ConfirmDialogContent(component: NotificationConfirmDialogComponent) {
                     )
                 }
             ) {
-                Text("Нет")
+                Text(text = stringResource(Res.string.no))
             }
         },
         title = {
-            Text("Вы уверены?")
+            Text(text = stringResource(Res.string.are_you_sure))
         },
         text = {
-            Text("Вы точно хотите ${component.actionName}?")
+            Text(text = stringResource(Res.string.are_you_sure_want, component.actionName))
         }
     )
 }
 
+@Composable
+@OptIn(ExperimentalResourceApi::class)
 private fun getCategoryName(category: NotificationType): String {
     return when(category) {
-        NotificationType.ALL_NOTIFICATIONS -> "Все уведомления"
-        NotificationType.DISCUSSION_IN_COMMENTS -> "Обсуждения в отзывах работы"
-        NotificationType.UPDATES_FROM_SUBSCRIBED_AUTHORS -> "Обновления у авторов, на которых подписан"
-        NotificationType.NEW_WORKS_IN_COLLECTIONS -> "Новые работы в сборниках"
-        NotificationType.UPDATES_IN_FANFICS -> "Новые части в работе"
-        NotificationType.NEW_BLOGS -> "Оповещения о новых блогах"
-        NotificationType.NEW_COMMENTS -> "Новые отзывы"
-        NotificationType.SYSTEM_MESSAGES -> "Системные сообщения"
-        NotificationType.NEW_WORKS_FOR_LIKED_REQUESTS -> "Новые работы по понравившимся заявкам"
-        NotificationType.HELPDESK_RESPONSES -> "Ответы службы поддержки"
+        NotificationType.ALL_NOTIFICATIONS -> stringResource(Res.string.notifications_category_all)
+        NotificationType.DISCUSSION_IN_COMMENTS -> stringResource(Res.string.notifications_category_discussion)
+        NotificationType.UPDATES_FROM_SUBSCRIBED_AUTHORS -> stringResource(Res.string.notifications_category_updates_from_subscribed_authors)
+        NotificationType.NEW_WORKS_IN_COLLECTIONS -> stringResource(Res.string.notifications_category_new_in_collections)
+        NotificationType.UPDATES_IN_FANFICS -> stringResource(Res.string.notifications_category_updates_in_fanfics)
+        NotificationType.NEW_BLOGS -> stringResource(Res.string.notifications_category_new_blogs)
+        NotificationType.NEW_COMMENTS -> stringResource(Res.string.notifications_category_new_comments)
+        NotificationType.SYSTEM_MESSAGES -> stringResource(Res.string.notifications_category_system_messages)
+        NotificationType.NEW_WORKS_FOR_LIKED_REQUESTS -> stringResource(Res.string.notifications_category_new_in_liked_requests)
+        NotificationType.HELPDESK_RESPONSES -> stringResource(Res.string.notifications_category_helpdesk_responses)
         NotificationType.TEXT_CHANGES_IN_OWN_FANFIC -> ""
-        NotificationType.NEW_PRESENTS -> "Новые подарки"
-        NotificationType.NEW_ACHIEVEMENTS -> "Новые достижения"
-        NotificationType.TEXT_CHANGES_IN_EDITED_FANFIC -> "Изменения в тексте работы, где я бета/гамма/соавтор"
-        NotificationType.ERROR_MESSAGES -> "Сообщения об ошибках"
-        NotificationType.REQUESTS_FOR_COAUTHORSHIPS -> "Запросы на соавторство"
-        NotificationType.REQUESTS_FOR_BETA_EDITING -> "Запросы на бету"
-        NotificationType.REQUESTS_FOR_GAMMA_EDITING -> "Запросы на гамму"
-        NotificationType.NEW_WORKS_ON_MY_REQUESTS -> "Новые работы по моим заявкам"
-        NotificationType.DISCUSSION_IN_REQUEST_COMMENTS -> "Обсуждения в отзывах заявки"
-        NotificationType.PRIVATE_MESSAGES -> "Личные сообщения"
-        NotificationType.NEW_COMMENTS_FOR_REQUEST -> "Новые отзывы к заявке"
-        NotificationType.NEW_FANFICS_REWARDS -> "Новые награды к фанфикам"
-        NotificationType.NEW_COMMENTS_REWARDS -> "Новые награды к отзывам"
-        NotificationType.CHANGES_IN_HEADER_OF_WORK -> "Изменения в шапке работы"
-        NotificationType.COAUTHOR_ADD_NEW_CHAPTER -> "Соавтор добавил новую главу в работу, где я автор"
-        NotificationType.UNKNOWN -> "Неизвестный раздел"
+        NotificationType.NEW_PRESENTS -> stringResource(Res.string.notifications_category_new_presents)
+        NotificationType.NEW_ACHIEVEMENTS -> stringResource(Res.string.notifications_category_new_achievements)
+        NotificationType.TEXT_CHANGES_IN_EDITED_FANFIC -> stringResource(Res.string.notifications_category_text_changed_in_edited_fanfic)
+        NotificationType.ERROR_MESSAGES -> stringResource(Res.string.notifications_category_messages_about_error)
+        NotificationType.REQUESTS_FOR_COAUTHORSHIPS -> stringResource(Res.string.notifications_category_request_for_coauthorship)
+        NotificationType.REQUESTS_FOR_BETA_EDITING -> stringResource(Res.string.notifications_category_request_for_beta_editing)
+        NotificationType.REQUESTS_FOR_GAMMA_EDITING -> stringResource(Res.string.notifications_category_request_for_gamma_editing)
+        NotificationType.NEW_WORKS_ON_MY_REQUESTS -> stringResource(Res.string.notifications_category_new_works_on_my_requests)
+        NotificationType.DISCUSSION_IN_REQUEST_COMMENTS -> stringResource(Res.string.notifications_category_discussion_in_request)
+        NotificationType.PRIVATE_MESSAGES -> stringResource(Res.string.notifications_category_private_messages)
+        NotificationType.NEW_COMMENTS_FOR_REQUEST -> stringResource(Res.string.notifications_category_new_comments_for_request)
+        NotificationType.NEW_FANFICS_REWARDS -> stringResource(Res.string.notifications_category_new_fanfic_rewards)
+        NotificationType.NEW_COMMENTS_REWARDS -> stringResource(Res.string.notifications_category_new_comments_rewards)
+        NotificationType.CHANGES_IN_HEADER_OF_WORK -> stringResource(Res.string.notifications_category_changes_in_work_header)
+        NotificationType.COAUTHOR_ADD_NEW_CHAPTER -> stringResource(Res.string.notifications_category_coauthor_add_new_chapter)
+        NotificationType.UNKNOWN -> stringResource(Res.string.notifications_category_unknown)
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getCategoryIcon(category: NotificationType): Painter {
     return when(category) {

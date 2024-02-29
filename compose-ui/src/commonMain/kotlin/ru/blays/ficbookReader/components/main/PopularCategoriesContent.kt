@@ -23,11 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.PointerEventType
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.platformUtils.onPointerEventPlatform
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
@@ -54,8 +55,7 @@ fun PopularCategoriesContent(component: PopularSectionsComponent) {
                 items(sections) { (section, direction) ->
                     CategoryGridItem(section, direction) {
                         component.onOutput(
-                            PopularSectionsComponent.Output
-                                .NavigateToSection(section)
+                            PopularSectionsComponent.Output.NavigateToSection(section)
                         )
                     }
                 }
@@ -121,7 +121,7 @@ private fun CategoryListItem(
         ) {
             Icon(
                 painter = icon,
-                contentDescription = "Иконка направления фанфика",
+                contentDescription = stringResource(Res.string.content_description_icon_direction),
                 modifier = Modifier.size(iconSize),
                 tint = iconColor
             )
@@ -180,7 +180,7 @@ private fun CategoryGridItem(
         ) {
             Icon(
                 painter = icon,
-                contentDescription = "Иконка направления фанфика",
+                contentDescription = stringResource(Res.string.content_description_icon_direction),
                 modifier = Modifier.size(iconSize),
                 tint = iconColor
             )

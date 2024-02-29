@@ -19,6 +19,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import ficbook_reader.`compose-ui`.generated.resources.Res
+import ficbook_reader.`compose-ui`.generated.resources.content_description_icon_author_avatar
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.data.dto.PopularAuthorModelStable
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersPopularComponent
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
@@ -56,6 +60,7 @@ fun PopularAuthorsContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AuthorItem(
     author: PopularAuthorModelStable,
@@ -71,7 +76,7 @@ private fun AuthorItem(
         ) {
             AsyncImage(
                 model = author.user.avatarUrl,
-                contentDescription = "Аватар автора ${author.user.name}",
+                contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .padding(10.dp)

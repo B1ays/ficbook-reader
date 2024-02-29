@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.collectionContent
 
 import androidx.compose.animation.AnimatedVisibility
@@ -17,13 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ficbook_reader.`compose-ui`.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import org.jetbrains.compose.resources.painterResource
+import ficbook_reader.`compose-ui`.generated.resources.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.ui.collectionSortComponent.CollectionFanficsListComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
@@ -49,6 +48,7 @@ fun CollectionContent(component: CollectionFanficsListComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(component: CollectionFanficsListComponent) {
     val state by component.state.subscribeAsState()
@@ -71,7 +71,7 @@ private fun LandscapeContent(component: CollectionFanficsListComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
@@ -83,7 +83,7 @@ private fun LandscapeContent(component: CollectionFanficsListComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_sort),
-                            contentDescription = "Сортировка",
+                            contentDescription = stringResource(Res.string.content_description_icon_sort),
                             modifier = Modifier.size(20.dp),
                         )
                     }
@@ -138,6 +138,7 @@ private fun LandscapeContent(component: CollectionFanficsListComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun PortraitContent(component: CollectionFanficsListComponent) {
     val state by component.state.subscribeAsState()
@@ -174,7 +175,7 @@ private fun PortraitContent(component: CollectionFanficsListComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
@@ -192,7 +193,7 @@ private fun PortraitContent(component: CollectionFanficsListComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_sort),
-                            contentDescription = "Сортировка",
+                            contentDescription = stringResource(Res.string.content_description_icon_sort),
                             modifier = Modifier.size(20.dp),
                         )
                     }
@@ -225,6 +226,7 @@ private fun PortraitContent(component: CollectionFanficsListComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SortParamContent(
     modifier: Modifier = Modifier,
@@ -248,7 +250,7 @@ private fun SortParamContent(
                 )
             },
             label = {
-                Text(text = "Поиск по названию")
+                Text(text = stringResource(Res.string.collection_search_by_name))
             },
             trailingIcon = {
                 IconButton(
@@ -260,7 +262,7 @@ private fun SortParamContent(
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_cancel),
-                        contentDescription = "Очистить поиск",
+                        contentDescription = stringResource(Res.string.content_description_icon_clear),
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -280,7 +282,7 @@ private fun SortParamContent(
                 onExpandedChange = {
                     fandomMenuExpanded = it
                 },
-                selectedItemName = state.currentParams.fandom?.first ?: "любой фэндом",
+                selectedItemName = state.currentParams.fandom?.first ?: stringResource(Res.string.collection_search_every_fandom),
                 items = items,
                 onItemClicked = { item ->
                     component.onIntent(
@@ -296,7 +298,7 @@ private fun SortParamContent(
                 onExpandedChange = {
                     directionMenuExpanded = it
                 },
-                selectedItemName = state.currentParams.direction?.first ?: "любая направленность",
+                selectedItemName = state.currentParams.direction?.first ?: stringResource(Res.string.collection_search_every_direction),
                 items = items,
                 onItemClicked = { item ->
                     component.onIntent(
@@ -312,7 +314,7 @@ private fun SortParamContent(
                 onExpandedChange = {
                     sortMenuExpanded = it
                 },
-                selectedItemName = state.currentParams.sort?.first ?: "по умолчанию",
+                selectedItemName = state.currentParams.sort?.first ?: stringResource(Res.string.collection_search_sort_default),
                 items = items,
                 onItemClicked = { item ->
                     component.onIntent(
@@ -336,12 +338,12 @@ private fun SortParamContent(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_cross),
-                    contentDescription = "Иконка очистки",
+                    contentDescription = stringResource(Res.string.content_description_icon_clear),
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.requiredWidth(8.dp))
                 Text(
-                    text = "Сбросить"
+                    text = stringResource(Res.string.reset)
                 )
             }
             Spacer(modifier = Modifier.requiredWidth(14.dp))
@@ -355,11 +357,11 @@ private fun SortParamContent(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_search),
-                    contentDescription = "Иконка поиска",
+                    contentDescription = stringResource(Res.string.content_description_icon_search),
                     modifier = Modifier.size(20.dp)
                 )
-                Spacer(modifier = Modifier.requiredWidth(8.dp),)
-                Text(text = "Найти")
+                Spacer(modifier = Modifier.requiredWidth(8.dp))
+                Text(text = stringResource(Res.string.action_search))
             }
         }
     }

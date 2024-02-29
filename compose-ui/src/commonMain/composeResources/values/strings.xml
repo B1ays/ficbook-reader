@@ -1,0 +1,321 @@
+<resources>
+    <string name="app_name">Ficbook reader</string>
+
+    <!--  Toolbar titles  -->
+    <string name="toolbar_title_comments">Отзывы</string>
+    <string name="toolbar_title_chapter_comments">Отзывы к главе</string>
+    <string name="toolbar_title_download">Скачать работу</string>
+    <string name="toolbar_title_search">Поиск</string>
+    <string name="toolbar_title_account_managing">Управление аккаунтами</string>
+    <string name="toolbar_title_profile">Профиль</string>
+    <string name="toolbar_title_authors">Авторы</string>
+
+    <!--  Common  -->
+    <string name="reset">Сбросить</string>
+    <string name="clear">Очистить</string>
+    <string name="search">Поиск</string>
+    <string name="reply">Ответить</string>
+    <string name="delete">Удалить</string>
+    <string name="liked">Нравится</string>
+    <string name="like">Лайк</string>
+    <string name="favourite">Избранное</string>
+    <string name="comments">Отзывы</string>
+    <string name="read">Читать</string>
+    <string name="download">Скачать</string>
+    <string name="subscription">Подписка</string>
+    <string name="readed">Прочитано</string>
+    <string name="error">Ошибка</string>
+    <string name="loading_in_progress">Загрузка...</string>
+    <string name="anonymous_mode">Анонимный режим</string>
+    <string name="cancel">Отмена</string>
+    <string name="authors">Авторы</string>
+    <string name="notifications">Уведомления</string>
+    <string name="random_fanfic">Случайный фанфик</string>
+    <string name="settings">Настройки</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="ok">Ок</string>
+    <string name="are_you_sure">Вы уверены?</string>
+    <string name="are_you_sure_want">Вы точно хотите %1$s</string>
+    <string name="parameters">Параметры</string>
+    <string name="description">Описание</string>
+    <string name="saved">Сохранённые</string>
+    <string name="save">Сохранение</string>
+    <string name="search_by_name">Поиск по имени</string>
+    <string name="search_author">Поиск авторов</string>
+    <string name="title">Название</string>
+    <string name="from">От</string>
+    <string name="to">До</string>
+    <string name="minimum">Минимум</string>
+    <string name="maximum">Максимум</string>
+    <string name="enabled">Включено</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="anonymous_user">Анонимный пользователь</string>
+
+    <!--  Author profile screen  -->
+    <string name="author_profile_tab_main">Инфо</string>
+    <string name="author_profile_tab_blog">Блог</string>
+    <string name="author_profile_tab_presents">Подарки</string>
+    <string name="author_profile_tab_works">Работы</string>
+    <string name="author_profile_tab_works_as_beta">Бета</string>
+    <string name="author_profile_tab_works_as_gamma">Гамма</string>
+    <string name="author_profile_tab_works_as_coauthor">Соавтор</string>
+    <string name="author_profile_tab_comments">Отзывы</string>
+
+    <string name="author_profile_subscribers_count">Подписчиков: %1$d</string>
+    <string name="author_profile_about">О себе:</string>
+    <string name="author_profile_contacts">Контактная информация:</string>
+    <string name="author_profile_support">Поддержать автора:</string>
+
+    <!--  Collections screen  -->
+    <string name="collection_search_by_name">Поиск по названию</string>
+    <string name="collection_search_every_fandom">любой фэндом</string>
+    <string name="collection_search_every_direction">любая направленность</string>
+    <string name="collection_search_sort_default">по умолчанию</string>
+
+    <!--  Comments screen  -->
+    <string name="comments_textfield_placeholder">Оставьте свой отзыв</string>
+
+    <!--  Fanfic page  -->
+    <string name="fanficPage_action_to_collection">В сборник"</string>
+    <string name="fanficPage_collections_dialog_title">Добавить работу в сборник</string>
+    <string name="fanficPage_description">Описание:</string>
+    <string name="fanficPage_fandoms">Фэндомы:</string>
+    <string name="fanficPage_pairings_and_characters">Пэйринги и персонажи:</string>
+    <string name="fanficPage_chapters_count">Глав: %1$d</string>
+    <string name="fanficPage_pages_count">Страниц: %1$d</string>
+    <string name="fanficPage_reward_from">«%1$s» от %2$s</string>
+    <string name="fanficPage_reverse_chapters_order">Обратный порядок глав</string>
+    
+    <!--  Landing screen  -->
+    <string name="landing_title">Добро пожаловать в Ficbook Reader</string>
+    <string name="landing_title">Добро пожаловать в Ficbook Reader</string>
+    
+    <string name="landing_dialog_title_confirm_am">Пропустить авторизацию?</string>
+    <string name="landing_dialog_title_confirm_migration">Добавить сохранённый аккаунт?</string>
+    <string name="landing_dialog_title_confirm_redirect">Перейти на сайт?</string>
+    <string name="landing_dialog_title_migration_failed">Не удалось конвертировать.</string>
+
+    <string name="landing_dialog_description_confirm_am">Пропустить авторизацию?</string>
+    <string name="landing_dialog_description_confirm_migration">Добавить сохранённый аккаунт?</string>
+    <string name="landing_dialog_description_confirm_redirect">Перейти на сайт?</string>
+    <string name="landing_dialog_description_migration_failed">Не удалось конвертировать.</string>
+
+    <!--  Main screen  -->
+    <string name="mainScreen_drawer_category_personal">Личные</string>
+    <string name="mainScreen_drawer_category_standart">Стандартные</string>
+
+    <!--  Notifications screen  -->
+    <string name="notifications_action_read_all">Всё прочтитано</string>
+    <string name="notifications_action_delete_all">Удалить всё</string>
+
+    <string name="notifications_category_all">Все уведомления</string>
+    <string name="notifications_category_discussion">Обсуждения в отзывах работы</string>
+    <string name="notifications_category_updates_from_subscribed_authors">Обновления у авторов, на которых подписан</string>
+    <string name="notifications_category_new_in_collections">Новые работы в сборниках</string>
+    <string name="notifications_category_updates_in_fanfics">Новые части в работе</string>
+    <string name="notifications_category_new_blogs">Оповещения о новых блогах</string>
+    <string name="notifications_category_new_comments">Новые отзывы</string>
+    <string name="notifications_category_system_messages">Системные сообщения</string>
+    <string name="notifications_category_new_in_liked_requests">Новые работы по понравившимся заявкам</string>
+    <string name="notifications_category_helpdesk_responses">Ответы службы поддержки</string>
+    <string name="notifications_category_new_presents">Новые подарки</string>
+    <string name="notifications_category_new_achievements">Новые достижения</string>
+    <string name="notifications_category_text_changed_in_edited_fanfic">Изменения в тексте работы, где я бета/гамма/соавтор</string>
+    <string name="notifications_category_messages_about_error">Сообщения об ошибках</string>
+    <string name="notifications_category_request_for_coauthorship">Запросы на соавторство</string>
+    <string name="notifications_category_request_for_beta_editing">Запросы на бету</string>
+    <string name="notifications_category_request_for_gamma_editing">Запросы на гамму</string>
+    <string name="notifications_category_new_works_on_my_requests">Новые работы по моим заявкам</string>
+    <string name="notifications_category_discussion_in_request">Обсуждения в отзывах заявки</string>
+    <string name="notifications_category_private_messages">Личные сообщения</string>
+    <string name="notifications_category_new_comments_for_request">Новые отзывы к заявке</string>
+    <string name="notifications_category_new_fanfic_rewards">Новые награды к фанфикам</string>
+    <string name="notifications_category_new_comments_rewards">Новые награды к отзывам</string>
+    <string name="notifications_category_changes_in_work_header">Изменения в шапке работы</string>
+    <string name="notifications_category_coauthor_add_new_chapter">Соавтор добавил новую главу в работу, где я автор</string>
+    <string name="notifications_category_unknown">Неизвестный раздел</string>
+
+    <!--  Search screen  -->
+    <string name="search_update_parameters">Обновить параметры</string>
+    <string name="search_selector_hot_works">Фанфики из раздела «Горячие работы»</string>
+    <string name="search_selector_dont_show_readed">Не показывать прочитанное</string>
+    <string name="search_selector_fandom_group">Группа фэндомов</string>
+    <string name="search_selector_select_fandoms">Выбрать фэндомы</string>
+    <string name="search_selector_select_pairings">Выбрать пейринги или персонажей</string>
+    <string name="search_selector_select_tags">Выбрать метки</string>
+    <string name="search_selector_with_status">Со статусом</string>
+    <string name="search_selector_with_rating">С рейтингом</string>
+    <string name="search_selector_direction">Одной из направленностей</string>
+    <string name="search_selector_translate">Перевод или оригинальный текст</string>
+    <string name="search_selector_pages_count">Количество страниц</string>
+    <string name="search_selector_likes_count">Количество лайков</string>
+    <string name="search_selector_rewards_count">Количество наград</string>
+    <string name="search_selector_sort_type">Отсортировать результат</string>
+
+    <string name="search_included_pairings">Пейринги</string>
+    <string name="search_excluded_pairings">Исключённые пейринги</string>
+
+    <string name="search_action_add_fandom">Добавить фэндом</string>
+    <string name="search_action_exclude_fandom">Исключить фэндом</string>
+    <string name="search_action_add_character">Добавить персонажа</string>
+    <string name="search_action_add_tag">Добавить метку</string>
+    <string name="search_action_exclude_tag">Исключить метку</string>
+    <string name="search_action_add_your">Добавить свой</string>
+    <string name="search_action_save_search">Сохранить поиск</string>
+
+    <string name="fandom_filter_all">Все</string>
+    <string name="fandom_filter_originals">Ориджиналы</string>
+    <string name="fandom_filter_all_in_group">Все фанфики в группе фэндомов</string>
+    <string name="fandom_filter_concrete_fandom">Фанфики по конкретным фэндомам</string>
+
+    <string name="fandom_group_anime_and_manga">Аниме и манга</string>
+    <string name="fandom_group_books">Книги</string>
+    <string name="fandom_group_cartoons">Мультфильмы</string>
+    <string name="fandom_group_games">Игры</string>
+    <string name="fandom_group_movies">Фильмы и сериалы</string>
+    <string name="fandom_group_other">Другие</string>
+    <string name="fandom_group_rpf">Известные люди (RPF)</string>
+    <string name="fandom_group_comics">Комиксы</string>
+    <string name="fandom_group_musicals">Мюзиклы</string>
+
+    <string name="status_in_progress">В процессе</string>
+    <string name="status_complete">Завершён</string>
+    <string name="status_frozen">Заморожен</string>
+
+    <string name="rating_G">G</string>
+    <string name="rating_PG_13">PG-13</string>
+    <string name="rating_R">R</string>
+    <string name="rating_NC_17">NC-17</string>
+    <string name="rating_NC-21">NC-21</string>
+
+    <string name="direction_gen">Джен</string>
+    <string name="direction_het">Гет</string>
+    <string name="direction_slash">Слэш</string>
+    <string name="direction_femslash">Фемслэш</string>
+    <string name="direction_other">Другие виды отношений</string>
+    <string name="direction_mixed">Смешанная</string>
+    <string name="direction_article">Статья</string>
+
+    <string name="translate_doesnt_matter">Всё равно</string>
+    <string name="translate_yes">Перевод с иностранного языка</string>
+    <string name="translate_no">Оригинальный текст</string>
+    
+    <string name="sort_by_likes">по оценкам читателей</string>
+    <string name="sort_by_comments">по количеству отзывов</string>
+    <string name="sort_by_date_from_new">по дате обновления (от новых к старым)</string>
+    <string name="sort_by_date_from_old">по дате обновления (от старых к новым)</string>
+    <string name="sort_by_pages">по количеству страниц</string>
+    <string name="sort_by_rewards">по количеству наград</string>
+    <string name="sort_20_random">20 случайных работ</string>
+
+    <!--  Settings  -->
+    <string name="settings_group_theme">Тема и цвета</string>
+    <string name="settings_group_common">Общие</string>
+
+    <string name="setting_title_theme">Тема</string>
+    <string name="setting_subtitle_theme">Выбрать тему приложения</string>
+    <string name="setting_title_monet">Monet цвета</string>
+    <string name="setting_subtitle_monet">Использовать тему из Monet</string>
+    <string name="setting_title_amoled">Amoled тема</string>
+    <string name="setting_subtitle_amoled">Использовать Amoled тему</string>
+    <string name="setting_title_accent">Цвет акцента</string>
+    <string name="setting_subtitle_accent">Выбрать цвет акцента</string>
+    <string name="setting_title_superfilter">Суперфильтр фанфиков</string>
+    <string name="setting_subtitle_superfilter">Скрыть выбранные направленности</string>
+    <string name="setting_title_auto_vote">Авто-голосование</string>
+    <string name="setting_subtitle_auto_vote">Автоматически ставить "Жду продолжения"</string>
+    <string name="setting_title_custom_tabs">Chrome Custom Tabs</string>
+    <string name="setting_subtitle_custom_tabs">Открывать ссылки в Chrome Custom Tabs</string>
+    <string name="setting_title_typograf">Типограф</string>
+    <string name="setting_subtitle_typograf">Автоматически исправлять форматирование текста</string>
+    <string name="setting_title_glassmorphism">Эффект стекла</string>
+    <string name="setting_subtitle_glassmorphism">Включает эффект стекла для некоторых элементов интерфейса</string>
+    <string name="setting_subtitle_glassmorphism_alpha">Прозрачность (альфа)</string>
+    <string name="setting_subtitle_glassmorphism_radius">Радиус размытия</string>
+    <string name="setting_subtitle_glassmorphism_noise">Множитель шума</string>
+
+    <string name="theme_system">Системная тема</string>
+    <string name="theme_dark">Тёмная тема</string>
+    <string name="theme_light">Светлая тема</string>
+
+    <!--  Authors  -->
+    <string name="authors_favourite">Избранные авторы</string>
+    <string name="authors_popular">Популярные авторы</string>
+    <string name="authors_search">Поиск авторов</string>
+
+    <!--  Fanfic card  -->
+    <string name="fanficCard_pairings_and_characters">Пэйринги и персонажи:</string>
+    <string name="fanficCard_tags">Тэги:</string>
+    <string name="fanficCard_updated">Обновлено: %1$s</string>
+    <string name="fanficCard_size">Размер: %1$s</string>
+
+    <!--  Actions  -->
+    <string name="action_download_in_format">Скачать в %1$s</string>
+    <string name="action_share">Поделиться</string>
+    <string name="action_copy_link">Копировать ccылку</string>
+    <string name="action_open_in_browser">Открыть в браузере</string>
+    <string name="action_add_account">Добавить аккаунт</string>
+    <string name="action_change_account">Сменить аккаунт</string>
+    <string name="action_register">Зарегистрироваться</string>
+    <string name="action_skip">Пропустить</string>
+    <string name="action_confirm">Подтвердить</string>
+    <string name="action_go_to">Перейти</string>
+    <string name="action_search">Найти</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_add">Добавить</string>
+    <string name="action_exclude">Исключить</string>
+    <string name="action_log_in">Войти</string>
+
+    <!--  Content descriptions  -->
+    <string name="content_description_fanfic_cover">Обложка фанфика</string>
+    <string name="content_description_icon_author_avatar">Аватарка автора</string>
+    <string name="content_description_icon_author_avatar_stub">Аватарка автора</string>
+    <string name="content_description_icon_profile_background">Фон профиля</string>
+    <string name="content_description_icon_back">Иконка назад</string>
+    <string name="content_description_icon_down">Иконка вниз</string>
+    <string name="content_description_icon_smile_sad">Иконка грустный смайлик</string>
+    <string name="content_description_icon_sort">Иконка сортировки</string>
+    <string name="content_description_icon_clear">Иконка очистки</string>
+    <string name="content_description_icon_cancel">Иконка отмены</string>
+    <string name="content_description_icon_search">Иконка поиска</string>
+    <string name="content_description_icon_reply">Иконка ответа</string>
+    <string name="content_description_icon_delete">Иконка удаления</string>
+    <string name="content_description_icon_send">Иконка отправки</string>
+    <string name="content_description_icon_lock">Иконка замка</string>
+    <string name="content_description_icon_download">Иконка скачивания</string>
+    <string name="content_description_icon_reward">Иконка награды</string>
+    <string name="content_description_icon_direction">Иконка направленности</string>
+    <string name="content_description_icon_status">Иконка статуса</string>
+    <string name="content_description_icon_like">Иконка лайка</string>
+    <string name="content_description_icon_flame">Иконка огня</string>
+    <string name="content_description_icon_book">Иконка книги</string>
+    <string name="content_description_icon_book_opened">Иконка открытой книги</string>
+    <string name="content_description_icon_bookmark">Иконка книги с закладкой</string>
+    <string name="content_description_icon_more">Иконка три точки</string>
+    <string name="content_description_icon_comment">Иконка комментария</string>
+    <string name="content_description_icon_star">Иконка избранное</string>
+    <string name="content_description_icon_book">Иконка книги</string>
+    <string name="content_description_icon_error">Иконка ошибки</string>
+    <string name="content_description_icon_user">Иконка пользователя</string>
+    <string name="content_description_icon_users">Иконка пользователи</string>
+    <string name="content_description_icon_menu">Иконка меню</string>
+    <string name="content_description_icon_eye">Иконка меню</string>
+    <string name="content_description_icon_bell">Иконка колокольчика</string>
+    <string name="content_description_icon_dice">Иконка игральные кости</string>
+    <string name="content_description_icon_settings">Иконка настроек</string>
+    <string name="content_description_icon_category">Иконка категории</string>
+    <string name="content_description_icon_filter">Иконка фильтра</string>
+    <string name="content_description_icon_edit">Иконка редактирования</string>
+    <string name="content_description_icon_plus">Иконка плюс</string>
+    <string name="content_description_icon_minus">Иконка минус</string>
+    <string name="content_description_icon_18">Иконка 18+</string>
+    <string name="content_description_icon_check">Иконка галочка</string>
+    <string name="content_description_icon_eye_crossed">Иконка сокрытия</string>
+    <string name="content_description_icon_globe">Иконка глобуса</string>
+
+    <!--  Errors  -->
+    <string name="error_something_went_wrong">Что-то пошло не так</string>
+    <string name="error_authorization">Ошибка авторизации.\n%1$s</string>
+</resources>

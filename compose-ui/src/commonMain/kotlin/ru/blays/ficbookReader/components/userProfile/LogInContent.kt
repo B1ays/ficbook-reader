@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.userProfile
 
 import androidx.compose.animation.*
@@ -25,6 +23,7 @@ import com.moriatsushi.insetsx.systemBarsPadding
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.platformUtils.landscapeModeWidth
 import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserLogInComponent
@@ -33,15 +32,19 @@ import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalResourceApi::class)
 @Composable
 fun LogInContent(component: UserLogInComponent) {
     val state by component.state.subscribeAsState()
-    val login = remember(state) { state.login }
-    val password = remember(state) { state.password }
-    val loading = remember(state) { state.loading }
-    val success = remember(state) { state.success }
-    val logInButtonActive = remember(login, password) { login.isNotEmpty() && password.isNotEmpty() }
+    val login = state.login
+    val password = state.password
+    val loading = state.loading
+    val success = state.success
+    val logInButtonActive by remember {
+        derivedStateOf {
+            login.isNotEmpty() && password.isNotEmpty()
+        }
+    }
 
     val logInButtonContainerColor by animateColorAsState(
         targetValue = if(logInButtonActive) {
@@ -93,11 +96,11 @@ fun LogInContent(component: UserLogInComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.small("Профиль"),
+                collapsingTitle = CollapsingTitle.small(stringResource(Res.string.toolbar_title_profile)),
             )
         }
     ) {
@@ -117,7 +120,7 @@ fun LogInContent(component: UserLogInComponent) {
                 Spacer(modifier = Modifier.fillMaxHeight(0.1F))
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Добавить аккаунт",
+                    text = stringResource(Res.string.action_add_account),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
@@ -139,7 +142,7 @@ fun LogInContent(component: UserLogInComponent) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Ошибка авторизации.\n${state.reason}",
+                            text = stringResource(Res.string.error_authorization, state.reason ?: ""),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer,
                             textAlign = TextAlign.Center,
@@ -155,7 +158,7 @@ fun LogInContent(component: UserLogInComponent) {
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_cancel),
-                                contentDescription = "Иконка отмены",
+                                contentDescription = stringResource(Res.string.content_description_icon_cancel),
                                 tint = MaterialTheme.colorScheme.onErrorContainer,
                                 modifier = Modifier.size(24.dp)
                             )
@@ -174,7 +177,7 @@ fun LogInContent(component: UserLogInComponent) {
                     },
                     singleLine = true,
                     label = {
-                        Text(text = "Логин")
+                        Text(text = stringResource(Res.string.login))
                     },
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
@@ -194,7 +197,7 @@ fun LogInContent(component: UserLogInComponent) {
                     },
                     singleLine = true,
                     label = {
-                        Text(text = "Пароль")
+                        Text(text = stringResource(Res.string.password))
                     },
                     trailingIcon = {
                        IconToggleButton(
@@ -208,7 +211,7 @@ fun LogInContent(component: UserLogInComponent) {
                            ) {
                                Icon(
                                    painter = painterResource(it),
-                                   contentDescription = "Иконка скрытия пароля",
+                                   contentDescription = stringResource(Res.string.content_description_icon_eye_crossed),
                                    modifier = Modifier.size(24.dp),
                                    tint = MaterialTheme.colorScheme.onSurface
                                )
@@ -234,9 +237,7 @@ fun LogInContent(component: UserLogInComponent) {
                         .height(56.dp),
                     enabled = !loading && logInButtonActive,
                     onClick = {
-                        component.sendIntent(
-                            UserLogInComponent.Intent.LogIn
-                        )
+                        component.sendIntent(UserLogInComponent.Intent.LogIn)
                     },
                     shape = CardDefaults.shape,
                     colors = ButtonDefaults.buttonColors(
@@ -247,7 +248,7 @@ fun LogInContent(component: UserLogInComponent) {
                     )
                 ) {
                     Text(
-                        text = "Войти",
+                        text = stringResource(Res.string.action_log_in),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }

@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.main
 
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,11 +21,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
-import org.jetbrains.compose.resources.painterResource
+import ficbook_reader.`compose-ui`.generated.resources.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.data.sections.userSections
@@ -90,7 +88,7 @@ private fun LandscapeContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun PortraitContent(
     component: MainScreenComponent,
@@ -114,9 +112,7 @@ private fun PortraitContent(
                         actions = {
                             CustomIconButton(
                                 onClick = {
-                                    component.onOutput(
-                                        MainScreenComponent.Output.Search
-                                    )
+                                    component.onOutput(MainScreenComponent.Output.Search)
                                 },
                                 modifier = Modifier
                                     .size(40.dp)
@@ -127,7 +123,7 @@ private fun PortraitContent(
                             ) {
                                 Icon(
                                     painter = painterResource(Res.drawable.ic_search),
-                                    contentDescription = "Иконка поиска",
+                                    contentDescription = stringResource(Res.string.content_description_icon_search),
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -138,20 +134,17 @@ private fun PortraitContent(
                             IconButton(
                                 onClick = {
                                     scope.launch {
-                                        drawerState.animateTo(
-                                            targetValue = DrawerValue.Open,
-                                            anim = spring()
-                                        )
+                                        drawerState.open()
                                     }
                                 }
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.Menu,
-                                    contentDescription = "иконка меню"
+                                    contentDescription = stringResource(Res.string.content_description_icon_menu)
                                 )
                             }
                         },
-                        collapsingTitle = CollapsingTitle.large("Ficbook Reader"),
+                        collapsingTitle = CollapsingTitle.large(stringResource(Res.string.app_name)),
                         insets = WindowInsets.statusBars
                     )
                     PagerChips(
@@ -237,6 +230,7 @@ private fun PagerContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun DrawerLandscape(
     modifier: Modifier = Modifier,
@@ -277,7 +271,7 @@ private fun DrawerLandscape(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_search),
-                    contentDescription = "Иконка поиска",
+                    contentDescription = stringResource(Res.string.content_description_icon_search),
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -301,6 +295,7 @@ private fun DrawerPortrait(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun DrawerContent(
     component: MainScreenComponent
@@ -314,7 +309,7 @@ private fun DrawerContent(
     }
 
     Text(
-        text = "Личные",
+        text = stringResource(Res.string.mainScreen_drawer_category_personal),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         style = MaterialTheme.typography.headlineSmall
@@ -329,7 +324,7 @@ private fun DrawerContent(
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_star_filled),
-                contentDescription = "Иконка звезда"
+                contentDescription = stringResource(Res.string.content_description_icon_star)
             )
         },
         selected = false,
@@ -346,7 +341,7 @@ private fun DrawerContent(
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_like_filled),
-                contentDescription = "Иконка лайк"
+                contentDescription = stringResource(Res.string.content_description_icon_like)
             )
         },
         selected = false,
@@ -363,7 +358,7 @@ private fun DrawerContent(
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_bookmark_filled),
-                contentDescription = "Иконка книга с закладкой"
+                contentDescription = stringResource(Res.string.content_description_icon_bookmark)
             )
         },
         selected = false,
@@ -380,7 +375,7 @@ private fun DrawerContent(
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_star_filled),
-                contentDescription = "Иконка звезда"
+                contentDescription = stringResource(Res.string.content_description_icon_star)
             )
         },
         selected = false,
@@ -397,7 +392,7 @@ private fun DrawerContent(
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_eye_filled),
-                contentDescription = "Иконка глаз"
+                contentDescription = stringResource(Res.string.content_description_icon_eye)
             )
         },
         selected = false,
@@ -407,7 +402,7 @@ private fun DrawerContent(
     )
     Spacer(modifier = Modifier.height(4.dp))
     Text(
-        text = "Стандартные",
+        text = stringResource(Res.string.mainScreen_drawer_category_standart),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         style = MaterialTheme.typography.headlineSmall
@@ -415,13 +410,13 @@ private fun DrawerContent(
     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
     NavigationDrawerItem(
         label = {
-            Text(text = "Авторы")
+            Text(text = stringResource(Res.string.authors))
         },
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_users),
-                contentDescription = "Иконка пользователи"
+                contentDescription = stringResource(Res.string.content_description_icon_users)
             )
         },
         selected = false,
@@ -433,13 +428,13 @@ private fun DrawerContent(
     )
     NavigationDrawerItem(
         label = {
-            Text(text = "Уведомления")
+            Text(text = stringResource(Res.string.notifications))
         },
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_bell),
-                contentDescription = "Иконка колокольчика"
+                contentDescription = stringResource(Res.string.content_description_icon_bell)
             )
         },
         selected = false,
@@ -451,13 +446,13 @@ private fun DrawerContent(
     )
     NavigationDrawerItem(
         label = {
-            Text(text = "Случайный фанфик")
+            Text(text = stringResource(Res.string.random_fanfic))
         },
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_dice),
-                contentDescription = "Иконка игральные кости"
+                contentDescription = stringResource(Res.string.content_description_icon_dice)
             )
         },
         selected = false,
@@ -471,13 +466,13 @@ private fun DrawerContent(
     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
     NavigationDrawerItem(
         label = {
-            Text(text = "Настройки")
+            Text(text = stringResource(Res.string.settings))
         },
         icon = {
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_settings),
-                contentDescription = "Иконка настройки"
+                contentDescription = stringResource(Res.string.content_description_icon_settings)
             )
         },
         selected = false,
@@ -489,6 +484,7 @@ private fun DrawerContent(
     )
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun UserIconButton(
     component: MainScreenComponent
@@ -502,7 +498,7 @@ fun UserIconButton(
         currentUser?.let {
             AsyncImage(
                 model = File(it.avatarPath),
-                contentDescription = "Иконка пользователя",
+                contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(40.dp)
@@ -513,7 +509,7 @@ fun UserIconButton(
                 .size(40.dp)
                 .padding(2.dp),
             painter = painterResource(Res.drawable.ic_user),
-            contentDescription = "Заполнитель иконки пользователя"
+            contentDescription = stringResource(Res.string.content_description_icon_author_avatar_stub)
         )
     }
 }

@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.users
 
 import androidx.compose.foundation.background
@@ -22,11 +20,13 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.data.dto.UserModelStable
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersSearchComponent
 import ru.blays.ficbookReader.values.DefaultPadding
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SearchUsersContent(component: UsersSearchComponent) {
     val state by component.state.subscribeAsState()
@@ -50,7 +50,7 @@ fun SearchUsersContent(component: UsersSearchComponent) {
                         )
                     },
                     label = {
-                        Text(text = "Поиск авторов")
+                        Text(text = stringResource(Res.string.search_author))
                     },
                     trailingIcon = {
                         IconButton(
@@ -62,7 +62,7 @@ fun SearchUsersContent(component: UsersSearchComponent) {
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_cancel),
-                                contentDescription = "Очистить поиск",
+                                contentDescription = stringResource(Res.string.clear),
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -98,6 +98,7 @@ fun SearchUsersContent(component: UsersSearchComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AuthorItem(
     author: UserModelStable,
@@ -116,7 +117,7 @@ private fun AuthorItem(
             if(author.avatarUrl.isNotEmpty()) {
                 SubcomposeAsyncImage(
                     model = author.avatarUrl,
-                    contentDescription = "Аватар пользователя",
+                    contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
                     contentScale = ContentScale.Crop,
                     loading = {
                         CircularProgressIndicator(
