@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.main
 
 import androidx.compose.foundation.background
@@ -7,7 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,13 +17,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.data.dto.CollectionModelStable
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.CollectionsComponent
 import ru.blays.ficbookReader.theme.lockColor
@@ -92,7 +94,7 @@ fun CollectionsComponent(component: CollectionsComponent) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun CollectionItem(
     collectionModel: CollectionModelStable,
@@ -141,7 +143,7 @@ fun CollectionItem(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_user),
-                            contentDescription = "иконка пользователь",
+                            contentDescription = stringResource(Res.string.content_description_icon_user),
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(3.dp))

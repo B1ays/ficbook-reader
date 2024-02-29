@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class, ExperimentalResourceApi::class, ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.fanficsList
 
 import androidx.compose.animation.core.animateFloat
@@ -27,6 +25,7 @@ import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficQuickActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficListComponents.declaration.FanficsListComponent
@@ -175,6 +174,7 @@ fun FanficsListContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FanficsListScreenContent(
     component: FanficsListComponent
@@ -196,7 +196,7 @@ fun FanficsListScreenContent(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
@@ -229,7 +229,7 @@ fun FanficsListScreenContent(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_star_filled),
-                            contentDescription = "Иконка добавить в избранное",
+                            contentDescription = stringResource(Res.string.content_description_icon_star),
                             modifier = Modifier
                                 .size(24.dp)
                                 .rotate(angle)
@@ -261,15 +261,16 @@ fun FanficsListScreenContent(
             modifier = Modifier
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .thenIf(blurConfig.blurEnabled) {
-                haze(
-                    state = hazeState,
-                    style = blurConfig.style
-                )
-            }
+                    haze(
+                        state = hazeState,
+                        style = blurConfig.style
+                    )
+                }
         )
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FanficQuickActions(
     contextMenuState: ContextMenuState,
@@ -290,7 +291,7 @@ fun FanficQuickActions(
         if(!state.loading && !state.error) {
             DropdownMenuItem(
                 text = {
-                    Text(text = "Лайк")
+                    Text(text = stringResource(Res.string.like))
                 },
                 leadingIcon = {
                     val icon = if(state.liked) {
@@ -300,7 +301,7 @@ fun FanficQuickActions(
                     }
                     Icon(
                         painter = icon,
-                        contentDescription = "Лайк",
+                        contentDescription = stringResource(Res.string.content_description_icon_like),
                         modifier = Modifier.size(20.dp),
                     )
                 },
@@ -312,7 +313,7 @@ fun FanficQuickActions(
             )
             DropdownMenuItem(
                 text = {
-                    Text(text = "Подписка")
+                    Text(text = stringResource(Res.string.subscription))
                 },
                 leadingIcon = {
                     val icon = if(state.subscribed) {
@@ -322,7 +323,7 @@ fun FanficQuickActions(
                     }
                     Icon(
                         painter = icon,
-                        contentDescription = "Подписка",
+                        contentDescription = stringResource(Res.string.content_description_icon_star),
                         modifier = Modifier.size(20.dp),
                     )
                 },
@@ -334,7 +335,7 @@ fun FanficQuickActions(
             )
             DropdownMenuItem(
                 text = {
-                    Text(text = "Прочитано")
+                    Text(text = stringResource(Res.string.readed))
                 },
                 leadingIcon = {
                     val icon = if(state.readed) {
@@ -344,7 +345,7 @@ fun FanficQuickActions(
                     }
                     Icon(
                         painter = icon,
-                        contentDescription = "Прочитано",
+                        contentDescription = stringResource(Res.string.content_description_icon_book),
                         modifier = Modifier.size(20.dp),
                     )
                 },
@@ -357,12 +358,12 @@ fun FanficQuickActions(
         } else if (state.error) {
             DropdownMenuItem(
                 text = {
-                    Text(text = "Ошибка")
+                    Text(text = stringResource(Res.string.error))
                 },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_error),
-                        contentDescription = "Ошибка",
+                        contentDescription = stringResource(Res.string.content_description_icon_error),
                         modifier = Modifier.size(20.dp),
                     )
                 },
@@ -371,7 +372,7 @@ fun FanficQuickActions(
         } else {
             DropdownMenuItem(
                 text = {
-                    Text(text = "Загрузка...")
+                    Text(text = stringResource(Res.string.loading_in_progress))
                 },
                 leadingIcon = {
                     CircularProgressIndicator(

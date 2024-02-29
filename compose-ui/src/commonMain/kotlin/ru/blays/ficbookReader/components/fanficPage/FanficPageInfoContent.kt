@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.fanficPage
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -15,8 +13,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
@@ -29,11 +25,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
@@ -42,13 +36,15 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
+import ficbook_reader.`compose-ui`.generated.resources.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.*
@@ -90,7 +86,7 @@ fun FanficPageInfoContent(component: FanficPageInfoComponent) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 private fun PortraitContent(component: FanficPageInfoComponent) {
     val state by component.state.subscribeAsState()
@@ -148,7 +144,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
             ) {
                 Image(
                     painter = coverPainter,
-                    contentDescription = "Обложка фанфика",
+                    contentDescription = stringResource(Res.string.content_description_fanfic_cover),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
@@ -251,7 +247,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                                 ) {
                                     Icon(
                                         painter = painterResource(Res.drawable.ic_arrow_back),
-                                        contentDescription = "Стрелка назад"
+                                        contentDescription = stringResource(Res.string.content_description_icon_back)
                                     )
                                 }
                             },
@@ -286,6 +282,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
 }
 
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(
     component: FanficPageInfoComponent
@@ -353,7 +350,7 @@ private fun LandscapeContent(
                 ) {
                     Image(
                         painter = coverPainter,
-                        contentDescription = "Обложка фанфика",
+                        contentDescription = stringResource(Res.string.content_description_fanfic_cover),
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .fillMaxSize()
@@ -382,7 +379,7 @@ private fun LandscapeContent(
                                 ) {
                                     Icon(
                                         painter = painterResource(Res.drawable.ic_arrow_back),
-                                        contentDescription = "Стрелка назад"
+                                        contentDescription = stringResource(Res.string.content_description_icon_back)
                                     )
                                 }
                             },
@@ -408,7 +405,7 @@ private fun LandscapeContent(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun FanficHeader(
     fanficPage: FanficPageModelStable,
@@ -437,7 +434,7 @@ private fun FanficHeader(
 
         Image(
             painter = coverPainter,
-            contentDescription = "Обложка фанфика",
+            contentDescription = stringResource(Res.string.content_description_fanfic_cover),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .layout { measurable, constraints ->
@@ -477,6 +474,7 @@ private fun FanficHeader(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FanficDescription(
     component: FanficPageInfoComponent,
@@ -565,7 +563,7 @@ private fun FanficDescription(
             }
             item {
                 Text(
-                    text = "Описание:",
+                    text = stringResource(Res.string.fanficPage_description),
                     style = MaterialTheme.typography.titleMedium
                 )
                 HyperlinkText(
@@ -590,13 +588,13 @@ private fun FanficDescription(
                             .padding(3.dp)
                             .size(18.dp),
                         painter = painterResource(Res.drawable.ic_trophy),
-                        contentDescription = "Значок награды",
+                        contentDescription = stringResource(Res.string.content_description_icon_reward),
                         tint = trophyColor
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Column {
                         Text(
-                            text = "«${reward.message}» от ${reward.fromUser}",
+                            text = stringResource(Res.string.fanficPage_reward_from, reward.message, reward.fromUser),
                             style = MaterialTheme.typography.labelLarge
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -618,7 +616,7 @@ private fun FanficDescription(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun Fandoms(
     fandoms: List<FandomModelStable>,
@@ -626,7 +624,7 @@ private fun Fandoms(
 ) {
     FlowRow {
         Text(
-            text = "Фэндомы:",
+            text = stringResource(Res.string.fanficPage_fandoms),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
@@ -648,7 +646,7 @@ private fun Fandoms(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun Pairings(
     pairings: List<PairingModelStable>,
@@ -657,7 +655,7 @@ private fun Pairings(
     FlowRow {
         val shape = remember { RoundedCornerShape(percent = 20) }
         Text(
-            text = "Пэйринги и персонажи:",
+            text = stringResource(Res.string.fanficPage_pairings_and_characters),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
@@ -693,7 +691,7 @@ private fun Pairings(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun FanficInfo(fanfic: FanficPageModelStable) {
     val status = fanfic.status
@@ -712,7 +710,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                         .size(20.dp)
                         .scale(1.5F),
                     painter = getIconForDirection(status.direction),
-                    contentDescription = "Значок направленности",
+                    contentDescription = stringResource(Res.string.content_description_icon_direction),
                     tint = getColorForDirection(status.direction)
                 )
             }
@@ -738,7 +736,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                         .padding(3.dp)
                         .size(20.dp),
                     painter = getIconForStatus(status.status),
-                    contentDescription = "Значок статуса",
+                    contentDescription = stringResource(Res.string.content_description_icon_status),
                     tint = getColorForStatus(status.status)
 
                 )
@@ -754,7 +752,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                         .padding(3.dp)
                         .size(20.dp),
                     painter = painterResource(Res.drawable.ic_like_outlined),
-                    contentDescription = "Значок лайка",
+                    contentDescription = stringResource(Res.string.content_description_icon_like),
                     tint = likeColor
                 )
                 Spacer(modifier = Modifier.width(2.dp))
@@ -775,7 +773,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                         .padding(3.dp)
                         .size(20.dp),
                     painter = painterResource(Res.drawable.ic_flame),
-                    contentDescription = "Значок огня",
+                    contentDescription = stringResource(Res.string.content_description_icon_flame),
                     brush = flameGradient
                 )
             }
@@ -804,6 +802,7 @@ private fun FanficTags(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun BottomSheetContentClosed(
     component: FanficPageInfoComponent,
@@ -822,11 +821,11 @@ private fun BottomSheetContentClosed(
     ) {
         Column {
             Text(
-                text = "Глав: ${fanficPage.chapters.size}",
+                text = stringResource(Res.string.fanficPage_chapters_count, fanficPage.chapters.size),
                 style = MaterialTheme.typography.titleLarge
             )
             Text(
-                text = "Страниц: ${fanficPage.pagesCount}",
+                text = stringResource(Res.string.fanficPage_pages_count, fanficPage.pagesCount),
                 style = MaterialTheme.typography.titleMedium
             )
         }
@@ -841,11 +840,11 @@ private fun BottomSheetContentClosed(
                 Icon(
                     modifier = Modifier.size(14.dp),
                     painter = painterResource(Res.drawable.ic_open_book),
-                    contentDescription = "Иконка книги"
+                    contentDescription = stringResource(Res.string.content_description_icon_book)
                 )
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
-                    text = "Читать"
+                    text = stringResource(Res.string.read)
                 )
             }
         } else {
@@ -854,7 +853,7 @@ private fun BottomSheetContentClosed(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_more_vertical),
-                    contentDescription = "Меню",
+                    contentDescription = stringResource(Res.string.content_description_icon_more),
                     modifier = Modifier.size(20.dp)
                 )
                 DropdownMenu(
@@ -864,7 +863,7 @@ private fun BottomSheetContentClosed(
                     ) {
                     DropdownMenuItem(
                         text = {
-                            Text("Обратный порядок глав")
+                            Text(text = stringResource(Res.string.fanficPage_reverse_chapters_order))
                         },
                         trailingIcon = {
                             Checkbox(
@@ -944,7 +943,7 @@ fun BottomSheetContentOpened(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 private fun ChapterItem(
     index: Int,
@@ -1016,7 +1015,7 @@ private fun ChapterItem(
                 Spacer(modifier = Modifier.width(2.dp))
                 Icon(
                     painter = painterResource(Res.drawable.ic_comment),
-                    contentDescription = "Иконка комментария",
+                    contentDescription = stringResource(Res.string.content_description_icon_comment),
                     modifier = Modifier
                         .padding(4.dp)
                         .size(18.dp)
@@ -1029,6 +1028,7 @@ private fun ChapterItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AuthorItem(
     authorModel: FanficAuthorModelStable,
@@ -1046,7 +1046,7 @@ private fun AuthorItem(
     ) {
         AsyncImage(
             model = user.avatarUrl,
-            contentDescription = "Аватар автора",
+            contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
             modifier = Modifier
                 .size(avatarSize)
                 .clip(CircleShape)
@@ -1068,6 +1068,7 @@ private fun AuthorItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> Unit = { component ->
     var dropDownMenuState by remember { mutableStateOf(false) }
     IconButton(
@@ -1090,7 +1091,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
         if(shareSupported) {
             DropdownMenuItem(
                 text = {
-                    Text(text = "Поделиться")
+                    Text(text = stringResource(Res.string.action_share))
                 },
                 leadingIcon = {
                     Icon(
@@ -1107,7 +1108,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
         }
         DropdownMenuItem(
             text = {
-                Text(text = "Копировать ccылку")
+                Text(text = stringResource(Res.string.action_copy_link))
             },
             leadingIcon = {
                 Icon(
@@ -1123,7 +1124,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
         )
         DropdownMenuItem(
             text = {
-                Text(text = "Открыть в браузере")
+                Text(text = stringResource(Res.string.action_open_in_browser))
             },
             leadingIcon = {
                 Icon(
@@ -1140,7 +1141,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
         component.state.value.fanfic?.let {
             DropdownMenuItem(
                 text = {
-                    Text(text = "Скачать")
+                    Text(text = stringResource(Res.string.download))
                 },
                 leadingIcon = {
                     Icon(
@@ -1163,6 +1164,7 @@ val topBarActions: @Composable RowScope.(component: FanficPageInfoComponent) -> 
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun getIconForDirection(direction: FanficDirection): Painter {
     return when (direction) {
@@ -1177,12 +1179,13 @@ fun getIconForDirection(direction: FanficDirection): Painter {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun getIconForStatus(status: FanficCompletionStatus): Painter {
     return when(status) {
         FanficCompletionStatus.IN_PROGRESS -> painterResource(Res.drawable.ic_clock)
         FanficCompletionStatus.COMPLETE -> painterResource(Res.drawable.ic_check)
         FanficCompletionStatus.FROZEN -> painterResource(Res.drawable.ic_snowflake)
-        FanficCompletionStatus.UNKNOWN -> rememberVectorPainter(Icons.Rounded.Close)
+        FanficCompletionStatus.UNKNOWN -> painterResource(Res.drawable.ic_dot)
     }
 }

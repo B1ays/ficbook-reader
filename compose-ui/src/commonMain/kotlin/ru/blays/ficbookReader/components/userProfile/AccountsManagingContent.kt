@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.userProfile
 
 import androidx.compose.foundation.layout.*
@@ -17,10 +15,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
+import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.data.dto.SavedUserModel
 import ru.blays.ficbookReader.shared.ui.profileComponents.declaration.UserProfileManagingComponent
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
@@ -30,6 +29,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 import java.io.File
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AccountsManagingContent(component: UserProfileManagingComponent) {
     val state by component.state.subscribeAsState()
@@ -47,11 +47,11 @@ fun AccountsManagingContent(component: UserProfileManagingComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Управление аккаунтами"),
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_account_managing)),
             )
         },
         modifier = Modifier.systemBarsPadding(),
@@ -101,7 +101,7 @@ fun AccountsManagingContent(component: UserProfileManagingComponent) {
                 )
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
-                    text = "Добавить аккаунт"
+                    text = stringResource(Res.string.action_add_account)
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
@@ -142,6 +142,7 @@ private fun SavedUserItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun UserCardContent(
     user: SavedUserModel,
@@ -156,7 +157,7 @@ fun UserCardContent(
     ) {
         AsyncImage(
             model = File(user.avatarPath),
-            contentDescription = "Аватар пользователя",
+            contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(65.dp)
@@ -188,7 +189,7 @@ fun UserCardContent(
         ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_delete),
-                contentDescription = "Иконка: удалить",
+                contentDescription = stringResource(Res.string.content_description_icon_delete),
                 modifier = Modifier.size(32.dp),
             )
         }

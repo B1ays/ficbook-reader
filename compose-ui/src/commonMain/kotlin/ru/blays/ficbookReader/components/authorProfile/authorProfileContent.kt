@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.authorProfile
 
 import androidx.compose.foundation.background
@@ -13,7 +11,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +33,7 @@ import com.moriatsushi.insetsx.navigationBars
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.components.commentsContent.CommentsContent
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.shared.data.dto.AuthorMainInfoStable
@@ -148,6 +146,7 @@ private fun PortraitContent(component: AuthorProfileComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ProfileHeader(
     mainInfo: AuthorMainInfoStable,
@@ -168,7 +167,7 @@ private fun ProfileHeader(
             ) {
                 AsyncImage(
                     model = mainInfo.profileCoverUrl,
-                    contentDescription = "Фон профиля",
+                    contentDescription = stringResource(Res.string.content_description_icon_profile_background),
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.TopCenter,
                     modifier = Modifier.matchParentSize()
@@ -186,7 +185,7 @@ private fun ProfileHeader(
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_back),
-                        contentDescription = "Иконка назад"
+                        contentDescription = stringResource(Res.string.content_description_icon_back)
                     )
                 }
             }
@@ -205,7 +204,7 @@ private fun ProfileHeader(
             ) {
                 AsyncImage(
                     model = mainInfo.avatarUrl,
-                    contentDescription = "Аватарка автора",
+                    contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxSize()
@@ -244,7 +243,7 @@ private fun ProfileHeader(
                     )
                     Spacer(modifier = Modifier.requiredHeight(6.dp))
                     Text(
-                        text = "Подписчиков: ${mainInfo.subscribers}",
+                        text = stringResource(Res.string.author_profile_subscribers_count, mainInfo.subscribers),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             alpha = 0.8F
@@ -343,7 +342,7 @@ private fun ChipTabs(
                 },
                 label = {
                     Text(
-                        text = remember(tab) { getTitleForTab(tab.configuration) }
+                        text = getTitleForTab(tab.configuration)
                     )
                 },
                 modifier = Modifier.padding(3.dp)
@@ -394,6 +393,7 @@ fun RailTabs(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ProfileMainInfo(component: AuthorProfileComponent) {
     val state by component.state.subscribeAsState()
@@ -418,7 +418,7 @@ private fun ProfileMainInfo(component: AuthorProfileComponent) {
             ) {
                 if(authorInfo.about.isNotEmpty()) {
                     Text(
-                        text = "О себе:",
+                        text = stringResource(Res.string.author_profile_about),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 4.dp)
@@ -433,7 +433,7 @@ private fun ProfileMainInfo(component: AuthorProfileComponent) {
                 }
                 if(authorInfo.contacts.isNotEmpty()) {
                     Text(
-                        text = "Контактная информация:",
+                        text = stringResource(Res.string.author_profile_contacts),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 4.dp)
@@ -448,7 +448,7 @@ private fun ProfileMainInfo(component: AuthorProfileComponent) {
                 }
                 if(authorInfo.support.isNotEmpty()) {
                     Text(
-                        text = "Поддержать автора:",
+                        text = stringResource(Res.string.author_profile_support),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 4.dp)
@@ -473,7 +473,7 @@ private fun BlogPostsRoot(
     val animator = LocalStackAnimator.current
     Children(
         stack = component.childStack,
-        animation = animator?.let { stackAnimation(it) },
+        animation = stackAnimation(animator),
         modifier = Modifier.fillMaxSize()
     ) {
         when(
@@ -485,6 +485,7 @@ private fun BlogPostsRoot(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun BlogPostsList(component: AuthorBlogPostsComponent) {
     val state by component.state.subscribeAsState()
@@ -506,13 +507,13 @@ private fun BlogPostsList(component: AuthorBlogPostsComponent) {
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_sad),
-                    contentDescription = "Иконка грустный смайлик",
+                    contentDescription = stringResource(Res.string.content_description_icon_smile_sad),
                     tint = MaterialTheme.colorScheme.surfaceTint,
                     modifier = Modifier.fillMaxWidth(0.4F)
                 )
                 Spacer(modifier = Modifier.requiredHeight(10.dp))
                 Text(
-                    text = "Что-то пошло не так",
+                    text = stringResource(Res.string.error_something_went_wrong),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.surfaceTint
                 )
@@ -540,6 +541,7 @@ private fun BlogPostsList(component: AuthorBlogPostsComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun BlogPostPage(
     component: AuthorBlogPageComponent
@@ -564,13 +566,13 @@ private fun BlogPostPage(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_sad),
-                    contentDescription = "Иконка грустный смайлик",
+                    contentDescription = stringResource(Res.string.content_description_icon_smile_sad),
                     tint = MaterialTheme.colorScheme.surfaceTint,
                     modifier = Modifier.fillMaxWidth(0.4F)
                 )
                 Spacer(modifier = Modifier.requiredHeight(10.dp))
                 Text(
-                    text = "Что-то пошло не так",
+                    text = stringResource(Res.string.error_something_went_wrong),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.surfaceTint
                 )
@@ -691,23 +693,24 @@ private fun BlogPostCard(
 }
 
 @Composable
-fun PresentsContent(component: AuthorPresentsComponent) {
-    // TODO
-}
+fun PresentsContent(component: AuthorPresentsComponent) = Unit // TODO
 
+@OptIn(ExperimentalResourceApi::class)
+@Composable
 private fun getTitleForTab(tab: AuthorProfileComponent.TabConfig): String {
     return when(tab) {
-        is AuthorProfileComponent.TabConfig.Main -> "Инфо"
-        is AuthorProfileComponent.TabConfig.Blog -> "Блог"
-        is AuthorProfileComponent.TabConfig.Presents -> "Подарки"
-        is AuthorProfileComponent.TabConfig.Works -> "Работы"
-        is AuthorProfileComponent.TabConfig.WorksAsBeta -> "Бета"
-        is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> "Соавтор"
-        is AuthorProfileComponent.TabConfig.WorksAsGamma -> "Гамма"
-        is AuthorProfileComponent.TabConfig.Comments -> "Отзывы"
+        is AuthorProfileComponent.TabConfig.Main -> stringResource(Res.string.author_profile_tab_main)
+        is AuthorProfileComponent.TabConfig.Blog -> stringResource(Res.string.author_profile_tab_blog)
+        is AuthorProfileComponent.TabConfig.Presents -> stringResource(Res.string.author_profile_tab_presents)
+        is AuthorProfileComponent.TabConfig.Works -> stringResource(Res.string.author_profile_tab_works)
+        is AuthorProfileComponent.TabConfig.WorksAsBeta -> stringResource(Res.string.author_profile_tab_works_as_beta)
+        is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> stringResource(Res.string.author_profile_tab_works_as_coauthor)
+        is AuthorProfileComponent.TabConfig.WorksAsGamma -> stringResource(Res.string.author_profile_tab_works_as_gamma)
+        is AuthorProfileComponent.TabConfig.Comments -> stringResource(Res.string.author_profile_tab_comments)
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getIconForTab(tab: AuthorProfileComponent.TabConfig): Painter {
     return when(tab) {

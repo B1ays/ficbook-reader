@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.settings
 
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -26,6 +24,7 @@ import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.FanficDirection
 import ru.blays.ficbookReader.shared.ui.settingsComponents.declaration.SettingsMainComponent
@@ -39,6 +38,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SettingsContent(component: SettingsMainComponent) {
     val windowSize = WindowSize()
@@ -67,7 +67,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
@@ -92,6 +92,8 @@ fun SettingsContent(component: SettingsMainComponent) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.TopCenter
         ) {
+            val themeGroupTitle = stringResource(Res.string.settings_group_theme)
+            val commonGroupTitle = stringResource(Res.string.settings_group_common)
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth(widthFill)
@@ -104,7 +106,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                 contentPadding = padding,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                itemsGroupWithHeader("Тема и цвета") {
+                itemsGroupWithHeader(themeGroupTitle) {
                     ThemeSetting(component.themeSetting)
                     if(component.dynamicColorsSetting != null) {
                         DynamicColorsSetting(component.dynamicColorsSetting!!)
@@ -118,7 +120,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                         noiseFactorComponent = component.blurNoiseFactor
                     )
                 }
-                itemsGroupWithHeader("Общие") {
+                itemsGroupWithHeader(commonGroupTitle) {
                     SuperfilterSetting(component.superfilterSetting)
                     AutoVoteSetting(component.autoVoteSetting)
                     TypografSetting(component.typografSetting)
@@ -131,6 +133,7 @@ fun SettingsContent(component: SettingsMainComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
     val state by component.state.collectAsState()
@@ -146,12 +149,12 @@ private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
         }
     }
     SettingsExpandableCard(
-        title = "Тема",
-        subtitle = "Выбрать тему приложения",
+        title = stringResource(Res.string.setting_title_theme),
+        subtitle = stringResource(Res.string.setting_subtitle_theme),
         icon = icon
     ) {
         SettingsRadioButtonWithTitle(
-            title = "Системная тема",
+            title = stringResource(Res.string.theme_system),
             checkedIndex = state,
             index = 0
         ) {
@@ -160,7 +163,7 @@ private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
             )
         }
         SettingsRadioButtonWithTitle(
-            title = "Тёмная тема",
+            title = stringResource(Res.string.theme_dark),
             checkedIndex = state,
             index = 1
         ) {
@@ -169,7 +172,7 @@ private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
             )
         }
         SettingsRadioButtonWithTitle(
-            title = "Светлая тема",
+            title = stringResource(Res.string.theme_light),
             checkedIndex = state,
             index = 2
         ) {
@@ -180,13 +183,14 @@ private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun DynamicColorsSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
     val icon = painterResource(Res.drawable.ic_color_swatches)
     SettingsCardWithSwitch(
-        title = "Monet цвета",
-        subtitle = "Использовать тему из Monet",
+        title = stringResource(Res.string.setting_title_monet),
+        subtitle = stringResource(Res.string.setting_subtitle_monet),
         icon = icon,
         enabled = state
     ) {
@@ -196,13 +200,14 @@ private fun DynamicColorsSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AmoledThemeSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
     val icon = painterResource(Res.drawable.ic_eclipse)
     SettingsCardWithSwitch(
-        title = "Amoled тема",
-        subtitle = "Использовать Amoled тему",
+        title = stringResource(Res.string.setting_title_amoled),
+        subtitle = stringResource(Res.string.setting_subtitle_amoled),
         icon = icon,
         enabled = state
     ) {
@@ -212,14 +217,15 @@ private fun AmoledThemeSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
     val state by component.state.collectAsState()
     val icon = painterResource(Res.drawable.ic_brush)
     val lazyListState = rememberLazyListState()
     SettingsExpandableCard(
-        title = "Цвет акцента",
-        subtitle = "Выбрать цвет акцента",
+        title = stringResource(Res.string.setting_title_accent),
+        subtitle = stringResource(Res.string.setting_subtitle_accent),
         icon = icon
     ) {
         LazyRow(
@@ -245,6 +251,7 @@ private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
     val state by component.state.collectAsState()
@@ -270,8 +277,8 @@ private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
     }
 
     SettingsExpandableCard(
-        title = "Суперфильтр фанфиков",
-        subtitle = "Скрыть выбранные направленности",
+        title = stringResource(Res.string.setting_title_superfilter),
+        subtitle = stringResource(Res.string.setting_subtitle_superfilter),
         icon = icon
     ) {
         FanficDirection.entries
@@ -296,12 +303,13 @@ private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
     SettingsCardWithSwitch(
-        title = "Авто-голосование",
-        subtitle = "Автоматически ставить \"Жду продолжения\"",
+        title = stringResource(Res.string.setting_title_auto_vote),
+        subtitle = stringResource(Res.string.setting_subtitle_auto_vote),
         enabled = state,
         icon = painterResource(Res.drawable.ic_vote)
     ) { newValue ->
@@ -311,12 +319,13 @@ private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
     SettingsCardWithSwitch(
-        title = "Chrome Custom Tabs",
-        subtitle = "Открывать ссылки в Chrome Custom Tabs",
+        title = stringResource(Res.string.setting_title_custom_tabs),
+        subtitle = stringResource(Res.string.setting_subtitle_custom_tabs),
         enabled = state,
         icon = painterResource(Res.drawable.ic_chrome)
     ) { newValue ->
@@ -326,12 +335,13 @@ private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
     SettingsCardWithSwitch(
-        title = "Типограф",
-        subtitle = "Автоматически исправлять форматирование текста",
+        title = stringResource(Res.string.setting_title_typograf),
+        subtitle = stringResource(Res.string.setting_subtitle_typograf),
         icon = painterResource(Res.drawable.ic_magic_wand),
         enabled = state
     ) { newValue ->
@@ -341,6 +351,7 @@ fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun BlurSetting(
     enabledComponent: SettingsUnitComponent<Boolean>,
@@ -349,14 +360,14 @@ fun BlurSetting(
     noiseFactorComponent: SettingsUnitComponent<Float>
 ) {
     SettingsExpandableCard(
-        title = "Эффект стекла",
-        subtitle = "Включает эффект стекла для некоторых элементов интерфейса",
+        title = stringResource(Res.string.setting_title_glassmorphism),
+        subtitle = stringResource(Res.string.setting_subtitle_glassmorphism),
         icon = painterResource(Res.drawable.ic_blur),
     ) {
         val enabled by enabledComponent.state.collectAsState()
 
         SettingsSwitchWithTitle(
-            title = "Включено",
+            title = stringResource(Res.string.enabled),
             state = enabled,
             action = { newValue ->
                 enabledComponent.onIntent(
@@ -366,7 +377,7 @@ fun BlurSetting(
         )
         Spacer(modifier = Modifier.height(3.dp))
         SettingsSliderWithTitle(
-            title = "Прозрачность (альфа)",
+            title = stringResource(Res.string.setting_subtitle_glassmorphism_alpha),
             enabled = enabled,
             value = alphaComponent.state.collectAsState().value,
             valueRange = 0F..1F,
@@ -377,7 +388,7 @@ fun BlurSetting(
             }
         )
         SettingsSliderWithTitle(
-            title = "Радиус размытия",
+            title = stringResource(Res.string.setting_subtitle_glassmorphism_radius),
             enabled = enabled,
             value = radiusComponent.state.collectAsState().value,
             valueRange = 5F..40F,
@@ -388,7 +399,7 @@ fun BlurSetting(
             }
         )
         SettingsSliderWithTitle(
-            title = "Множитель шума",
+            title = stringResource(Res.string.setting_subtitle_glassmorphism_noise),
             enabled = enabled,
             value = noiseFactorComponent.state.collectAsState().value,
             valueRange = 0F..1F,
@@ -399,14 +410,4 @@ fun BlurSetting(
             }
         )
     }
-    /*SettingsCardWithSwitch(
-        title = "Эффект стекла",
-        subtitle = "Включает эффект стекла для некоторых элементов интерфейса",
-        icon = painterResource(Res.drawable.ic_blur),
-        enabled = state
-    ) { newValue ->
-        component.onIntent(
-            SettingsUnitComponent.Intent.ChangeValue(newValue)
-        )
-    }*/
 }

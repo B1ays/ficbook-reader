@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.users
 
 import androidx.compose.foundation.layout.*
@@ -11,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -20,17 +17,18 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
-import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.systemBarsPadding
+import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.ui.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbookReader.ui_components.decomposePager.Pages
 import ru.blays.ficbookReader.values.Zero
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
-@OptIn(ExperimentalDecomposeApi::class)
+@OptIn(ExperimentalDecomposeApi::class, ExperimentalResourceApi::class)
 @Composable
 fun UsersRootContent(component: UsersRootComponent) {
     val pagesState = component.tabs.subscribeAsState()
@@ -55,11 +53,11 @@ fun UsersRootContent(component: UsersRootComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Авторы")
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_authors))
             )
         }
     ) { padding ->
@@ -162,12 +160,10 @@ fun ChipTabs(
         itemsIndexed(state.items) { index, tab ->
             InputChip(
                 selected = state.selectedIndex == index,
-                onClick = {
-                    onPageSelected(index)
-                },
+                onClick = { onPageSelected(index) },
                 label = {
                     Text(
-                        text = remember(tab) { getTitleForTab(tab.configuration) }
+                        text = getTitleForTab(tab.configuration)
                     )
                 },
                 modifier = Modifier.padding(3.dp)
@@ -203,21 +199,19 @@ fun RailTabs(
                     )
                 },
                 label = {
-                    val title = remember(tab) { getTitleForTab(tab.configuration) }
                     Text(
-                        text = title,
+                        text = getTitleForTab(tab.configuration),
                         style = MaterialTheme.typography.labelLarge
                     )
                 },
                 selected = state.selectedIndex == index,
-                onClick = {
-                    onPageSelected(index)
-                }
+                onClick = { onPageSelected(index) }
             )
         }
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getIconForTab(tabs: UsersRootComponent.TabConfig): Painter {
     return when(tabs) {
@@ -227,10 +221,12 @@ private fun getIconForTab(tabs: UsersRootComponent.TabConfig): Painter {
     }
 }
 
+@Composable
+@OptIn(ExperimentalResourceApi::class)
 private fun getTitleForTab(tab: UsersRootComponent.TabConfig): String {
     return when(tab) {
-        UsersRootComponent.TabConfig.FavouriteAuthors -> "Избранные авторы"
-        UsersRootComponent.TabConfig.PopularAuthors -> "Популярные авторы"
-        UsersRootComponent.TabConfig.SearchAuthors -> "Поиск авторов"
+        UsersRootComponent.TabConfig.FavouriteAuthors -> stringResource(Res.string.authors_favourite)
+        UsersRootComponent.TabConfig.PopularAuthors -> stringResource(Res.string.authors_popular)
+        UsersRootComponent.TabConfig.SearchAuthors -> stringResource(Res.string.authors_search)
     }
 }

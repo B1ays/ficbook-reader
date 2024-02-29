@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.ui_components.FanficComponents
 
 import androidx.compose.foundation.BorderStroke
@@ -24,7 +22,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
@@ -33,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.platformUtils.WindowSize
 import ru.blays.ficbookReader.shared.data.dto.*
 import ru.blays.ficbookReader.theme.*
@@ -79,6 +78,7 @@ fun FanficCard(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(
     modifier: Modifier = Modifier,
@@ -131,7 +131,7 @@ private fun LandscapeContent(
                     if (fanfic.coverUrl.isNotEmpty()) {
                         AsyncImage(
                             model = fanfic.coverUrl,
-                            contentDescription = "Обложка фанфика",
+                            contentDescription = stringResource(Res.string.content_description_fanfic_cover),
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .layout { measurable, constraints ->
@@ -179,6 +179,7 @@ private fun LandscapeContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun PortraitContent(
     modifier: Modifier = Modifier,
@@ -201,7 +202,7 @@ private fun PortraitContent(
         if(fanfic.coverUrl.isNotEmpty()) {
             AsyncImage(
                 model = fanfic.coverUrl,
-                contentDescription = "Обложка фанфика",
+                contentDescription = stringResource(Res.string.content_description_fanfic_cover),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .offset(y = 16.dp)
@@ -330,7 +331,7 @@ fun CardWithDirectionIndicator(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
 fun FanficChips(
     status: FanficStatusStable
@@ -365,7 +366,7 @@ fun FanficChips(
                         FanficCompletionStatus.FROZEN -> painterResource(Res.drawable.ic_snowflake)
                         FanficCompletionStatus.UNKNOWN -> rememberVectorPainter(Icons.Rounded.Close)
                     },
-                    contentDescription = "Значок статуса",
+                    contentDescription = stringResource(Res.string.content_description_icon_status),
                     tint = getColorForStatus(status.status)
 
                 )
@@ -381,7 +382,7 @@ fun FanficChips(
                         .padding(3.dp)
                         .size(20.dp),
                     painter = painterResource(Res.drawable.ic_like_outlined),
-                    contentDescription = "Значок лайка",
+                    contentDescription = stringResource(Res.string.content_description_icon_like),
                     tint = likeColor
                 )
                 Spacer(modifier = Modifier.width(2.dp))
@@ -402,7 +403,7 @@ fun FanficChips(
                         .padding(3.dp)
                         .size(20.dp),
                     painter = painterResource(Res.drawable.ic_trophy),
-                    contentDescription = "Значок награды",
+                    contentDescription = stringResource(Res.string.content_description_icon_reward),
                     tint = trophyColor
                 )
                 Spacer(modifier = Modifier.width(2.dp))
@@ -423,7 +424,7 @@ fun FanficChips(
                         .padding(3.dp)
                         .size(20.dp),
                     painter = painterResource(Res.drawable.ic_flame),
-                    contentDescription = "Значок огня",
+                    contentDescription = stringResource(Res.string.content_description_icon_flame),
                     brush = flameGradient
                 )
             }
@@ -431,7 +432,7 @@ fun FanficChips(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
 fun FanficHeader(
     fanfic: FanficCardModelStable,
@@ -452,7 +453,7 @@ fun FanficHeader(
             Icon(
                 modifier = Modifier.size(16.dp),
                 painter = painterResource(Res.drawable.ic_user),
-                contentDescription = "Иконка человек"
+                contentDescription = stringResource(Res.string.content_description_icon_user)
             )
             Spacer(modifier = Modifier.width(2.dp))
             Text(
@@ -468,7 +469,7 @@ fun FanficHeader(
                 Icon(
                     modifier = Modifier.size(16.dp),
                     painter = painterResource(Res.drawable.ic_globe),
-                    contentDescription = "Иконка глобус"
+                    contentDescription = stringResource(Res.string.content_description_icon_globe)
                 )
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
@@ -484,7 +485,7 @@ fun FanficHeader(
             Icon(
                 modifier = Modifier.size(16.dp),
                 painter = painterResource(Res.drawable.ic_open_book),
-                contentDescription = "Иконка открытая книга"
+                contentDescription = stringResource(Res.string.content_description_icon_book_opened)
             )
             Spacer(modifier = Modifier.width(4.dp))
             fanfic.fandom.forEachIndexed { index, it ->
@@ -505,7 +506,7 @@ fun FanficHeader(
                 val shape = remember { RoundedCornerShape(percent = 20) }
                 val style = MaterialTheme.typography.labelLarge
                 Text(
-                    text = "Пэйринги и персонажи:",
+                    text = stringResource(Res.string.fanficCard_pairings_and_characters),
                     style = style,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
@@ -543,7 +544,7 @@ fun FanficHeader(
         Spacer(modifier = Modifier.requiredHeight(2.dp))
         if(fanfic.tags.isNotEmpty()) {
             Text(
-                text = "Тэги:",
+                text = stringResource(Res.string.fanficCard_tags),
                 style = MaterialTheme.typography.labelLarge
             )
             FlowRow {
@@ -554,12 +555,12 @@ fun FanficHeader(
             Spacer(modifier = Modifier.requiredHeight(4.dp))
         }
         Text(
-            text = "Обновлено: ${fanfic.updateDate}",
+            text = stringResource(Res.string.fanficCard_updated, fanfic.updateDate),
             style = MaterialTheme.typography.labelLarge
         )
         Spacer(modifier = Modifier.requiredHeight(4.dp))
         Text(
-            text = "Размер: ${fanfic.size}",
+            text = stringResource(Res.string.fanficCard_size, fanfic.size),
             style = MaterialTheme.typography.labelLarge
         )
     }

@@ -9,6 +9,10 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import dev.chrisbanes.haze.HazeStyle
+import ficbook_reader.`compose-ui`.generated.resources.Res
+import ficbook_reader.`compose-ui`.generated.resources.ok
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.components.authorProfile.AuthorProfileContent
 import ru.blays.ficbookReader.components.collectionContent.CollectionContent
 import ru.blays.ficbookReader.components.fanficPage.FanficPageContent
@@ -97,6 +101,7 @@ fun RootContent(component: RootComponent) {
 }
 
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SnackbarVisualsWithError(
     message: String,
@@ -107,7 +112,7 @@ fun SnackbarVisualsWithError(
     contentColor = MaterialTheme.colorScheme.onErrorContainer,
     action = {
         TextButton(onClick = onDismiss) {
-            Text("Ок")
+            Text(text = stringResource(Res.string.ok))
         }
     }
 ) {

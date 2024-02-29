@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.searchContent
 
 import androidx.compose.animation.*
@@ -30,13 +28,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ficbook_reader.`compose-ui`.generated.resources.*
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import org.jetbrains.compose.resources.painterResource
+import ficbook_reader.`compose-ui`.generated.resources.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.components.fanficsList.FanficsListContent
 import ru.blays.ficbookReader.platformUtils.BackHandler
 import ru.blays.ficbookReader.shared.data.dto.*
@@ -69,6 +68,7 @@ fun SearchContent(component: SearchComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(component: SearchComponent) {
     val coroutineScope = rememberCoroutineScope()
@@ -102,7 +102,7 @@ private fun LandscapeContent(component: SearchComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
@@ -120,12 +120,12 @@ private fun LandscapeContent(component: SearchComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_filter_outlined),
-                            contentDescription = "Иконка фильтр",
+                            contentDescription = stringResource(Res.string.content_description_icon_filter),
                             modifier = Modifier.size(20.dp),
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Поиск"),
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_search)),
                 containerColor = if (glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
@@ -171,6 +171,7 @@ private fun LandscapeContent(component: SearchComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun PortraitContent(component: SearchComponent) {
     val bottomSheetState = rememberSheetState(
@@ -220,7 +221,7 @@ private fun PortraitContent(component: SearchComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
@@ -234,12 +235,12 @@ private fun PortraitContent(component: SearchComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_filter_outlined),
-                            contentDescription = "Иконка фильтр",
+                            contentDescription = stringResource(Res.string.content_description_icon_filter),
                             modifier = Modifier.size(20.dp),
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.large("Поиск"),
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.search)),
                 containerColor = if (glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
@@ -267,6 +268,7 @@ private fun PortraitContent(component: SearchComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SearchMenuRoot(
     component: SearchComponent,
@@ -303,7 +305,7 @@ private fun SearchMenuRoot(
                     }
                 }
             ) {
-                Text(text = "Параметры")
+                Text(text = stringResource(Res.string.parameters))
             }
             CustomTab(
                 selected = pagerState.currentPage == 1,
@@ -316,7 +318,7 @@ private fun SearchMenuRoot(
                     }
                 }
             ) {
-                Text(text = "Сохранённые")
+                Text(text = stringResource(Res.string.saved))
             }
         }
         HorizontalPager(
@@ -342,6 +344,7 @@ private fun SearchMenuRoot(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SearchParamsSelector(
     component: SearchComponent,
@@ -366,7 +369,7 @@ fun SearchParamsSelector(
                     component.setTitle(it)
                 },
                 label = {
-                    Text(text = "Поиск по названию")
+                    Text(text = stringResource(Res.string.search_by_name))
                 },
                 trailingIcon = {
                     IconButton(
@@ -376,7 +379,7 @@ fun SearchParamsSelector(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_cancel),
-                            contentDescription = "Очистить поиск",
+                            contentDescription = stringResource(Res.string.content_description_icon_clear),
                             modifier = Modifier.size(20.dp),
                         )
                     }
@@ -452,7 +455,7 @@ fun SearchParamsSelector(
             VerticalCategorySpacer()
             CheckboxWithTitle(
                 checked = state.onlyPremium,
-                title = "Фанфики из раздела «Горячие работы»",
+                title = stringResource(Res.string.search_selector_hot_works),
                 onClick = component::setOnlyPremium
             )
             VerticalCategorySpacer()
@@ -468,7 +471,7 @@ fun SearchParamsSelector(
             VerticalCategorySpacer()
             CheckboxWithTitle(
                 checked = state.filterReaded,
-                title = "Не показывать прочитанное",
+                title = stringResource(Res.string.search_selector_dont_show_readed),
                 onClick = component::setFilterReaded
             )
             VerticalCategorySpacer()
@@ -523,6 +526,7 @@ private fun SavedSearches(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SavedSearchItem(
     shortcut: SearchParamsEntityShortcut,
@@ -563,7 +567,7 @@ private fun SavedSearchItem(
                             value = name,
                             onValueChange = { name = it },
                             label = {
-                                Text(text = "Название")
+                                Text(text = stringResource(Res.string.title))
                             },
                             singleLine = true,
                             shape = CardDefaults.shape,
@@ -592,7 +596,7 @@ private fun SavedSearchItem(
                             value = description,
                             onValueChange = { description = it },
                             label = {
-                                Text(text = "Описание")
+                                Text(text = stringResource(Res.string.description))
                             },
                             maxLines = 5,
                             shape = CardDefaults.shape,
@@ -618,7 +622,7 @@ private fun SavedSearchItem(
                         Spacer(modifier = Modifier.height(4.dp))
                         CheckboxWithTitle(
                             checked = updateParams,
-                            title = "Обновить параметры",
+                            title = stringResource(Res.string.search_update_parameters),
                             onClick = { updateParams = !updateParams }
                         )
                         Spacer(modifier = Modifier.height(6.dp))
@@ -629,13 +633,13 @@ private fun SavedSearchItem(
                                     editing = false
                                 }
                             ) {
-                                Text(text = "Сохранить")
+                                Text(text = stringResource(Res.string.action_save))
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             OutlinedButton(
                                 onClick = { editing = false }
                             ) {
-                                Text(text = "Отмена")
+                                Text(text = stringResource(Res.string.cancel))
                             }
                         }
                     }
@@ -655,7 +659,7 @@ private fun SavedSearchItem(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_edit),
-                            contentDescription = "Иконка редактирования",
+                            contentDescription = stringResource(Res.string.content_description_icon_edit),
                             modifier = Modifier.size(24.dp),
                         )
                     }
@@ -667,7 +671,7 @@ private fun SavedSearchItem(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_delete),
-                            contentDescription = "Иконка удаления",
+                            contentDescription = stringResource(Res.string.content_description_icon_delete),
                             modifier = Modifier.size(24.dp),
                         )
                     }
@@ -677,6 +681,7 @@ private fun SavedSearchItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FandomFilter(
     value: String,
@@ -687,28 +692,28 @@ private fun FandomFilter(
     ) {
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_FILTER_ALL,
-            title = "Все",
+            title = stringResource(Res.string.fandom_filter_all),
             onClick = {
                 onValueChange(SearchParams.FANDOM_FILTER_ALL)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_FILTER_ORIGINALS,
-            title = "Ориджиналы",
+            title = stringResource(Res.string.fandom_filter_originals),
             onClick = {
                 onValueChange(SearchParams.FANDOM_FILTER_ORIGINALS)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_FILTER_CATEGORY,
-            title = "Все фанфики в группе фэндомов",
+            title = stringResource(Res.string.fandom_filter_all_in_group),
             onClick = {
                 onValueChange(SearchParams.FANDOM_FILTER_CATEGORY)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_FILTER_CONCRETE,
-            title = "Фанфики по конкретным фэндомам",
+            title = stringResource(Res.string.fandom_filter_concrete_fandom),
             onClick = {
                 onValueChange(SearchParams.FANDOM_FILTER_CONCRETE)
             }
@@ -716,6 +721,7 @@ private fun FandomFilter(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FandomGroupSelector(
     value: Int,
@@ -725,7 +731,7 @@ fun FandomGroupSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Группа фэндомов",
+            text = stringResource(Res.string.search_selector_fandom_group),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -733,63 +739,63 @@ fun FandomGroupSelector(
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_ANIME_AND_MANGA,
-            title = "Аниме и манга",
+            title = stringResource(Res.string.fandom_group_anime_and_manga),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_ANIME_AND_MANGA)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_BOOKS,
-            title = "Книги",
+            title = stringResource(Res.string.fandom_group_books),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_BOOKS)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_CARTOONS,
-            title = "Мультфильмы",
+            title = stringResource(Res.string.fandom_group_cartoons),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_CARTOONS)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_GAMES,
-            title = "Игры",
+            title = stringResource(Res.string.fandom_group_games),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_GAMES)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_MOVIES,
-            title = "Фильмы и сериалы",
+            title = stringResource(Res.string.fandom_group_movies),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_MOVIES)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_OTHER,
-            title = "Другие",
+            title = stringResource(Res.string.fandom_group_other),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_OTHER)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_RPF,
-            title = "Известные люди (RPF)",
+            title = stringResource(Res.string.fandom_group_rpf),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_RPF)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_COMICS,
-            title = "Комиксы",
+            title = stringResource(Res.string.fandom_group_comics),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_COMICS)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_GROUP_MUSICALS,
-            title = "Мюзиклы",
+            title = stringResource(Res.string.fandom_group_musicals),
             onClick = {
                 onValueChange(SearchParams.FANDOM_GROUP_MUSICALS)
             }
@@ -798,6 +804,7 @@ fun FandomGroupSelector(
 }
 
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FandomsSelector(
     component: SearchFandomsComponent,
@@ -814,7 +821,7 @@ private fun FandomsSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Выбрать фэндомы",
+            text = stringResource(Res.string.search_selector_select_fandoms),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -826,7 +833,7 @@ private fun FandomsSelector(
                 outlineColor = MaterialTheme.colorScheme.outline,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 iconColor = MaterialTheme.colorScheme.surface,
-                label = "Добавить фэндом",
+                label = stringResource(Res.string.search_action_add_fandom),
                 icon = painterResource(Res.drawable.ic_plus),
                 onClick = {
                     selectIncludedFandomDialogVisible = true
@@ -864,7 +871,7 @@ private fun FandomsSelector(
             outlineColor = MaterialTheme.colorScheme.outline,
             contentColor = MaterialTheme.colorScheme.onSurface,
             iconColor = MaterialTheme.colorScheme.surface,
-            label = "Исключить фэндом",
+            label = stringResource(Res.string.search_action_exclude_fandom),
             icon = painterResource(Res.drawable.ic_minus),
             onClick = {
                 selectExcludedFandomDialogVisible = true
@@ -928,7 +935,7 @@ private fun FandomsSelector(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun PairingSelector(component: SearchPairingsComponent) {
     val state by component.state.subscribeAsState()
@@ -938,7 +945,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Выбрать пейринги или персонажей",
+            text = stringResource(Res.string.search_selector_select_pairings),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -985,12 +992,12 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_plus),
-                        contentDescription = "Иконка плюс",
+                        contentDescription = stringResource(Res.string.content_description_icon_plus),
                         modifier = Modifier.size(20.dp),
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Добавить персонажа"
+                        text = stringResource(Res.string.search_action_add_character)
                     )
                 }
                 AnimatedVisibility(
@@ -1015,12 +1022,12 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_cross),
-                                contentDescription = "Иконка плюс",
+                                contentDescription = stringResource(Res.string.content_description_icon_plus),
                                 modifier = Modifier.size(20.dp),
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Очистить"
+                                text = stringResource(Res.string.clear)
                             )
                         }
                     }
@@ -1059,11 +1066,11 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_plus),
-                                contentDescription = "Иконка плюс",
+                                contentDescription = stringResource(Res.string.content_description_icon_plus),
                                 modifier = Modifier.size(20.dp),
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Добавить")
+                            Text(text = stringResource(Res.string.action_add))
                         }
                         Spacer(modifier = Modifier.weight(0.10F))
                         Button(
@@ -1087,12 +1094,12 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_minus),
-                                contentDescription = "Иконка минус",
+                                contentDescription = stringResource(Res.string.content_description_icon_minus),
                                 modifier = Modifier.size(20.dp),
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Исключить"
+                                text = stringResource(Res.string.action_exclude)
                             )
                         }
                     }
@@ -1111,7 +1118,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Пейринги",
+                text = stringResource(Res.string.search_included_pairings),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(horizontal = 12.dp),
@@ -1150,7 +1157,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Исключённые пейринги",
+                text = stringResource(Res.string.search_excluded_pairings),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(horizontal = 12.dp)
@@ -1186,6 +1193,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun TagsSelector(
     component: SearchTagsComponent
@@ -1200,7 +1208,7 @@ private fun TagsSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Выбрать метки",
+            text = stringResource(Res.string.search_selector_select_tags),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1211,7 +1219,7 @@ private fun TagsSelector(
             outlineColor = MaterialTheme.colorScheme.outline,
             contentColor = MaterialTheme.colorScheme.onSurface,
             iconColor = MaterialTheme.colorScheme.surface,
-            label = "Добавить метку",
+            label = stringResource(Res.string.search_action_add_tag),
             icon = painterResource(Res.drawable.ic_plus),
             onClick = {
                 selectIncludedTagDialogVisible = true
@@ -1249,7 +1257,7 @@ private fun TagsSelector(
             outlineColor = MaterialTheme.colorScheme.outline,
             contentColor = MaterialTheme.colorScheme.onSurface,
             iconColor = MaterialTheme.colorScheme.surface,
-            label = "Исключить метку",
+            label = stringResource(Res.string.search_action_exclude_tag),
             icon = painterResource(Res.drawable.ic_minus),
             onClick = {
                 selectExcludedTagDialogVisible = true
@@ -1378,6 +1386,7 @@ fun OutlinedCardWithCornerButton(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun StatusSelector(
     value: List<Int>,
@@ -1387,7 +1396,7 @@ private fun StatusSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Со статусом",
+            text = stringResource(Res.string.search_selector_with_status),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1395,7 +1404,7 @@ private fun StatusSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.STATUS_IN_PROGRESS in value,
-            title = "В процессе",
+            title = stringResource(Res.string.status_in_progress),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1408,7 +1417,7 @@ private fun StatusSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.STATUS_COMPLETED in value,
-            title = "Завершён",
+            title = stringResource(Res.string.status_complete),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1421,7 +1430,7 @@ private fun StatusSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.STATUS_FROZEN in value,
-            title = "Заморожен",
+            title = stringResource(Res.string.status_frozen),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1435,6 +1444,7 @@ private fun StatusSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun RatingSelector(
     value: List<Int>,
@@ -1444,7 +1454,7 @@ private fun RatingSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "С рейтингом",
+            text = stringResource(Res.string.search_selector_with_rating),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1452,7 +1462,7 @@ private fun RatingSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.RATING_G in value,
-            title = "G",
+            title = stringResource(Res.string.rating_G),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1465,7 +1475,7 @@ private fun RatingSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.RATING_PG13 in value,
-            title = "PG-13",
+            title = stringResource(Res.string.rating_PG_13),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1478,7 +1488,7 @@ private fun RatingSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.RATING_R in value,
-            title = "R",
+            title = stringResource(Res.string.rating_R),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1491,7 +1501,7 @@ private fun RatingSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.RATING_NC17 in value,
-            title = "NC-17",
+            title = stringResource(Res.string.rating_NC_17),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1504,7 +1514,7 @@ private fun RatingSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.RATING_NC21 in value,
-            title = "NC-21",
+            title = stringResource(Res.string.rating_NC_21),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1518,6 +1528,7 @@ private fun RatingSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun DirectionSelector(
     value: List<Int>,
@@ -1527,7 +1538,7 @@ private fun DirectionSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Одной из направленностей",
+            text = stringResource(Res.string.search_selector_direction),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1535,7 +1546,7 @@ private fun DirectionSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.DIRECTION_GEN in value,
-            title = "Джен",
+            title = stringResource(Res.string.direction_gen),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1548,7 +1559,7 @@ private fun DirectionSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.DIRECTION_HET in value,
-            title = "Гет",
+            title = stringResource(Res.string.direction_het),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1561,7 +1572,7 @@ private fun DirectionSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.DIRECTION_SLASH in value,
-            title = "Слэш",
+            title = stringResource(Res.string.direction_slash),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1574,7 +1585,7 @@ private fun DirectionSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.DIRECTION_FEMSLASH in value,
-            title = "Фемслэш",
+            title = stringResource(Res.string.direction_femslash),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1587,7 +1598,7 @@ private fun DirectionSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.DIRECTION_OTHER in value,
-            title = "Другие виды отношений",
+            title = stringResource(Res.string.direction_other),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1600,7 +1611,7 @@ private fun DirectionSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.DIRECTION_MIXED in value,
-            title = "Смешанная",
+            title = stringResource(Res.string.direction_mixed),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1613,7 +1624,7 @@ private fun DirectionSelector(
         )
         CheckboxWithTitle(
             checked = SearchParams.DIRECTION_ARTICLE in value,
-            title = "Статья",
+            title = stringResource(Res.string.direction_article),
             onClick = {
                 onSelect(
                     if (it) {
@@ -1627,6 +1638,7 @@ private fun DirectionSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun TranslateSelector(
     value: Int,
@@ -1636,7 +1648,7 @@ private fun TranslateSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Перевод или оригинальный текст",
+            text = stringResource(Res.string.search_selector_translate),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1644,21 +1656,21 @@ private fun TranslateSelector(
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.TRANSLATE_DOESNT_MATTER,
-            title = "Всё равно",
+            title = stringResource(Res.string.translate_doesnt_matter),
             onClick = {
                 onSelect(SearchParams.TRANSLATE_DOESNT_MATTER)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.TRANSLATE_YES,
-            title = "Перевод с иностранного языка",
+            title = stringResource(Res.string.translate_yes),
             onClick = {
                 onSelect(SearchParams.TRANSLATE_YES)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.TRANSLATE_NO,
-            title = "Оригинальный текст",
+            title = stringResource(Res.string.translate_no),
             onClick = {
                 onSelect(SearchParams.TRANSLATE_NO)
             }
@@ -1666,6 +1678,7 @@ private fun TranslateSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PagesRangeSelector(
     value: IntRangeSimple,
@@ -1675,7 +1688,7 @@ fun PagesRangeSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Количество страниц",
+            text = stringResource(Res.string.search_selector_pages_count),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1688,6 +1701,7 @@ fun PagesRangeSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LikesRangeSelector(
     value: IntRangeSimple,
@@ -1697,7 +1711,7 @@ fun LikesRangeSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Количество лайков",
+            text = stringResource(Res.string.search_selector_likes_count),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1710,6 +1724,7 @@ fun LikesRangeSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun RewardsCountSelector(
     value: Int,
@@ -1719,7 +1734,7 @@ fun RewardsCountSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Количество наград",
+            text = stringResource(Res.string.search_selector_rewards_count),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1731,7 +1746,7 @@ fun RewardsCountSelector(
                 onSelect(it.toIntOrNull() ?: 0)
             },
             label = {
-                Text(text = "От")
+                Text(text = stringResource(Res.string.from))
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
@@ -1741,6 +1756,7 @@ fun RewardsCountSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SortTypeSelector(
     value: Int,
@@ -1750,7 +1766,7 @@ fun SortTypeSelector(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
     ) {
         Text(
-            text = "Отсортировать результат",
+            text = stringResource(Res.string.search_selector_sort_type),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -1758,49 +1774,49 @@ fun SortTypeSelector(
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.SORT_BY_LIKES_COUNT,
-            title = "по оценкам читателей",
+            title = stringResource(Res.string.sort_by_likes),
             onClick = {
                 onSelect(SearchParams.SORT_BY_LIKES_COUNT)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.SORT_BY_COMMENTS_COUNT,
-            title = "по количеству отзывов",
+            title = stringResource(Res.string.sort_by_comments),
             onClick = {
                 onSelect(SearchParams.SORT_BY_COMMENTS_COUNT)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.SORT_BY_DATE_FROM_NEW,
-            title = "по дате обновления (от новых к старым)",
+            title = stringResource(Res.string.sort_by_date_from_new),
             onClick = {
                 onSelect(SearchParams.SORT_BY_DATE_FROM_NEW)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.SORT_BY_DATE_FROM_OLD,
-            title = "по дате обновления (от старых к новым)",
+            title = stringResource(Res.string.sort_by_date_from_old),
             onClick = {
                 onSelect(SearchParams.SORT_BY_DATE_FROM_OLD)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.SORT_BY_PAGES_COUNT,
-            title = "по количеству страниц",
+            title = stringResource(Res.string.sort_by_pages),
             onClick = {
                 onSelect(SearchParams.SORT_BY_PAGES_COUNT)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.SORT_BY_REWARDS_COUNT,
-            title = "по количеству наград",
+            title = stringResource(Res.string.sort_by_rewards),
             onClick = {
                 onSelect(SearchParams.SORT_BY_REWARDS_COUNT)
             }
         )
         RadioButtonWithTitle(
             selected = value == SearchParams.SORT_20_RANDOM,
-            title = "20 случайных работ",
+            title = stringResource(Res.string.sort_20_random),
             onClick = {
                 onSelect(SearchParams.SORT_20_RANDOM)
             }
@@ -1808,6 +1824,7 @@ fun SortTypeSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun RangeSelector(
     value: IntRangeSimple,
@@ -1829,7 +1846,7 @@ fun RangeSelector(
                 )
             },
             label = {
-                Text(text = "Минимум")
+                Text(text = stringResource(Res.string.minimum))
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
@@ -1846,7 +1863,7 @@ fun RangeSelector(
                 )
             },
             label = {
-                Text(text = "Максимум")
+                Text(text = stringResource(Res.string.maximum))
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
@@ -1856,6 +1873,7 @@ fun RangeSelector(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FindFandomDialog(
     component: SearchFandomsComponent,
@@ -1875,7 +1893,7 @@ private fun FindFandomDialog(
                     value = state.searchedName,
                     onValueChange = component::changeSearchedName,
                     label = {
-                        Text(text = "Поиск по названию")
+                        Text(text = stringResource(Res.string.search_by_name))
                     },
                     trailingIcon = {
                         IconButton(
@@ -1883,7 +1901,7 @@ private fun FindFandomDialog(
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_cancel),
-                                contentDescription = "Очистить поиск",
+                                contentDescription = stringResource(Res.string.content_description_icon_clear),
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -1913,7 +1931,7 @@ private fun FindFandomDialog(
                     OutlinedButton(
                         onClick = onDismiss
                     ) {
-                        Text("Отмена")
+                        Text(stringResource(Res.string.cancel))
                     }
                 }
             }
@@ -1921,6 +1939,7 @@ private fun FindFandomDialog(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FindTagDialog(
     component: SearchTagsComponent,
@@ -1940,7 +1959,7 @@ private fun FindTagDialog(
                     value = state.searchedName,
                     onValueChange = component::changeSearchedName,
                     label = {
-                        Text(text = "Поиск по названию")
+                        Text(text = stringResource(Res.string.search_by_name))
                     },
                     trailingIcon = {
                         IconButton(
@@ -1948,7 +1967,7 @@ private fun FindTagDialog(
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_cancel),
-                                contentDescription = "Очистить поиск",
+                                contentDescription = stringResource(Res.string.content_description_icon_clear),
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -1978,7 +1997,7 @@ private fun FindTagDialog(
                     OutlinedButton(
                         onClick = onDismiss
                     ) {
-                        Text("Отмена")
+                        Text(text = stringResource(Res.string.cancel))
                     }
                 }
             }
@@ -1986,6 +2005,7 @@ private fun FindTagDialog(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SelectCharacterDialog(
     component: SearchPairingsComponent,
@@ -2000,7 +2020,7 @@ fun SelectCharacterDialog(
             group.copy(
                 characters = group.characters.filter { character ->
                     character.name.contains(searchedName, ignoreCase = true) ||
-                            character.aliases.any { it.contains(searchedName, ignoreCase = true) }
+                        character.aliases.any { it.contains(searchedName, ignoreCase = true) }
                 }
             )
         }
@@ -2018,7 +2038,7 @@ fun SelectCharacterDialog(
                     value = searchedName,
                     onValueChange = { searchedName = it },
                     label = {
-                        Text(text = "Поиск по названию")
+                        Text(text = stringResource(Res.string.search_by_name))
                     },
                     trailingIcon = {
                         IconButton(
@@ -2026,7 +2046,7 @@ fun SelectCharacterDialog(
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_cancel),
-                                contentDescription = "Очистить поиск",
+                                contentDescription = stringResource(Res.string.content_description_icon_clear),
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -2066,7 +2086,7 @@ fun SelectCharacterDialog(
                     OutlinedButton(
                         onClick = onDismiss
                     ) {
-                        Text("Отмена")
+                        Text(stringResource(Res.string.cancel))
                     }
                 }
             }
@@ -2103,6 +2123,7 @@ private fun SearchedFandomItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SearchedTagItem(
     tag: SearchedTagModel,
@@ -2128,7 +2149,7 @@ private fun SearchedTagItem(
                 Spacer(modifier = Modifier.width(spaceBetweenItems))
                 Icon(
                     painter = painterResource(Res.drawable.ic_18),
-                    contentDescription = "Иконка 18+",
+                    contentDescription = stringResource(Res.string.content_description_icon_18),
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -2176,6 +2197,7 @@ private fun SearchedCharacterItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CharacterItem(
     character: SearchedPairingModel.Character,
@@ -2222,7 +2244,7 @@ private fun CharacterItem(
                     Spacer(modifier = Modifier.width(3.dp))
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_down),
-                        contentDescription = "Иконка стрелка вниз",
+                        contentDescription = stringResource(Res.string.content_description_icon_down),
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -2266,7 +2288,7 @@ private fun CharacterItem(
                                     textFieldValue = it
                                 },
                                 placeholder = {
-                                    Text("Добавить свой")
+                                    Text(stringResource(Res.string.search_action_add_your))
                                 },
                                 trailingIcon = {
                                     IconButton(
@@ -2277,7 +2299,7 @@ private fun CharacterItem(
                                     ) {
                                         Icon(
                                             painter = painterResource(Res.drawable.ic_check),
-                                            contentDescription = "Иконка галочка",
+                                            contentDescription = stringResource(Res.string.content_description_icon_check),
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -2329,6 +2351,7 @@ private fun CharacterItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ItemChip(
     modifier: Modifier = Modifier,
@@ -2442,6 +2465,7 @@ private fun CheckboxWithTitle(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun BottomButtonContent(
     component: SearchSaveComponent,
@@ -2459,7 +2483,7 @@ private fun BottomButtonContent(
             modifier = Modifier.padding(vertical = 3.dp),
         ) {
             Text(
-                text = "Сохранить поиск",
+                text = stringResource(Res.string.search_action_save_search),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
@@ -2468,7 +2492,7 @@ private fun BottomButtonContent(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text(text = "Название") },
+                label = { Text(text = stringResource(Res.string.title)) },
                 singleLine = true,
                 shape = CardDefaults.shape,
                 modifier = Modifier.fillMaxWidth(),
@@ -2477,7 +2501,7 @@ private fun BottomButtonContent(
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text(text = "Описание") },
+                label = { Text(text = stringResource(Res.string.description)) },
                 maxLines = 5,
                 shape = CardDefaults.shape,
                 modifier = Modifier
@@ -2514,13 +2538,13 @@ private fun BottomButtonContent(
             ) { expanded ->
                 if (expanded) {
                     Text(
-                        text = "Сохранить",
+                        text = stringResource(Res.string.action_save),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold
                     )
                 } else {
                     Text(
-                        text = "Найти",
+                        text = stringResource(Res.string.action_search),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -2530,11 +2554,7 @@ private fun BottomButtonContent(
         Spacer(modifier = Modifier.width(6.dp))
         Button(
             onClick = {
-                if(saveMenuExpanded) {
-                    saveMenuExpanded = false
-                } else {
-                    saveMenuExpanded = true
-                }
+                saveMenuExpanded = !saveMenuExpanded
             },
             shape = CardShape.CardMid,
             contentPadding = PaddingValues(2.dp),
@@ -2551,13 +2571,13 @@ private fun BottomButtonContent(
                 if (expanded) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_cancel),
-                        contentDescription = "Иконка звёздочка",
+                        contentDescription = stringResource(Res.string.content_description_icon_star),
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
                     Icon(
                         painter = painterResource(Res.drawable.ic_star_outlined),
-                        contentDescription = "Иконка звёздочка",
+                        contentDescription = stringResource(Res.string.content_description_icon_star),
                         modifier = Modifier.size(24.dp)
                     )
                 }

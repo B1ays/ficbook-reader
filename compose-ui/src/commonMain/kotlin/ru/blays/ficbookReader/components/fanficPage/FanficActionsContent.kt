@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.fanficPage
 
 import androidx.compose.foundation.background
@@ -25,6 +23,7 @@ import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.data.dto.AvailableCollectionsModel
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.FanficPageCollectionsComponent
@@ -36,6 +35,7 @@ import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FanficActionsContent(
     component: FanficPageActionsComponent
@@ -70,7 +70,7 @@ fun FanficActionsContent(
             modifier = Modifier.weight(1F/4),
             value = mark,
             icon = likeItemIcon,
-            title = "Нравится",
+            title = stringResource(Res.string.liked),
             iconSize = 28.dp,
             iconColor = MaterialTheme.colorScheme.primary
         ) {
@@ -83,7 +83,7 @@ fun FanficActionsContent(
             modifier = Modifier.weight(1F/4),
             value = follow,
             icon = subscribeItemIcon,
-            title = "Избранное",
+            title = stringResource(Res.string.favourite),
             iconSize = 28.dp,
             iconColor = MaterialTheme.colorScheme.primary
         ) {
@@ -96,7 +96,7 @@ fun FanficActionsContent(
             modifier = Modifier.weight(1F/4),
             value = true,
             icon = collectionsItemIcon,
-            title = "В сборник",
+            title = stringResource(Res.string.fanficPage_action_to_collection),
             iconSize = 28.dp,
             iconColor = MaterialTheme.colorScheme.primary
         ) {
@@ -109,7 +109,7 @@ fun FanficActionsContent(
             modifier = Modifier.weight(1F/4),
             value = true,
             icon = commentsItemIcon,
-            title = "Отзывы",
+            title = stringResource(Res.string.comments),
             iconSize = 28.dp,
             iconColor = MaterialTheme.colorScheme.primary
         ) {
@@ -148,7 +148,7 @@ fun FanficActionsContent(
                     },
                 ) {
                     Text(
-                        text = "Добавить работу в сборник",
+                        text = stringResource(Res.string.fanficPage_collections_dialog_title),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(3.dp)
                     )
@@ -233,6 +233,7 @@ private fun FanficActionItem(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CollectionItem(
     modifier: Modifier = Modifier,
@@ -276,7 +277,7 @@ private fun CollectionItem(
             ) {
                 Icon(
                     painter = indicatorIcon,
-                    contentDescription = "Иконка замок",
+                    contentDescription = stringResource(Res.string.content_description_icon_lock),
                     tint = indicatorIconColor,
                     modifier = Modifier.size(30.dp)
                 )

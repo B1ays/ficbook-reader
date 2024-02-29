@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.fanficPage
 
 import androidx.compose.foundation.background
@@ -11,19 +9,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.darkrockstudios.libraries.mpfilepicker.FileSaver
-import ficbook_reader.`compose-ui`.generated.resources.*
 import com.moriatsushi.insetsx.statusBars
+import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.ui.fanficPageComponents.declaration.DownloadFanficComponent
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FanficDownloadContent(component: DownloadFanficComponent) {
     val state by component.state.subscribeAsState()
@@ -40,11 +39,11 @@ fun FanficDownloadContent(component: DownloadFanficComponent) {
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Стрелка назад"
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.small("Скачать работу"),
+                collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_download)),
                 insets = WindowInsets.statusBars
             )
         }
@@ -65,11 +64,11 @@ fun FanficDownloadContent(component: DownloadFanficComponent) {
         }
     }
 
-    if(state.selectedFormat != null) {
+    state.selectedFormat?.let { extension ->
         FileSaver(
             show = state.showFilePicker,
             fileName = state.fanficName,
-            fileExtension = state.selectedFormat!!
+            fileExtension = extension
         ) { file ->
             component.sendIntent(
                 DownloadFanficComponent.Intent.CloseFilePicker
@@ -83,6 +82,7 @@ fun FanficDownloadContent(component: DownloadFanficComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FormatItem(
     format: DownloadFanficComponent.FileFormat,
@@ -98,7 +98,7 @@ fun FormatItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Скачать в ${format.extension}",
+                text = stringResource(Res.string.action_download_in_format, format.extension),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(12.dp)
             )
@@ -115,7 +115,7 @@ fun FormatItem(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_download),
-                    contentDescription = "Иконка скачать",
+                    contentDescription = stringResource(Res.string.content_description_icon_download),
                     tint = MaterialTheme.colorScheme.surfaceTint,
                     modifier = Modifier.size(30.dp),
                 )

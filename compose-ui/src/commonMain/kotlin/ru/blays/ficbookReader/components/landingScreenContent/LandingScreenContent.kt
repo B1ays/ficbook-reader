@@ -1,23 +1,26 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbookReader.components.landingScreenContent
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ficbook_reader.`compose-ui`.generated.resources.*
-import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbookReader.shared.ui.landingScreenComponent.ConfirmDialogComponent
 import ru.blays.ficbookReader.shared.ui.landingScreenComponent.ConfirmDialogConfig
 import ru.blays.ficbookReader.shared.ui.landingScreenComponent.LandingScreenComponent
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LandingScreenContent(component: LandingScreenComponent) {
     val dialogState by component.confirmDialog.subscribeAsState()
@@ -41,7 +44,7 @@ fun LandingScreenContent(component: LandingScreenComponent) {
                 .fillMaxSize()
         ) {
             Text(
-                text = "Добро пожаловать в Ficbook Reader",
+                text = stringResource(Res.string.landing_title),
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -72,7 +75,7 @@ fun LandingScreenContent(component: LandingScreenComponent) {
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Добавить аккаунт"
+                        text = stringResource(Res.string.action_add_account)
                     )
                 }
                 Spacer(modifier = Modifier.height(9.dp))
@@ -94,7 +97,7 @@ fun LandingScreenContent(component: LandingScreenComponent) {
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Зарегистрироваться"
+                        text = stringResource(Res.string.action_register)
                     )
                 }
                 Spacer(modifier = Modifier.height(9.dp))
@@ -116,7 +119,7 @@ fun LandingScreenContent(component: LandingScreenComponent) {
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Анонимный режим"
+                        text = stringResource(Res.string.anonymous_mode)
                     )
                 }
                 Spacer(modifier = Modifier.height(80.dp))
@@ -138,6 +141,7 @@ fun LandingScreenContent(component: LandingScreenComponent) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ConfirmDialogContent(
     instance: ConfirmDialogComponent,
@@ -179,7 +183,7 @@ private fun ConfirmDialogContent(
                     .weight(0.4F, true)
             ) {
                 Text(
-                    text = "Отмена"
+                    text = stringResource(Res.string.cancel)
                 )
             }
             Button(
@@ -202,41 +206,35 @@ private fun ConfirmDialogContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getTitleForConfig(config: ConfirmDialogConfig): String {
-    return remember(config) {
-        when(config) {
-            is ConfirmDialogConfig.ConfirmAnonymousMode -> "Пропустить авторизацию?"
-            is ConfirmDialogConfig.ConfirmDBMigration -> "Добавить сохранённый аккаунт?"
-            is ConfirmDialogConfig.ConfirmRegisterRedirect -> "Перейти на сайт?"
-            is ConfirmDialogConfig.DBMigrationFailed -> "Не удалось конвертировать."
-        }
+    return when(config) {
+        is ConfirmDialogConfig.ConfirmAnonymousMode -> stringResource(Res.string.landing_dialog_title_confirm_am)
+        is ConfirmDialogConfig.ConfirmDBMigration -> stringResource(Res.string.landing_dialog_title_confirm_migration)
+        is ConfirmDialogConfig.ConfirmRegisterRedirect -> stringResource(Res.string.landing_dialog_title_confirm_redirect)
+        is ConfirmDialogConfig.DBMigrationFailed -> stringResource(Res.string.landing_dialog_title_migration_failed)
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getDescriptionForConfig(config: ConfirmDialogConfig): String {
-    return remember(config) {
-        when(config) {
-            is ConfirmDialogConfig.ConfirmAnonymousMode -> "Ficbook Reader можно использоваться и без аккаунта ficbook, но в этом случае многие разделы сайта окажутся не доступны.\n" +
-                "Чтобы войти в аккаунт позже, необходимо нажать на кнопку профиля в правом верхнем углу экрана."
-            is ConfirmDialogConfig.ConfirmDBMigration -> "Найден сохранённый аккаунт старого формата.\n" +
-                "Конвертировать его в новый формат?"
-            is ConfirmDialogConfig.ConfirmRegisterRedirect -> "Регистрация выполняется на сайте ficbook.net."
-            is ConfirmDialogConfig.DBMigrationFailed -> "Автоматическая конвертация не удалась.\n" +
-                "Попробуйте ещё раз позже. Или заново войдите в аккаунт."
-        }
+    return when(config) {
+        is ConfirmDialogConfig.ConfirmAnonymousMode -> stringResource(Res.string.landing_dialog_description_confirm_am)
+        is ConfirmDialogConfig.ConfirmDBMigration -> stringResource(Res.string.landing_dialog_description_confirm_migration)
+        is ConfirmDialogConfig.ConfirmRegisterRedirect -> stringResource(Res.string.landing_dialog_description_confirm_redirect)
+        is ConfirmDialogConfig.DBMigrationFailed -> stringResource(Res.string.landing_dialog_description_migration_failed)
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getActionNameForConfig(config: ConfirmDialogConfig): String {
-    return remember(config) {
-        when(config) {
-            is ConfirmDialogConfig.ConfirmAnonymousMode -> "Пропустить"
-            is ConfirmDialogConfig.ConfirmDBMigration -> "Подтвердить"
-            is ConfirmDialogConfig.ConfirmRegisterRedirect -> "Перейти"
-            is ConfirmDialogConfig.DBMigrationFailed -> "Перейти"
-        }
+    return when(config) {
+        is ConfirmDialogConfig.ConfirmAnonymousMode -> stringResource(Res.string.action_skip)
+        is ConfirmDialogConfig.ConfirmDBMigration -> stringResource(Res.string.action_confirm)
+        is ConfirmDialogConfig.ConfirmRegisterRedirect -> stringResource(Res.string.action_go_to)
+        is ConfirmDialogConfig.DBMigrationFailed -> stringResource(Res.string.action_go_to)
     }
 }
