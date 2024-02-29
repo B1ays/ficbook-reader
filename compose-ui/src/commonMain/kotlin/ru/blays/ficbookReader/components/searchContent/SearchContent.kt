@@ -336,7 +336,8 @@ private fun SearchMenuRoot(
                 1 -> {
                     SavedSearches(
                         modifier = modifier,
-                        component = component.savedSearchesComponent
+                        component = component.savedSearchesComponent,
+                        onBack = { scope.launch { pagerState.animateScrollToPage(0) } }
                     )
                 }
             }
@@ -494,7 +495,8 @@ fun SearchParamsSelector(
 @Composable
 private fun SavedSearches(
     modifier: Modifier,
-    component: SearchSaveComponent
+    component: SearchSaveComponent,
+    onBack: () -> Unit
 ) {
     val state by component.state.subscribeAsState()
     Column {
@@ -506,6 +508,7 @@ private fun SavedSearches(
                     shortcut = shortcut,
                     onSelect = {
                         component.select(shortcut)
+                        onBack()
                     },
                     onDelete = {
                         component.delete(shortcut)
