@@ -174,6 +174,8 @@ class SearchParamsEntity(): RealmObject {
             )
         }
         this.title = searchParams.title
+        this.filterReaded = searchParams.filterReaded
+        this.sort = searchParams.sort
     }
 }
 
