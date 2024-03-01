@@ -9,7 +9,7 @@
     </queries>
 
     <application
-        android:name="ru.blays.ficbookReader.android.App"
+        android:name=".android.App"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="Ficbook Reader"
@@ -17,7 +17,7 @@
         tools:ignore="DataExtractionRules">
 
         <activity
-            android:name="ru.blays.ficbookReader.android.CrashHandlerActivity"
+            android:name=".android.CrashHandlerActivity"
             android:exported="false"
             android:theme="@style/AppTheme"
             android:launchMode="singleTask"
@@ -26,7 +26,7 @@
         />
 
         <activity
-            android:name="ru.blays.ficbookReader.android.MainActivity"
+            android:name=".android.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme">
