@@ -5,22 +5,23 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.russhwolf.settings.boolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent.inject
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbookReader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbookReader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbookReader.shared.preferences.SettingsKeys
-import ru.blays.ficbookReader.shared.preferences.repositiry.ISettingsRepository
+import ru.blays.ficbookReader.shared.preferences.settings
 import ru.blays.ficbookReader.shared.ui.readerComponents.declaration.VoteReaderComponent
 
 class DefaultVoteReaderComponent(
     componentContext: ComponentContext,
     private val chapters: FanficChapterStable,
-    private val fanficID: String
+    private val fanficID: String,
+    private val lastChapter: () -> Boolean
 ): VoteReaderComponent, ComponentContext by componentContext {
     private val fanficPageRepo: IFanficPageRepo by getKoin().inject()
 
@@ -30,9 +31,8 @@ class DefaultVoteReaderComponent(
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private val settingsRepository: ISettingsRepository by inject(ISettingsRepository::class.java)
-    private val autoVoteSetting by settingsRepository.getDelegate(
-        key = ISettingsRepository.booleanKey(SettingsKeys.AUTO_VOTE_FOR_CONTINUE),
+    private val autoVoteSetting by settings.boolean(
+        key = SettingsKeys.AUTO_VOTE_FOR_CONTINUE,
         defaultValue = false
     )
 
@@ -97,7 +97,7 @@ class DefaultVoteReaderComponent(
     }
 
     private suspend fun dispose() {
-        if(autoVoteSetting) {
+        if(autoVoteSetting && lastChapter()) {
             if (state.value.canVote) {
                 setVote(true)
             }

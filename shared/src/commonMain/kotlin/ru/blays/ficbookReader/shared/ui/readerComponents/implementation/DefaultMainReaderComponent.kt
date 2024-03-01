@@ -37,7 +37,7 @@ class DefaultMainReaderComponent(
         key = SettingsKeys.READER_PREFS_KEY
     )
 
-    val typografEnabled by settings.boolean(
+    private val typografEnabled by settings.boolean(
         key = SettingsKeys.TYPOGRAF_KEY,
         defaultValue = true
     )
@@ -66,7 +66,15 @@ class DefaultMainReaderComponent(
     override val voteComponent = DefaultVoteReaderComponent(
         componentContext = childContext("voteComponent"),
         chapters = chapters,
-        fanficID = fanficID
+        fanficID = fanficID,
+        lastChapter = {
+            when(chapters) {
+                is FanficChapterStable.SeparateChaptersModel -> {
+                    chapters.chapters.lastIndex == state.value.chapterIndex
+                }
+                else -> false
+            }
+        }
     )
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
