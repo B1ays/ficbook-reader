@@ -17,6 +17,8 @@ android {
         versionName = libs.versions.projectVersion.get()
         versionNameSuffix = libs.versions.versionNameSuffix.get()
 
+        resourceConfigurations += "ru"
+
         proguardFile("proguard-rules.pro")
     }
 
@@ -26,7 +28,7 @@ android {
         }
     }
 
-    flavorDimensions += listOf("abi")
+    flavorDimensions += arrayOf("abi")
 
     //noinspection ChromeOsAbiSupport
     buildTypes {
