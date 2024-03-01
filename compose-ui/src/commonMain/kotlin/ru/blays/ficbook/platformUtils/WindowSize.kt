@@ -7,3 +7,5 @@ import androidx.compose.ui.unit.IntSize
 expect fun WindowSize(): IntSize
 
 expect val landscapeModeWidth: Int
+
+expect val scaleContent: Boolean

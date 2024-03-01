@@ -22,6 +22,7 @@ import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import ru.blays.ficbook.platformUtils.scaleContent
 import ru.blays.ficbook.reader.shared.ui.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbook.ui_components.decomposePager.Pages
 import ru.blays.ficbook.values.Zero
@@ -122,14 +123,16 @@ fun UsersPager(
     BoxWithConstraints(
         modifier = Modifier.fillMaxWidth(),
     ) {
-        val widthFill = when(maxWidth) {
-            in 1500.dp..Dp.Infinity -> 0.5F
-            in 1200.dp..1500.dp -> 0.6F
-            in 1000.dp..1200.dp -> 0.7F
-            in 800.dp..1000.dp -> 0.8F
-            in 500.dp..800.dp -> 0.9F
-            else -> 1F
-        }
+        val widthFill = if(scaleContent) {
+            when (maxWidth) {
+                in 1500.dp..Dp.Infinity -> 0.5F
+                in 1200.dp..1500.dp -> 0.6F
+                in 1000.dp..1200.dp -> 0.7F
+                in 800.dp..1000.dp -> 0.8F
+                in 500.dp..800.dp -> 0.9F
+                else -> 1F
+            }
+        } else 1F
 
         Pages(
             pages = state,
