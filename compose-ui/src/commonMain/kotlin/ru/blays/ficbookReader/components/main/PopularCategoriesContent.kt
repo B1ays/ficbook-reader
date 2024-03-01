@@ -37,7 +37,10 @@ import ru.blays.ficbookReader.theme.getColorForDirection
 import ru.blays.ficbookReader.values.DefaultPadding
 
 @Composable
-fun PopularCategoriesContent(component: PopularSectionsComponent) {
+fun PopularCategoriesContent(
+    component: PopularSectionsComponent,
+    contentPadding: PaddingValues?
+) {
     val sections = component.sections
 
     BoxWithConstraints(
@@ -48,6 +51,7 @@ fun PopularCategoriesContent(component: PopularSectionsComponent) {
                 columns = GridCells.Adaptive(minSize = 150.dp),
                 verticalArrangement = Arrangement.spacedBy(space = 2.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 2.dp),
+                contentPadding = contentPadding ?: PaddingValues(0.dp),
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxSize()
@@ -62,13 +66,13 @@ fun PopularCategoriesContent(component: PopularSectionsComponent) {
             }
         } else {
             LazyColumn(
+                contentPadding = contentPadding ?: PaddingValues(0.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(sections) { (section, direction) ->
                     CategoryListItem(section, direction) {
                         component.onOutput(
-                            PopularSectionsComponent.Output
-                                .NavigateToSection(section)
+                            PopularSectionsComponent.Output.NavigateToSection(section)
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))

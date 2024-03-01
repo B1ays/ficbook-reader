@@ -17,11 +17,15 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.moriatsushi.insetsx.systemBarsPadding
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.`compose-ui`.generated.resources.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -32,6 +36,8 @@ import ru.blays.ficbookReader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbookReader.shared.data.sections.userSections
 import ru.blays.ficbookReader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbookReader.ui_components.CustomButton.CustomIconButton
+import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
+import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
@@ -98,6 +104,9 @@ private fun PortraitContent(
     val tabs = component.tabs
     val scope = rememberCoroutineScope()
 
+    val hazeState = remember { HazeState() }
+    val blurConfig = LocalGlassEffectConfig.current
+
     ModalNavigationDrawer(
         drawerContent = {
             DrawerPortrait(component = component)
@@ -107,29 +116,15 @@ private fun PortraitContent(
     ) {
         Scaffold(
             topBar = {
-                Column {
+                Column(
+                    modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                        hazeChild(
+                            state = hazeState,
+                            style = blurConfig.style
+                        )
+                    }
+                ) {
                     CollapsingToolbar(
-                        actions = {
-                            CustomIconButton(
-                                onClick = {
-                                    component.onOutput(MainScreenComponent.Output.Search)
-                                },
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .padding(2.dp),
-                                shape = CircleShape,
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.ic_search),
-                                    contentDescription = stringResource(Res.string.content_description_icon_search),
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.requiredWidth(5.dp))
-                            UserIconButton(component)
-                        },
                         navigationIcon = {
                             IconButton(
                                 onClick = {
@@ -144,8 +139,35 @@ private fun PortraitContent(
                                 )
                             }
                         },
+                        actions = {
+                            CustomIconButton(
+                                onClick = {
+                                    component.onOutput(MainScreenComponent.Output.Search)
+                                },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .padding(2.dp),
+                                shape = CircleShape,
+                                containerColor = Color.Transparent,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.ic_search),
+                                    contentDescription = stringResource(Res.string.content_description_icon_search),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.requiredWidth(5.dp))
+                            UserIconButton(component)
+                        },
                         collapsingTitle = CollapsingTitle.large(stringResource(Res.string.app_name)),
-                        insets = WindowInsets.statusBars
+                        insets = WindowInsets.statusBars,
+                        containerColor = if(blurConfig.blurEnabled) {
+                            Color.Transparent
+                        } else {
+                            MaterialTheme.colorScheme.surface
+                        },
+                        collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
                     )
                     PagerChips(
                         tabs = tabs,
@@ -157,13 +179,16 @@ private fun PortraitContent(
             PagerContent(
                 component = component,
                 pagerState = pagerState,
-                contentPadding = padding
+                contentPadding = padding,
+                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                    haze(hazeState)
+                },
             )
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PagerChips(
     tabs: Array<MainScreenComponent.TabModel>,
@@ -205,26 +230,38 @@ fun PagerChips(
 private fun PagerContent(
     component: MainScreenComponent,
     pagerState: PagerState,
-    contentPadding: PaddingValues? = null
+    contentPadding: PaddingValues? = null,
+    modifier: Modifier = Modifier
 ) {
     HorizontalPager(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         state = pagerState,
-        userScrollEnabled = false,
-        contentPadding = contentPadding ?: PaddingValues(0.dp),
+        userScrollEnabled = false
     ) { page ->
         when (page) {
             0 -> {
-                MainFeedContent(component.feedComponent)
+                MainFeedContent(
+                    component.feedComponent,
+                    contentPadding
+                )
             }
             1 -> {
-                PopularCategoriesContent(component.popularSectionsComponent)
+                PopularCategoriesContent(
+                    component.popularSectionsComponent,
+                    contentPadding
+                )
             }
             2 -> {
-                CollectionsComponent(component.collectionsComponent)
+                CollectionsComponent(
+                    component.collectionsComponent,
+                    contentPadding
+                )
             }
             3 -> {
-                SavedFanficsContent(component.savedFanficsComponent)
+                SavedFanficsContent(
+                    component.savedFanficsComponent,
+                    contentPadding
+                )
             }
         }
     }
