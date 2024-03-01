@@ -30,7 +30,7 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "ru.blays.ficbookReader.desktop.MainKt"
+        mainClass = "ru.blays.ficbook.reader.desktop.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
