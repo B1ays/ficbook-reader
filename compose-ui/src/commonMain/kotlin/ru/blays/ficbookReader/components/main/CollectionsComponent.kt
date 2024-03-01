@@ -34,7 +34,10 @@ import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 
 @Composable
-fun CollectionsComponent(component: CollectionsComponent) {
+fun CollectionsComponent(
+    component: CollectionsComponent,
+    contentPadding: PaddingValues?
+) {
     val state by component.state.subscribeAsState()
     val list = remember(state) { state.list }
     val isLoading = remember(state) { state.isLoading }
@@ -68,12 +71,13 @@ fun CollectionsComponent(component: CollectionsComponent) {
                     else -> 1
                 }
             ),
+            contentPadding = contentPadding ?: PaddingValues(0.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier
                 .padding(DefaultPadding.CardDefaultPadding)
                 .fillMaxSize()
                 .nestedScroll(pullRefreshState.nestedScrollConnection),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             items(list) { collection ->
                 CollectionItem(collection) {
