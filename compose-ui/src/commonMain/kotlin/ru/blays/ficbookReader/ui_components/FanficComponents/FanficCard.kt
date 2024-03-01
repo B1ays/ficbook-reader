@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -134,7 +133,9 @@ private fun LandscapeContent(
                             contentDescription = stringResource(Res.string.content_description_fanfic_cover),
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .layout { measurable, constraints ->
+                                .fillMaxWidth(0.38F)
+                                .aspectRatio(1F/1.5F)
+                                /*.layout { measurable, constraints ->
                                     val widthFloat = (constraints.maxWidth * 0.38F).coerceAtMost(300F)
                                     val heightFloat = widthFloat * 1.5F
 
@@ -149,7 +150,7 @@ private fun LandscapeContent(
                                             )
                                         ).place(0, 0)
                                     }
-                                }
+                                }*/
                                 .clip(CardDefaults.shape)
                         )
                     }

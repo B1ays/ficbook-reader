@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
@@ -62,8 +61,6 @@ import ru.blays.ficbookReader.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbookReader.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbookReader.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbookReader.utils.LocalGlassEffectConfig
-import ru.blays.ficbookReader.utils.LocalHazeState
-import ru.blays.ficbookReader.utils.thenIf
 import ru.blays.ficbookReader.values.CardShape
 import ru.blays.ficbookReader.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -73,16 +70,11 @@ import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
 @Composable
 fun FanficPageInfoContent(component: FanficPageInfoComponent) {
     val windowSize = WindowSize()
-    val hazeState = remember { HazeState() }
 
-    CompositionLocalProvider(
-        LocalHazeState provides hazeState
-    ) {
-        if(windowSize.width > 600) {
-            LandscapeContent(component)
-        } else {
-            PortraitContent(component)
-        }
+    if(windowSize.width > 600) {
+        LandscapeContent(component)
+    } else {
+        PortraitContent(component)
     }
 }
 
@@ -290,6 +282,7 @@ private fun LandscapeContent(
     val state by component.state.subscribeAsState()
     val fanfic = state.fanfic
     val isLoading = state.isLoading
+
     val hazeState = remember { HazeState() }
     val glassEffectConfig = LocalGlassEffectConfig.current
 
@@ -354,18 +347,16 @@ private fun LandscapeContent(
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .fillMaxSize()
-                            .haze(
-                                state = hazeState,
-                            )
+                            .haze(hazeState)
                     )
                 }
                 Scaffold(
                     modifier = Modifier
-                        .systemBarsPadding()
                         .hazeChild(
                             state = hazeState,
                             style = glassEffectConfig.style
-                        ),
+                        )
+                        .systemBarsPadding(),
                     topBar = {
                         CollapsingToolbar(
                             containerColor = Color.Transparent,
@@ -432,45 +423,26 @@ private fun FanficHeader(
             animationSpec = spring()
         )
 
-        Image(
-            painter = coverPainter,
-            contentDescription = stringResource(Res.string.content_description_fanfic_cover),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .layout { measurable, constraints ->
-                    val fullWidth = constraints.maxWidth
-                    val coverWidth = (fullWidth * animatedCoverWidth).toInt()
-                    val coverHeight = (coverWidth * 1.5F).toInt()
-                    val coverPlaceX = ((fullWidth - coverWidth) / 2F).toInt()
-
-                    layout(
-                        width = constraints.maxWidth,
-                        height = coverHeight
-                    ) {
-                        val placeable = measurable.measure(
-                            constraints.copy(
-                                minWidth = coverWidth,
-                                maxWidth = coverWidth,
-                                minHeight = coverHeight,
-                                maxHeight = coverHeight
-                            )
-                        )
-                        placeable.placeRelative(
-                            x = coverPlaceX,
-                            y = 0
-                        )
-                    }
-                }
-                .clip(CardShape.CardStandalone)
-                .shadow(
-                    elevation = 4.dp,
-                    shape = CardShape.CardStandalone,
-                    clip = true
-                )
-                .clickable {
-                    isCoverExpanded = !isCoverExpanded
-                }
-        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Image(
+                painter = coverPainter,
+                contentDescription = stringResource(Res.string.content_description_fanfic_cover),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth(animatedCoverWidth)
+                    .aspectRatio(1F/1.5F)
+                    .clip(CardShape.CardStandalone)
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = CardShape.CardStandalone,
+                        clip = true
+                    )
+                    .clickable { isCoverExpanded = !isCoverExpanded }
+            )
+        }
     }
 }
 
@@ -483,8 +455,6 @@ private fun FanficDescription(
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
-    val hazeState = LocalHazeState.current
-    val blurConfig = LocalGlassEffectConfig.current
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -493,13 +463,7 @@ private fun FanficDescription(
                 .align(Alignment.TopStart)
                 .padding(DefaultPadding.CardDefaultPadding)
                 .padding(end = 4.dp)
-                .fillMaxSize()
-                .thenIf(blurConfig.blurEnabled) {
-                    haze(
-                        state = hazeState,
-                        style = blurConfig.style
-                    )
-                },
+                .fillMaxSize(),
             state = lazyListState
         ) {
             item {
