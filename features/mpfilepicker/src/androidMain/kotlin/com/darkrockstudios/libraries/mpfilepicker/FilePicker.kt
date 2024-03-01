@@ -124,7 +124,12 @@ actual fun FileSaver(
 
 	LaunchedEffect(show) {
 		if (show) {
-			launcher.launch(fileName)
+			val fullFileName = if(mimeType != null) {
+				fileName
+			} else {
+				"$fileName.$fileExtension"
+			}
+			launcher.launch(fullFileName)
 		}
 	}
 }
