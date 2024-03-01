@@ -26,6 +26,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
+import ru.blays.ficbook.platformUtils.scaleContent
 import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.ui.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbook.reader.shared.ui.settingsComponents.declaration.SettingsUnitComponent
@@ -42,7 +43,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 @Composable
 fun SettingsContent(component: SettingsMainComponent) {
     val windowSize = WindowSize()
-    val widthFill = remember(windowSize.width) {
+    val widthFill = if(scaleContent) {
         when (windowSize.width) {
             in 1300..Int.MAX_VALUE -> 0.6F
             in 1000..1300 -> 0.7F
@@ -50,7 +51,8 @@ fun SettingsContent(component: SettingsMainComponent) {
             in 600..800 -> 0.9F
             else -> 1F
         }
-    }
+    } else 1F
+
     val blurConfig = LocalGlassEffectConfig.current
     val hazeState = remember { HazeState() }
 

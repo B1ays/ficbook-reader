@@ -32,6 +32,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
+import ru.blays.ficbook.platformUtils.scaleContent
 import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.theme.*
 import ru.blays.ficbook.ui_components.GradientIcon.GradientIcon
@@ -92,13 +93,15 @@ private fun LandscapeContent(
     val status = fanfic.status
 
     BoxWithConstraints {
-        val widthFill = when(constraints.maxWidth) {
-            in 2000..Int.MAX_VALUE -> 0.65F
-            in 1600..2000 -> 0.7F
-            in 1300..1600 -> 0.8F
-            in 900..1300 -> 0.9F
-            else -> 1F
-        }
+        val widthFill = if(scaleContent) {
+            when (constraints.maxWidth) {
+                in 2000..Int.MAX_VALUE -> 0.65F
+                in 1600..2000 -> 0.7F
+                in 1300..1600 -> 0.8F
+                in 900..1300 -> 0.9F
+                else -> 1F
+            }
+        } else 1F
         val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
         val cardColor = remember {
             if (fanfic.readInfo?.hasUpdate == true) {

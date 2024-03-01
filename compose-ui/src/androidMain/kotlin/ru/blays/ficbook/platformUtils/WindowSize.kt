@@ -12,3 +12,5 @@ actual fun WindowSize(): IntSize {
 }
 
 actual val landscapeModeWidth: Int = 700
+
+actual const val scaleContent: Boolean = false
