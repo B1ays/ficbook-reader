@@ -14,6 +14,7 @@ data class PopularSectionsStable(
     val het: SectionWithQuery,
     val slash: SectionWithQuery,
     val femslash: SectionWithQuery,
+    val article: SectionWithQuery,
     val mixed: SectionWithQuery,
     val other: SectionWithQuery
 )
@@ -24,6 +25,7 @@ val popularSections = with(PopularSections.default()) {
         het = het.toStableModel(),
         slash = slash.toStableModel(),
         femslash = femslash.toStableModel(),
+        article = article.toStableModel(),
         mixed = mixed.toStableModel(),
         other = other.toStableModel()
     )

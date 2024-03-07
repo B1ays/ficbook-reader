@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbook.ui_components.LogView
 
 import androidx.compose.foundation.layout.*
@@ -37,6 +35,7 @@ fun LogView(
     )
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LogView(
     log: AnnotatedString,
