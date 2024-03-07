@@ -90,10 +90,6 @@ class DefaultMainScreenComponent private constructor(
         MainScreenComponent.TabModel(
             2,
             "Сборники"
-        ),
-        MainScreenComponent.TabModel(
-            3,
-            "Сохранённые"
         )
     )
 
