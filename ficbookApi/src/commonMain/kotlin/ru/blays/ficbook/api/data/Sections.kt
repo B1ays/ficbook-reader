@@ -68,31 +68,35 @@ data class PopularSections(
     val het: SectionWithQuery,
     val slash: SectionWithQuery,
     val femslash: SectionWithQuery,
+    val article: SectionWithQuery,
     val mixed: SectionWithQuery,
     val other: SectionWithQuery
 ) {
     companion object {
         fun default(): PopularSections = PopularSections(
             allPopular = SectionWithQuery(
-                "Все", emptyList(), "popular-fanfics-376846"
+                "Все", "popular-fanfics-376846"
             ),
             gen = SectionWithQuery(
-                "Джен", emptyList(), "popular-fanfics-376846", "gen"
+                "Джен", "popular-fanfics-376846/gen"
             ),
             het = SectionWithQuery(
-                "Гет", emptyList(), "popular-fanfics-376846", "het"
+                "Гет", "popular-fanfics-376846/het"
             ),
             slash = SectionWithQuery(
-                "Слэш", emptyList(), "popular-fanfics-376846", "slash-fics-783456238"
+                "Слэш","popular-fanfics-376846/slash-fics-783456238"
             ),
             femslash = SectionWithQuery(
-                "Фемслэш", emptyList(), "popular-fanfics-376846", "femslash-fanfics-54353433"
+                "Фемслэш", "popular-fanfics-376846/femslash-fanfics-54353433"
+            ),
+            article = SectionWithQuery(
+                "Статьи", "popular-fanfics-376846/article"
             ),
             mixed = SectionWithQuery(
-                "Смешанный", emptyList(), "popular-fanfics-376846", "mixed"
+                "Смешанный","popular-fanfics-376846/mixed"
             ),
             other= SectionWithQuery(
-                "Другой", emptyList(), "popular-fanfics-376846", "other"
+                "Другой", "popular-fanfics-376846/other"
             )
         )
     }
@@ -114,37 +118,37 @@ data class CategoriesSections(
     companion object {
         fun default(): CategoriesSections = CategoriesSections(
             allFandoms = SectionWithQuery(
-                "Все", emptyList(), "fanfiction"
+                "Все", "fanfiction"
             ),
             animeAndManga = SectionWithQuery(
-                "Аниме и манга", emptyList(), "fanfiction", "anime_and_manga"
+                "Аниме и манга", "fanfiction/anime_and_manga"
             ),
             books = SectionWithQuery(
-                "Книги", emptyList(), "fanfiction", "books"
+                "Книги", "fanfiction/books"
             ),
             cartoons = SectionWithQuery(
-                "Мультфильмы", emptyList(), "fanfiction", "cartoons"
+                "Мультфильмы", "fanfiction/cartoons"
             ),
             games = SectionWithQuery(
-                "Игры", emptyList(), "fanfiction", "games"
+                "Игры", "fanfiction/games"
             ),
             movies = SectionWithQuery(
-                "Фильмы и сериалы", emptyList(), "fanfiction", "movies_and_tv_series"
+                "Фильмы и сериалы", "fanfiction/movies_and_tv_series"
             ),
             other = SectionWithQuery(
-                "Другое", emptyList(), "fanfiction", "other"
+                "Другое", "fanfiction/other"
             ),
             rpf = SectionWithQuery(
-                "Известные люди", emptyList(), "fanfiction", "rpf"
+                "Известные люди", "fanfiction/rpf"
             ),
             originals = SectionWithQuery(
-                "Оригинальные", emptyList(), "fanfiction", "originals"
+                "Оригинальные", "fanfiction/originals"
             ),
             comics = SectionWithQuery(
-                "Комиксы", emptyList(), "fanfiction", "comics"
+                "Комиксы", "fanfiction/comics"
             ),
             musicals = SectionWithQuery(
-                "Мюзиклы", emptyList(), "fanfiction", "musicals"
+                "Мюзиклы", "fanfiction/musicals"
             )
         )
     }
@@ -163,19 +167,19 @@ data class UserSections(
     companion object {
         fun default(): UserSections = UserSections(
             favourites = SectionWithQuery(
-                "Подписки на авторов", emptyList(), "home", "favourites"
+                "Подписки на авторов", "home/favourites"
             ),
             liked = SectionWithQuery(
-                "Понравившиеся", emptyList(), "home", "liked_fanfics"
+                "Понравившиеся", "home/liked_fanfics"
             ),
             readed = SectionWithQuery(
-                "Прочитанные", emptyList(), "home", "readedList"
+                "Прочитанные", "home/readedList"
             ),
             follow = SectionWithQuery(
-                "Подписки", emptyList(), "home", "followList"
+                "Подписки", "home/followList"
             ),
             visited = SectionWithQuery(
-                "Просмотренные", emptyList(), "home", "visitedList"
+                "Просмотренные", "home/visitedList"
             )
         )
     }

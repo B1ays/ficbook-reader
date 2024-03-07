@@ -16,6 +16,7 @@ class DefaultPopularSectionsComponent(
             het to FanficDirection.HET,
             slash to FanficDirection.SLASH,
             femslash to FanficDirection.FEMSLASH,
+            article to FanficDirection.ARTICLE,
             mixed to FanficDirection.MIXED,
             other to FanficDirection.OTHER
         )

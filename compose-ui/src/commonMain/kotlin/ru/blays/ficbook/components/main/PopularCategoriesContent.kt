@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbook.components.main
 
 import androidx.compose.animation.animateColorAsState
@@ -82,7 +80,7 @@ fun PopularCategoriesContent(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun CategoryListItem(
     section: SectionWithQuery,
@@ -102,7 +100,7 @@ private fun CategoryListItem(
         targetValue = if(isFocused) primaryColor else onSurfaceColor
     )
 
-    val icon = iconForDirection(direction)
+    val icon = getIconForDirection(direction)
 
     Box(
         modifier = Modifier
@@ -143,7 +141,7 @@ private fun CategoryListItem(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun CategoryGridItem(
     section: SectionWithQuery,
@@ -163,7 +161,7 @@ private fun CategoryGridItem(
         targetValue = if(isFocused) primaryColor else onSurfaceColor
     )
 
-    val icon = iconForDirection(direction)
+    val icon = getIconForDirection(direction)
 
     Box(
         modifier = Modifier
@@ -202,16 +200,18 @@ private fun CategoryGridItem(
     }
 }
 
-private val iconForDirection: @Composable (direction: FanficDirection) -> Painter
-    @Composable get() = { direction ->
-        when (direction) {
-            FanficDirection.GEN -> painterResource(Res.drawable.ic_direction_gen)
-            FanficDirection.HET -> painterResource(Res.drawable.ic_direction_het)
-            FanficDirection.SLASH -> painterResource(Res.drawable.ic_direction_slash)
-            FanficDirection.FEMSLASH -> painterResource(Res.drawable.ic_direction_femslash)
-            FanficDirection.ARTICLE -> painterResource(Res.drawable.ic_direction_article)
-            FanficDirection.MIXED -> painterResource(Res.drawable.ic_direction_mixed)
-            FanficDirection.OTHER -> painterResource(Res.drawable.ic_direction_other)
-            FanficDirection.UNKNOWN -> painterResource(Res.drawable.ic_direction_other)
-        }
+@NonRestartableComposable
+@Composable
+@OptIn(ExperimentalResourceApi::class)
+private fun getIconForDirection(direction: FanficDirection): Painter {
+    return when (direction) {
+        FanficDirection.GEN -> painterResource(Res.drawable.ic_direction_gen)
+        FanficDirection.HET -> painterResource(Res.drawable.ic_direction_het)
+        FanficDirection.SLASH -> painterResource(Res.drawable.ic_direction_slash)
+        FanficDirection.FEMSLASH -> painterResource(Res.drawable.ic_direction_femslash)
+        FanficDirection.ARTICLE -> painterResource(Res.drawable.ic_direction_article)
+        FanficDirection.MIXED -> painterResource(Res.drawable.ic_direction_mixed)
+        FanficDirection.OTHER -> painterResource(Res.drawable.ic_direction_other)
+        FanficDirection.UNKNOWN -> painterResource(Res.drawable.ic_direction_other)
     }
+}
