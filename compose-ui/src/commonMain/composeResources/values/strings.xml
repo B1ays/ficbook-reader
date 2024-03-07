@@ -52,6 +52,7 @@
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
     <string name="anonymous_user">Анонимный пользователь</string>
+    <string name="cover_copied">Обложка скопирована в буфер обмена</string>
 
     <!--  Author profile screen  -->
     <string name="author_profile_tab_main">Инфо</string>

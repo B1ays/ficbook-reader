@@ -55,6 +55,9 @@ kotlin {
                 // Koin
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
+
+                // Projects
+                implementation(projects.features.copyImageFeature)
             }
         }
 
