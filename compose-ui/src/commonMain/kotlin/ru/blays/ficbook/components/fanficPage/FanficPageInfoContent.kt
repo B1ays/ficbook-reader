@@ -2,10 +2,7 @@ package ru.blays.ficbook.components.fanficPage
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
@@ -40,15 +38,19 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.`compose-ui`.generated.resources.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.BackHandler
 import ru.blays.ficbook.platformUtils.WindowSize
+import ru.blays.ficbook.reader.feature.copyImageFeature.copyImageToClipboard
 import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.reader.shared.platformUtils.shareSupported
 import ru.blays.ficbook.reader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
+import ru.blays.ficbook.reader.shared.ui.snackbarStateHost.SnackbarHost
 import ru.blays.ficbook.theme.*
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
@@ -396,7 +398,7 @@ private fun LandscapeContent(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class, ExperimentalCoilApi::class)
 @Composable
 private fun FanficHeader(
     fanficPage: FanficPageModelStable,
@@ -423,6 +425,8 @@ private fun FanficHeader(
             animationSpec = spring()
         )
 
+        val scope = rememberCoroutineScope { Dispatchers.IO }
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxWidth(),
@@ -440,7 +444,24 @@ private fun FanficHeader(
                         shape = CardShape.CardStandalone,
                         clip = true
                     )
-                    .clickable { isCoverExpanded = !isCoverExpanded }
+                    .combinedClickable(
+                        onClick = { isCoverExpanded = !isCoverExpanded },
+                        onLongClick = {
+                            when(val state = coverPainter.state) {
+                                is AsyncImagePainter.State.Success -> {
+                                    scope.launch {
+                                        val success = copyImageToClipboard(state.result.image)
+                                        if(success) {
+                                            SnackbarHost.showMessage(
+                                                message = getString(Res.string.cover_copied)
+                                            )
+                                        }
+                                    }
+                                }
+                                else -> {}
+                            }
+                        }
+                    )
             )
         }
     }

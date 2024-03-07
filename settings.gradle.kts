@@ -7,6 +7,9 @@ pluginManagement {
         mavenCentral()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
+}
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
@@ -37,3 +40,5 @@ project(":haze:haze-materials").projectDir = file("${rootDir}/haze/haze-material
 include("features")
 include("features:fileDownloadFeature")
 include("features:mpfilepicker")
+include("features:copyImageFeature")
+findProject(":features:copyImageFeature")?.name = "copyImageFeature"
