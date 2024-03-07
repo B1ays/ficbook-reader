@@ -45,6 +45,16 @@
                     android:host="ficbook.net"
                     android:scheme="https"/>
             </intent-filter>
+
+            <intent-filter
+            android:label="Открыть в приложении">
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="application/json"/>
+                <data android:mimeType="text/json"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
         </activity>
 
         <profileable
