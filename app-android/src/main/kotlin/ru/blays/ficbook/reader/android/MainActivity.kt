@@ -1,9 +1,10 @@
 package ru.blays.ficbook.reader.android
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
@@ -29,12 +30,19 @@ class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val deepLinkData: Uri? = intent?.data
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            checkPermission(
+                permission = Manifest.permission.POST_NOTIFICATIONS,
+                requestCode = 1111
+            )
+        }
+
+        val initialLink: String? = getLinkFromIntent(intent)
 
         rootComponent = retainedComponent { componentContext ->
             DefaultRootComponent(
                 componentContext = componentContext,
-                deepLink = deepLinkData?.toString()
+                deepLink = initialLink
             )
         }
 
@@ -58,11 +66,9 @@ class MainActivity: ComponentActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        val deepLinkData: Uri? = intent?.data
+        val newLink: String = getLinkFromIntent(intent) ?: return
         rootComponent?.sendIntent(
-            RootComponent.Intent.NewDeepLink(
-                deepLinkData.toString()
-            )
+            RootComponent.Intent.NewDeepLink(newLink)
         )
     }
 
@@ -88,8 +94,19 @@ class MainActivity: ComponentActivity() {
         requestCode: Int
     ) {
         if (ContextCompat.checkSelfPermission(this@MainActivity, permission) == PackageManager.PERMISSION_DENIED) {
-            // Requesting the permission
             ActivityCompat.requestPermissions(this@MainActivity, arrayOf(permission), requestCode)
+        }
+    }
+
+    private fun getLinkFromIntent(intent: Intent?): String? {
+        return when(intent?.action) {
+            Intent.ACTION_VIEW -> {
+                intent.data.toString()
+            }
+            Intent.ACTION_SEND -> {
+                intent.getStringExtra(Intent.EXTRA_TEXT)
+            }
+            else -> null
         }
     }
 }
