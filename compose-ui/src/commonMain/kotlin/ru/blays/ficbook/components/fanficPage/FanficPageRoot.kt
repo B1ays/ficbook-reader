@@ -8,7 +8,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import ru.blays.ficbook.components.commentsContent.CommentsScreenContent
 import ru.blays.ficbook.components.commentsContent.PartCommentsContent
 import ru.blays.ficbook.components.fanficPage.reader.FanficReaderContent
-import ru.blays.ficbook.reader.shared.ui.fanficPageComponents.declaration.FanficPageComponent
+import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbook.utils.LocalStackAnimator
 
 @Composable

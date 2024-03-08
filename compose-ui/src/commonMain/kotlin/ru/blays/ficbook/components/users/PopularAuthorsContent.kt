@@ -24,8 +24,8 @@ import ficbook_reader.`compose-ui`.generated.resources.content_description_icon_
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.PopularAuthorModelStable
-import ru.blays.ficbook.reader.shared.ui.usersComponent.declaration.UsersPopularComponent
-import ru.blays.ficbook.reader.shared.ui.usersComponent.declaration.UsersRootComponent
+import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersPopularComponent
+import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbook.theme.likeColor
 import ru.blays.ficbook.values.DefaultPadding
 

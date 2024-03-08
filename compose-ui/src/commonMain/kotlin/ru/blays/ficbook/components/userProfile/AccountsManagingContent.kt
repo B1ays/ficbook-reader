@@ -21,7 +21,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.SavedUserModel
-import ru.blays.ficbook.reader.shared.ui.profileComponents.declaration.UserProfileManagingComponent
+import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileManagingComponent
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.values.DefaultPadding

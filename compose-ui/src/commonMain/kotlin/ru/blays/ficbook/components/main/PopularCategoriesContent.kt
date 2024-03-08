@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.onPointerEventPlatform
 import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
-import ru.blays.ficbook.reader.shared.ui.mainScreenComponents.declaration.PopularSectionsComponent
+import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.PopularSectionsComponent
 import ru.blays.ficbook.theme.getColorForDirection
 import ru.blays.ficbook.values.DefaultPadding
 

@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.platformUtils.landscapeModeWidth
-import ru.blays.ficbook.reader.shared.ui.profileComponents.declaration.UserLogInComponent
+import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserLogInComponent
 import ru.blays.ficbook.ui_components.AutofillTextField.AutofillTextField
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle

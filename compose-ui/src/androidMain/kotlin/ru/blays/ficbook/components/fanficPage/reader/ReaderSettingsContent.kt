@@ -26,8 +26,8 @@ import ficbook_reader.`compose-ui`.generated.resources.Res
 import ficbook_reader.`compose-ui`.generated.resources.ic_dropper
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import ru.blays.ficbook.reader.shared.ui.readerComponents.declaration.MainReaderComponent
-import ru.blays.ficbook.reader.shared.ui.readerComponents.declaration.SettingsReaderComponent
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.values.DefaultPadding
 

@@ -43,9 +43,9 @@ import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import ru.blays.ficbook.reader.shared.ui.readerComponents.declaration.MainReaderComponent
-import ru.blays.ficbook.reader.shared.ui.readerComponents.declaration.SettingsReaderComponent
-import ru.blays.ficbook.reader.shared.ui.readerComponents.declaration.VoteReaderComponent
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.SettingsReaderComponent
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.VoteReaderComponent
 import ru.blays.ficbook.theme.ReaderTheme
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding

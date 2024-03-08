@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbook.reader.shared.data.sections.userSections
-import ru.blays.ficbook.reader.shared.ui.mainScreenComponents.declaration.MainScreenComponent
+import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf

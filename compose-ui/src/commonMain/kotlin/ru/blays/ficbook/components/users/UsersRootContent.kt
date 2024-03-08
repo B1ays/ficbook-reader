@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.scaleContent
-import ru.blays.ficbook.reader.shared.ui.usersComponent.declaration.UsersRootComponent
+import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbook.ui_components.decomposePager.Pages
 import ru.blays.ficbook.values.Zero
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle

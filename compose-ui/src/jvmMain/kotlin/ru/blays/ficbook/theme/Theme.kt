@@ -23,7 +23,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.materialkolor.LocalDynamicMaterialThemeSeed
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
-import ru.blays.ficbook.reader.shared.ui.themeComponents.ThemeComponent
+import ru.blays.ficbook.reader.shared.components.themeComponents.ThemeComponent
 
 @Composable
 actual fun AppTheme(

@@ -8,7 +8,7 @@ import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
-import ru.blays.ficbook.reader.shared.ui.themeComponents.ThemeComponent
+import ru.blays.ficbook.reader.shared.components.themeComponents.ThemeComponent
 
 @Composable
 expect fun AppTheme(
