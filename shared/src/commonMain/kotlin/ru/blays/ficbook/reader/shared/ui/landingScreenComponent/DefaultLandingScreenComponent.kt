@@ -44,6 +44,7 @@ class DefaultLandingScreenComponent(
                                 value = false
                             )
                         }
+                        onOutput(LandingScreenComponent.Output.Close)
                     }
                     ConfirmDialogConfig.ConfirmDBMigration -> {
                         coroutineScope.launch {

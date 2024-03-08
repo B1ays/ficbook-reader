@@ -9,6 +9,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.Cookie
 import org.koin.mp.KoinPlatform.getKoin
+import ru.blays.ficbook.api.api.AuthorizationApi
+import ru.blays.ficbook.api.dataModels.AuthorizationResult
+import ru.blays.ficbook.api.dataModels.LoginModel
+import ru.blays.ficbook.api.dataModels.UserModel
+import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.reader.shared.data.cookieStorage.DynamicCookieJar
 import ru.blays.ficbook.reader.shared.data.cookieStorage.toCookie
 import ru.blays.ficbook.reader.shared.data.cookieStorage.toEntity
 import ru.blays.ficbook.reader.shared.data.dto.SavedUserModel
@@ -21,11 +27,6 @@ import ru.blays.ficbook.reader.shared.platformUtils.downloadImageToFile
 import ru.blays.ficbook.reader.shared.platformUtils.getCacheDir
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.settings
-import ru.blays.ficbook.api.api.AuthorizationApi
-import ru.blays.ficbook.api.dataModels.AuthorizationResult
-import ru.blays.ficbook.api.dataModels.LoginModel
-import ru.blays.ficbook.api.dataModels.UserModel
-import ru.blays.ficbook.api.result.ApiResult
 import java.io.File
 
 class AuthorizationRepo(
@@ -34,7 +35,7 @@ class AuthorizationRepo(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val _currentUserModel: MutableStateFlow<SavedUserModel?> = MutableStateFlow(null)
-    private val _cookieStorage: ru.blays.ficbook.reader.shared.data.cookieStorage.DynamicCookieJar by getKoin().inject()
+    private val _cookieStorage: DynamicCookieJar by getKoin().inject()
     private var _selectedUserID: String? by settings.nullableString(
         key = SettingsKeys.ACTIVE_USER_ID_KEY
     )
@@ -46,10 +47,11 @@ class AuthorizationRepo(
     override val hasSavedCookies: Boolean
         get() = getRealm().query(CookieEntity::class).find().isNotEmpty()
 
-    override val anonymousMode by settings.boolean(
+    override var anonymousMode by settings.boolean(
         key = SettingsKeys.ANONYMOUS_MODE_KEY,
         defaultValue = false
     )
+        private set
 
     override suspend fun addNewUser(loginModel: LoginModel): ApiResult<AuthorizationResult> {
         return when(
@@ -63,7 +65,6 @@ class AuthorizationRepo(
                 val userEntity = saveUserToDB(result.value.user)
                 val savedUser = userEntity?.toSavedUserModel()
                 if(savedUser != null) {
-                    println("Saved user: $savedUser")
                     _currentUserModel.value = savedUser
                     _selectedUserID = savedUser.id
                     ApiResult.success(result.value)
@@ -75,15 +76,21 @@ class AuthorizationRepo(
     }
 
     override suspend fun changeCurrentUser(id: String): Boolean {
-        val savedUser = getRealm().query(UserEntity::class, "id = $0", id)
-            .first()
-            .find()
+        val savedUser = getRealm().query(
+            UserEntity::class,
+            "id = $0",
+            id
+        )
+        .first()
+        .find()
+
         if(savedUser == null) return false
         _currentUserModel.value = savedUser.toSavedUserModel()
         _selectedUserID = savedUser.id
         _cookieStorage.addAll(
             savedUser.cookies.map(CookieEntity::toCookie)
         )
+        anonymousMode = false
         return true
     }
 
@@ -103,10 +110,7 @@ class AuthorizationRepo(
     }
 
     override fun switchAnonymousMode(enable: Boolean) {
-        settings.putBoolean(
-            key = SettingsKeys.ANONYMOUS_MODE_KEY,
-            value = enable
-        )
+        anonymousMode = enable
     }
 
     override suspend fun migrateDB(): Boolean {
