@@ -3,13 +3,15 @@ package ru.blays.ficbook.reader.shared.ui.mainScreenComponents.implemenatation
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.coroutines.getStringOrNullFlow
+import com.russhwolf.settings.nullableString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.koin.java.KoinJavaComponent.inject
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
@@ -17,13 +19,14 @@ import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbook.reader.shared.data.sections.popularSections
 import ru.blays.ficbook.reader.shared.data.sections.userSections
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
-import ru.blays.ficbook.reader.shared.preferences.repositiry.ISettingsRepository
+import ru.blays.ficbook.reader.shared.preferences.settings
 import ru.blays.ficbook.reader.shared.ui.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.ui.fanficListComponents.declaration.FanficsListComponentInternal
 import ru.blays.ficbook.reader.shared.ui.fanficListComponents.implementation.DefaultFanficsListComponent
 import ru.blays.ficbook.reader.shared.ui.mainScreenComponents.declaration.FeedComponent
 import ru.blays.ficbook.reader.shared.ui.mainScreenComponents.declaration.FeedComponentInternal
 
+@OptIn(ExperimentalSettingsApi::class)
 class DefaultFeedComponent private constructor(
     componentContext: ComponentContext,
     fanficsList: (
@@ -53,14 +56,11 @@ class DefaultFeedComponent private constructor(
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private val settingsComponent: ISettingsRepository by inject(ISettingsRepository::class.java)
-    private var feedSettingsDelegate by settingsComponent.getDelegate(
-        key = ISettingsRepository.stringKey(SettingsKeys.FEED_SECTION_KEY),
-        defaultValue = Json.encodeToString(userSections.favourites.toApiModel())
+    private var feedSettingsDelegate by settings.nullableString(
+        key = SettingsKeys.FEED_SECTION_KEY
     )
-    private val feedSettingsFlow by settingsComponent.getFlowDelegate(
-        key = ISettingsRepository.stringKey(SettingsKeys.FEED_SECTION_KEY),
-        defaultValue = feedSettingsDelegate
+    private val feedSettingsFlow = settings.getStringOrNullFlow(
+        key = SettingsKeys.FEED_SECTION_KEY
     )
 
 
@@ -74,15 +74,15 @@ class DefaultFeedComponent private constructor(
 
     private fun getFeedSection(): SectionWithQuery {
         val saved = feedSettingsDelegate
-        return try {
-            Json.decodeFromString(saved)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            if(authRepository.currentUserModel.value != null) {
-                userSections.favourites.toApiModel()
-            } else {
-                popularSections.allPopular.toApiModel()
-            }
+        if(saved != null) {
+            try {
+                return Json.decodeFromString(saved)
+            } catch (_: Exception) {}
+        }
+        return if(authRepository.hasSavedAccount && !authRepository.anonymousMode) {
+            userSections.favourites.toApiModel()
+        } else {
+            popularSections.allPopular.toApiModel()
         }
     }
 
@@ -106,9 +106,10 @@ class DefaultFeedComponent private constructor(
             coroutineScope.cancel()
         }
         coroutineScope.launch {
-            feedSettingsFlow.collect { rawJson ->
-                val section: SectionWithQuery? = Json.decodeFromString(rawJson)
-                section?.let { _fanficListComponent.setSection(it) }
+            feedSettingsFlow.collect { json ->
+                if(json == null) return@collect
+                val section: SectionWithQuery = Json.decodeFromString<SectionWithQuery?>(json) ?: return@collect
+                _fanficListComponent.setSection(section)
             }
         }
     }
