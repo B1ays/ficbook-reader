@@ -6,7 +6,11 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Constraints
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlin.math.floor
 
 @Composable
 fun rememberTextPages(
@@ -110,8 +114,6 @@ suspend fun splitTextToPages(
     config: TextSplitterConfig.SinglePanelConfig,
     textMeasurer: TextMeasurer
 ): List<String> = coroutineScope {
-    val list = mutableListOf<String>()
-
     val measureResult = textMeasurer.measure(
         text = text,
         style = config.style,
@@ -119,12 +121,12 @@ suspend fun splitTextToPages(
     )
     val maxHeight = config.constraints.maxHeight
 
-    list += calculatePages(
+    val result = calculatePages(
         measureResult = measureResult,
         maxHeight = maxHeight,
         text = text
     )
-    return@coroutineScope list
+    return@coroutineScope result
 }
 
 private suspend fun calculatePages(
@@ -132,40 +134,24 @@ private suspend fun calculatePages(
     maxHeight: Int,
     text: String
 ): List<String> = coroutineScope {
-    val newPages = mutableListOf<String>()
-    var currentHeight = 0F
-    var currentPage = ""
+    val textLastIndex = text.lastIndex
+    return@coroutineScope if(textLastIndex > 0) {
+        val linesInHeight = floor(
+            maxHeight / measureResult.multiParagraph.getLineHeight(0).toDouble()
+        ).toInt()
 
-    for (line in 0 until measureResult.lineCount) {
-        if(isActive) {
-            currentHeight += measureResult.multiParagraph.getLineHeight(line)
-            if (currentHeight >= maxHeight) {
-                newPages += currentPage
-                val lineStart = measureResult.getLineStart(line)
-                val lineEnd = measureResult.getLineEnd(line)
-                    .coerceAtMost(text.lastIndex)
-
-                currentPage = text
-                    .substring(lineStart .. lineEnd)
-                    .runCatching { if(last() == '\n') this else dropLast(1) }.getOrElse { "" }
-                currentHeight = measureResult.multiParagraph.getLineHeight(line)
-            } else {
-                val lineStart = measureResult.getLineStart(line)
-                val lineEnd = measureResult
-                    .getLineEnd(line)
-                    .coerceAtMost(text.lastIndex)
-
-                currentPage += text
-                    .substring(lineStart .. lineEnd)
-                    .run { if(lastOrNull() == '\n') this else dropLast(1) }
-            }
+        val lines = (0 until measureResult.lineCount).map {
+            val lineStart = measureResult.getLineStart(it)
+            val lineEnd = (measureResult.getLineEnd(it)-1).coerceIn(0, textLastIndex)
+            text.substring(lineStart .. lineEnd)
         }
-    }
 
-    if(currentPage.isNotEmpty()) {
-        newPages += currentPage
+        lines.chunked(linesInHeight).map {
+            it.fold("") { acc, line -> acc + line }
+        }
+    } else {
+        emptyList()
     }
-    return@coroutineScope newPages
 }
 
 sealed class TextSplitterConfig {
