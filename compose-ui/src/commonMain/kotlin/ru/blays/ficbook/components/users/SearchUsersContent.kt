@@ -74,9 +74,8 @@ fun SearchUsersContent(component: UsersSearchComponent) {
                     ),
                     shape = CardDefaults.shape,
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(3.dp)
-                        .fillMaxWidth(0.9F),
+                        .fillMaxWidth()
+                        .padding(DefaultPadding.CardDefaultPadding),
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 4.dp),
