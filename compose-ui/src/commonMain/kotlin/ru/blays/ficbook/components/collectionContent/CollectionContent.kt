@@ -24,8 +24,8 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
-import ru.blays.ficbook.reader.shared.ui.collectionSortComponent.CollectionFanficsListComponent
-import ru.blays.ficbook.reader.shared.ui.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.components.collectionSortComponent.CollectionFanficsListComponent
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue.Expanded
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue.PartiallyExpanded

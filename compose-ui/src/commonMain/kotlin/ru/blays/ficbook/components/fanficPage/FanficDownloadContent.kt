@@ -17,7 +17,7 @@ import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.ui.fanficPageComponents.declaration.DownloadFanficComponent
+import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.DownloadFanficComponent
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar

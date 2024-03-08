@@ -16,7 +16,7 @@ import ru.blays.ficbook.reader.feature.fileDownload.downloadFeatureModule
 import ru.blays.ficbook.components.root.RootContent
 import ru.blays.ficbook.platformUtils.createImageLoader
 import ru.blays.ficbook.reader.shared.di.sharedModule
-import ru.blays.ficbook.reader.shared.ui.RootComponent.DefaultRootComponent
+import ru.blays.ficbook.reader.shared.components.RootComponent.DefaultRootComponent
 import ru.blays.ficbook.theme.AppTheme
 
 @OptIn(ExperimentalDecomposeApi::class, ExperimentalCoilApi::class)

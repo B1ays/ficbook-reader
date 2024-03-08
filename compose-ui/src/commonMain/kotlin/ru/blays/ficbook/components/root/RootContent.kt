@@ -25,9 +25,9 @@ import ru.blays.ficbook.components.settings.SettingsContent
 import ru.blays.ficbook.components.userProfile.UserProfileRootContent
 import ru.blays.ficbook.components.users.UsersRootContent
 import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
-import ru.blays.ficbook.reader.shared.ui.RootComponent.RootComponent
-import ru.blays.ficbook.reader.shared.ui.snackbarStateHost.DefaultSnackbarVisuals
-import ru.blays.ficbook.reader.shared.ui.snackbarStateHost.SnackbarHost.snackbarHostState
+import ru.blays.ficbook.reader.shared.components.RootComponent.RootComponent
+import ru.blays.ficbook.reader.shared.components.snackbarStateHost.DefaultSnackbarVisuals
+import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost.snackbarHostState
 import ru.blays.ficbook.utils.BlurConfig
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.LocalStackAnimator

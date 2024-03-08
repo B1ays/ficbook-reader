@@ -49,8 +49,8 @@ import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.reader.feature.copyImageFeature.copyImageToClipboard
 import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.reader.shared.platformUtils.shareSupported
-import ru.blays.ficbook.reader.shared.ui.fanficPageComponents.declaration.FanficPageInfoComponent
-import ru.blays.ficbook.reader.shared.ui.snackbarStateHost.SnackbarHost
+import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageInfoComponent
+import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
 import ru.blays.ficbook.theme.*
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue

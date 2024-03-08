@@ -1,22 +1,12 @@
 package ru.blays.ficbook.components.fanficPage.reader
 
 import android.content.res.Configuration
-import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.PagerScope
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -25,30 +15,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
-import ficbook_reader.`compose-ui`.generated.resources.*
-import com.godaddy.android.colorpicker.ClassicColorPicker
-import com.godaddy.android.colorpicker.HsvColor
-import com.godaddy.android.colorpicker.toColorInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbook.platformUtils.FullscreenContainer
-import ru.blays.ficbook.reader.shared.ui.readerComponents.declaration.MainReaderComponent
-import ru.blays.ficbook.reader.shared.ui.readerComponents.declaration.SettingsReaderComponent
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbook.theme.ReaderTheme
-import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.ui_components.pager2.*
 import ru.blays.ficbook.values.DefaultPadding
-import kotlin.math.floor
 import kotlin.math.roundToInt
 
 @Composable

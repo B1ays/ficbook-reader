@@ -22,7 +22,7 @@ import ficbook_reader.`compose-ui`.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.ui.profileComponents.declaration.UserProfileComponent
+import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileComponent
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle

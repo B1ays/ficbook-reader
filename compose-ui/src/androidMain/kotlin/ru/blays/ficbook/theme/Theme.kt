@@ -20,7 +20,7 @@ import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.materialkolor.LocalDynamicMaterialThemeSeed
 import com.materialkolor.dynamicColorScheme
-import ru.blays.ficbook.reader.shared.ui.themeComponents.ThemeComponent
+import ru.blays.ficbook.reader.shared.components.themeComponents.ThemeComponent
 
 @Composable
 actual fun AppTheme(

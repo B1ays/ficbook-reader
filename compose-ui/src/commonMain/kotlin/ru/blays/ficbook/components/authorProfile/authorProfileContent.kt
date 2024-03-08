@@ -38,7 +38,7 @@ import ru.blays.ficbook.components.commentsContent.CommentsContent
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
 import ru.blays.ficbook.reader.shared.data.dto.AuthorMainInfoStable
 import ru.blays.ficbook.reader.shared.data.dto.BlogPostCardModelStable
-import ru.blays.ficbook.reader.shared.ui.authorProfile.declaration.*
+import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.*
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbook.ui_components.decomposePager.Pages

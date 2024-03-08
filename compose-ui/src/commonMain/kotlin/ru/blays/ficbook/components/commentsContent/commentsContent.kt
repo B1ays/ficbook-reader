@@ -41,9 +41,9 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbook.reader.shared.data.dto.CommentModelStable
 import ru.blays.ficbook.reader.shared.data.dto.QuoteModelStable
-import ru.blays.ficbook.reader.shared.ui.commentsComponent.declaration.CommentsComponent
-import ru.blays.ficbook.reader.shared.ui.commentsComponent.declaration.ExtendedCommentsComponent
-import ru.blays.ficbook.reader.shared.ui.commentsComponent.declaration.WriteCommentComponent
+import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
+import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.ExtendedCommentsComponent
+import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.WriteCommentComponent
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu
 import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
 import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState

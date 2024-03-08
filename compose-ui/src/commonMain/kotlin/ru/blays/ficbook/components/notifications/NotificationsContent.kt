@@ -30,8 +30,8 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.NotificationModelStable
 import ru.blays.ficbook.reader.shared.data.dto.NotificationType
-import ru.blays.ficbook.reader.shared.ui.notificationComponents.NotificationComponent
-import ru.blays.ficbook.reader.shared.ui.notificationComponents.NotificationConfirmDialogComponent
+import ru.blays.ficbook.reader.shared.components.notificationComponents.NotificationComponent
+import ru.blays.ficbook.reader.shared.components.notificationComponents.NotificationConfirmDialogComponent
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.utils.thenIf

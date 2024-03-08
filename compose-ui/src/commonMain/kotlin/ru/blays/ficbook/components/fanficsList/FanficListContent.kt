@@ -27,8 +27,8 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
-import ru.blays.ficbook.reader.shared.ui.fanficListComponents.declaration.FanficQuickActionsComponent
-import ru.blays.ficbook.reader.shared.ui.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenuState
 import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor

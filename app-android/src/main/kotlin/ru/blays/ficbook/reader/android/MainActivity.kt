@@ -18,8 +18,8 @@ import com.arkivanov.decompose.retainedComponent
 import ru.blays.ficbook.components.fanficPage.reader.LocalVolumeKeysEventSource
 import ru.blays.ficbook.components.fanficPage.reader.TwoWayVolumeKeysEventAdapter
 import ru.blays.ficbook.components.root.RootContent
-import ru.blays.ficbook.reader.shared.ui.RootComponent.DefaultRootComponent
-import ru.blays.ficbook.reader.shared.ui.RootComponent.RootComponent
+import ru.blays.ficbook.reader.shared.components.RootComponent.DefaultRootComponent
+import ru.blays.ficbook.reader.shared.components.RootComponent.RootComponent
 import ru.blays.ficbook.theme.AppTheme
 
 @OptIn(ExperimentalDecomposeApi::class)

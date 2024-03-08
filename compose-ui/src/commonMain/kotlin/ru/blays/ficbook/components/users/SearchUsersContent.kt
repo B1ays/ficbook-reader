@@ -22,8 +22,8 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.UserModelStable
-import ru.blays.ficbook.reader.shared.ui.usersComponent.declaration.UsersRootComponent
-import ru.blays.ficbook.reader.shared.ui.usersComponent.declaration.UsersSearchComponent
+import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
+import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersSearchComponent
 import ru.blays.ficbook.values.DefaultPadding
 
 @OptIn(ExperimentalResourceApi::class)

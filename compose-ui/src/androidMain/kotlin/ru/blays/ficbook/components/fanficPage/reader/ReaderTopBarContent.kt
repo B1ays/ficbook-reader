@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ru.blays.ficbook.reader.shared.ui.readerComponents.declaration.MainReaderComponent
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 
 @Composable
 fun ReaderTopBarContent(

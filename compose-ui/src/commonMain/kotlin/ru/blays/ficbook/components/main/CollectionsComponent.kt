@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.CollectionModelStable
-import ru.blays.ficbook.reader.shared.ui.mainScreenComponents.declaration.CollectionsComponent
+import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.CollectionsComponent
 import ru.blays.ficbook.theme.lockColor
 import ru.blays.ficbook.theme.unlockColor
 import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer

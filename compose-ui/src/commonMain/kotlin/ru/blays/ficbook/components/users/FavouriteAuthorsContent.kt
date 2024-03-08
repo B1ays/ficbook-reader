@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ru.blays.ficbook.reader.shared.data.dto.UserModelStable
-import ru.blays.ficbook.reader.shared.ui.usersComponent.declaration.UsersFavouriteComponent
-import ru.blays.ficbook.reader.shared.ui.usersComponent.declaration.UsersRootComponent
+import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersFavouriteComponent
+import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbook.values.DefaultPadding
 
 @Composable

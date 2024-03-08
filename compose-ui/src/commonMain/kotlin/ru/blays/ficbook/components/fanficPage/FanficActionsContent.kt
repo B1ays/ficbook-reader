@@ -25,8 +25,8 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.AvailableCollectionsModel
-import ru.blays.ficbook.reader.shared.ui.fanficPageComponents.declaration.FanficPageActionsComponent
-import ru.blays.ficbook.reader.shared.ui.fanficPageComponents.declaration.FanficPageCollectionsComponent
+import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageActionsComponent
+import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageCollectionsComponent
 import ru.blays.ficbook.theme.lockColor
 import ru.blays.ficbook.theme.unlockColor
 import ru.blays.ficbook.utils.LocalGlassEffectConfig

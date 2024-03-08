@@ -16,9 +16,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.ui.landingScreenComponent.ConfirmDialogComponent
-import ru.blays.ficbook.reader.shared.ui.landingScreenComponent.ConfirmDialogConfig
-import ru.blays.ficbook.reader.shared.ui.landingScreenComponent.LandingScreenComponent
+import ru.blays.ficbook.reader.shared.components.landingScreenComponent.ConfirmDialogComponent
+import ru.blays.ficbook.reader.shared.components.landingScreenComponent.ConfirmDialogConfig
+import ru.blays.ficbook.reader.shared.components.landingScreenComponent.LandingScreenComponent
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable

@@ -28,8 +28,8 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.platformUtils.scaleContent
 import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
-import ru.blays.ficbook.reader.shared.ui.settingsComponents.declaration.SettingsMainComponent
-import ru.blays.ficbook.reader.shared.ui.settingsComponents.declaration.SettingsUnitComponent
+import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
+import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsUnitComponent
 import ru.blays.ficbook.theme.defaultAccentColorsList
 import ru.blays.ficbook.ui_components.LazyItems.itemsGroupWithHeader
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
