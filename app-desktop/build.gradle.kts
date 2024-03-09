@@ -12,7 +12,12 @@ kotlin {
     }
 
     sourceSets {
-        val jvmMain by getting {
+        commonMain {
+            dependencies {
+                implementation(compose.components.resources)
+            }
+        }
+        jvmMain {
             dependencies {
                 implementation(projects.shared)
                 implementation(projects.composeUi)
@@ -20,6 +25,8 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(compose.ui)
                 implementation(compose.runtime)
+                implementation(compose.material3)
+
                 implementation(libs.decompose.extensionsComposeJetbrains)
 
                 implementation(libs.kotlinx.coroutines.core.swing)
