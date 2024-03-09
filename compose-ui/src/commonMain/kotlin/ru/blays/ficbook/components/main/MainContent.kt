@@ -345,198 +345,202 @@ private fun DrawerContent(
         )
     }
 
-    Text(
-        text = stringResource(Res.string.mainScreen_drawer_category_personal),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.headlineSmall
-    )
-    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-    val favouritesSection = remember { userSections.favourites }
-    NavigationDrawerItem(
-        label = {
-            Text(text = favouritesSection.name)
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_star_filled),
-                contentDescription = stringResource(Res.string.content_description_icon_star)
-            )
-        },
-        selected = false,
-        onClick = {
-            navigateToSection(favouritesSection)
-        }
-    )
-    val likedSection = remember { userSections.liked }
-    NavigationDrawerItem(
-        label = {
-            Text(text = likedSection.name)
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_like_filled),
-                contentDescription = stringResource(Res.string.content_description_icon_like)
-            )
-        },
-        selected = false,
-        onClick = {
-            navigateToSection(likedSection)
-        }
-    )
-    val readedSection = remember { userSections.readed }
-    NavigationDrawerItem(
-        label = {
-            Text(text = readedSection.name)
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_bookmark_filled),
-                contentDescription = stringResource(Res.string.content_description_icon_bookmark)
-            )
-        },
-        selected = false,
-        onClick = {
-            navigateToSection(readedSection)
-        }
-    )
-    val followSection = remember { userSections.follow }
-    NavigationDrawerItem(
-        label = {
-            Text(text = followSection.name)
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_star_filled),
-                contentDescription = stringResource(Res.string.content_description_icon_star)
-            )
-        },
-        selected = false,
-        onClick = {
-            navigateToSection(followSection)
-        }
-    )
-    val visitedSection = remember { userSections.visited }
-    NavigationDrawerItem(
-        label = {
-            Text(text = visitedSection.name)
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_eye_filled),
-                contentDescription = stringResource(Res.string.content_description_icon_eye)
-            )
-        },
-        selected = false,
-        onClick = {
-            navigateToSection(visitedSection)
-        }
-    )
-    Spacer(modifier = Modifier.height(4.dp))
-    Text(
-        text = stringResource(Res.string.mainScreen_drawer_category_standart),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = MaterialTheme.typography.headlineSmall
-    )
-    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-    NavigationDrawerItem(
-        label = {
-            Text(text = stringResource(Res.string.authors))
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_users),
-                contentDescription = stringResource(Res.string.content_description_icon_users)
-            )
-        },
-        selected = false,
-        onClick = {
-            component.onOutput(
-                MainScreenComponent.Output.OpenUsersScreen
-            )
-        }
-    )
-    NavigationDrawerItem(
-        label = {
-            Text(text = stringResource(Res.string.notifications))
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_bell),
-                contentDescription = stringResource(Res.string.content_description_icon_bell)
-            )
-        },
-        selected = false,
-        onClick = {
-            component.onOutput(
-                MainScreenComponent.Output.OpenNotifications
-            )
-        }
-    )
-    NavigationDrawerItem(
-        label = {
-            Text(text = stringResource(Res.string.random_fanfic))
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_dice),
-                contentDescription = stringResource(Res.string.content_description_icon_dice)
-            )
-        },
-        selected = false,
-        onClick = {
-            component.onOutput(
-                MainScreenComponent.Output.OpenRandomFanficPage
-            )
-        }
-    )
-    Spacer(modifier = Modifier.height(4.dp))
-    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-    NavigationDrawerItem(
-        label = {
-            Text(text = stringResource(Res.string.settings))
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_settings),
-                contentDescription = stringResource(Res.string.content_description_icon_settings)
-            )
-        },
-        selected = false,
-        onClick = {
-            component.onOutput(
-                MainScreenComponent.Output.OpenSettings
-            )
-        }
-    )
-    NavigationDrawerItem(
-        label = {
-            Text(text = stringResource(Res.string.toolbar_title_about))
-        },
-        icon = {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.ic_info),
-                contentDescription = stringResource(Res.string.content_description_icon_info)
-            )
-        },
-        selected = false,
-        onClick = {
-            component.onOutput(
-                MainScreenComponent.Output.OpenAbout
-            )
-        }
-    )
+    Column(
+        modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall)
+    ) {
+        Text(
+            text = stringResource(Res.string.mainScreen_drawer_category_personal),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.headlineSmall
+        )
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+        val favouritesSection = remember { userSections.favourites }
+        NavigationDrawerItem(
+            label = {
+                Text(text = favouritesSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_star_filled),
+                    contentDescription = stringResource(Res.string.content_description_icon_star)
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(favouritesSection)
+            }
+        )
+        val likedSection = remember { userSections.liked }
+        NavigationDrawerItem(
+            label = {
+                Text(text = likedSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_like_filled),
+                    contentDescription = stringResource(Res.string.content_description_icon_like)
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(likedSection)
+            }
+        )
+        val readedSection = remember { userSections.readed }
+        NavigationDrawerItem(
+            label = {
+                Text(text = readedSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_bookmark_filled),
+                    contentDescription = stringResource(Res.string.content_description_icon_bookmark)
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(readedSection)
+            }
+        )
+        val followSection = remember { userSections.follow }
+        NavigationDrawerItem(
+            label = {
+                Text(text = followSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_star_filled),
+                    contentDescription = stringResource(Res.string.content_description_icon_star)
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(followSection)
+            }
+        )
+        val visitedSection = remember { userSections.visited }
+        NavigationDrawerItem(
+            label = {
+                Text(text = visitedSection.name)
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_eye_filled),
+                    contentDescription = stringResource(Res.string.content_description_icon_eye)
+                )
+            },
+            selected = false,
+            onClick = {
+                navigateToSection(visitedSection)
+            }
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = stringResource(Res.string.mainScreen_drawer_category_standart),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.headlineSmall
+        )
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+        NavigationDrawerItem(
+            label = {
+                Text(text = stringResource(Res.string.authors))
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_users),
+                    contentDescription = stringResource(Res.string.content_description_icon_users)
+                )
+            },
+            selected = false,
+            onClick = {
+                component.onOutput(
+                    MainScreenComponent.Output.OpenUsersScreen
+                )
+            }
+        )
+        NavigationDrawerItem(
+            label = {
+                Text(text = stringResource(Res.string.notifications))
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_bell),
+                    contentDescription = stringResource(Res.string.content_description_icon_bell)
+                )
+            },
+            selected = false,
+            onClick = {
+                component.onOutput(
+                    MainScreenComponent.Output.OpenNotifications
+                )
+            }
+        )
+        NavigationDrawerItem(
+            label = {
+                Text(text = stringResource(Res.string.random_fanfic))
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_dice),
+                    contentDescription = stringResource(Res.string.content_description_icon_dice)
+                )
+            },
+            selected = false,
+            onClick = {
+                component.onOutput(
+                    MainScreenComponent.Output.OpenRandomFanficPage
+                )
+            }
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+        NavigationDrawerItem(
+            label = {
+                Text(text = stringResource(Res.string.settings))
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_settings),
+                    contentDescription = stringResource(Res.string.content_description_icon_settings)
+                )
+            },
+            selected = false,
+            onClick = {
+                component.onOutput(
+                    MainScreenComponent.Output.OpenSettings
+                )
+            }
+        )
+        NavigationDrawerItem(
+            label = {
+                Text(text = stringResource(Res.string.toolbar_title_about))
+            },
+            icon = {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(Res.drawable.ic_info),
+                    contentDescription = stringResource(Res.string.content_description_icon_info)
+                )
+            },
+            selected = false,
+            onClick = {
+                component.onOutput(
+                    MainScreenComponent.Output.OpenAbout
+                )
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalResourceApi::class)
