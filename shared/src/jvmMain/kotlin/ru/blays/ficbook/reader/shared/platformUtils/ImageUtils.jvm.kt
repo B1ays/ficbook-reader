@@ -26,7 +26,7 @@ actual suspend fun downloadImageToFile(
                     .build()
             ).image
             ?: return@coroutineScope false
-        val bufferedImage = image.asBitmap().toBufferedImage()
+        val bufferedImage = image.toBitmap().toBufferedImage()
         withContext(Dispatchers.IO) {
             ImageIO.write(bufferedImage, formatName, file)
         }
