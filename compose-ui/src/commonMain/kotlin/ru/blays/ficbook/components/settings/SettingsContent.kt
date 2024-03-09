@@ -27,9 +27,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.platformUtils.scaleContent
-import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsUnitComponent
+import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
+import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
 import ru.blays.ficbook.theme.defaultAccentColorsList
 import ru.blays.ficbook.ui_components.LazyItems.itemWithHeader
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
@@ -115,12 +116,14 @@ fun SettingsContent(component: SettingsMainComponent) {
                     }
                     AmoledThemeSetting(component.amoledSetting)
                     AccentColorSetting(component.accentIndexSetting)
-                    BlurSetting(
-                        enabledComponent = component.glassEffectEnabled,
-                        alphaComponent = component.blurAlpha,
-                        radiusComponent = component.blurRadius,
-                        noiseFactorComponent = component.blurNoiseFactor
-                    )
+                    if(blurSupported) {
+                        BlurSetting(
+                            enabledComponent = component.glassEffectEnabled,
+                            alphaComponent = component.blurAlpha,
+                            radiusComponent = component.blurRadius,
+                            noiseFactorComponent = component.blurNoiseFactor
+                        )
+                    }
                 }
                 itemWithHeader(commonGroupTitle) {
                     SuperfilterSetting(component.superfilterSetting)
