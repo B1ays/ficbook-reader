@@ -5,7 +5,6 @@ import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import ru.blays.ficbook.api.data.SectionWithQuery
-import ru.blays.ficbook.reader.shared.preferences.json.GlassEffectConfig
 import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbook.reader.shared.components.collectionSortComponent.CollectionFanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
@@ -18,6 +17,7 @@ import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.Se
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbook.reader.shared.components.themeComponents.ThemeComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
+import ru.blays.ficbook.reader.shared.preferences.json.GlassEffectConfig
 import java.util.*
 
 interface RootComponent {
@@ -80,6 +80,9 @@ interface RootComponent {
 
         @Serializable
         data object Search: Config()
+
+        @Serializable
+        data object About: Config()
     }
 
     sealed class Child {
@@ -94,5 +97,6 @@ interface RootComponent {
         data class Users(val component: UsersRootComponent): Child()
         data class Notifications(val component: NotificationComponent): Child()
         data class Search(val component: SearchComponent): Child()
+        data class About(val onBack: () -> Unit) : Child()
     }
 }

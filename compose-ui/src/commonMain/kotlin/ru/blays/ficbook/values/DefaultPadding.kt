@@ -6,9 +6,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object CardShape {
-    val CardStart = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 5.dp, bottomEnd = 5.dp)
-    val CardMid = RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp, bottomStart = 5.dp, bottomEnd = 5.dp)
-    val CardEnd = RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp, bottomStart = 10.dp, bottomEnd = 10.dp)
+    val CardStart = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+    val CardMid = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+    val CardEnd = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 12.dp, bottomEnd = 12.dp)
     val CardStandalone = RoundedCornerShape(10.dp)
     val CardStandaloneLarge = RoundedCornerShape(16.dp)
 }
@@ -19,6 +19,7 @@ object DefaultPadding {
     val CardDefaultPadding = PaddingValues(horizontal = 12.dp, vertical = 3.dp)
     val CardDefaultPaddingLarge = PaddingValues(horizontal = 16.dp, vertical = 7.dp)
     val CardDefaultPaddingSmall = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
+    val CardPaddingSmallVertical = PaddingValues(horizontal = 12.dp, vertical = 2.dp)
 }
 
 expect val defaultScrollbarPadding: Dp

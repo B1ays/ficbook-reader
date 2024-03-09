@@ -21,12 +21,6 @@ import ru.blays.ficbook.api.UrlProcessor.UrlProcessor
 import ru.blays.ficbook.api.UrlProcessor.UrlProcessor.analyzeUrl
 import ru.blays.ficbook.api.UrlProcessor.getUrlForHref
 import ru.blays.ficbook.api.data.SectionWithQuery
-import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
-import ru.blays.ficbook.reader.shared.platformUtils.openInBrowser
-import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
-import ru.blays.ficbook.reader.shared.preferences.json.GlassEffectConfig
-import ru.blays.ficbook.reader.shared.preferences.settings
 import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorProfileComponent
 import ru.blays.ficbook.reader.shared.components.authorProfile.implementation.DefaultAuthorProfileComponent
 import ru.blays.ficbook.reader.shared.components.collectionSortComponent.DefaultCollectionFanficsListComponent
@@ -49,6 +43,12 @@ import ru.blays.ficbook.reader.shared.components.themeComponents.DefaultThemeCom
 import ru.blays.ficbook.reader.shared.components.themeComponents.ThemeComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.implementation.DefaultUsersRootComponent
+import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
+import ru.blays.ficbook.reader.shared.platformUtils.openInBrowser
+import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
+import ru.blays.ficbook.reader.shared.preferences.json.GlassEffectConfig
+import ru.blays.ficbook.reader.shared.preferences.settings
 
 @OptIn(ExperimentalSettingsApi::class)
 class DefaultRootComponent private constructor(
@@ -137,12 +137,6 @@ class DefaultRootComponent private constructor(
 
     override val glassEffectConfig: StateFlow<GlassEffectConfig> = getGlassEffectConfigFlow()
 
-    init {
-        lifecycle.doOnDestroy {
-            coroutineScope.cancel()
-        }
-    }
-
     override fun sendIntent(intent: RootComponent.Intent) {
         when(intent) {
             is RootComponent.Intent.NewDeepLink -> {
@@ -213,7 +207,7 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
-            RootComponent.Config.Landing -> {
+            is RootComponent.Config.Landing -> {
                 RootComponent.Child.Landing(
                     DefaultLandingScreenComponent(
                         componentContext = componentContext,
@@ -221,6 +215,7 @@ class DefaultRootComponent private constructor(
                     )
                 )
             }
+            is RootComponent.Config.About -> RootComponent.Child.About(navigation::pop)
         }
     }
 
@@ -273,6 +268,11 @@ class DefaultRootComponent private constructor(
             is MainScreenComponent.Output.OpenSettings -> {
                 navigation.push(
                     RootComponent.Config.Settings
+                )
+            }
+            is MainScreenComponent.Output.OpenAbout -> {
+                navigation.push(
+                    RootComponent.Config.About
                 )
             }
             is MainScreenComponent.Output.OpenUrl -> navigateToLink(output.url)
@@ -434,13 +434,22 @@ class DefaultRootComponent private constructor(
             val analyzeResult = link?.let { analyzeUrl(it) }
         ) {
             is UrlProcessor.FicbookUrlAnalyzeResult.FanficsList -> {
-                listOf(RootComponent.Config.Main, RootComponent.Config.FanficsList(analyzeResult.sectionWithQuery))
+                listOf(
+                    RootComponent.Config.Main,
+                    RootComponent.Config.FanficsList(analyzeResult.sectionWithQuery)
+                )
             }
             is UrlProcessor.FicbookUrlAnalyzeResult.Fanfic -> {
-                listOf(RootComponent.Config.Main, RootComponent.Config.FanficPage(analyzeResult.href))
+                listOf(
+                    RootComponent.Config.Main,
+                    RootComponent.Config.FanficPage(analyzeResult.href)
+                )
             }
             is UrlProcessor.FicbookUrlAnalyzeResult.User -> {
-                listOf(RootComponent.Config.Main, RootComponent.Config.AuthorProfile(analyzeResult.href))
+                listOf(
+                    RootComponent.Config.Main,
+                    RootComponent.Config.AuthorProfile(analyzeResult.href)
+                )
             }
             else -> {
                 listOf(RootComponent.Config.Main)
@@ -523,5 +532,11 @@ class DefaultRootComponent private constructor(
             initialValue = defaultValue,
             started = SharingStarted.WhileSubscribed(100)
         )
+    }
+
+    init {
+        lifecycle.doOnDestroy {
+            coroutineScope.cancel()
+        }
     }
 }

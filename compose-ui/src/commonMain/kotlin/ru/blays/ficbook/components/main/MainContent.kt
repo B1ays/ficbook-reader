@@ -32,9 +32,9 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
+import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbook.reader.shared.data.sections.userSections
-import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
@@ -516,6 +516,24 @@ private fun DrawerContent(
         onClick = {
             component.onOutput(
                 MainScreenComponent.Output.OpenSettings
+            )
+        }
+    )
+    NavigationDrawerItem(
+        label = {
+            Text(text = stringResource(Res.string.toolbar_title_about))
+        },
+        icon = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(Res.drawable.ic_info),
+                contentDescription = stringResource(Res.string.content_description_icon_info)
+            )
+        },
+        selected = false,
+        onClick = {
+            component.onOutput(
+                MainScreenComponent.Output.OpenAbout
             )
         }
     )
