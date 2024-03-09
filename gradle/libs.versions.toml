@@ -2,8 +2,8 @@
 # Project
 applicationId = "ru.blays.ficbook.reader"
 projectVersion = "1.0.6"
-versionCode = "11"
-versionNameSuffix = "-rc1"
+versionCode = "12"
+versionNameSuffix = "-rc2"
 kotlin = "1.9.22"
 agp = "8.3.0"
 jvmTarget = "18"
@@ -59,7 +59,6 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 moriatsushi-insetsx = { module = "com.moriatsushi.insetsx:insetsx", version.ref = "insetsx" }
