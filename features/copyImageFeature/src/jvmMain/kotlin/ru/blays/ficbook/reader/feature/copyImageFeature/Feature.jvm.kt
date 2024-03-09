@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage
 actual suspend fun copyImageToClipboard(image: Image): Boolean {
     val clipboard = Toolkit.getDefaultToolkit().systemClipboard
 
-    val bufferedImage = image.asBitmap().toBufferedImage()
+    val bufferedImage = image.toBitmap().toBufferedImage()
 
     return try {
         val transferable = TransferableImage(bufferedImage)
