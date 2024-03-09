@@ -31,7 +31,7 @@ import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsUnitComponent
 import ru.blays.ficbook.theme.defaultAccentColorsList
-import ru.blays.ficbook.ui_components.LazyItems.itemsGroupWithHeader
+import ru.blays.ficbook.ui_components.LazyItems.itemWithHeader
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
@@ -108,7 +108,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                 contentPadding = padding,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                itemsGroupWithHeader(themeGroupTitle) {
+                itemWithHeader(themeGroupTitle) {
                     ThemeSetting(component.themeSetting)
                     if(component.dynamicColorsSetting != null) {
                         DynamicColorsSetting(component.dynamicColorsSetting!!)
@@ -122,7 +122,7 @@ fun SettingsContent(component: SettingsMainComponent) {
                         noiseFactorComponent = component.blurNoiseFactor
                     )
                 }
-                itemsGroupWithHeader(commonGroupTitle) {
+                itemWithHeader(commonGroupTitle) {
                     SuperfilterSetting(component.superfilterSetting)
                     AutoVoteSetting(component.autoVoteSetting)
                     TypografSetting(component.typografSetting)

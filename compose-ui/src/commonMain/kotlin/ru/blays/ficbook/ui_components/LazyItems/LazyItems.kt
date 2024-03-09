@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-fun LazyListScope.itemsGroupWithHeader(title: String, content: @Composable () -> Unit) = item {
+fun LazyListScope.itemWithHeader(title: String, content: @Composable () -> Unit) = item {
     Text(
         modifier = Modifier
             .fillMaxWidth()

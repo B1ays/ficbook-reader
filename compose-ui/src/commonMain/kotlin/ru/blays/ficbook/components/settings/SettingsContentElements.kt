@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbook.components.settings
 
 import androidx.compose.animation.*
@@ -27,11 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import ficbook_reader.`compose-ui`.generated.resources.*
+import ficbook_reader.`compose-ui`.generated.resources.Res
+import ficbook_reader.`compose-ui`.generated.resources.ic_arrow_down
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.ui_components.CustomButton.BackgroundedIcon
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.values.CardShape
@@ -39,6 +38,7 @@ import ru.blays.ficbook.values.DefaultPadding
 
 const val ANIMATION_DURATION_MILLIS = 300
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SettingsExpandableCard(
     title: String,
