@@ -1,6 +1,5 @@
 package ru.blays.ficbook.reader.desktop
 
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -12,11 +11,11 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import org.koin.core.context.startKoin
-import ru.blays.ficbook.reader.feature.fileDownload.downloadFeatureModule
 import ru.blays.ficbook.components.root.RootContent
 import ru.blays.ficbook.platformUtils.createImageLoader
-import ru.blays.ficbook.reader.shared.di.sharedModule
+import ru.blays.ficbook.reader.feature.fileDownload.downloadFeatureModule
 import ru.blays.ficbook.reader.shared.components.RootComponent.DefaultRootComponent
+import ru.blays.ficbook.reader.shared.di.sharedModule
 import ru.blays.ficbook.theme.AppTheme
 
 @OptIn(ExperimentalDecomposeApi::class, ExperimentalCoilApi::class)
@@ -46,15 +45,22 @@ fun main() {
         )
 
         LifecycleController(lifecycle, windowState)
-        ButtonDefaults.buttonColors()
+
         Window(
             onCloseRequest = ::exitApplication,
             state = windowState,
             title = "Ficbook reader",
-            icon = painterResource("icon_windows.ico")
+            icon = painterResource("icon_windows.ico"),
+            undecorated = true,
+            transparent = true
         ) {
             AppTheme(root.themeComponent) {
-                RootContent(root)
+                WindowFrame(
+                    state = windowState,
+                    onClose = ::exitApplication
+                ) {
+                    RootContent(root)
+                }
             }
         }
     }
