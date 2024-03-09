@@ -1,5 +1,6 @@
 [versions]
 # Project
+applicationId = "ru.blays.ficbook.reader"
 projectVersion = "1.0.6"
 versionCode = "10"
 versionNameSuffix = "-beta05"
@@ -36,6 +37,7 @@ browser = "1.8.0-rc01"
 coil = "3.0.0-alpha04"
 cache-fix = "3.0.1"
 lwjgl = "3.3.3"
+build-konfig = "0.15.1"
 
 [libraries]
 androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -80,3 +82,4 @@ nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update
 realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 gradle-cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cache-fix" }
+build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }
