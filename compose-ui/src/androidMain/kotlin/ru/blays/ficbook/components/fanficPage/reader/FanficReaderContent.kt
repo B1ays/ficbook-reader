@@ -5,7 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.PagerScope
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -96,10 +97,6 @@ private class Reader(
     )
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
-
-    private var initialized = false
-
-    private var progress: Float = 0F
 
     private val currentProgress: Float
         get() = pagerState.currentPage / pagerState.pageCount.toFloat()
@@ -226,9 +223,7 @@ private class Reader(
                     )
                     pagerState.updatePages { pages }
                 }
-                onDispose {
-                    job.cancel()
-                }
+                onDispose(job::cancel)
             }
 
             TextPager(
@@ -286,18 +281,15 @@ private class Reader(
 
             DisposableEffect(state.value.chapterIndex) {
                 val pages = pagerState.pages
-                if(!initialized) {
-                    scope.launch {
-                        while(pagerState.pageCount == 0) {
-                            delay(100)
-                        }
-                        val page = pages.findPageIndexForCharIndex(
-                            index = state.value.initialCharIndex
-                        )
-                        if(page !in pages.indices) return@launch
-                        pagerState.scrollToPage(page)
+                scope.launch {
+                    while(pagerState.pageCount == 0) {
+                        delay(100)
                     }
-                    initialized = true
+                    val page = pages.findPageIndexForCharIndex(
+                        index = state.value.initialCharIndex
+                    )
+                    if(page !in pages.indices) return@launch
+                    pagerState.scrollToPage(page)
                 }
 
                 onDispose {
@@ -341,8 +333,6 @@ private class Reader(
             pageContent = pagerContent
         )
     }
-    
-    
 
     private suspend fun animatedScrollToNextPageOrChapter() {
         if(state.value.settings.autoOpenNextChapter) {
@@ -416,16 +406,14 @@ private class Reader(
     }
 
     private fun initialize(initialProgress: Float) {
-        if(initialized) {
-            coroutineScope.launch {
-                while(pagerState.pages.isEmpty()) {
-                    delay(300)
-                }
-                val page = (initialProgress * pagerState.pages.lastIndex)
-                    .roundToInt()
-                    .coerceIn(pagerState.pages.indices)
-                pagerState.scrollToPage(page)
+        coroutineScope.launch {
+            while(pagerState.pages.isEmpty()) {
+                delay(300)
             }
+            val page = (initialProgress * pagerState.pages.lastIndex)
+                .roundToInt()
+                .coerceIn(pagerState.pages.indices)
+            pagerState.scrollToPage(page)
         }
     }
     
@@ -443,8 +431,7 @@ private class Reader(
             saver = listSaver<Reader, Any>(
                 save = {
                     listOf(
-                        it.currentProgress,
-                        it.initialized
+                        it.currentProgress
                     )
                 },
                 restore = {
@@ -457,7 +444,6 @@ private class Reader(
                         openNextChapter = openNextChapter,
                         openSettings = openSettings
                     ).apply {
-                        initialized = it[1] as Boolean
                         initialize(it[0] as Float)
                     }
                 }
