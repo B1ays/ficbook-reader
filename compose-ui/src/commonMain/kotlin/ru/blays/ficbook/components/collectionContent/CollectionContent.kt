@@ -242,7 +242,7 @@ private fun SortParamContent(
     Column(
         modifier = modifier.padding(DefaultPadding.CardDefaultPadding),
     ) {
-        TextField(
+        OutlinedTextField(
             value = state.currentParams.searchText ?: "",
             onValueChange = {
                 component.onIntent(
@@ -268,10 +268,6 @@ private fun SortParamContent(
                 }
             },
             singleLine = true,
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
             shape = CardDefaults.shape,
             modifier = Modifier.fillMaxWidth(),
         )
