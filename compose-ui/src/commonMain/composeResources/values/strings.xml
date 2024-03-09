@@ -9,6 +9,7 @@
     <string name="toolbar_title_account_managing">Управление аккаунтами</string>
     <string name="toolbar_title_profile">Профиль</string>
     <string name="toolbar_title_authors">Авторы</string>
+    <string name="toolbar_title_about">О приложении</string>
 
     <!--  Common  -->
     <string name="reset">Сбросить</string>
@@ -252,6 +253,17 @@
     <string name="fanficCard_updated">Обновлено: %1$s</string>
     <string name="fanficCard_size">Размер: %1$s</string>
 
+    <!--  About  -->
+    <string name="about_group_app">Приложение</string>
+    <string name="about_group_developer">Разработчик</string>
+    <string name="about_title_tg_group">Группа в Telegram</string>
+    <string name="about_title_source_code">Исходный код на GitHub</string>
+    <string name="about_title_profile_tg">Профиль в Telegram</string>
+    <string name="about_title_profile_4pda">Профиль на 4pda</string>
+    <string name="about_title_profile_github">Профиль на GitHub</string>
+    <string name="about_title_support">Поддержать разработчика</string>
+    <string name="about_info_developer">Разработно Blays</string>
+
     <!--  Actions  -->
     <string name="action_download_in_format">Скачать в %1$s</string>
     <string name="action_share">Поделиться</string>
@@ -315,8 +327,16 @@
     <string name="content_description_icon_check">Иконка галочка</string>
     <string name="content_description_icon_eye_crossed">Иконка сокрытия</string>
     <string name="content_description_icon_globe">Иконка глобуса</string>
+    <string name="content_description_icon_info">Иконка информации</string>
 
     <!--  Errors  -->
     <string name="error_something_went_wrong">Что-то пошло не так</string>
     <string name="error_authorization">Ошибка авторизации.\n%1$s</string>
+
+    <string name="link_tg_group">https://t.me/ficbook_reader</string>
+    <string name="link_github_repo">https://github.com/B1ays/ficbook-reader</string>
+    <string name="link_developer_tg">https://t.me/B1ays</string>
+    <string name="link_developer_4pda">https://4pda.to/forum/index.php?showuser=7576426</string>
+    <string name="link_developer_github">https://github.com/B1ays</string>
+    <string name="link_developer_support">https://yoomoney.ru/to/410012804373847</string>
 </resources>

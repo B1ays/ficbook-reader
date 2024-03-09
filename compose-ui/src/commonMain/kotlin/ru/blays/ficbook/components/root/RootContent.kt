@@ -13,6 +13,7 @@ import ficbook_reader.`compose-ui`.generated.resources.Res
 import ficbook_reader.`compose-ui`.generated.resources.ok
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
+import ru.blays.ficbook.components.aboutContent.AboutContent
 import ru.blays.ficbook.components.authorProfile.AuthorProfileContent
 import ru.blays.ficbook.components.collectionContent.CollectionContent
 import ru.blays.ficbook.components.fanficPage.FanficPageContent
@@ -24,10 +25,10 @@ import ru.blays.ficbook.components.searchContent.SearchContent
 import ru.blays.ficbook.components.settings.SettingsContent
 import ru.blays.ficbook.components.userProfile.UserProfileRootContent
 import ru.blays.ficbook.components.users.UsersRootContent
-import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
 import ru.blays.ficbook.reader.shared.components.RootComponent.RootComponent
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.DefaultSnackbarVisuals
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost.snackbarHostState
+import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
 import ru.blays.ficbook.utils.BlurConfig
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.LocalStackAnimator
@@ -94,6 +95,7 @@ fun RootContent(component: RootComponent) {
                     is RootComponent.Child.Notifications -> NotificationsContent(child.component)
                     is RootComponent.Child.Search -> SearchContent(child.component)
                     is RootComponent.Child.Landing -> LandingScreenContent(child.component)
+                    is RootComponent.Child.About -> AboutContent(child.onBack)
                 }
             }
         }

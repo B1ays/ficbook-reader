@@ -2,9 +2,9 @@ package ru.blays.ficbook.reader.shared.components.mainScreenComponents.declarati
 
 import kotlinx.coroutines.flow.StateFlow
 import ru.blays.ficbook.api.data.SectionWithQuery
+import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserLogInComponent
 import ru.blays.ficbook.reader.shared.data.dto.SavedUserModel
 import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
-import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserLogInComponent
 
 interface MainScreenComponent {
     val tabs: Array<TabModel>
@@ -32,6 +32,7 @@ interface MainScreenComponent {
         data class OpenAuthor(val href: String) : Output()
         data object OpenRandomFanficPage: Output()
         data object OpenSettings: Output()
+        data object OpenAbout: Output()
         data object UserProfile: Output()
         data object OpenUsersScreen: Output()
         data object OpenNotifications: Output()
