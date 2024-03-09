@@ -5,7 +5,7 @@ projectVersion = "1.0.6"
 versionCode = "10"
 versionNameSuffix = "-beta05"
 kotlin = "1.9.22"
-agp = "8.2.2"
+agp = "8.3.0"
 jvmTarget = "18"
 
 # Android
@@ -24,7 +24,6 @@ kotlinx-coroutines = "1.8.0"
 kotlinx-serialization = "1.6.3"
 ktxCore = "1.12.0"
 appcompat = "1.6.1"
-libres = "1.2.2"
 materialKolor = "1.4.0"
 multiplatform-settings = "1.1.1"
 okhttp = "4.12.0"
@@ -33,8 +32,8 @@ compose-jetbrains = "1.6.0"
 androidx-activityCompose = "1.8.2"
 composeColorPicker = "0.7.0"
 insetsx = "0.1.0-alpha10"
-browser = "1.8.0-rc01"
-coil = "3.0.0-alpha04"
+browser = "1.8.0"
+coil = "3.0.0-alpha06"
 cache-fix = "3.0.1"
 lwjgl = "3.3.3"
 build-konfig = "0.15.1"
@@ -74,12 +73,11 @@ realm-library-base = { module = "io.realm.kotlin:library-base", version.ref = "r
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 com-github-ben-manes-versions = "com.github.ben-manes.versions:0.49.0"
+nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.1"
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-jetbrains" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.1"
-realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
 gradle-cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cache-fix" }
 build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }
