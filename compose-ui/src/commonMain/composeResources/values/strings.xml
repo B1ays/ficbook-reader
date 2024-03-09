@@ -80,7 +80,7 @@
     <string name="comments_textfield_placeholder">Оставьте свой отзыв</string>
 
     <!--  Fanfic page  -->
-    <string name="fanficPage_action_to_collection">В сборник"</string>
+    <string name="fanficPage_action_to_collection">В сборник</string>
     <string name="fanficPage_collections_dialog_title">Добавить работу в сборник</string>
     <string name="fanficPage_description">Описание:</string>
     <string name="fanficPage_fandoms">Фэндомы:</string>
@@ -109,7 +109,7 @@
     <string name="mainScreen_drawer_category_standart">Стандартные</string>
 
     <!--  Notifications screen  -->
-    <string name="notifications_action_read_all">Всё прочтитано</string>
+    <string name="notifications_action_read_all">Всё прочитано</string>
     <string name="notifications_action_delete_all">Удалить всё</string>
 
     <string name="notifications_category_all">Все уведомления</string>
@@ -262,7 +262,7 @@
     <string name="about_title_profile_4pda">Профиль на 4pda</string>
     <string name="about_title_profile_github">Профиль на GitHub</string>
     <string name="about_title_support">Поддержать разработчика</string>
-    <string name="about_info_developer">Разработно Blays</string>
+    <string name="about_info_developer">Разработано Blays</string>
 
     <!--  Actions  -->
     <string name="action_download_in_format">Скачать в %1$s</string>
