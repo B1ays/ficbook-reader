@@ -19,18 +19,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import dev.chrisbanes.haze.hazeChild
-import ficbook_reader.`compose-ui`.generated.resources.*
+import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.data.dto.AvailableCollectionsModel
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageCollectionsComponent
+import ru.blays.ficbook.reader.shared.data.dto.AvailableCollectionsModel
 import ru.blays.ficbook.theme.lockColor
 import ru.blays.ficbook.theme.unlockColor
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
-import ru.blays.ficbook.utils.LocalHazeState
+import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
@@ -120,78 +118,14 @@ fun FanficActionsContent(
     }
 
     childSlot.child?.instance?.let { slotComponent ->
-        val slotState by slotComponent.state.subscribeAsState()
-        val availableCollections = slotState.availableCollections?.data?.collections
-        val blurConfig = LocalGlassEffectConfig.current
-        val hazeState = LocalHazeState.current
-        if(!slotState.loading) {
-            Dialog(
-                onDismissRequest = {
-                    component.sendIntent(
-                        FanficPageActionsComponent.Intent.CloseAvailableCollections
-                    )
-                }
-            ) {
-                Card(
-                    colors = if(blurConfig.blurEnabled) {
-                        CardDefaults.cardColors(
-                            containerColor = Color.Transparent,
-                        )
-                    } else {
-                        CardDefaults.cardColors()
-                    },
-                    modifier = Modifier.thenIf(blurConfig.blurEnabled) {
-                        hazeChild(
-                            state = hazeState,
-                            shape = CardDefaults.shape
-                        )
-                    },
-                ) {
-                    Text(
-                        text = stringResource(Res.string.fanficPage_collections_dialog_title),
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(3.dp)
-                    )
-                    Spacer(modifier = Modifier.requiredHeight(8.dp),)
-                    if (availableCollections != null) {
-                        LazyColumn(
-                            modifier = Modifier.padding(3.dp),
-                        ) {
-                            items(availableCollections) { collection ->
-                                CollectionItem(
-                                    modifier = Modifier
-                                        .background(
-                                            color = if(blurConfig.blurEnabled) {
-                                                MaterialTheme.colorScheme.surfaceVariant.copy(0.3F)
-                                            } else {
-                                                MaterialTheme.colorScheme.surfaceVariant
-                                            },
-                                            shape = CardDefaults.shape
-                                        )
-                                        .clip(CardDefaults.shape)
-                                        .thenIf(blurConfig.blurEnabled) {
-                                            hazeChild(
-                                                state = hazeState,
-                                                shape = CardDefaults.shape
-                                            )
-                                        },
-                                    collection = collection,
-                                    selected = collection.isInThisCollection == AvailableCollectionsModel.Data.Collection.IN_COLLECTION,
-                                    onSelect = { add ->
-                                        slotComponent.sendIntent(
-                                            FanficPageCollectionsComponent.Intent.AddToCollection(
-                                                add = add,
-                                                collection = collection
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
+        CollectionsDialog(
+            component = slotComponent,
+            onDismissRequest = {
+                component.sendIntent(
+                    FanficPageActionsComponent.Intent.CloseAvailableCollections
+                )
             }
-        }
+        )
     }
 }
 
@@ -230,6 +164,77 @@ private fun FanficActionItem(
             text = title,
             style = MaterialTheme.typography.bodySmall
         )
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+private fun CollectionsDialog(
+    component: FanficPageCollectionsComponent,
+    onDismissRequest: () -> Unit
+) {
+    val state by component.state.subscribeAsState()
+    val availableCollections = state.availableCollections?.data?.collections
+    val loading = state.loading
+
+    Dialog(
+        onDismissRequest = onDismissRequest
+    ) {
+        Card {
+            if(!loading) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall)
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_stack_plus),
+                        contentDescription = stringResource(Res.string.content_description_icon_stack_plus),
+                        modifier = Modifier.size(24.dp),
+                    )
+                    HorizontalSpacer(6.dp)
+                    Text(
+                        text = stringResource(Res.string.fanficPage_collections_dialog_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(3.dp)
+                    )
+                }
+                if (availableCollections != null) {
+                    LazyColumn {
+                        items(availableCollections) { collection ->
+                            CollectionItem(
+                                modifier = Modifier
+                                    .background(
+                                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
+                                        shape = CardDefaults.shape
+                                    )
+                                    .clip(CardDefaults.shape),
+                                collection = collection,
+                                selected = collection.isInThisCollection == AvailableCollectionsModel.Data.Collection.IN_COLLECTION,
+                                onSelect = { add ->
+                                    component.sendIntent(
+                                        FanficPageCollectionsComponent.Intent.AddToCollection(
+                                            add = add,
+                                            collection = collection
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator()
+                    HorizontalSpacer(10.dp)
+                    Text(
+                        text = stringResource(Res.string.loading_in_progress),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -294,14 +299,15 @@ private fun CollectionItem(
                 modifier = Modifier
                     .size(36.dp)
                     .background(
-                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.surfaceVariant,
                         CardShape.CardStandalone,
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = collection.count.toString(),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }

@@ -66,16 +66,20 @@ data class UserSectionsStable(
     val readed: SectionWithQuery,
     val follow: SectionWithQuery,
     val visited: SectionWithQuery
-)
-val userSections = with(UserSections.default()) {
-    UserSectionsStable(
-        favourites = favourites.toStableModel(),
-        liked = liked.toStableModel(),
-        readed = readed.toStableModel(),
-        follow = follow.toStableModel(),
-        visited = visited.toStableModel()
-    )
+) {
+    companion object {
+        val default = with(UserSections.default()) {
+            UserSectionsStable(
+                favourites = favourites.toStableModel(),
+                liked = liked.toStableModel(),
+                readed = readed.toStableModel(),
+                follow = follow.toStableModel(),
+                visited = visited.toStableModel()
+            )
+        }
+    }
 }
+
 
 object CollectionsTypes {
     val personalCollections: SectionWithQuery

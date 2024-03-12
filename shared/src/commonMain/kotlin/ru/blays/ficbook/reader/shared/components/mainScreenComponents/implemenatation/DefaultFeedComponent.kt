@@ -14,17 +14,17 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.data.SectionWithQuery
-import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
-import ru.blays.ficbook.reader.shared.data.sections.popularSections
-import ru.blays.ficbook.reader.shared.data.sections.userSections
-import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
-import ru.blays.ficbook.reader.shared.preferences.settings
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponentInternal
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
 import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.FeedComponent
 import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.FeedComponentInternal
+import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
+import ru.blays.ficbook.reader.shared.data.sections.UserSectionsStable
+import ru.blays.ficbook.reader.shared.data.sections.popularSections
+import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
+import ru.blays.ficbook.reader.shared.preferences.settings
 
 @OptIn(ExperimentalSettingsApi::class)
 class DefaultFeedComponent private constructor(
@@ -80,7 +80,7 @@ class DefaultFeedComponent private constructor(
             } catch (_: Exception) {}
         }
         return if(authRepository.hasSavedAccount && !authRepository.anonymousMode) {
-            userSections.favourites.toApiModel()
+            UserSectionsStable.default.favourites.toApiModel()
         } else {
             popularSections.allPopular.toApiModel()
         }

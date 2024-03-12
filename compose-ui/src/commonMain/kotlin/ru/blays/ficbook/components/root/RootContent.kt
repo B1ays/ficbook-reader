@@ -9,8 +9,8 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import dev.chrisbanes.haze.HazeStyle
-import ficbook_reader.`compose-ui`.generated.resources.Res
-import ficbook_reader.`compose-ui`.generated.resources.ok
+import ficbook_reader.compose_ui.generated.resources.Res
+import ficbook_reader.compose_ui.generated.resources.ok
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.aboutContent.AboutContent

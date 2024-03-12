@@ -37,7 +37,7 @@ import com.moriatsushi.insetsx.systemBarsPadding
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import ficbook_reader.`compose-ui`.generated.resources.*
+import ficbook_reader.compose_ui.generated.resources.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -47,10 +47,10 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.BackHandler
 import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.reader.feature.copyImageFeature.copyImageToClipboard
-import ru.blays.ficbook.reader.shared.data.dto.*
-import ru.blays.ficbook.reader.shared.platformUtils.shareSupported
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
+import ru.blays.ficbook.reader.shared.data.dto.*
+import ru.blays.ficbook.reader.shared.platformUtils.shareSupported
 import ru.blays.ficbook.theme.*
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
@@ -73,7 +73,7 @@ import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
 fun FanficPageInfoContent(component: FanficPageInfoComponent) {
     val windowSize = WindowSize()
 
-    if(windowSize.width > 600) {
+    if (windowSize.width > 600) {
         LandscapeContent(component)
     } else {
         PortraitContent(component)
@@ -87,19 +87,14 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
     val fanfic = state.fanfic
     val isLoading = state.isLoading
 
-    val hazeState = remember { HazeState() }
     val glassEffectConfig = LocalGlassEffectConfig.current
 
-    val bottomSheetState =
-        rememberStandardBottomSheetState(
-            initialValue = SheetValue.PartiallyExpanded
-        )
-    val snackbarHostState = remember { SnackbarHostState() }
-    val bottomSheetScaffoldState =
-        rememberBottomSheetScaffoldState(
-            bottomSheetState = bottomSheetState,
-            snackbarHostState = snackbarHostState
-        )
+    val bottomSheetState = rememberStandardBottomSheetState(
+        initialValue = SheetValue.PartiallyExpanded
+    )
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
     val pullRefreshState = rememberPullToRefreshState()
     val scrollBehavior = rememberToolbarScrollBehavior()
 
@@ -132,10 +127,20 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
             } else {
                 null
             }
+
+            var boxModifier: Modifier = Modifier
+
             if (
                 coverPainter != null &&
                 glassEffectConfig.blurEnabled
             ) {
+                val hazeState = remember { HazeState() }
+
+                boxModifier = Modifier.hazeChild(
+                    state = hazeState,
+                    style = glassEffectConfig.style
+                )
+
                 Image(
                     painter = coverPainter,
                     contentDescription = stringResource(Res.string.content_description_fanfic_cover),
@@ -158,12 +163,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                 )
             }
             Box(
-                modifier = Modifier
-                    .hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
-                    .systemBarsPadding()
+                modifier = boxModifier.systemBarsPadding()
             ) {
                 BottomSheetScaffold(
                     scaffoldState = bottomSheetScaffoldState,
@@ -285,7 +285,6 @@ private fun LandscapeContent(
     val fanfic = state.fanfic
     val isLoading = state.isLoading
 
-    val hazeState = remember { HazeState() }
     val glassEffectConfig = LocalGlassEffectConfig.current
 
     if(fanfic != null && !isLoading) {
@@ -339,10 +338,19 @@ private fun LandscapeContent(
             BoxWithConstraints(
                 modifier = Modifier.fillMaxSize()
             ) {
+                var scaffoldModifier: Modifier = Modifier
+
                 if (
                     coverPainter != null &&
                     glassEffectConfig.blurEnabled
                 ) {
+                    val hazeState = remember { HazeState() }
+
+                    scaffoldModifier = Modifier.hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+
                     Image(
                         painter = coverPainter,
                         contentDescription = stringResource(Res.string.content_description_fanfic_cover),
@@ -353,12 +361,7 @@ private fun LandscapeContent(
                     )
                 }
                 Scaffold(
-                    modifier = Modifier
-                        .hazeChild(
-                            state = hazeState,
-                            style = glassEffectConfig.style
-                        )
-                        .systemBarsPadding(),
+                    modifier = scaffoldModifier.systemBarsPadding(),
                     topBar = {
                         CollapsingToolbar(
                             containerColor = Color.Transparent,

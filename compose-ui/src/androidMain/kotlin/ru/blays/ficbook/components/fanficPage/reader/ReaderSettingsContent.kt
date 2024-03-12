@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
-import ficbook_reader.`compose-ui`.generated.resources.Res
-import ficbook_reader.`compose-ui`.generated.resources.ic_dropper
+import ficbook_reader.compose_ui.generated.resources.Res
+import ficbook_reader.compose_ui.generated.resources.ic_dropper
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent

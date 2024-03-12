@@ -23,10 +23,10 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ficbook_reader.`compose-ui`.generated.resources.Res
-import ficbook_reader.`compose-ui`.generated.resources.ic_book_outlined
-import ficbook_reader.`compose-ui`.generated.resources.ic_clock
-import ficbook_reader.`compose-ui`.generated.resources.ic_settings
+import ficbook_reader.compose_ui.generated.resources.Res
+import ficbook_reader.compose_ui.generated.resources.ic_book_outlined
+import ficbook_reader.compose_ui.generated.resources.ic_clock
+import ficbook_reader.compose_ui.generated.resources.ic_settings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
