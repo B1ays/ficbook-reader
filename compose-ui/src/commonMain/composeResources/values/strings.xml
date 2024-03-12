@@ -288,6 +288,7 @@
     <string name="content_description_icon_profile_background">Фон профиля</string>
     <string name="content_description_icon_back">Иконка назад</string>
     <string name="content_description_icon_down">Иконка вниз</string>
+    <string name="content_description_icon_up">Иконка вверх</string>
     <string name="content_description_icon_smile_sad">Иконка грустный смайлик</string>
     <string name="content_description_icon_sort">Иконка сортировки</string>
     <string name="content_description_icon_clear">Иконка очистки</string>
