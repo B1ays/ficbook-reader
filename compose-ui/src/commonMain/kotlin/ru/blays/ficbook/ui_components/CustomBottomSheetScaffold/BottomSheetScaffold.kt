@@ -19,10 +19,7 @@ package ru.blays.ficbook.ui_components.CustomBottomSheetScaffold
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +32,12 @@ import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMapNotNull
+import androidx.compose.ui.util.fastMaxBy
 import kotlinx.coroutines.launch
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.*
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue.*
@@ -102,6 +105,8 @@ fun BottomSheetScaffold(
     sheetSwipeEnabled: Boolean = true,
     topBar: @Composable (() -> Unit)? = null,
     snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
+    floatingActionButton: @Composable () -> Unit = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
     containerColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = contentColorFor(containerColor),
     content: @Composable (PaddingValues) -> Unit
@@ -113,11 +118,14 @@ fun BottomSheetScaffold(
         snackbarHost = {
             snackbarHost(scaffoldState.snackbarHostState)
         },
+        fab = floatingActionButton,
+        fabPosition = floatingActionButtonPosition,
         sheetPeekHeight = sheetPeekHeight,
         sheetOffset = { scaffoldState.bottomSheetState.requireOffset() },
         sheetState = scaffoldState.bottomSheetState,
         containerColor = containerColor,
         contentColor = contentColor,
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets,
         bottomSheet = { layoutHeight ->
             StandardBottomSheet(
                 state = scaffoldState.bottomSheetState,
@@ -318,11 +326,14 @@ private fun BottomSheetScaffoldLayout(
     body: @Composable (innerPadding: PaddingValues) -> Unit,
     bottomSheet: @Composable (layoutHeight: Int) -> Unit,
     snackbarHost: @Composable () -> Unit,
+    fab: @Composable () -> Unit,
+    fabPosition: FabPosition,
     sheetPeekHeight: Dp,
     sheetOffset: () -> Float,
     sheetState: SheetState,
     containerColor: Color,
     contentColor: Color,
+    contentWindowInsets: WindowInsets,
 ) {
     val density = LocalDensity.current
     SubcomposeLayout { constraints ->
@@ -368,10 +379,70 @@ private fun BottomSheetScaffoldLayout(
             Expanded, Hidden -> layoutHeight - snackbarPlaceable.height
         }
 
+        val fabPlaceables = subcompose(BottomSheetScaffoldLayoutSlot.Fab, fab).fastMapNotNull { measurable ->
+            // respect only bottom and horizontal for snackbar and fab
+            val leftInset =
+                contentWindowInsets.getLeft(this@SubcomposeLayout, layoutDirection)
+            val rightInset =
+                contentWindowInsets.getRight(this@SubcomposeLayout, layoutDirection)
+            val bottomInset = contentWindowInsets.getBottom(this@SubcomposeLayout)
+            measurable.measure(
+                looseConstraints.offset(
+                    -leftInset - rightInset,
+                    -bottomInset
+                )
+            )
+            .takeIf { it.height != 0 && it.width != 0 }
+        }
+
+        val fabPlacement = if (fabPlaceables.isNotEmpty()) {
+            val fabWidth = fabPlaceables.fastMaxBy { it.width }!!.width
+            val fabHeight = fabPlaceables.fastMaxBy { it.height }!!.height
+            // FAB distance from the left of the layout, taking into account LTR / RTL
+            val fabLeftOffset = when (fabPosition) {
+                FabPosition.Start -> {
+                    if (layoutDirection == LayoutDirection.Ltr) {
+                        FabSpacing.roundToPx()
+                    } else {
+                        layoutWidth - FabSpacing.roundToPx() - fabWidth
+                    }
+                }
+                FabPosition.End, FabPosition.EndOverlay -> {
+                    if (layoutDirection == LayoutDirection.Ltr) {
+                        layoutWidth - FabSpacing.roundToPx() - fabWidth
+                    } else {
+                        FabSpacing.roundToPx()
+                    }
+                }
+                else -> (layoutWidth - fabWidth) / 2
+            }
+
+            FabPlacement(
+                left = fabLeftOffset,
+                width = fabWidth,
+                height = fabHeight
+            )
+        } else {
+            null
+        }
+
+        val fabOffsetFromBottom = fabPlacement?.let {
+            if (it.height != 0) {
+                it.height + FabSpacing.roundToPx() + contentWindowInsets.getBottom(this@SubcomposeLayout)
+            } else {
+                0
+            }
+        } ?: 0
+
         layout(layoutWidth, layoutHeight) {
             // Placement order is important for elevation
             bodyPlaceable.placeRelative(0, 0)
             topBarPlaceable?.placeRelative(0, 0)
+            fabPlacement?.let { placement ->
+                fabPlaceables.fastForEach {
+                    it.place(placement.left, layoutHeight - fabOffsetFromBottom)
+                }
+            }
             sheetPlaceable.placeRelative(sheetOffsetX, sheetOffsetY)
             snackbarPlaceable.placeRelative(snackbarOffsetX, snackbarOffsetY)
         }
@@ -383,23 +454,40 @@ private fun BottomSheetScaffoldAnchorChangeHandler(
     state: SheetState,
     animateTo: (target: SheetValue, velocity: Float) -> Unit,
     snapTo: (target: SheetValue) -> Unit,
-) =
-    ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.AnchorChangeHandler<SheetValue> { previousTarget, previousAnchors, newAnchors ->
-        val previousTargetOffset = previousAnchors[previousTarget]
-        val newTarget = when (previousTarget) {
-            Hidden, PartiallyExpanded -> PartiallyExpanded
-            Expanded -> if (newAnchors.containsKey(Expanded)) Expanded else PartiallyExpanded
-        }
-        val newTargetOffset = newAnchors.getValue(newTarget)
-        if (newTargetOffset != previousTargetOffset) {
-            if (state.swipeableState.isAnimationRunning) {
-                // Re-target the animation to the new offset if it changed
-                animateTo(newTarget, state.swipeableState.lastVelocity)
-            } else {
-                // Snap to the new offset value of the target if no animation was running
-                snapTo(newTarget)
-            }
+) = AnchorChangeHandler<SheetValue> { previousTarget, previousAnchors, newAnchors ->
+    val previousTargetOffset = previousAnchors[previousTarget]
+    val newTarget = when (previousTarget) {
+        Hidden, PartiallyExpanded -> PartiallyExpanded
+        Expanded -> if (newAnchors.containsKey(Expanded)) Expanded else PartiallyExpanded
+    }
+    val newTargetOffset = newAnchors.getValue(newTarget)
+    if (newTargetOffset != previousTargetOffset) {
+        if (state.swipeableState.isAnimationRunning) {
+            // Re-target the animation to the new offset if it changed
+            animateTo(newTarget, state.swipeableState.lastVelocity)
+        } else {
+            // Snap to the new offset value of the target if no animation was running
+            snapTo(newTarget)
         }
     }
+}
 
-private enum class BottomSheetScaffoldLayoutSlot { TopBar, Body, Sheet, Snackbar }
+/**
+ * Placement information for a [FloatingActionButton] inside a [Scaffold].
+ *
+ * @property left the FAB's offset from the left edge of the bottom bar, already adjusted for RTL
+ * support
+ * @property width the width of the FAB
+ * @property height the height of the FAB
+ */
+@Immutable
+internal class FabPlacement(
+    val left: Int,
+    val width: Int,
+    val height: Int
+)
+
+private enum class BottomSheetScaffoldLayoutSlot { TopBar, Body, Sheet, Snackbar, Fab }
+
+// FAB spacing above the bottom bar / bottom of the Scaffold
+private val FabSpacing = 16.dp
