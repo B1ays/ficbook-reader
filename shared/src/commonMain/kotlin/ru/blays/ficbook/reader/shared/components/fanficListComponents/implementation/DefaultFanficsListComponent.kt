@@ -17,17 +17,17 @@ import org.koin.java.KoinJavaComponent.inject
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponentInternal
+import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
+import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarMessageType
 import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.data.mappers.toStableModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficsListRepo
 import ru.blays.ficbook.reader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.repositiry.ISettingsRepository
-import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
-import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
-import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponentInternal
-import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
-import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarMessageType
 
 class DefaultFanficsListComponent(
     componentContext: ComponentContext,
@@ -83,15 +83,6 @@ class DefaultFanficsListComponent(
         key = ISettingsRepository.stringKey(SettingsKeys.SUPERFILTER_KEY),
         defaultValue = ""
     )
-
-    init {
-        if(loadAtCreate) {
-            refresh()
-        }
-        lifecycle.doOnDestroy {
-            coroutineScope.cancel()
-        }
-    }
 
     override fun sendIntent(intent: FanficsListComponent.Intent) {
         when(intent) {
@@ -185,6 +176,15 @@ class DefaultFanficsListComponent(
                 message = "Секция ${section.name} установлена как лента",
                 infoType = SnackbarMessageType.INFO
             )
+        }
+    }
+
+    init {
+        if(loadAtCreate) {
+            refresh()
+        }
+        lifecycle.doOnDestroy {
+            coroutineScope.cancel()
         }
     }
 }

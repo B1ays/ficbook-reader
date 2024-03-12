@@ -56,7 +56,7 @@ class DefaultFeedComponent private constructor(
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private var feedSettingsDelegate by settings.nullableString(
+    private var feedSetting by settings.nullableString(
         key = SettingsKeys.FEED_SECTION_KEY
     )
     private val feedSettingsFlow = settings.getStringOrNullFlow(
@@ -73,7 +73,7 @@ class DefaultFeedComponent private constructor(
     override val fanficListComponent: FanficsListComponent = _fanficListComponent
 
     private fun getFeedSection(): SectionWithQuery {
-        val saved = feedSettingsDelegate
+        val saved = feedSetting
         if(saved != null) {
             try {
                 return Json.decodeFromString(saved)
@@ -96,7 +96,7 @@ class DefaultFeedComponent private constructor(
         when(intent) {
             is FeedComponent.Intent.SetFeedSection -> {
                 _fanficListComponent.setSection(intent.section)
-                feedSettingsDelegate = Json.encodeToString(intent.section)
+                feedSetting = Json.encodeToString(intent.section)
             }
         }
     }
