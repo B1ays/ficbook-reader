@@ -1,6 +1,7 @@
 package ru.blays.ficbook.components.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -14,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -107,6 +107,12 @@ private fun PortraitContent(
     val hazeState = remember { HazeState() }
     val blurConfig = LocalGlassEffectConfig.current
 
+    val containerColor = if(blurConfig.blurEnabled) {
+        Color.Transparent
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+
     ModalNavigationDrawer(
         drawerContent = {
             DrawerPortrait(component = component)
@@ -162,16 +168,13 @@ private fun PortraitContent(
                         },
                         collapsingTitle = CollapsingTitle.large(stringResource(Res.string.app_name)),
                         insets = WindowInsets.statusBars,
-                        containerColor = if(blurConfig.blurEnabled) {
-                            Color.Transparent
-                        } else {
-                            MaterialTheme.colorScheme.surface
-                        },
+                        containerColor = containerColor,
                         collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
                     )
                     PagerChips(
                         tabs = tabs,
-                        pagerState = pagerState
+                        pagerState = pagerState,
+                        modifier = Modifier.background(containerColor),
                     )
                 }
             }
@@ -197,29 +200,23 @@ fun PagerChips(
 ) {
     val scope = rememberCoroutineScope()
 
-    var currentTab by rememberSaveable {
-        mutableStateOf(pagerState.currentPage)
-    }
+    val currentTab = pagerState.currentPage
 
     LazyRow(
         modifier = modifier
             .padding(horizontal = 10.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ) {
         itemsIndexed(tabs) { index, value ->
             InputChip(
-                modifier = Modifier
-                    .padding(horizontal = 3.dp),
+                modifier = Modifier.padding(horizontal = 3.dp),
                 selected = currentTab == index,
                 onClick = {
                     scope.launch {
                         pagerState.animateScrollToPage(index)
                     }
-                    currentTab = index
                 },
-                label = {
-                    Text(text = value.name)
-                }
+                label = { Text(text = value.name) }
             )
         }
     }
