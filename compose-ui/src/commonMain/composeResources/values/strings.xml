@@ -328,6 +328,7 @@
     <string name="content_description_icon_eye_crossed">Иконка сокрытия</string>
     <string name="content_description_icon_globe">Иконка глобуса</string>
     <string name="content_description_icon_info">Иконка информации</string>
+    <string name="content_description_icon_stack_plus">Иконка стопки с плюсом</string>
 
     <!--  Errors  -->
     <string name="error_something_went_wrong">Что-то пошло не так</string>

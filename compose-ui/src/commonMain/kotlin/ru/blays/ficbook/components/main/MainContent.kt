@@ -26,7 +26,7 @@ import com.moriatsushi.insetsx.systemBarsPadding
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import ficbook_reader.`compose-ui`.generated.resources.*
+import ficbook_reader.compose_ui.generated.resources.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
-import ru.blays.ficbook.reader.shared.data.sections.userSections
+import ru.blays.ficbook.reader.shared.data.sections.UserSectionsStable
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
@@ -337,7 +337,7 @@ private fun DrawerPortrait(
 private fun DrawerContent(
     component: MainScreenComponent
 ) {
-    val userSections = userSections
+    val userSections = UserSectionsStable.default
 
     fun navigateToSection(section: SectionWithQuery) {
         component.onOutput(
@@ -355,7 +355,7 @@ private fun DrawerContent(
             style = MaterialTheme.typography.headlineSmall
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-        val favouritesSection = remember { userSections.favourites }
+        val favouritesSection = userSections.favourites
         NavigationDrawerItem(
             label = {
                 Text(text = favouritesSection.name)
@@ -372,7 +372,7 @@ private fun DrawerContent(
                 navigateToSection(favouritesSection)
             }
         )
-        val likedSection = remember { userSections.liked }
+        val likedSection = userSections.liked
         NavigationDrawerItem(
             label = {
                 Text(text = likedSection.name)
@@ -389,7 +389,7 @@ private fun DrawerContent(
                 navigateToSection(likedSection)
             }
         )
-        val readedSection = remember { userSections.readed }
+        val readedSection = userSections.readed
         NavigationDrawerItem(
             label = {
                 Text(text = readedSection.name)
@@ -406,7 +406,7 @@ private fun DrawerContent(
                 navigateToSection(readedSection)
             }
         )
-        val followSection = remember { userSections.follow }
+        val followSection = userSections.follow
         NavigationDrawerItem(
             label = {
                 Text(text = followSection.name)
@@ -423,7 +423,7 @@ private fun DrawerContent(
                 navigateToSection(followSection)
             }
         )
-        val visitedSection = remember { userSections.visited }
+        val visitedSection = userSections.visited
         NavigationDrawerItem(
             label = {
                 Text(text = visitedSection.name)

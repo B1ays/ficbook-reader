@@ -19,8 +19,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import ficbook_reader.`compose-ui`.generated.resources.Res
-import ficbook_reader.`compose-ui`.generated.resources.content_description_icon_author_avatar
+import ficbook_reader.compose_ui.generated.resources.Res
+import ficbook_reader.compose_ui.generated.resources.content_description_icon_author_avatar
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.PopularAuthorModelStable

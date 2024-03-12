@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
-import ficbook_reader.`compose-ui`.generated.resources.*
+import ficbook_reader.compose_ui.generated.resources.*
 import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
 import org.jetbrains.compose.resources.painterResource
