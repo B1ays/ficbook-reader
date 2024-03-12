@@ -6,13 +6,13 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import ru.blays.ficbook.api.SEARCH_HREF
 import ru.blays.ficbook.api.data.SectionWithQuery
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchComponent
 import ru.blays.ficbook.reader.shared.data.dto.IntRangeSimple
 import ru.blays.ficbook.reader.shared.data.dto.SearchParams
 import ru.blays.ficbook.reader.shared.data.dto.SearchedFandomModel
 import ru.blays.ficbook.reader.shared.data.realm.entity.*
-import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
-import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
-import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchComponent
 
 class DefaultSearchComponent(
     componentContext: ComponentContext,
@@ -308,10 +308,9 @@ class DefaultSearchComponent(
         searchFandomsComponent.state.subscribe { state ->
             if(state.selectedFandoms.isNotEmpty()) {
                 val fandomsIds = state.selectedFandoms.map(SearchedFandomModel::id)
-                if(!fandomsIds.containsAll(previousIds) || previousIds.isEmpty()) {
+                if(fandomsIds != previousIds) {
                     _searchPairingsComponent.excludeNotLinkedPairings(fandomsIds)
                     _searchPairingsComponent.update(fandomsIds)
-                    println("Update searched characters")
                 }
                 previousIds = fandomsIds
             } else {

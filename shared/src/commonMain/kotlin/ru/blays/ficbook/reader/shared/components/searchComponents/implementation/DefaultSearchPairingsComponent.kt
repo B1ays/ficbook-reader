@@ -8,12 +8,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.dto.SearchedCharacterModel
-import ru.blays.ficbook.reader.shared.data.dto.SearchedPairingModel
-import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
 import ru.blays.ficbook.reader.shared.components.Utils.ExternalStateUpdatable
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.InternalSearchPairingsComponent
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchPairingsComponent
+import ru.blays.ficbook.reader.shared.data.dto.SearchedCharacterModel
+import ru.blays.ficbook.reader.shared.data.dto.SearchedPairingModel
+import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
 
 class DefaultSearchPairingsComponent(
     componentContext: ComponentContext,
@@ -134,8 +134,8 @@ class DefaultSearchPairingsComponent(
                 val result = repository.getCharacters(fandomIDs)
             ) {
                 is ApiResult.Error -> {
+                    result.exception.printStackTrace()
                     _state.update {
-                        result.exception.printStackTrace()
                         it.copy(
                             loading = false,
                             error = true,
