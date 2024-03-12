@@ -47,6 +47,7 @@ import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberSheetState
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
+import ru.blays.ficbook.ui_components.FAB.ScrollToStartFAB
 import ru.blays.ficbook.ui_components.LazyItems.items
 import ru.blays.ficbook.ui_components.Tabs.CustomTab
 import ru.blays.ficbook.ui_components.Tabs.CustomTabIndicator
@@ -76,6 +77,8 @@ fun SearchContent(component: SearchComponent) {
 private fun LandscapeContent(component: SearchComponent) {
     val coroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Open)
+
+    val lazyListState = rememberLazyListState()
 
     val glassEffectConfig = LocalGlassEffectConfig.current
     val hazeState = remember { HazeState() }
@@ -143,7 +146,9 @@ private fun LandscapeContent(component: SearchComponent) {
                     )
                 }
             )
-        }
+        },
+        floatingActionButton = { ScrollToStartFAB(lazyListState) },
+        floatingActionButtonPosition = FabPosition.End
     ) { padding ->
         ModalNavigationDrawer(
             gesturesEnabled = false,
@@ -173,6 +178,7 @@ private fun LandscapeContent(component: SearchComponent) {
         ) {
             FanficsListContent(
                 component = component.fanficsListComponent,
+                lazyListState = lazyListState,
                 contentPadding = padding
             )
         }
@@ -188,6 +194,8 @@ private fun PortraitContent(component: SearchComponent) {
     )
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
     val coroutineScope = rememberCoroutineScope()
+
+    val lazyListState = rememberLazyListState()
 
     val glassEffectConfig = LocalGlassEffectConfig.current
     val hazeState = remember { HazeState() }
@@ -267,10 +275,13 @@ private fun PortraitContent(component: SearchComponent) {
                 },
             )
         },
+        floatingActionButton = { ScrollToStartFAB(lazyListState) },
+        floatingActionButtonPosition = FabPosition.End,
         scaffoldState = bottomSheetScaffoldState,
     ) { padding ->
         FanficsListContent(
             component = component.fanficsListComponent,
+            lazyListState = lazyListState,
             contentPadding = padding,
             modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
                 haze(state = hazeState)

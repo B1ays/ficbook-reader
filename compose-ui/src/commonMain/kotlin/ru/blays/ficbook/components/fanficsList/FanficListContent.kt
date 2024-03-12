@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
@@ -26,13 +27,14 @@ import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenuState
 import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
 import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
+import ru.blays.ficbook.ui_components.FAB.ScrollToStartFAB
 import ru.blays.ficbook.ui_components.FanficComponents.FanficCard
 import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
@@ -47,6 +49,7 @@ import ru.hh.toolbar.custom_toolbar.rememberToolbarScrollBehavior
 @Composable
 fun FanficsListContent(
     component: FanficsListComponent,
+    lazyListState: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues? = null,
     modifier: Modifier = Modifier
 ) {
@@ -54,7 +57,6 @@ fun FanficsListContent(
     val list = state.list
     val isLoading = state.isLoading
 
-    val lazyListState = rememberLazyListState()
     val pullRefreshState = rememberPullToRefreshState()
 
     LaunchedEffect(isLoading) {
@@ -180,6 +182,7 @@ fun FanficsListScreenContent(
     component: FanficsListComponent
 ) {
     val state by component.state.subscribeAsState()
+    val lazyListState = rememberLazyListState()
     val scrollBehavior = rememberToolbarScrollBehavior()
     val hazeState = remember { HazeState() }
     val blurConfig = LocalGlassEffectConfig.current
@@ -253,10 +256,13 @@ fun FanficsListScreenContent(
                     )
                 }
             )
-        }
+        },
+        floatingActionButton = { ScrollToStartFAB(lazyListState) },
+        floatingActionButtonPosition = FabPosition.End
     ) { padding ->
         FanficsListContent(
             component = component,
+            lazyListState = lazyListState,
             contentPadding = padding,
             modifier = Modifier
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
