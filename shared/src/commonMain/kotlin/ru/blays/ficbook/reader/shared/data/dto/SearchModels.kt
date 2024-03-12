@@ -95,7 +95,15 @@ data class SearchParams(
                 RATING_NC17,
                 RATING_NC21
             ),
-            withDirection = emptyList(),
+            withDirection = listOf(
+                DIRECTION_GEN,
+                DIRECTION_HET,
+                DIRECTION_SLASH,
+                DIRECTION_FEMSLASH,
+                DIRECTION_OTHER,
+                DIRECTION_MIXED,
+                DIRECTION_ARTICLE,
+            ),
             translate = TRANSLATE_DOESNT_MATTER,
             onlyPremium = false,
             likesRange = IntRangeSimple.EMPTY,

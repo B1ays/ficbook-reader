@@ -6,6 +6,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.selection.toggleable
@@ -38,9 +39,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
 import ru.blays.ficbook.platformUtils.BackHandler
-import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.*
+import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
@@ -50,6 +51,8 @@ import ru.blays.ficbook.ui_components.LazyItems.items
 import ru.blays.ficbook.ui_components.Tabs.CustomTab
 import ru.blays.ficbook.ui_components.Tabs.CustomTabIndicator
 import ru.blays.ficbook.ui_components.Tabs.CustomTabRow
+import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
+import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
@@ -145,16 +148,21 @@ private fun LandscapeContent(component: SearchComponent) {
         ModalNavigationDrawer(
             gesturesEnabled = false,
             drawerContent = {
-                ModalDrawerSheet(
-                    modifier = Modifier.padding(
-                        top = padding.calculateTopPadding()
-                    ),
+                Column(
+                    modifier = Modifier
+                        .background(
+                            color = DrawerDefaults.containerColor,
+                            shape = DrawerDefaults.shape
+                        )
+                        .padding(
+                            top = padding.calculateTopPadding()
+                        ),
                 ) {
                     SearchMenuRoot(
                         component = component,
                         modifier = Modifier
                             .padding(DefaultPadding.CardDefaultPadding)
-                            .width(450.dp),
+                            .fillMaxWidth(0.4F),
                     )
                 }
             },
@@ -202,13 +210,16 @@ private fun PortraitContent(component: SearchComponent) {
         sheetContent = {
             SearchMenuRoot(
                 component = component,
-                modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(DefaultPadding.CardDefaultPadding),
             ) {
                 coroutineScope.launch {
                     bottomSheetState.partialExpand()
                 }
             }
         },
+        sheetDragHandle = null,
         topBar = {
             CollapsingToolbar(
                 navigationIcon = {
@@ -278,11 +289,11 @@ private fun SearchMenuRoot(
     val pagerState = rememberPagerState(0) { 2 }
     val scope = rememberCoroutineScope()
 
-    Column {
+    Column(
+        modifier = modifier,
+    ) {
         CustomTabRow(
-            modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 5.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             selectedTabIndex = pagerState.currentPage,
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             shape = CircleShape,
@@ -321,6 +332,7 @@ private fun SearchMenuRoot(
                 Text(text = stringResource(Res.string.saved))
             }
         }
+        VerticalCategorySpacer()
         HorizontalPager(
             state = pagerState,
             userScrollEnabled = false
@@ -329,13 +341,11 @@ private fun SearchMenuRoot(
                 0 -> {
                     SearchParamsSelector(
                         component = component,
-                        modifier = modifier,
                         onDismissRequest = onDismissRequest
                     )
                 }
                 1 -> {
                     SavedSearches(
-                        modifier = modifier,
                         component = component.savedSearchesComponent,
                         onBack = { scope.launch { pagerState.animateScrollToPage(0) } }
                     )
@@ -424,7 +434,6 @@ fun SearchParamsSelector(
                 exit = shrinkVertically(spring())
             ) {
                 PairingSelector(component.searchCharactersComponent)
-                VerticalCategorySpacer()
             }
             TagsSelector(
                 component = component.searchTagsComponent,
@@ -494,7 +503,7 @@ fun SearchParamsSelector(
 
 @Composable
 private fun SavedSearches(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     component: SearchSaveComponent,
     onBack: () -> Unit
 ) {
@@ -568,7 +577,7 @@ private fun SavedSearchItem(
                     if(it) {
                         OutlinedTextField(
                             value = name,
-                            onValueChange = { name = it },
+                            onValueChange = { newValue -> name = newValue },
                             label = {
                                 Text(text = stringResource(Res.string.title))
                             },
@@ -587,7 +596,7 @@ private fun SavedSearchItem(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(6.dp))
+                VerticalSpacer(4.dp)
                 AnimatedContent(
                     targetState = editing,
                     transitionSpec = {
@@ -597,7 +606,7 @@ private fun SavedSearchItem(
                     if(it) {
                         OutlinedTextField(
                             value = description,
-                            onValueChange = { description = it },
+                            onValueChange = { newValue -> description = newValue },
                             label = {
                                 Text(text = stringResource(Res.string.description))
                             },
@@ -658,24 +667,26 @@ private fun SavedSearchItem(
                     CustomIconButton(
                         onClick = { editing = true },
                         containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.primary
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        minSize = 40.dp
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_edit),
                             contentDescription = stringResource(Res.string.content_description_icon_edit),
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(22.dp),
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    HorizontalSpacer(4.dp)
                     CustomIconButton(
                         onClick = onDelete,
                         containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.primary
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        minSize = 40.dp
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_delete),
                             contentDescription = stringResource(Res.string.content_description_icon_delete),
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(22.dp),
                         )
                     }
                 }
@@ -1109,84 +1120,97 @@ private fun PairingSelector(component: SearchPairingsComponent) {
                 }
             }
         }
-        OutlinedCard(
-            modifier = Modifier.fillMaxWidth(),
-            border = BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline
-            ),
-            colors = CardDefaults.outlinedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
+        AnimatedVisibility(
+            visible = state.selectedPairings.isNotEmpty(),
+            enter = expandVertically(spring()),
+            exit = shrinkVertically(spring())
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(Res.string.search_included_pairings),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.padding(horizontal = 12.dp),
-            )
-            if (state.selectedPairings.isNotEmpty()) {
-                state.selectedPairings.forEach { pairing ->
-                    ItemChip(
-                        modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
-                        title = pairing.characters.joinToString("/") {
-                            "${if (it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
-                        },
-                        expanded = false,
-                        maxLines = Int.MAX_VALUE,
-                        onRemove = {
-                            component.selectPairing(
-                                select = false,
-                                pairing = pairing
-                            )
-                        },
-                        onClick = {}
-                    )
+            OutlinedCard(
+                modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline
+                ),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(Res.string.search_included_pairings),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                )
+                if (state.selectedPairings.isNotEmpty()) {
+                    state.selectedPairings.forEach { pairing ->
+                        ItemChip(
+                            modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
+                            title = pairing.characters.joinToString("/") {
+                                "${if (it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
+                            },
+                            expanded = false,
+                            maxLines = Int.MAX_VALUE,
+                            onRemove = {
+                                component.selectPairing(
+                                    select = false,
+                                    pairing = pairing
+                                )
+                            },
+                            onClick = {}
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
-            } else {
-                Spacer(modifier = Modifier.height(6.dp))
             }
         }
-        OutlinedCard(
-            modifier = Modifier.fillMaxWidth(),
-            border = BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline
-            ),
-            colors = CardDefaults.outlinedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
+        AnimatedVisibility(
+            visible = state.excludedPairings.isNotEmpty(),
+            enter = expandVertically(spring()),
+            exit = shrinkVertically(spring())
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(Res.string.search_excluded_pairings),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.padding(horizontal = 12.dp)
-            )
-            if (state.excludedPairings.isNotEmpty()) {
-                state.excludedPairings.forEach { pairing ->
-                    ItemChip(
-                        modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
-                        title = pairing.characters.joinToString("/") {
-                            "${if (it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
-                        },
-                        expanded = false,
-                        maxLines = Int.MAX_VALUE,
-                        onRemove = {
-                            component.excludePairing(
-                                exclude = false,
-                                pairing = pairing
-                            )
-                        },
-                        onClick = {}
-                    )
+            OutlinedCard(
+                modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline
+                ),
+                colors = CardDefaults.outlinedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(Res.string.search_excluded_pairings),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+                if (state.excludedPairings.isNotEmpty()) {
+                    state.excludedPairings.forEach { pairing ->
+                        ItemChip(
+                            modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
+                            title = pairing.characters.joinToString("/") {
+                                "${if (it.modifier.isNotEmpty()) "${it.modifier}!" else ""}${it.name}"
+                            },
+                            expanded = false,
+                            maxLines = Int.MAX_VALUE,
+                            onRemove = {
+                                component.excludePairing(
+                                    exclude = false,
+                                    pairing = pairing
+                                )
+                            },
+                            onClick = {}
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
-            } else {
-                Spacer(modifier = Modifier.height(6.dp))
             }
         }
+        VerticalCategorySpacer()
     }
     if (selectCharacterDialogVisible) {
         SelectCharacterDialog(
@@ -1254,7 +1278,6 @@ private fun TagsSelector(
             }
         }
 
-
         OutlinedCardWithCornerButton(
             modifier = Modifier.animateContentSize(spring()),
             outlineColor = MaterialTheme.colorScheme.outline,
@@ -1291,7 +1314,6 @@ private fun TagsSelector(
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
-        Spacer(modifier = Modifier.height(6.dp))
     }
     if (selectIncludedTagDialogVisible) {
         FindTagDialog(
@@ -2018,14 +2040,18 @@ fun SelectCharacterDialog(
     var searchedName by remember { mutableStateOf("") }
 
     val filteredList = remember(searchedName) {
-        if (searchedName.isEmpty()) state.searchedCharacters
-        else state.searchedCharacters.map { group ->
-            group.copy(
-                characters = group.characters.filter { character ->
-                    character.name.contains(searchedName, ignoreCase = true) ||
+        if (searchedName.isEmpty()) {
+            state.searchedCharacters
+        }
+        else {
+            state.searchedCharacters.map { group ->
+                group.copy(
+                    characters = group.characters.filter { character ->
+                        character.name.contains(searchedName, ignoreCase = true) ||
                         character.aliases.any { it.contains(searchedName, ignoreCase = true) }
-                }
-            )
+                    }
+                )
+            }
         }
     }
 
@@ -2059,18 +2085,43 @@ fun SelectCharacterDialog(
                     modifier = Modifier.fillMaxWidth(),
                 )
                 VerticalCategorySpacer()
+
+                val lazyColumnState = rememberLazyListState()
+
+                val ranges = remember(filteredList) {
+                    var previousGroupEnd: Int = 0
+                    filteredList.map { group ->
+                        val groupEnd = previousGroupEnd + group.characters.lastIndex
+                        val range = previousGroupEnd .. groupEnd
+                        previousGroupEnd = groupEnd
+                        return@map range
+                    }
+                }
+
+                val categoryTitle by remember {
+                    derivedStateOf {
+                        filteredList.getOrNull(
+                            index = ranges.indexOfFirst { lazyColumnState.firstVisibleItemIndex in it }
+                        )?.fandomName ?: ""
+                    }
+                }
+
                 LazyColumn(
+                    state = lazyColumnState,
                     modifier = Modifier.weight(1F),
                 ) {
+                    stickyHeader {
+                        Text(
+                            text = categoryTitle,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(6.dp),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
                     filteredList.forEach { group ->
-                        item {
-                            Text(
-                                text = group.fandomName,
-                                modifier = Modifier.padding(6.dp),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
                         items(group.characters) { character ->
                             SearchedCharacterItem(
                                 character = character,
@@ -2590,7 +2641,7 @@ private fun BottomButtonContent(
 }
 
 @Composable
-private fun VerticalCategorySpacer() = Spacer(modifier = Modifier.height(spaceBetweenCategories))
+private fun VerticalCategorySpacer() = VerticalSpacer(spaceBetweenCategories)
 
 private val spaceBetweenCategories = 8.dp
 private val spaceBetweenItems = 6.dp
