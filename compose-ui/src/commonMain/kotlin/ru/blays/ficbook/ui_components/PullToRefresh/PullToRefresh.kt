@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.*
@@ -42,8 +43,8 @@ fun PullToRefreshContainer(
         ArrowIndicator(state = pullRefreshState)
     },
     shape: Shape = PullToRefreshDefaults.shape,
-    containerColor: Color = PullToRefreshDefaults.containerColor,
-    contentColor: Color = PullToRefreshDefaults.contentColor,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    contentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     // Surface is not used here, as we do not want its input-blocking behaviour, since the indicator
     // is typically displayed above other (possibly) interactive indicator.
@@ -60,7 +61,7 @@ fun PullToRefreshContainer(
                     }
                     .shadow(
                         // Avoid shadow when indicator is hidden
-                        elevation = if (showElevation.value) Elevation else 0.dp,
+                        elevation = Elevation,
                         shape = shape,
                         clip = true
                     )
@@ -211,7 +212,7 @@ private val StrokeWidth = 2.5.dp
 private val ArcRadius = 5.5.dp
 internal val SpinnerSize = 16.dp // (ArcRadius + PullRefreshIndicatorDefaults.StrokeWidth).times(2)
 internal val SpinnerContainerSize = 40.dp
-private val Elevation = 2.dp
+private val Elevation = 6.dp
 private val ArrowWidth = 10.dp
 private val ArrowHeight = 5.dp
 // Values taken from SwipeRefreshLayout
