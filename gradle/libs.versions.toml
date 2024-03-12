@@ -18,8 +18,7 @@ decompose = "3.0.0-alpha05"
 essenty = "2.0.0-alpha03"
 # Project Dependencies
 jsoup = "1.17.2"
-koin = "3.5.3"
-koinCompose = "1.1.2"
+koin = "3.6.0-wasm-alpha2"
 kotlinx-coroutines = "1.8.0"
 kotlinx-serialization = "1.6.3"
 ktxCore = "1.12.0"
@@ -27,8 +26,8 @@ appcompat = "1.6.1"
 materialKolor = "1.4.0"
 multiplatform-settings = "1.1.1"
 okhttp = "4.12.0"
-realm = "1.13.0"
-compose-jetbrains = "1.6.0"
+realm = "1.14.0"
+compose-jetbrains = "1.6.10-dev1509"
 androidx-activityCompose = "1.8.2"
 composeColorPicker = "0.7.0"
 insetsx = "0.1.0-alpha10"
@@ -54,7 +53,7 @@ decompose-extensionsComposeJetbrains = { module = "com.arkivanov.decompose:exten
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
-koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-core-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
