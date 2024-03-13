@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -21,9 +20,9 @@ import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.data.dto.UserModelStable
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersSearchComponent
+import ru.blays.ficbook.reader.shared.data.dto.UserModelStable
 import ru.blays.ficbook.values.DefaultPadding
 
 @OptIn(ExperimentalResourceApi::class)
@@ -40,12 +39,13 @@ fun SearchUsersContent(component: UsersSearchComponent) {
                         color = MaterialTheme.colorScheme.background
                     )
             ) {
-                TextField(
+
+                OutlinedTextField(
                     value = state.searchedName,
-                    onValueChange = {
+                    onValueChange = { newValue ->
                         component.sendIntent(
                             UsersSearchComponent.Intent.ChangeSearchedName(
-                                newName = it
+                                newName = newValue
                             )
                         )
                     },
@@ -68,10 +68,6 @@ fun SearchUsersContent(component: UsersSearchComponent) {
                         }
                     },
                     singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
                     shape = CardDefaults.shape,
                     modifier = Modifier
                         .fillMaxWidth()
