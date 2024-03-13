@@ -16,7 +16,8 @@ data class AuthorMainInfoStable(
     val id: String,
     val avatarUrl: String,
     val profileCoverUrl: String,
-    val subscribers: Int
+    val subscribers: Int,
+    val subscribed: Boolean
 )
 
 @Immutable

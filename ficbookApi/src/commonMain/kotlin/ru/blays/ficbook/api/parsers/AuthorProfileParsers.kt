@@ -50,6 +50,12 @@ internal class AuthorMainInfoParser : IDataParser<Document, AuthorMainInfo> {
             .toIntOrNull()
             ?: 0
 
+        val subscribed = profileHeader
+            .select("author-to-favourites-button")
+            .attr(":model-value")
+            .toBooleanStrictOrNull()
+            ?: false
+
         val availableTabs = AuthorProfileTabsParser().parse(data)
 
         return AuthorMainInfo(
@@ -57,10 +63,10 @@ internal class AuthorMainInfoParser : IDataParser<Document, AuthorMainInfo> {
             id = id,
             avatarUrl = avatarUrl,
             profileCoverUrl = profileCoverUrl,
-            subscribers = subscribers
-        ).apply {
-            this.availableTabs = availableTabs
-        }
+            subscribers = subscribers,
+            subscribed = subscribed,
+            availableTabs = availableTabs
+        )
     }
 
     override fun parseSynchronously(data: Document): StateFlow<AuthorMainInfo?> {

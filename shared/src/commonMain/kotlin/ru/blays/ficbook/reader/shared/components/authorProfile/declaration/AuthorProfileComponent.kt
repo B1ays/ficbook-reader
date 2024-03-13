@@ -5,15 +5,18 @@ import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbook.api.data.SectionWithQuery
-import ru.blays.ficbook.reader.shared.data.dto.AuthorProfileModelStable
+import ru.blays.ficbook.reader.shared.components.authorProfile.implementation.DefaultAuthorFollowComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.data.dto.AuthorProfileModelStable
 
 @OptIn(ExperimentalDecomposeApi::class)
 interface AuthorProfileComponent {
     val state: Value<State>
 
     val tabs: Value<ChildPages<TabConfig, Tabs>>
+
+    val followComponent: DefaultAuthorFollowComponent
 
     fun sendIntent(intent: Intent)
     fun onOutput(output: Output)

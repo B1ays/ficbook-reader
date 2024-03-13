@@ -1,5 +1,6 @@
 package ru.blays.ficbook.components.authorProfile
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -22,6 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFold
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.Children
@@ -36,9 +40,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.commentsContent.CommentsContent
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
+import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.*
+import ru.blays.ficbook.reader.shared.components.authorProfile.implementation.DefaultAuthorFollowComponent
 import ru.blays.ficbook.reader.shared.data.dto.AuthorMainInfoStable
 import ru.blays.ficbook.reader.shared.data.dto.BlogPostCardModelStable
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.*
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbook.ui_components.decomposePager.Pages
@@ -81,6 +86,7 @@ private fun LandscapeContent(component: AuthorProfileComponent) {
                 .fillMaxWidth()
         ) {
             ProfileHeader(
+                followComponent = component.followComponent,
                 mainInfo = profile.authorMain,
                 landscape = true,
                 onBack = {
@@ -126,6 +132,7 @@ private fun PortraitContent(component: AuthorProfileComponent) {
                 .windowInsetsPadding(WindowInsets.navigationBars)
         ) {
             ProfileHeader(
+                followComponent = component.followComponent,
                 mainInfo = profile.authorMain,
                 landscape = false,
                 onBack = {
@@ -149,9 +156,10 @@ private fun PortraitContent(component: AuthorProfileComponent) {
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ProfileHeader(
+    followComponent: DefaultAuthorFollowComponent,
     mainInfo: AuthorMainInfoStable,
     landscape: Boolean,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val avatarSize = if(landscape) 125.dp else 100.dp
     val avatarSizePx = with(LocalDensity.current) {
@@ -215,7 +223,7 @@ private fun ProfileHeader(
         val info = subcompose(
             slotId = ProfileHeaderSlots.INFO
         ) {
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
@@ -225,14 +233,14 @@ private fun ProfileHeader(
                             topEnd = CornerSize(0.dp)
                         )
                     ),
-                contentAlignment = Alignment.CenterStart
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
                     modifier = Modifier
                         .padding(
                             DefaultPadding.CardDefaultPadding
                         )
-                        .fillMaxWidth(0.5F)
+                        .weight(1F)
                 ) {
                     Text(
                         text = mainInfo.name,
@@ -250,27 +258,50 @@ private fun ProfileHeader(
                         )
                     )
                 }
+                val followed by followComponent.state.subscribeAsState()
+                CustomIconButton(
+                    onClick = followComponent::changeFollow,
+                    minSize = 42.dp,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = DefaultPadding.CardHorizontalPadding),
+                ) {
+                    AnimatedContent(
+                        targetState = followed
+                    ) {
+                        Icon(
+                            painter = if(it) {
+                                painterResource(Res.drawable.ic_star_filled)
+                            } else {
+                                painterResource(Res.drawable.ic_star_outlined)
+                            },
+                            contentDescription = stringResource(Res.string.content_description_icon_star),
+                            modifier = Modifier.size(26.dp),
+                        )
+                    }
+
+                }
             }
         }
 
-        val headerPlaceable = headerImage.map {
+        val headerPlaceable = headerImage.fastMap {
             it.measure(
                 constraints
             )
         }
-        val headerHeight = headerPlaceable.fold(0) { acc, placeable ->
+        val headerHeight = headerPlaceable.fastFold(0) { acc, placeable ->
             maxOf(acc, placeable.height)
         }
-        val infoPlaceable = info.map {
+        val infoPlaceable = info.fastMap {
             it.measure(
                 constraints
             )
         }
-        val infoHeight = infoPlaceable.fold(0) { acc, placeable ->
+        val infoHeight = infoPlaceable.fastFold(0) { acc, placeable ->
             maxOf(acc, placeable.height)
         }
         val avatarResizedSize = avatarSizePx.coerceAtMost((infoHeight*1.5).roundToInt())
-        val avatarPlaceable = avatar.map {
+        val avatarPlaceable = avatar.fastMap {
             it.measure(
                 Constraints.fixed(
                     width = avatarResizedSize,
@@ -283,13 +314,13 @@ private fun ProfileHeader(
             width = constraints.maxWidth,
             height = headerHeight + infoHeight
         ) {
-            headerPlaceable.forEach {
+            headerPlaceable.fastForEach {
                 it.place(0, 0)
             }
 
-            infoPlaceable.first().place(0, headerHeight)
+            infoPlaceable[0].place(0, headerHeight)
 
-            avatarPlaceable.first().place(
+            avatarPlaceable[0].place(
                 x = ((constraints.maxWidth - avatarResizedSize)*0.8F).toInt(),
                 y = (headerHeight + infoHeight)/2 - avatarResizedSize/2
             )

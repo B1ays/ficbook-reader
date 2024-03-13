@@ -8,6 +8,8 @@ interface IAuthorProfileRepo {
     suspend fun getByHref(href: String): ApiResult<AuthorProfileModelStable>
     suspend fun getByID(id: String): ApiResult<AuthorProfileModelStable>
 
+    suspend fun changeFollow(follow: Boolean, id: String): ApiResult<Boolean>
+
     suspend fun getBlogPosts(id: String, page: Int): ApiResult<ListResult<BlogPostCardModelStable>>
     suspend fun getBlogPage(userID: String, postID: String): ApiResult<BlogPostModelStable>
     suspend fun getPresents(id: String, page: Int): ApiResult<ListResult<AuthorPresentModelStable>>

@@ -22,20 +22,10 @@ data class AuthorMainInfo(
     val id: String,
     val avatarUrl: String,
     val profileCoverUrl: String,
-    val subscribers: Int
-) {
-    internal var availableTabs: List<AuthorProfileTabs> = emptyList()
-    
-    override fun toString(): String = """
-        AuthorMainInfo(
-            name: $name,
-            id: $id,
-            avatarUrl: $avatarUrl,
-            profileCoverUrl: $profileCoverUrl,
-            subscribers count: $subscribers
-        )
-    """.trimIndent()
-}
+    val subscribers: Int,
+    val subscribed: Boolean,
+    internal val availableTabs: List<AuthorProfileTabs>
+)
 
 data class AuthorInfoModel(
     val about: String,
