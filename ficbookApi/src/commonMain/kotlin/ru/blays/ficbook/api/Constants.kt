@@ -21,6 +21,8 @@ const val SEARCH_FANDOMS_HREF = "fandoms/search"
 const val SEARCH_TAGS_HREF = "tags/search"
 const val SEARCH_CHARACTERS_HREF = "ajax/fandoms/characters"
 const val COMMENT_ADD_HREF = "comment/add"
+const val ADD_AUTHOR_TO_FAVOURITE_HREF = "user/favourite/add"
+const val REMOVE_AUTHOR_FROM_FAVOURITE_HREF = "user/favourite/remove"
 
 const val QUERY_PAGE = "p"
 const val QUERY_TAB = "tab"

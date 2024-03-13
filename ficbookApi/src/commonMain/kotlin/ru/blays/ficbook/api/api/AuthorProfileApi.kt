@@ -4,13 +4,13 @@ import kotlinx.coroutines.coroutineScope
 import okhttp3.OkHttpClient
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import ru.blays.ficbook.api.ADD_AUTHOR_TO_FAVOURITE_HREF
 import ru.blays.ficbook.api.QUERY_TAB
+import ru.blays.ficbook.api.REMOVE_AUTHOR_FROM_FAVOURITE_HREF
 import ru.blays.ficbook.api.dataModels.*
 import ru.blays.ficbook.api.ficbookExtensions.ficbookUrl
-import ru.blays.ficbook.api.okHttpDsl.get
-import ru.blays.ficbook.api.okHttpDsl.href
-import ru.blays.ficbook.api.okHttpDsl.page
-import ru.blays.ficbook.api.okHttpDsl.stringOrThrow
+import ru.blays.ficbook.api.json
+import ru.blays.ficbook.api.okHttpDsl.*
 import ru.blays.ficbook.api.parsers.*
 import ru.blays.ficbook.api.result.ApiResult
 import kotlin.reflect.KSuspendFunction1
@@ -18,6 +18,8 @@ import kotlin.reflect.KSuspendFunction1
 interface AuthorProfileApi {
     suspend fun getByHref(href: String): ApiResult<AuthorProfileModel>
     suspend fun getByID(id: String): ApiResult<AuthorProfileModel>
+
+    suspend fun changeFollow(follow: Boolean, id: String): ApiResult<Boolean>
 
     suspend fun getBlogPosts(id: String, page: Int): ApiResult<ListResult<BlogPostCardModel>>
     suspend fun getBlogPage(userId: String, blogId: String): ApiResult<BlogPostPageModel>
@@ -65,6 +67,28 @@ class AuthorProfileApiImpl(
 
     override suspend fun getByID(id: String): ApiResult<AuthorProfileModel> {
         return getByHref("authors/$id")
+    }
+
+    override suspend fun changeFollow(follow: Boolean, id: String): ApiResult<Boolean> = coroutineScope {
+        return@coroutineScope try {
+            val response = client.post(
+                url = ficbookUrl {
+                    if(follow) {
+                        href(ADD_AUTHOR_TO_FAVOURITE_HREF)
+                    } else {
+                        href(REMOVE_AUTHOR_FROM_FAVOURITE_HREF)
+                    }
+                },
+                body = formBody {
+                    add("author_id", id)
+                }
+            )
+            val body: String = response.body.stringOrThrow()
+            val result: AjaxSimpleResult = json.decodeFromString(body)
+            ApiResult.success(result.result)
+        } catch (e: Exception) {
+            ApiResult.failure(e)
+        }
     }
 
     override suspend fun getBlogPosts(id: String, page: Int): ApiResult<ListResult<BlogPostCardModel>> = coroutineScope {

@@ -197,7 +197,8 @@ fun AuthorMainInfo.toStableModel() = AuthorMainInfoStable(
     id = id,
     avatarUrl = avatarUrl,
     profileCoverUrl = profileCoverUrl,
-    subscribers = subscribers
+    subscribers = subscribers,
+    subscribed = subscribed
 )
 
 fun AuthorInfoModel.toStableModel() = AuthorInfoModelStable(

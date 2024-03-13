@@ -16,8 +16,6 @@ import org.koin.java.KoinJavaComponent
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.api.dataModels.AuthorProfileTabs
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
 import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorBlogComponent
 import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorPresentsComponent
 import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorProfileComponent
@@ -25,6 +23,8 @@ import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.C
 import ru.blays.ficbook.reader.shared.components.commentsComponent.implementation.DefaultAllCommentsComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
 
 @OptIn(ExperimentalDecomposeApi::class)
 class DefaultAuthorProfileComponent private constructor(
@@ -126,6 +126,12 @@ class DefaultAuthorProfileComponent private constructor(
     private var worksAsCoauthorComponent: FanficsListComponent? = null
     private var worksAsBetaComponent: FanficsListComponent? = null
     private var worksAsGammaComponent: FanficsListComponent? = null
+
+    override var followComponent: DefaultAuthorFollowComponent = DefaultAuthorFollowComponent(
+        componentContext = childContext(
+            key = "followComponent"
+        )
+    )
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -310,6 +316,10 @@ class DefaultAuthorProfileComponent private constructor(
                     tabs = result.value.availableTabs
                 )
                 transformTabsStack(availableTabs)
+                followComponent.update(
+                    authorID = result.value.authorMain.id,
+                    currentValue = result.value.authorMain.subscribed
+                )
                 _state.update {
                     it.copy(
                         loading = false,

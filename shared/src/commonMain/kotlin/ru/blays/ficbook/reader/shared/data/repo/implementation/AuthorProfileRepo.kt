@@ -1,11 +1,11 @@
 package ru.blays.ficbook.reader.shared.data.repo.implementation
 
-import ru.blays.ficbook.reader.shared.data.dto.*
-import ru.blays.ficbook.reader.shared.data.mappers.toStableModel
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
 import ru.blays.ficbook.api.api.AuthorProfileApi
 import ru.blays.ficbook.api.dataModels.*
 import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.reader.shared.data.dto.*
+import ru.blays.ficbook.reader.shared.data.mappers.toStableModel
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
 
 class AuthorProfileRepo(
     private val api: AuthorProfileApi
@@ -32,6 +32,10 @@ class AuthorProfileRepo(
                 value = result.value.toStableModel()
             )
         }
+    }
+
+    override suspend fun changeFollow(follow: Boolean, id: String): ApiResult<Boolean> {
+        return api.changeFollow(follow, id)
     }
 
     override suspend fun getBlogPosts(
