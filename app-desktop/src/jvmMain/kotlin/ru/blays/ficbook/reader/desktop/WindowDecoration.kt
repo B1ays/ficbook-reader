@@ -22,10 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
-import ficbook_reader.`app-desktop`.generated.resources.Res
-import ficbook_reader.`app-desktop`.generated.resources.ic_cross
-import ficbook_reader.`app-desktop`.generated.resources.ic_minimize
-import ficbook_reader.`app-desktop`.generated.resources.ic_restore
+import ficbook_reader.app_desktop.generated.resources.Res
+import ficbook_reader.app_desktop.generated.resources.ic_cross
+import ficbook_reader.app_desktop.generated.resources.ic_minimize
+import ficbook_reader.app_desktop.generated.resources.ic_restore
+
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
