@@ -95,6 +95,7 @@ fun BottomSheetScaffold(
     sheetContent: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
     scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(),
+    fullscreenSheet: Boolean = false,
     sheetPeekHeight: Dp = BottomSheetDefaults.SheetPeekHeight,
     sheetShape: Shape = BottomSheetDefaults.ExpandedShape,
     sheetContainerColor: Color = BottomSheetDefaults.ContainerColor,
@@ -130,6 +131,7 @@ fun BottomSheetScaffold(
             StandardBottomSheet(
                 state = scaffoldState.bottomSheetState,
                 peekHeight = sheetPeekHeight,
+                fullscreen = fullscreenSheet,
                 sheetSwipeEnabled = sheetSwipeEnabled,
                 layoutHeight = layoutHeight.toFloat(),
                 shape = sheetShape,
@@ -203,6 +205,7 @@ fun rememberStandardBottomSheetState(
 @Composable
 private fun StandardBottomSheet(
     state: SheetState,
+    fullscreen: Boolean,
     peekHeight: Dp,
     sheetSwipeEnabled: Boolean,
     layoutHeight: Float,
@@ -217,6 +220,7 @@ private fun StandardBottomSheet(
     val scope = rememberCoroutineScope()
     val peekHeightPx = with(LocalDensity.current) { peekHeight.toPx() }
     val orientation = Orientation.Vertical
+    val density = LocalDensity.current
 
     // Callback that is invoked when the anchors have changed.
     val anchorChangeHandler = remember(state, scope) {
@@ -238,7 +242,11 @@ private fun StandardBottomSheet(
         modifier = Modifier
             .widthIn(max = BottomSheetMaxWidth)
             .fillMaxWidth()
-            .requiredHeightIn(min = peekHeight)
+            .requiredHeightIn(
+                min = if(fullscreen) {
+                    with(density) { layoutHeight.toDp() }
+                } else peekHeight
+            )
             .nestedScroll(
                 remember(state.swipeableState) {
                     ConsumeSwipeWithinBottomSheetBoundsNestedScrollConnection(
