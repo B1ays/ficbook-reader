@@ -13,11 +13,18 @@ import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import com.russhwolf.settings.get
 import org.koin.java.KoinJavaComponent
+import org.koin.mp.KoinPlatform.getKoin
+import ru.blays.ficbook.api.FICBOOK_HOST
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.settings
 
+/**
+ * Open the given URL in a browser
+ *
+ * @param url The URL to be opened
+ */
 actual fun openInBrowser(url: String) {
-    val context: Context by KoinJavaComponent.getKoin().inject()
+    val context: Context by getKoin().inject()
     val chromeCustomTabs = settings.get(
         key = SettingsKeys.CHROME_CUSTOM_TABS_KEY,
         defaultValue = false
@@ -41,29 +48,35 @@ actual fun openInBrowser(url: String) {
             return
         }
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val emptyBrowserIntent = Intent().apply {
-                setAction(Intent.ACTION_VIEW)
-                addCategory(Intent.CATEGORY_BROWSABLE)
-                setData(Uri.fromParts("http", "", null))
+        if(uri.isFicbookUri) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val emptyBrowserIntent = Intent().apply {
+                    setAction(Intent.ACTION_VIEW)
+                    addCategory(Intent.CATEGORY_BROWSABLE)
+                    setData(Uri.fromParts("http", "", null))
+                }
+                val targetIntent = Intent().apply {
+                    setAction(Intent.ACTION_VIEW)
+                    addCategory(Intent.CATEGORY_BROWSABLE)
+                    setData(uri)
+                    setSelector(emptyBrowserIntent)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(targetIntent)
+            } else {
+                val defaultBrowser = Intent.makeMainSelectorActivity(
+                    Intent.ACTION_MAIN,
+                    Intent.CATEGORY_APP_BROWSER
+                ).apply {
+                    setData(uri)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(defaultBrowser)
             }
-            val targetIntent = Intent().apply {
-                setAction(Intent.ACTION_VIEW)
-                addCategory(Intent.CATEGORY_BROWSABLE)
-                setData(uri)
-                setSelector(emptyBrowserIntent)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            context.startActivity(targetIntent)
         } else {
-            val defaultBrowser = Intent.makeMainSelectorActivity(
-                Intent.ACTION_MAIN,
-                Intent.CATEGORY_APP_BROWSER
-            ).apply {
-                setData(uri)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            context.startActivity(defaultBrowser)
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
         }
     } catch (e: Exception) {
         e.printStackTrace()
@@ -77,32 +90,29 @@ actual fun openInBrowser(url: String) {
 
 actual fun copyToClipboard(text: String) {
     val context: Context by KoinJavaComponent.getKoin().inject()
-    val clipboard = context.getSystemService<ClipboardManager>()
+    val clipboard = context.getSystemService<ClipboardManager>() ?: return
 
-    if(clipboard == null) {
-        Toast.makeText(
-            context,
-            "ClipboardManager не найден",
-            Toast.LENGTH_SHORT
-        ).show()
-    } else {
-        val clip = ClipData.newPlainText("Copied Text", text)
-        clipboard.setPrimaryClip(clip)
+    val clip = ClipData.newPlainText("Copied Text", text)
+    clipboard.setPrimaryClip(clip)
+    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
         Toast.makeText(
             context,
             "Скопировано в буфер обмена",
             Toast.LENGTH_SHORT
         ).show()
     }
+
 }
 
 actual fun shareText(text: String) {
     val context: Context by KoinJavaComponent.getKoin().inject()
-    val intent = Intent(Intent.ACTION_SEND)
-    intent.type = "text/plain"
-    intent.putExtra(Intent.EXTRA_TEXT, text)
-    val chooserIntent = Intent.createChooser(intent, "Поделиться")
-    chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, text)
+    }
+    val chooserIntent = Intent.createChooser(intent, "Поделиться").apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
     context.startActivity(chooserIntent)
 }
 
@@ -120,3 +130,6 @@ fun Context.isPackageInstalled(packageName: String): Boolean {
 }
 
 private const val CHROME_PACKAGE_NAME = "com.android.chrome"
+
+private val Uri.isFicbookUri
+    get() = host == FICBOOK_HOST
