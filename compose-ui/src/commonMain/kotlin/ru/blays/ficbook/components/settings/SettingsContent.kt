@@ -35,6 +35,7 @@ import ru.blays.ficbook.theme.defaultAccentColorsList
 import ru.blays.ficbook.ui_components.LazyItems.itemWithHeader
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
+import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
@@ -156,7 +157,8 @@ private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
     SettingsExpandableCard(
         title = stringResource(Res.string.setting_title_theme),
         subtitle = stringResource(Res.string.setting_subtitle_theme),
-        icon = icon
+        icon = icon,
+        shape = CardShape.CardStart
     ) {
         SettingsRadioButtonWithTitle(
             title = stringResource(Res.string.theme_system),
@@ -197,6 +199,7 @@ private fun DynamicColorsSetting(component: SettingsUnitComponent<Boolean>) {
         title = stringResource(Res.string.setting_title_monet),
         subtitle = stringResource(Res.string.setting_subtitle_monet),
         icon = icon,
+        shape = CardShape.CardMid,
         enabled = state
     ) {
         component.onIntent(
@@ -214,6 +217,7 @@ private fun AmoledThemeSetting(component: SettingsUnitComponent<Boolean>) {
         title = stringResource(Res.string.setting_title_amoled),
         subtitle = stringResource(Res.string.setting_subtitle_amoled),
         icon = icon,
+        shape = CardShape.CardMid,
         enabled = state
     ) {
         component.onIntent(
@@ -231,7 +235,8 @@ private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
     SettingsExpandableCard(
         title = stringResource(Res.string.setting_title_accent),
         subtitle = stringResource(Res.string.setting_subtitle_accent),
-        icon = icon
+        icon = icon,
+        shape = CardShape.CardMid,
     ) {
         LazyRow(
             modifier = Modifier
@@ -284,7 +289,8 @@ private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
     SettingsExpandableCard(
         title = stringResource(Res.string.setting_title_superfilter),
         subtitle = stringResource(Res.string.setting_subtitle_superfilter),
-        icon = icon
+        icon = icon,
+        shape = CardShape.CardStart,
     ) {
         FanficDirection.entries
             .filterNot { it == FanficDirection.UNKNOWN }
@@ -316,7 +322,8 @@ private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
         title = stringResource(Res.string.setting_title_auto_vote),
         subtitle = stringResource(Res.string.setting_subtitle_auto_vote),
         enabled = state,
-        icon = painterResource(Res.drawable.ic_vote)
+        icon = painterResource(Res.drawable.ic_vote),
+        shape = CardShape.CardMid,
     ) { newValue ->
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(newValue)
@@ -332,7 +339,8 @@ private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
         title = stringResource(Res.string.setting_title_custom_tabs),
         subtitle = stringResource(Res.string.setting_subtitle_custom_tabs),
         enabled = state,
-        icon = painterResource(Res.drawable.ic_chrome)
+        icon = painterResource(Res.drawable.ic_chrome),
+        shape = CardShape.CardEnd,
     ) { newValue ->
         component.onIntent(
             SettingsUnitComponent.Intent.ChangeValue(newValue)
@@ -348,6 +356,7 @@ fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
         title = stringResource(Res.string.setting_title_typograf),
         subtitle = stringResource(Res.string.setting_subtitle_typograf),
         icon = painterResource(Res.drawable.ic_magic_wand),
+        shape = CardShape.CardMid,
         enabled = state
     ) { newValue ->
         component.onIntent(
@@ -368,6 +377,7 @@ fun BlurSetting(
         title = stringResource(Res.string.setting_title_glassmorphism),
         subtitle = stringResource(Res.string.setting_subtitle_glassmorphism),
         icon = painterResource(Res.drawable.ic_blur),
+        shape = CardShape.CardEnd,
     ) {
         val enabled by enabledComponent.state.collectAsState()
 
