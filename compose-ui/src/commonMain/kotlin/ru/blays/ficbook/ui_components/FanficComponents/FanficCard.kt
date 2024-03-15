@@ -19,13 +19,15 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastMap
+import androidx.compose.ui.util.fastMaxOfOrNull
 import coil3.compose.AsyncImage
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -138,22 +140,6 @@ private fun LandscapeContent(
                             modifier = Modifier
                                 .fillMaxWidth(0.38F)
                                 .aspectRatio(1F/1.5F)
-                                /*.layout { measurable, constraints ->
-                                    val widthFloat = (constraints.maxWidth * 0.38F).coerceAtMost(300F)
-                                    val heightFloat = widthFloat * 1.5F
-
-                                    layout(
-                                        width = widthFloat.toInt(),
-                                        height = heightFloat.toInt()
-                                    ) {
-                                        measurable.measure(
-                                            Constraints(
-                                                maxWidth = widthFloat.toInt(),
-                                                maxHeight = heightFloat.toInt()
-                                            )
-                                        ).place(0, 0)
-                                    }
-                                }*/
                                 .clip(CardDefaults.shape)
                         )
                     }
@@ -271,20 +257,27 @@ fun CardWithDirectionIndicator(
     shape: Shape = CardDefaults.shape,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    indicator: @Composable () -> Unit = {
+        Box(
+            modifier = Modifier.background(
+                color = getColorForDirection(direction)
+            )
+        )
+    },
     content: @Composable () -> Unit
 ) {
-    val density = LocalDensity.current
     val indicatorWidthInDp = 10.dp
-    val indicatorWidthInPx = with(density) { indicatorWidthInDp.roundToPx() }
+    val indicatorWidthInPx = with(LocalDensity.current) { indicatorWidthInDp.roundToPx() }
     Card(
-        modifier = modifier.thenIf(
+        modifier = modifier
+            .thenIf(
             onClick != null || onLongClick != null
-        ) {
-            combinedClickable(
-                onClick = onClick ?: {},
-                onLongClick = onLongClick ?: {}
-            )
-        },
+            ) {
+                combinedClickable(
+                    onClick = onClick ?: {},
+                    onLongClick = onLongClick ?: {}
+                )
+            },
         colors = colors,
         border = border,
         shape = shape
@@ -292,10 +285,10 @@ fun CardWithDirectionIndicator(
         SubcomposeLayout(
             modifier = Modifier.fillMaxWidth()
         ) { constraints ->
-            val info = subcompose(
-                slotId = "Info",
+            val contentPlaceables = subcompose(
+                slotId = FanficCardSlots.Content,
                 content = content
-            ).map {
+            ).fastMap {
                 it.measure(
                     constraints.copy(
                         maxWidth = constraints.maxWidth - indicatorWidthInPx,
@@ -304,32 +297,26 @@ fun CardWithDirectionIndicator(
                 )
             }
 
-            val maxHeight = info.fold(IntSize.Zero) { currentMax, placeable ->
-                IntSize(
-                    width = maxOf(currentMax.width, placeable.width),
-                    height = maxOf(currentMax.height, placeable.height)
-                )
-            }
+            val maxHeight = contentPlaceables.fastMaxOfOrNull(Placeable::height) ?: 0
 
-            val indicator = subcompose("Indicator") {
-                Box(
-                    modifier = Modifier.background(
-                        color = getColorForDirection(direction)
-                    )
-                )
-            }.map {
+            val indicatorPlaceables = subcompose(
+                slotId = FanficCardSlots.Indicator,
+                content = indicator
+            ).fastMap {
                 it.measure(
                     Constraints.fixed(
                         width = indicatorWidthInPx,
-                        height = maxHeight.height
+                        height = maxHeight
                     )
                 )
             }
 
-            layout(width = constraints.maxWidth, height = maxHeight.height) {
-                val firstIndicator =  indicator.first()
-                firstIndicator.place(0, 0)
-                info.first().placeRelative(indicatorWidthInPx, 0)
+            layout(
+                width = constraints.maxWidth,
+                height = maxHeight
+            ) {
+                indicatorPlaceables.first().placeRelative(0, 0)
+                contentPlaceables.first().placeRelative(indicatorWidthInPx, 0)
             }
         }
     }
@@ -568,4 +555,9 @@ fun FanficHeader(
             style = MaterialTheme.typography.labelLarge
         )
     }
+}
+
+private enum class FanficCardSlots {
+    Indicator,
+    Content;
 }

@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbook.components.commentsContent
 
 import androidx.compose.animation.*
@@ -14,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
+import androidx.compose.ui.util.fastMaxOfOrNull
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.chrisbanes.haze.HazeState
@@ -38,16 +40,17 @@ import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
-import ru.blays.ficbook.reader.shared.data.dto.CommentModelStable
-import ru.blays.ficbook.reader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.ExtendedCommentsComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.WriteCommentComponent
+import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
+import ru.blays.ficbook.reader.shared.data.dto.CommentModelStable
+import ru.blays.ficbook.reader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu
 import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
 import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
 import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
+import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
@@ -65,29 +68,42 @@ fun CommentsContent(
     onAddReply: (
         userName: String,
         blocks: List<CommentBlockModelStable>
-    ) -> Unit = { userName, block -> }
+    ) -> Unit = { _, _ -> }
 ) {
     val state by component.state.subscribeAsState()
     val comments = state.comments
+    val isLoading = state.loading
 
     val lazyListState = rememberLazyListState()
+    val pullRefreshState = rememberPullToRefreshState()
 
     val canScrollForward = lazyListState.canScrollForward
     val canScrollBackward = lazyListState.canScrollBackward
 
     LaunchedEffect(canScrollForward) {
-        if(!canScrollForward && canScrollBackward) {
+        if (!canScrollForward && canScrollBackward) {
             component.sendIntent(
                 CommentsComponent.Intent.LoadNextPage
             )
         }
     }
 
-    Box {
+    LaunchedEffect(isLoading) {
+        when {
+            isLoading && !pullRefreshState.isRefreshing -> {
+                pullRefreshState.startRefresh()
+            }
+            !isLoading && pullRefreshState.isRefreshing -> {
+                pullRefreshState.endRefresh()
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
         LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(end = defaultScrollbarPadding),
+            modifier = modifier.padding(end = defaultScrollbarPadding),
             state = lazyListState,
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = contentPadding ?: PaddingValues(0.dp),
@@ -126,6 +142,13 @@ fun CommentsContent(
                 )
             }
         }
+        PullToRefreshContainer(
+            state = pullRefreshState,
+            contentColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = contentPadding?.calculateTopPadding() ?: 0.dp),
+        )
         VerticalScrollbar(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
@@ -157,7 +180,7 @@ private fun CommentItem(
             .fillMaxWidth(),
         verticalAlignment = Alignment.Bottom
     ) {
-        if(!hideAvatar) {
+        if (!hideAvatar) {
             AsyncImage(
                 model = user.avatarUrl,
                 contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
@@ -248,7 +271,7 @@ private fun CommentItem(
                     },
                     onClick = onAddReply
                 )
-                if(comment.isOwnComment) {
+                if (comment.isOwnComment) {
                     DropdownMenuItem(
                         leadingIcon = {
                             Icon(
@@ -319,7 +342,7 @@ private fun QuoteElement(
     Column(
         modifier = Modifier.padding(start = 12.dp),
     ) {
-        if(quote.userName.isNotEmpty()) {
+        if (quote.userName.isNotEmpty()) {
             Text(
                 text = quote.userName,
                 style = MaterialTheme.typography.titleMedium,
@@ -327,14 +350,14 @@ private fun QuoteElement(
             )
             Spacer(modifier = Modifier.requiredHeight(2.dp))
         }
-        if(quote.quote != null) {
+        if (quote.quote != null) {
             QuoteElement(
                 quote = quote.quote!!,
                 onUrlClick = onUrlClick
-                )
+            )
             Spacer(modifier = Modifier.requiredHeight(2.dp))
         }
-        if(quote.text.isNotEmpty()) {
+        if (quote.text.isNotEmpty()) {
             Spacer(modifier = Modifier.requiredHeight(2.dp))
             SubcomposeLayout { constraints ->
                 val divider = subcompose(QUOTE_TEXT_SLOTS.DIVIDER) {
@@ -353,24 +376,24 @@ private fun QuoteElement(
                         onLinkClick = onUrlClick
                     )
                 }
-                val textHeight = text.fold(0) { acc, it ->
-                    maxOf(acc, it.maxIntrinsicHeight(constraints.maxWidth))
-                }
-                val dividerPlaceable = divider.map {
+
+                val dividerWidth = divider.fastMaxOfOrNull { it.maxIntrinsicWidth(constraints.maxHeight) } ?: 0
+                val textOffset = dividerWidth + 8
+
+                val textPlaceables = text.fastMap {
                     it.measure(
-                        Constraints.fixedHeight(
-                            height = textHeight
+                        constraints.copy(
+                            maxWidth = constraints.maxWidth - textOffset,
+                            minWidth = 0
                         )
                     )
                 }
-                val dividerWidth = dividerPlaceable.fold(0) { acc, placeable ->
-                    maxOf(acc, placeable.width)
-                }
-                val textOffset = dividerWidth+8
-                val textResizedPlaceable = text.map {
+                val textHeight = textPlaceables.fastMaxOfOrNull { it.height } ?: 0
+
+                val dividerPlaceable = divider.fastMap {
                     it.measure(
-                        constraints.copy(
-                            maxWidth = constraints.maxWidth-textOffset
+                        Constraints.fixedHeight(
+                            height = textHeight
                         )
                     )
                 }
@@ -379,11 +402,11 @@ private fun QuoteElement(
                     width = constraints.maxWidth,
                     height = textHeight
                 ) {
-                    dividerPlaceable.forEach {
-                        it.place(0, 0)
+                    dividerPlaceable.fastForEach {
+                        it.placeRelative(0, 0)
                     }
-                    textResizedPlaceable.forEach {
-                        it.place(textOffset, 0)
+                    textPlaceables.fastForEach {
+                        it.placeRelative(textOffset, 0)
                     }
                 }
             }
@@ -416,12 +439,12 @@ fun CommentsScreenContent(
                     }
                 },
                 collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_comments)),
-                containerColor = if(glassEffectConfig.blurEnabled) {
+                containerColor = if (glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
                 modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
                     hazeChild(
@@ -443,6 +466,7 @@ fun CommentsScreenContent(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PartCommentsContent(component: ExtendedCommentsComponent) {
     val hazeState = remember { HazeState() }
@@ -464,12 +488,12 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_chapter_comments)),
-                containerColor = if(glassEffectConfig.blurEnabled) {
+                containerColor = if (glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
                 modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
                     hazeChild(
@@ -482,7 +506,7 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
         bottomBar = {
             WriteCommentContent(
                 component = component.writeCommentComponent,
-                containerColor = if(glassEffectConfig.blurEnabled) {
+                containerColor = if (glassEffectConfig.blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
@@ -520,15 +544,20 @@ private fun WriteCommentContent(
 ) {
     val state by component.state.subscribeAsState()
 
+    val previewVisible by remember {
+        derivedStateOf {
+            state.text.isNotEmpty() &&
+            state.renderedBlocks.any { it.quote != null }
+        }
+    }
+
     Column(
         modifier = modifier.background(
             color = containerColor
         )
     ) {
         AnimatedVisibility(
-            visible = state.text.isNotEmpty() &&
-                state.renderedBlocks.isNotEmpty() &&
-                state.renderedBlocks.any { it.quote != null },
+            visible = previewVisible,
             enter = expandVertically(),
             exit = shrinkVertically()
         ) {
@@ -585,6 +614,7 @@ private fun WriteCommentContent(
                 }
             }
         }
+        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }
 
