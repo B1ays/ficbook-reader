@@ -40,8 +40,11 @@ fun LogInContent(component: UserLogInComponent) {
     val password = state.password
     val loading = state.loading
     val success = state.success
-    val logInButtonActive = remember(login, password) {
-        login.isNotEmpty() && password.isNotEmpty()
+
+    val logInButtonActive by remember(login, password) {
+        derivedStateOf {
+            login.isNotEmpty() && password.isNotEmpty()
+        }
     }
 
     val logInButtonContainerColor by animateColorAsState(

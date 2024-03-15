@@ -224,14 +224,13 @@ private fun PortraitContent(component: SearchComponent) {
             SearchMenuRoot(
                 component = component,
                 modifier = Modifier
-                    .statusBarsPadding()
+                    .systemBarsPadding()
                     .padding(DefaultPadding.CardDefaultPadding),
             ) {
                 coroutineScope.launch {
                     bottomSheetState.partialExpand()
                 }
             }
-            Spacer(modifier = Modifier.navigationBarsPadding())
         },
         sheetDragHandle = null,
         topBar = {
