@@ -8,11 +8,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
+import ru.blays.ficbook.api.data.CollectionsTypes
+import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.*
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserLogInComponent
 import ru.blays.ficbook.reader.shared.components.profileComponents.implementation.DefaultUserLogInComponent
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
 
 class DefaultMainScreenComponent private constructor(
     componentContext: ComponentContext,
@@ -26,6 +28,7 @@ class DefaultMainScreenComponent private constructor(
     ) -> PopularSectionsComponent,
     private val collections: (
         componentContext: ComponentContext,
+        sections: Array<SectionWithQuery>,
         output: (CollectionsComponent.Output) -> Unit
     ) -> CollectionsComponentInternal,
     private val saved: (
@@ -54,9 +57,10 @@ class DefaultMainScreenComponent private constructor(
                 onOutput = output
             )
         },
-        collections = { componentContext, output ->
+        collections = { componentContext, sections, output ->
             DefaultCollectionsComponent(
                 componentContext = componentContext,
+                sections = sections,
                 onOutput = output
             )
         },
@@ -173,6 +177,7 @@ class DefaultMainScreenComponent private constructor(
         childContext(
             key = "collections"
         ),
+        getCollectionSections(),
         ::onCollectionsOutput
     )
     override val collectionsComponent: CollectionsComponent = _collectionsComponent
@@ -189,6 +194,12 @@ class DefaultMainScreenComponent private constructor(
         )
     )
 
+    private fun getCollectionSections(): Array<SectionWithQuery> {
+        return arrayOf(
+            CollectionsTypes.personalCollections,
+            CollectionsTypes.trackedCollections
+        )
+    }
 
     init {
         lifecycle.doOnDestroy {

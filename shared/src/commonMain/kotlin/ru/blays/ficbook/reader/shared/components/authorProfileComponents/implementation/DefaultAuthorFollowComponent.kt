@@ -1,4 +1,4 @@
-package ru.blays.ficbook.reader.shared.components.authorProfile.implementation
+package ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue

@@ -5,7 +5,7 @@ import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import ru.blays.ficbook.api.data.SectionWithQuery
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorProfileComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorProfileComponent
 import ru.blays.ficbook.reader.shared.components.collectionSortComponent.CollectionFanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageComponent

@@ -1,11 +1,11 @@
-package ru.blays.ficbook.reader.shared.components.authorProfile.implementation
+package ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import org.koin.java.KoinJavaComponent
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorPresentsComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorPresentsComponent
 
 class DefaultAuthorPresentsComponent(
     componentContext: ComponentContext,

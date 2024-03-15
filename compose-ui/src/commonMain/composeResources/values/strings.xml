@@ -56,7 +56,7 @@
     <string name="cover_copied">Обложка скопирована в буфер обмена</string>
 
     <!--  Author profile screen  -->
-    <string name="author_profile_tab_main">Инфо</string>
+    <string name="author_profile_tab_main">Информация</string>
     <string name="author_profile_tab_blog">Блог</string>
     <string name="author_profile_tab_presents">Подарки</string>
     <string name="author_profile_tab_works">Работы</string>
@@ -64,6 +64,7 @@
     <string name="author_profile_tab_works_as_gamma">Гамма</string>
     <string name="author_profile_tab_works_as_coauthor">Соавтор</string>
     <string name="author_profile_tab_comments">Отзывы</string>
+    <string name="author_profile_tab_collections">Сборники</string>
 
     <string name="author_profile_subscribers_count">Подписчиков: %1$d</string>
     <string name="author_profile_about">О себе:</string>

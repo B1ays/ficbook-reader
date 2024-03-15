@@ -1,13 +1,14 @@
-package ru.blays.ficbook.reader.shared.components.authorProfile.declaration
+package ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration
 
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbook.api.data.SectionWithQuery
-import ru.blays.ficbook.reader.shared.components.authorProfile.implementation.DefaultAuthorFollowComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation.DefaultAuthorFollowComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.CollectionsComponent
 import ru.blays.ficbook.reader.shared.data.dto.AuthorProfileModelStable
 
 @OptIn(ExperimentalDecomposeApi::class)
@@ -23,8 +24,6 @@ interface AuthorProfileComponent {
 
     sealed class Intent {
         data object Refresh: Intent()
-        data class Follow(val follow: Boolean): Intent()
-
         data class SelectTabs(val index: Int): Intent()
     }
 
@@ -34,6 +33,7 @@ interface AuthorProfileComponent {
         data class OpenAnotherProfile(val href: String): Output()
         data class OpenFanfic(val href: String): Output()
         data class OpenFanficsList(val section: SectionWithQuery): Output()
+        data class OpenCollection(val section: SectionWithQuery): Output()
     }
 
     sealed class Tabs {
@@ -45,6 +45,7 @@ interface AuthorProfileComponent {
         data class WorksAsGamma(val component: FanficsListComponent): Tabs()
         data class Comments(val component: CommentsComponent): Tabs()
         data class Presents(val component: AuthorPresentsComponent): Tabs()
+        data class Collections(val component: CollectionsComponent): Tabs()
     }
 
     @Serializable
@@ -52,19 +53,21 @@ interface AuthorProfileComponent {
         @Serializable
         data object Main: TabConfig()
         @Serializable
-        data class Blog(val userID: String): TabConfig()
+        data object Blog: TabConfig()
         @Serializable
-        data class Works(val section: SectionWithQuery): TabConfig()
+        data object Works: TabConfig()
         @Serializable
-        data class WorksAsCoauthor(val section: SectionWithQuery): TabConfig()
+        data object WorksAsCoauthor : TabConfig()
         @Serializable
-        data class WorksAsBeta(val section: SectionWithQuery): TabConfig()
+        data object WorksAsBeta : TabConfig()
         @Serializable
-        data class WorksAsGamma(val section: SectionWithQuery): TabConfig()
+        data object WorksAsGamma : TabConfig()
         @Serializable
-        data class Comments(val userID: String): TabConfig()
+        data object Comments : TabConfig()
         @Serializable
-        data class Presents(val href: String): TabConfig()
+        data object Presents : TabConfig()
+        @Serializable
+        data object Collections: TabConfig()
     }
 
     data class State(

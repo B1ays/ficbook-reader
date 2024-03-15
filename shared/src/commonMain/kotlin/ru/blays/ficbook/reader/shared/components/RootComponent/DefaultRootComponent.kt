@@ -21,8 +21,8 @@ import ru.blays.ficbook.api.UrlProcessor.UrlProcessor
 import ru.blays.ficbook.api.UrlProcessor.UrlProcessor.analyzeUrl
 import ru.blays.ficbook.api.UrlProcessor.getUrlForHref
 import ru.blays.ficbook.api.data.SectionWithQuery
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorProfileComponent
-import ru.blays.ficbook.reader.shared.components.authorProfile.implementation.DefaultAuthorProfileComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorProfileComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation.DefaultAuthorProfileComponent
 import ru.blays.ficbook.reader.shared.components.collectionSortComponent.DefaultCollectionFanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
@@ -382,6 +382,13 @@ class DefaultRootComponent private constructor(
             }
             is AuthorProfileComponent.Output.OpenUrl -> {
                 navigateToLink(output.url)
+            }
+            is AuthorProfileComponent.Output.OpenCollection -> {
+                navigation.push(
+                    RootComponent.Config.Collection(
+                        section = output.section
+                    )
+                )
             }
         }
     }

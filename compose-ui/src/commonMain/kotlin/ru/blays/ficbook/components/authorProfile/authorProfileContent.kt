@@ -2,6 +2,7 @@ package ru.blays.ficbook.components.authorProfile
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.rememberScrollState
@@ -40,8 +41,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.commentsContent.CommentsContent
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.*
-import ru.blays.ficbook.reader.shared.components.authorProfile.implementation.DefaultAuthorFollowComponent
+import ru.blays.ficbook.components.main.CollectionsComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.*
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation.DefaultAuthorFollowComponent
 import ru.blays.ficbook.reader.shared.data.dto.AuthorMainInfoStable
 import ru.blays.ficbook.reader.shared.data.dto.BlogPostCardModelStable
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
@@ -351,6 +353,7 @@ private fun ProfilePager(
                 component = page.component,
                 hideAvatar = true
             )
+            is AuthorProfileComponent.Tabs.Collections -> CollectionsComponent(page.component, null)
         }
     }
 }
@@ -629,13 +632,13 @@ private fun BlogPostPage(
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ) {
                         Icon(
-                            painter = painterResource(Res.drawable.ic_cancel),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
+                            painter = painterResource(Res.drawable.ic_arrow_back),
+                            contentDescription = stringResource(Res.string.content_description_icon_back),
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                     Column(
-                        modifier = Modifier.fillMaxWidth(0.8F)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
                             text = post.title,
@@ -680,23 +683,26 @@ private fun BlogPostCard(
     val shape = CardDefaults.shape
     val foregroundCardColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.6F)
     val foregroundCardContentColor = MaterialTheme.colorScheme.onSurface
-    Card(
+    Column(
         modifier = modifier
             .padding(DefaultPadding.CardDefaultPadding)
-            .fillMaxWidth(),
-        shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = foregroundCardColor,
-            contentColor = foregroundCardContentColor
-        ),
-        onClick = onPostClicked
+            .fillMaxWidth()
+            .background(
+                color = foregroundCardColor,
+                shape = shape
+            )
+            .clip(shape)
+            .clickable(onClick = onPostClicked),
     ) {
         Column(
             modifier = Modifier.padding(DefaultPadding.CardDefaultPadding)
         ) {
             Text(
                 text = post.title,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = foregroundCardContentColor,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.requiredHeight(4.dp))
             Text(
@@ -706,10 +712,13 @@ private fun BlogPostCard(
             )
         }
         if(post.text.isNotEmpty()) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = shape,
-                onClick = onPostClicked
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = shape
+                    )
             ) {
                 Text(
                     text = post.text,
@@ -738,6 +747,7 @@ private fun getTitleForTab(tab: AuthorProfileComponent.TabConfig): String {
         is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> stringResource(Res.string.author_profile_tab_works_as_coauthor)
         is AuthorProfileComponent.TabConfig.WorksAsGamma -> stringResource(Res.string.author_profile_tab_works_as_gamma)
         is AuthorProfileComponent.TabConfig.Comments -> stringResource(Res.string.author_profile_tab_comments)
+        is AuthorProfileComponent.TabConfig.Collections -> stringResource(Res.string.author_profile_tab_collections)
     }
 }
 
@@ -753,6 +763,7 @@ private fun getIconForTab(tab: AuthorProfileComponent.TabConfig): Painter {
         is AuthorProfileComponent.TabConfig.WorksAsCoauthor -> painterResource(Res.drawable.ic_book_outlined)
         is AuthorProfileComponent.TabConfig.WorksAsGamma -> painterResource(Res.drawable.ic_book_outlined)
         is AuthorProfileComponent.TabConfig.Comments -> painterResource(Res.drawable.ic_comment)
+        is AuthorProfileComponent.TabConfig.Collections -> painterResource(Res.drawable.ic_stack)
     }
 }
 
