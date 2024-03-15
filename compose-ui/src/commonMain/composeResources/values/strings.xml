@@ -84,6 +84,9 @@
     <string name="fanficPage_action_to_collection">В сборник</string>
     <string name="fanficPage_collections_dialog_title">Добавить работу в сборник</string>
     <string name="fanficPage_description">Описание:</string>
+    <string name="fanficPage_dedication">Посвящение:</string>
+    <string name="fanficPage_author_comment">Примечания:</string>
+    <string name="fanficPage_publication_rules">Публикация на других ресурсах:</string>
     <string name="fanficPage_fandoms">Фэндомы:</string>
     <string name="fanficPage_pairings_and_characters">Пэйринги и персонажи:</string>
     <string name="fanficPage_chapters_count">Глав: %1$d</string>

@@ -178,14 +178,18 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     )
                 }
             }
-            val sheetBackground = MaterialTheme.colorScheme.surfaceVariant
+            val sheetBackground = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp)
             val sheetBackgroundAtProgress = sheetBackground.copy(
                 alpha = sheetProgress
             )
 
+            val navigationBarHeight = WindowInsets.navigationBars
+                .asPaddingValues()
+                .calculateBottomPadding()
+
             BottomSheetScaffold(
                 scaffoldState = bottomSheetScaffoldState,
-                sheetPeekHeight = 110.dp,
+                sheetPeekHeight = 110.dp + navigationBarHeight,
                 containerColor = Color.Transparent,
                 fullscreenSheet = true,
                 sheetContainerColor = sheetBackgroundAtProgress,
@@ -209,6 +213,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                             }
                         }
                     }
+
                     BottomSheetContentClosed(
                         component = component,
                         fanficPage = fanfic,
@@ -221,7 +226,9 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                             )
                         )
                     }
-                    VerticalSpacer((24 * (1 - sheetProgress)).dp)
+
+                    VerticalSpacer(navigationBarHeight * (1 - sheetProgress))
+
                     val chapters = fanfic.chapters
                     if (chapters is FanficChapterStable.SeparateChaptersModel) {
                         BottomSheetContentOpened(
@@ -289,7 +296,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     modifier = Modifier
                         .padding(
                             top = padding.calculateTopPadding(),
-                            bottom = 110.dp
+                            bottom = padding.calculateBottomPadding()
                         )
                         .nestedScroll(pullRefreshState.nestedScrollConnection)
                         .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -594,7 +601,58 @@ private fun FanficDescription(
                         )
                     }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                VerticalSpacer(6.dp)
+            }
+            fanfic.dedication?.let { dedication ->
+                item {
+                    Text(
+                        text = stringResource(Res.string.fanficPage_dedication),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    HyperlinkText(
+                        fullText = dedication,
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        ),
+                        onLinkClick = { url ->
+                            component.onOutput(
+                                FanficPageInfoComponent.Output.OpenUrl(url)
+                            )
+                        }
+                    )
+                    VerticalSpacer(6.dp)
+                }
+            }
+            fanfic.authorComment?.let { authorComment ->
+                item {
+                    Text(
+                        text = stringResource(Res.string.fanficPage_author_comment),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    HyperlinkText(
+                        fullText = authorComment,
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        ),
+                        onLinkClick = { url ->
+                            component.onOutput(
+                                FanficPageInfoComponent.Output.OpenUrl(url)
+                            )
+                        }
+                    )
+                    VerticalSpacer(6.dp)
+                }
+            }
+            item {
+                Text(
+                    text = stringResource(Res.string.fanficPage_publication_rules),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = fanfic.publicationRules,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                VerticalSpacer(6.dp)
             }
             items(fanfic.rewards) { reward ->
                 Row(
@@ -669,41 +727,43 @@ private fun Pairings(
     pairings: List<PairingModelStable>,
     onPairingClick: (pairing: PairingModelStable) -> Unit
 ) {
-    FlowRow {
-        val shape = remember { RoundedCornerShape(percent = 20) }
-        Text(
-            text = stringResource(Res.string.fanficPage_pairings_and_characters),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
-        Spacer(modifier = Modifier.requiredWidth(3.dp))
-        pairings.forEach { pairing ->
+    if(pairings.isNotEmpty()) {
+        FlowRow {
+            val shape = remember { RoundedCornerShape(percent = 20) }
             Text(
-                text = pairing.character + ',',
-                style = MaterialTheme.typography.labelLarge,
-                color = if (pairing.isHighlighted) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    Color.Unspecified
-                },
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(2.dp)
-                    .background(
-                        color = if (pairing.isHighlighted) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            Color.Unspecified
-                        },
-                        shape = shape
-                    )
-                    .clip(shape)
-                    .clickable {
-                        onPairingClick(pairing)
-                    }
+                text = stringResource(Res.string.fanficPage_pairings_and_characters),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterVertically)
             )
             Spacer(modifier = Modifier.requiredWidth(3.dp))
+            pairings.forEach { pairing ->
+                Text(
+                    text = pairing.character + ',',
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (pairing.isHighlighted) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        Color.Unspecified
+                    },
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(2.dp)
+                        .background(
+                            color = if (pairing.isHighlighted) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                Color.Unspecified
+                            },
+                            shape = shape
+                        )
+                        .clip(shape)
+                        .clickable {
+                            onPairingClick(pairing)
+                        }
+                )
+                Spacer(modifier = Modifier.requiredWidth(3.dp))
+            }
         }
     }
 }

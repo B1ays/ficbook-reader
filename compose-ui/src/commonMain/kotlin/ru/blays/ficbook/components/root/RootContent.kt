@@ -25,6 +25,7 @@ import ru.blays.ficbook.components.searchContent.SearchContent
 import ru.blays.ficbook.components.settings.SettingsContent
 import ru.blays.ficbook.components.userProfile.UserProfileRootContent
 import ru.blays.ficbook.components.users.UsersRootContent
+import ru.blays.ficbook.platformUtils.landscapeInsetsPadding
 import ru.blays.ficbook.reader.shared.components.RootComponent.RootComponent
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.DefaultSnackbarVisuals
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost.snackbarHostState
@@ -79,7 +80,8 @@ fun RootContent(component: RootComponent) {
         ) {
             Children(
                 stack = component.childStack,
-                animation = stackAnimation(LocalStackAnimator.current)
+                animation = stackAnimation(LocalStackAnimator.current),
+                modifier = Modifier.landscapeInsetsPadding()
             ) {
                 when(
                     val child = it.instance

@@ -168,9 +168,14 @@ private fun LandscapeContent(component: SearchComponent) {
                         modifier = Modifier
                             .padding(DefaultPadding.CardDefaultPadding)
                             .fillMaxWidth(0.4F),
-                    )
+                    ) {
+                        coroutineScope.launch {
+                            drawerState.close()
+                        }
+                    }
                 }
             },
+            scrimColor = Color.Transparent,
             drawerState = drawerState,
             modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
                 haze(state = hazeState)
@@ -226,6 +231,7 @@ private fun PortraitContent(component: SearchComponent) {
                     bottomSheetState.partialExpand()
                 }
             }
+            Spacer(modifier = Modifier.navigationBarsPadding())
         },
         sheetDragHandle = null,
         topBar = {

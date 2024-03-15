@@ -153,15 +153,45 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
 
         val description = mb5
             .select("div:contains(Описание:)")
-            .fold(StringBuilder()) { acc, element ->
-                acc.append(element.wholeText())
-            }
-            .toString()
-            .trim(' ', '\n')
-            .replace(
+            .firstOrNull()
+            ?.wholeText()
+            ?.trim(' ', '\n')
+            ?.replace(
                 regex = Regex("Описание:\\s*"),
                 replacement = ""
             )
+            ?: ""
+
+        val dedication = mb5
+            .select("div:contains(Посвящение:)")
+            .firstOrNull()
+            ?.wholeText()
+            ?.trim(' ', '\n')
+            ?.replace(
+                regex = Regex("Посвящение:\\s*"),
+                replacement = ""
+            )
+
+        val authorComment = mb5
+            .select("div:contains(Примечания:)")
+            .firstOrNull()
+            ?.wholeText()
+            ?.trim(' ', '\n')
+            ?.replace(
+                regex = Regex("Примечания:\\s*"),
+                replacement = ""
+            )
+
+        val publicationRules = mb5
+            .select("div:contains(Публикация на других ресурсах:)")
+            .firstOrNull()
+            ?.wholeText()
+            ?.trim(' ', '\n')
+            ?.replace(
+                regex = Regex("Публикация на других ресурсах:\\s*"),
+                replacement = ""
+            )
+            ?: ""
 
         val coverUrl = data
             .select(".fanfic-hat")
@@ -319,6 +349,9 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             coverUrl = coverUrl,
             tags = genres,
             description = description,
+            dedication = dedication,
+            authorComment = authorComment,
+            publicationRules = publicationRules,
             subscribersCount = 0,
             commentCount = 0,
             liked = liked,

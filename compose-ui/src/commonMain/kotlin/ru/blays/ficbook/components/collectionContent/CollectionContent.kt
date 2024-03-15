@@ -162,6 +162,7 @@ private fun PortraitContent(component: CollectionFanficsListComponent) {
                     bottomSheetState.partialExpand()
                 }
             }
+            Spacer(modifier = Modifier.navigationBarsPadding())
         },
         topBar = {
             CollapsingToolbar(
