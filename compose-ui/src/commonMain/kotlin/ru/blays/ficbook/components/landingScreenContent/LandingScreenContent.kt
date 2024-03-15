@@ -28,10 +28,8 @@ fun LandingScreenContent(component: LandingScreenComponent) {
     BottomSheetScaffold(
         sheetContent = {
             dialogState.child?.let {
-                val instance = it.instance
-                val config = it.configuration
-
-                ConfirmDialogContent(instance, config)
+                ConfirmDialogContent(it.instance, it.configuration)
+                Spacer(modifier = Modifier.navigationBarsPadding())
             }
         },
         sheetPeekHeight = 0.dp,

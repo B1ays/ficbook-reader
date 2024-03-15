@@ -13,6 +13,9 @@ data class FanficPageModel(
     val tags: List<FanficTag>,
     val coverUrl: CoverUrl,
     val description: String,
+    val dedication: String?,
+    val authorComment: String?,
+    val publicationRules: String,
     val subscribersCount: Int,
     val commentCount: Int,
     val pagesCount: Int,
@@ -21,22 +24,7 @@ data class FanficPageModel(
     val inCollectionsCount: Int,
     val chapters: FanficChapter,
     val rewards: List<RewardModel>
-) {
-    override fun toString(): String {
-        return """
-id: $id
-name: $name
-status: $status
-author: $authors
-fandom: $fandoms
-coverUrl: $coverUrl
-tags: ${tags.joinToString { it.toString() }}
-description: $description
-chapters: $chapters
-rewards: ${rewards.joinToString("\n") { it.toString() }}
-""".trimIndent()
-    }
-}
+)
 
 @Serializable
 sealed class FanficChapter {
