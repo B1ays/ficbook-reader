@@ -1,4 +1,4 @@
-package ru.blays.ficbook.reader.shared.components.authorProfile.implementation
+package ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
@@ -16,13 +16,15 @@ import org.koin.java.KoinJavaComponent
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.api.dataModels.AuthorProfileTabs
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorBlogComponent
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorPresentsComponent
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorProfileComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorPresentsComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorProfileComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.implementation.DefaultAllCommentsComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
+import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.CollectionsComponent
+import ru.blays.ficbook.reader.shared.components.mainScreenComponents.implemenatation.DefaultCollectionsComponent
 import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
 
@@ -51,20 +53,20 @@ class DefaultAuthorProfileComponent private constructor(
         output: (output: FanficsListComponent.Output) -> Unit
     ) -> FanficsListComponent,
     private val output: (output: AuthorProfileComponent.Output) -> Unit
-): AuthorProfileComponent, ComponentContext by componentContext {
+) : AuthorProfileComponent, ComponentContext by componentContext {
     constructor(
         componentContext: ComponentContext,
         href: String,
         output: (output: AuthorProfileComponent.Output) -> Unit
-    ): this(
+    ) : this(
         componentContext = componentContext,
         href = href,
         blogFactory = { childContext, userID, output ->
-              DefaultAuthorBlogComponent(
-                  componentContext = childContext,
-                  userID = userID,
-                  output = output
-              )
+            DefaultAuthorBlogComponent(
+                componentContext = childContext,
+                userID = userID,
+                output = output
+            )
         },
         presentsFactory = { childContext, href, output ->
             DefaultAuthorPresentsComponent(
@@ -126,6 +128,7 @@ class DefaultAuthorProfileComponent private constructor(
     private var worksAsCoauthorComponent: FanficsListComponent? = null
     private var worksAsBetaComponent: FanficsListComponent? = null
     private var worksAsGammaComponent: FanficsListComponent? = null
+    private var collectionsComponent: CollectionsComponent? = null
 
     override var followComponent: DefaultAuthorFollowComponent = DefaultAuthorFollowComponent(
         componentContext = childContext(
@@ -136,15 +139,10 @@ class DefaultAuthorProfileComponent private constructor(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun sendIntent(intent: AuthorProfileComponent.Intent) {
-        when(intent) {
-            is AuthorProfileComponent.Intent.Follow -> {
-                // TODO
-            }
-            AuthorProfileComponent.Intent.Refresh -> {
-                loadProfile()
-            }
+        when (intent) {
+            is AuthorProfileComponent.Intent.Refresh -> loadProfile()
             is AuthorProfileComponent.Intent.SelectTabs -> {
-                if(intent.index != tabs.value.selectedIndex) {
+                if (intent.index != tabs.value.selectedIndex) {
                     pagesNavigation.select(intent.index)
                 }
             }
@@ -153,98 +151,6 @@ class DefaultAuthorProfileComponent private constructor(
 
     override fun onOutput(output: AuthorProfileComponent.Output) {
         this.output(output)
-    }
-
-    private fun blogOutput(output: AuthorBlogComponent.Output) {
-        when(output) {
-            is AuthorBlogComponent.Output.OpenUrl -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenUrl(
-                        url = output.url
-                    )
-                )
-            }
-        }
-    }
-
-    private fun presentsOutput(output: AuthorPresentsComponent.Output) {
-        when(output) {
-            is AuthorPresentsComponent.Output.OpenAnotherProfile -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenAnotherProfile(
-                        href = output.href
-                    )
-                )
-            }
-            is AuthorPresentsComponent.Output.OpenFanfic -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenFanfic(
-                        href = output.href
-                    )
-                )
-            }
-        }
-    }
-
-    private fun commentsOutput(output: CommentsComponent.Output) {
-        when(output) {
-            CommentsComponent.Output.NavigateBack -> {}
-            is CommentsComponent.Output.OpenAuthor -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenAnotherProfile(
-                        href = output.href
-                    )
-                )
-            }
-            is CommentsComponent.Output.OpenUrl -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenUrl(
-                        url = output.url
-                    )
-                )
-            }
-            is CommentsComponent.Output.OpenFanfic -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenFanfic(
-                        href = output.href
-                    )
-                )
-            }
-        }
-    }
-
-    private fun fanficsListOutput(output: FanficsListComponent.Output) {
-        when(output) {
-            is FanficsListComponent.Output.NavigateBack -> {}
-            is FanficsListComponent.Output.OpenAnotherSection -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenFanficsList(
-                        section = output.section.toApiModel()
-                    )
-                )
-            }
-            is FanficsListComponent.Output.OpenFanfic -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenFanfic(
-                        href = output.href
-                    )
-                )
-            }
-            is FanficsListComponent.Output.OpenUrl -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenUrl(
-                        url = output.url
-                    )
-                )
-            }
-            is FanficsListComponent.Output.OpenAuthor -> {
-                this.output(
-                    AuthorProfileComponent.Output.OpenAnotherProfile(
-                        href = output.href
-                    )
-                )
-            }
-        }
     }
 
     private fun tabsChildFactory(
@@ -288,6 +194,113 @@ class DefaultAuthorProfileComponent private constructor(
                     component = commentsComponent!!
                 )
             }
+            is AuthorProfileComponent.TabConfig.Collections -> {
+                AuthorProfileComponent.Tabs.Collections(
+                    component = collectionsComponent!!
+                )
+            }
+        }
+    }
+
+    private fun blogOutput(output: AuthorBlogComponent.Output) {
+        when (output) {
+            is AuthorBlogComponent.Output.OpenUrl -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenUrl(
+                        url = output.url
+                    )
+                )
+            }
+        }
+    }
+
+    private fun presentsOutput(output: AuthorPresentsComponent.Output) {
+        when (output) {
+            is AuthorPresentsComponent.Output.OpenAnotherProfile -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenAnotherProfile(
+                        href = output.href
+                    )
+                )
+            }
+            is AuthorPresentsComponent.Output.OpenFanfic -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenFanfic(
+                        href = output.href
+                    )
+                )
+            }
+        }
+    }
+
+    private fun commentsOutput(output: CommentsComponent.Output) {
+        when (output) {
+            CommentsComponent.Output.NavigateBack -> {}
+            is CommentsComponent.Output.OpenAuthor -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenAnotherProfile(
+                        href = output.href
+                    )
+                )
+            }
+            is CommentsComponent.Output.OpenUrl -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenUrl(
+                        url = output.url
+                    )
+                )
+            }
+            is CommentsComponent.Output.OpenFanfic -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenFanfic(
+                        href = output.href
+                    )
+                )
+            }
+        }
+    }
+
+    private fun fanficsListOutput(output: FanficsListComponent.Output) {
+        when (output) {
+            is FanficsListComponent.Output.NavigateBack -> {}
+            is FanficsListComponent.Output.OpenAnotherSection -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenFanficsList(
+                        section = output.section.toApiModel()
+                    )
+                )
+            }
+            is FanficsListComponent.Output.OpenFanfic -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenFanfic(
+                        href = output.href
+                    )
+                )
+            }
+            is FanficsListComponent.Output.OpenUrl -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenUrl(
+                        url = output.url
+                    )
+                )
+            }
+            is FanficsListComponent.Output.OpenAuthor -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenAnotherProfile(
+                        href = output.href
+                    )
+                )
+            }
+        }
+    }
+
+    private fun collectionsOutput(output: CollectionsComponent.Output) {
+        when (output) {
+            is CollectionsComponent.Output.OpenCollection -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenCollection(output.section)
+                )
+            }
         }
     }
 
@@ -297,7 +310,7 @@ class DefaultAuthorProfileComponent private constructor(
                 loading = true
             )
         }
-        when(
+        when (
             val result = authorProfileRepo.getByHref(href)
         ) {
             is ApiResult.Error -> {
@@ -310,6 +323,7 @@ class DefaultAuthorProfileComponent private constructor(
                     )
                 }
             }
+
             is ApiResult.Success -> {
                 val availableTabs = createComponentsForProfile(
                     userID = result.value.authorMain.id,
@@ -338,17 +352,15 @@ class DefaultAuthorProfileComponent private constructor(
     ): List<AuthorProfileComponent.TabConfig> {
         val availableTabs: MutableList<AuthorProfileComponent.TabConfig> = mutableListOf()
 
-        tabs.forEach { 
-            when(it) {
+        tabs.forEach { tab ->
+            when(tab) {
                 AuthorProfileTabs.BLOG -> {
                     blogComponent = blogFactory(
                         childContext("blogComponent"),
                         userID,
                         ::blogOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.Blog(
-                        userID = userID
-                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.Blog
                 }
                 AuthorProfileTabs.WORKS -> {
                     val section = SectionWithQuery(
@@ -359,9 +371,7 @@ class DefaultAuthorProfileComponent private constructor(
                         section,
                         ::fanficsListOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.Works(
-                        section = section
-                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.Works
                 }
                 AuthorProfileTabs.WORKS_COAUTHOR -> {
                     val section = SectionWithQuery(
@@ -372,9 +382,7 @@ class DefaultAuthorProfileComponent private constructor(
                         section,
                         ::fanficsListOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsCoauthor(
-                        section = section
-                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsCoauthor
                 }
                 AuthorProfileTabs.WORKS_BETA -> {
                     val section = SectionWithQuery(
@@ -385,9 +393,7 @@ class DefaultAuthorProfileComponent private constructor(
                         section,
                         ::fanficsListOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsBeta(
-                        section = section
-                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsBeta
                 }
                 AuthorProfileTabs.WORKS_GAMMA -> {
                     val section = SectionWithQuery(
@@ -398,28 +404,31 @@ class DefaultAuthorProfileComponent private constructor(
                         section,
                         ::fanficsListOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsGamma(
-                        section = section
-                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsGamma
                 }
-                AuthorProfileTabs.REQUESTS -> {
-
-                }
+                AuthorProfileTabs.REQUESTS -> {}
                 AuthorProfileTabs.COLLECTIONS -> {
-
+                    collectionsComponent = DefaultCollectionsComponent(
+                        componentContext = childContext("collectionsComponent"),
+                        sections = arrayOf(
+                            SectionWithQuery(
+                                href = "authors/$userID/collections"
+                            )
+                        ),
+                        onOutput = ::collectionsOutput
+                    ).apply {
+                        refresh()
+                    }
+                    availableTabs += AuthorProfileComponent.TabConfig.Collections
                 }
-                AuthorProfileTabs.PRESENTS -> {
-
-                }
+                AuthorProfileTabs.PRESENTS -> {}
                 AuthorProfileTabs.COMMENTS -> {
                     commentsComponent = commentsFactory(
                         childContext("commentsComponent"),
                         userID,
                         ::commentsOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.Comments(
-                        userID = href
-                    )
+                    availableTabs += AuthorProfileComponent.TabConfig.Comments
                 }
             }
         }
@@ -438,13 +447,13 @@ class DefaultAuthorProfileComponent private constructor(
 
     private fun transformTabsStack(availableTabs: List<AuthorProfileComponent.TabConfig>?) {
         pagesNavigation.navigate {
-            if(availableTabs == null) {
+            if (availableTabs == null) {
                 return@navigate Pages(
                     items = listOf(AuthorProfileComponent.TabConfig.Main),
                     selectedIndex = 0
                 )
             }
-            return@navigate if(it.items.containsAll(availableTabs)) {
+            return@navigate if (it.items.containsAll(availableTabs)) {
                 val newItems = it.items.dropLastWhile { config ->
                     config != AuthorProfileComponent.TabConfig.Main
                 }

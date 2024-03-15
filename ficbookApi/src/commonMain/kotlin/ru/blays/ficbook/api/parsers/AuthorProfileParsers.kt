@@ -2,6 +2,7 @@ package ru.blays.ficbook.api.parsers
 
 import kotlinx.coroutines.flow.StateFlow
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 import org.jsoup.select.Evaluator
 import ru.blays.ficbook.api.ATTR_HREF
 import ru.blays.ficbook.api.ATTR_SRC
@@ -78,21 +79,28 @@ internal class AuthorProfileTabsParser: IDataParser<Document, List<AuthorProfile
     override suspend fun parse(data: Document): List<AuthorProfileTabs> {
         val sideBarNavListItems = data
             .select(".sidebar-nav-list")
-            .select("li a")
+            .select("li")
 
-        val tabs: MutableList<AuthorProfileTabs> = mutableListOf()
+        return sideBarNavListItems.mapNotNull { element ->
+            val href = element.select("a").attr(ATTR_HREF)
 
-        sideBarNavListItems.forEach { element ->
-            val href = element.attr(ATTR_HREF)
-            val tab = AuthorProfileTabs.findForPath(href)
-
-            if (tab != null) {
-                tabs += tab
+            when(
+                val tab = AuthorProfileTabs.findForPath(href)
+            ) {
+                AuthorProfileTabs.BLOG -> {
+                    if(element.hasCounter) {
+                        tab
+                    } else {
+                        null
+                    }
+                }
+                else -> tab
             }
         }
-
-        return tabs
     }
+
+    private val Element.hasCounter: Boolean
+        get() = allElements.hasClass("counter")
 
     override fun parseSynchronously(data: Document): StateFlow<List<AuthorProfileTabs>?> {
         TODO("Not yet implemented")

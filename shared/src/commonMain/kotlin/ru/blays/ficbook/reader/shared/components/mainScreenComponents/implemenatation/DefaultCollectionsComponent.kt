@@ -9,14 +9,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
-import ru.blays.ficbook.api.data.CollectionsTypes
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.repo.declaration.ICollectionsRepo
 import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.CollectionsComponent
 import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.CollectionsComponentInternal
+import ru.blays.ficbook.reader.shared.data.repo.declaration.ICollectionsRepo
+
 class DefaultCollectionsComponent(
     componentContext: ComponentContext,
+    private val sections: Array<SectionWithQuery>,
     private val onOutput: (CollectionsComponent.Output) -> Unit
 ): CollectionsComponentInternal, ComponentContext by componentContext {
     private val repository: ICollectionsRepo by getKoin().inject()
@@ -26,11 +27,6 @@ class DefaultCollectionsComponent(
     )
 
     override val state get() = _state
-
-    private val collectionSections = listOf(
-        CollectionsTypes.personalCollections,
-        CollectionsTypes.trackedCollections
-    )
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -45,11 +41,11 @@ class DefaultCollectionsComponent(
     }
 
     override fun refresh() {
-        getCollections(collectionSections)
+        getCollections(sections)
     }
 
     private fun getCollections(
-        sections: List<SectionWithQuery>
+        sections: Array<SectionWithQuery>
     ) {
         coroutineScope.launch {
             _state.update {

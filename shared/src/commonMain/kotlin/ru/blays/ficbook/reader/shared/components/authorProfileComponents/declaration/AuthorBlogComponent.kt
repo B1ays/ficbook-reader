@@ -1,4 +1,4 @@
-package ru.blays.ficbook.reader.shared.components.authorProfile.declaration
+package ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration
 
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value

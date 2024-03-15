@@ -1,4 +1,4 @@
-package ru.blays.ficbook.reader.shared.components.authorProfile.implementation
+package ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
@@ -14,9 +14,9 @@ import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorBlogComponent
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorBlogPageComponent
-import ru.blays.ficbook.reader.shared.components.authorProfile.declaration.AuthorBlogPostsComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogPageComponent
+import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogPostsComponent
 
 class DefaultAuthorBlogComponent(
     componentContext: ComponentContext,
