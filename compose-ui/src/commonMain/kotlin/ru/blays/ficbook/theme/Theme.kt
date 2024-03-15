@@ -3,6 +3,8 @@
 
 package ru.blays.ficbook.theme
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
@@ -66,3 +68,8 @@ private val DarkThemeRippleAlpha = RippleAlpha(
     draggedAlpha = 0.58f,
     hoveredAlpha = 0.54f
 )
+
+@Composable
+internal fun Color.animate(animationSpec: AnimationSpec<Color>): Color {
+    return animateColorAsState(this, animationSpec).value
+}
