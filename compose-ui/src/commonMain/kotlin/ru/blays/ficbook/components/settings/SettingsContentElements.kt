@@ -22,28 +22,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ic_arrow_down
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.ui_components.CustomButton.BackgroundedIcon
+import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.CornerSmoothing
+import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.SquircleShape
+import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
 
 const val ANIMATION_DURATION_MILLIS = 300
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun SettingsExpandableCard(
     title: String,
-    subtitle: String = "",
+    subtitle: String? = null,
     icon: Painter? = null,
+    shape: Shape = CardDefaults.shape,
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isCardExpanded by rememberSaveable { mutableStateOf(false) }
@@ -54,25 +58,24 @@ fun SettingsExpandableCard(
     )
     val rotateValue by transition.animateFloat(
         transitionSpec = {
-            tween(
-                durationMillis = ANIMATION_DURATION_MILLIS
-            )
+            tween(durationMillis = ANIMATION_DURATION_MILLIS)
         }
     ) { expanded ->
         if (expanded) 180F else 0F
     }
 
-    Card(
+    ElevatedCard(
         modifier = Modifier
-            .padding(DefaultPadding.CardDefaultPadding)
+            .padding(DefaultPadding.CardPaddingSmallVertical)
             .fillMaxWidth()
-            .clip(CardShape.CardStandalone)
+            .clip(shape)
             .toggleable(
                 value = isCardExpanded
             ) { newValue ->
                 isCardExpanded = newValue
             },
-        elevation = CardDefaults.cardElevation(2.dp)
+        shape = shape,
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
     ) {
         Row(
             modifier = Modifier
@@ -82,13 +85,18 @@ fun SettingsExpandableCard(
         ) {
             AnimatedContent(
                 targetState = icon,
+                transitionSpec = {
+                    fadeIn() togetherWith  fadeOut()
+                }
             ) {
                 if(it != null) {
                     BackgroundedIcon(
                         modifier = Modifier.padding(horizontal = 6.dp),
                         icon = it,
                         iconScale = 0.8F,
-                        shape = MaterialTheme.shapes.large,
+                        shape = SquircleShape(
+                            cornerSmoothing = CornerSmoothing.High
+                        ),
                         containerColor = MaterialTheme.colorScheme.background,
                         contentColor = MaterialTheme.colorScheme.primary.copy(.6F)
                     )
@@ -110,7 +118,7 @@ fun SettingsExpandableCard(
                         text = title,
                         style = MaterialTheme.typography.titleMedium
                     )
-                    if (subtitle.isNotEmpty()) Text(
+                    if (subtitle != null) Text(
                         text = subtitle,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -124,8 +132,8 @@ fun SettingsExpandableCard(
                 )
             }
         }
-        AnimatedVisibility(
-            visible = isCardExpanded,
+        transition.AnimatedVisibility(
+            visible = { it },
             enter = expandVertically(
                 animationSpec = spring(stiffness = 300F, dampingRatio = .6F)
             ),
@@ -146,11 +154,13 @@ fun SettingsExpandableCard(
     title: String,
     subtitle: String = "",
     icon: ImageVector? = null,
+    shape: Shape = CardDefaults.shape,
     content: @Composable ColumnScope.() -> Unit
 ) = SettingsExpandableCard(
     title = title,
     subtitle = subtitle,
     icon = icon?.let { rememberVectorPainter(it) },
+    shape = shape,
     content = content
 )
 
@@ -159,18 +169,18 @@ fun SettingsCardWithSwitch(
     title: String,
     subtitle: String,
     icon: Painter? = null,
+    shape: Shape = CardDefaults.shape,
     enabled: Boolean,
     isSwitchEnabled: Boolean = true,
     action: (Boolean) -> Unit
 ) {
-    Card(
-        shape = CardShape.CardStandalone,
-        onClick = {
-            action(!enabled)
-        },
+    ElevatedCard(
         modifier = Modifier
-            .padding(DefaultPadding.CardDefaultPadding)
-            .clip(CardShape.CardStandalone),
+            .padding(DefaultPadding.CardPaddingSmallVertical)
+            .clip(shape),
+        onClick = { action(!enabled) },
+        shape = shape,
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
     ) {
         Row(
             modifier = Modifier
@@ -183,7 +193,9 @@ fun SettingsCardWithSwitch(
                     modifier = Modifier.padding(horizontal = 6.dp),
                     icon = icon,
                     iconScale = 0.8F,
-                    shape = MaterialTheme.shapes.large,
+                    shape = SquircleShape(
+                        cornerSmoothing = CornerSmoothing.High
+                    ),
                     containerColor = MaterialTheme.colorScheme.background,
                     contentColor = MaterialTheme.colorScheme.primary.copy(.6F)
                 )
@@ -227,24 +239,30 @@ fun SettingsRadioButtonWithTitle(
     index: Int,
     action: (index: Int) -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier
-            .padding(vertical = 2.dp, horizontal = 12.dp)
+            .padding(DefaultPadding.CardDefaultPadding)
             .fillMaxWidth()
             .clip(CardShape.CardStandalone)
-            .clickable(enabled = enabled, onClick = { action(index) }),
-        verticalAlignment = Alignment.CenterVertically
-    )
-    {
-        RadioButton(
-            selected = checkedIndex == index,
-            onClick = { action(index) },
-            enabled = enabled
-        )
-        Text(
-            modifier = Modifier.padding(start = 8.dp),
-            text = title
-        )
+            .clickable(
+                enabled = enabled,
+                onClick = { action(index) }
+            ),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(
+                vertical = 4.dp
+            ),
+        ) {
+            RadioButton(
+                selected = checkedIndex == index,
+                onClick = null,
+                enabled = enabled
+            )
+            HorizontalSpacer(8.dp)
+            Text(text = title)
+        }
     }
 }
 
@@ -257,13 +275,16 @@ fun SettingsCheckboxWithTitle(
 ) {
     Row(
         modifier = Modifier
-            .padding(vertical = 2.dp, horizontal = 12.dp)
+            .padding(
+                vertical = 2.dp,
+                horizontal = 12.dp
+            )
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     )
     {
-        Text(modifier = Modifier.padding(start = 8.dp), text = title)
+        Text(text = title)
         Checkbox(
             checked = state,
             onCheckedChange = action,
@@ -279,31 +300,34 @@ fun SettingsSwitchWithTitle(
     enabled: Boolean = true,
     action: (Boolean) -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier
-            .padding(
-                vertical = 2.dp,
-                horizontal = 12.dp
-            )
+            .padding(DefaultPadding.CardDefaultPadding)
             .fillMaxWidth()
+            .clip(CardShape.CardStandalone)
             .toggleable(
                 value = state,
                 onValueChange = action,
                 enabled = enabled
             ),
-        verticalAlignment = Alignment.CenterVertically,
-    )
-    {
-        Text(
-            modifier = Modifier.weight(1F),
-            text = title
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Switch(
-            checked = state,
-            onCheckedChange = null,
-            enabled = enabled
-        )
+    ) {
+        Row(
+            modifier = Modifier.padding(
+                vertical = 4.dp
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.weight(1F),
+                text = title
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Switch(
+                checked = state,
+                onCheckedChange = null,
+                enabled = enabled
+            )
+        }
     }
 }
 
@@ -369,147 +393,3 @@ fun ColorPickerItem(
             )
     )
 }
-
-/*@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun ColorPickerItem(
-    brush: Brush,
-    customColorSelected: Boolean,
-    actionSelect: () -> Unit,
-    actionOpenDialog: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .size(50.dp)
-            .padding(4.dp)
-            .clip(CircleShape)
-            .then(
-                if (customColorSelected) Modifier.border(
-                    width = 3.dp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    shape = CircleShape
-                ) else Modifier
-            )
-            .blur(3.dp)
-            .combinedClickable(
-                onClick = actionSelect,
-                onLongClick = actionOpenDialog
-            )
-    ) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(brush = brush)
-        )
-    }
-}*/
-
-@Composable
-fun CurrentSegment(
-    currentSegment: Segment,
-    modifier: Modifier,
-    alignment: Alignment
-) {
-    Box(modifier = modifier, contentAlignment = alignment) {
-        AnimatedContent(
-            targetState = currentSegment,
-            transitionSpec = {
-                if (targetState.start > initialState.start) {
-                    (slideInVertically { height -> height } + fadeIn()) togetherWith(
-                        slideOutVertically { height -> -height } + fadeOut())
-                } else {
-                    (slideInVertically { height -> -height } + fadeIn()) togetherWith(
-                        slideOutVertically { height -> height } + fadeOut())
-                }.using(
-                    SizeTransform(clip = false)
-                )
-            }
-        ) { currentSegment ->
-            Text(
-                text = currentSegment.name,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-    }
-}
-
-/*@Composable
-fun ColorPickerDialogContent(
-    color: Color,
-    onClose: () -> Unit,
-    onPick: (color: Color) -> Unit
-) {
-    val controller = rememberColorPickerController()
-
-    val selectedColor by controller.selectedColor
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        CustomIconButton(
-            onClick = onClose,
-            minSize = 30.dp,
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.3F),
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(fanficID = R.drawable.round_close_24),
-                contentDescription = null
-            )
-        }
-    }
-    HsvColorPicker(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp)
-            .padding(10.dp),
-        controller = controller,
-        initialColor = color
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    BrightnessSlider(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .height(35.dp),
-        controller = controller,
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        Button(
-            modifier = Modifier
-                .height(65.dp)
-                .wrapContentWidth(),
-            shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(
-                contentColor = selectedColor.invert(),
-                containerColor = selectedColor
-            ),
-            onClick = {
-                onPick(selectedColor)
-                onClose()
-            },
-
-            ) {
-            Text(
-                text = stringResource(fanficID = R.string.Pick_color),
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-}*/
-
-data class Segment(
-    val start: Float,
-    val name: String
-)
