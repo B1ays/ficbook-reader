@@ -22,7 +22,7 @@ interface FanficPageApi {
     suspend fun read(read: Boolean, fanficID: String): Boolean
 }
 
-class FanficPageApiImpl(
+internal class FanficPageApiImpl(
     private val client: OkHttpClient
 ): FanficPageApi {
     private val fanficPageParser = FanficPageParser()

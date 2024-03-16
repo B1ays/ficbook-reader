@@ -29,7 +29,7 @@ interface AuthorProfileApi {
     suspend fun getCommentsPresents(id: String, page: Int): ApiResult<ListResult<AuthorCommentPresentModel>>
 }
 
-class AuthorProfileApiImpl(
+internal class AuthorProfileApiImpl(
     private val client: OkHttpClient
 ): AuthorProfileApi {
     private val authorProfileParser = AuthorMainInfoParser()

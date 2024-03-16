@@ -15,7 +15,7 @@ interface ChaptersApi {
     suspend fun getChapterText(href: String): ApiResult<String>
 }
 
-class ChaptersApiImpl(
+internal class ChaptersApiImpl(
     private val client: OkHttpClient
 ): ChaptersApi {
     private val chapterTextParser = ChapterParser()

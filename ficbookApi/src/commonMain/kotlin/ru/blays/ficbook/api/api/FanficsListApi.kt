@@ -18,7 +18,7 @@ interface FanficsListApi {
     suspend fun get(href: String, page: Int): ApiResult<ListResult<FanficCardModel>>
 }
 
-class FanficsListApiImpl(
+internal class FanficsListApiImpl(
     private val client: OkHttpClient
 ): FanficsListApi {
     private val fanficsListParser = FanficsListParser()

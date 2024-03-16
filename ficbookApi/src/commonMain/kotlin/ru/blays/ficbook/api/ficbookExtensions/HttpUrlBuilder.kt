@@ -6,7 +6,9 @@ import ru.blays.ficbook.api.FICBOOK_HOST
 import ru.blays.ficbook.api.HTTPS_SCHEME
 import ru.blays.ficbook.api.okHttpDsl.httpUrl
 
-fun ficbookUrl(block: HttpUrl.Builder.() -> Unit): HttpUrl {
+internal fun ficbookUrl(
+    block: HttpUrl.Builder.() -> Unit
+): HttpUrl {
     return httpUrl {
         scheme(HTTPS_SCHEME)
         host(FICBOOK_HOST)
@@ -14,11 +16,6 @@ fun ficbookUrl(block: HttpUrl.Builder.() -> Unit): HttpUrl {
     }
 }
 
-
-fun Request.Builder.ficbookUrl(
+internal fun Request.Builder.ficbookUrl(
     block: HttpUrl.Builder.() -> Unit
-) {
-     url(
-         ru.blays.ficbook.api.ficbookExtensions.ficbookUrl(block)
-     )
-}
+) = url(ru.blays.ficbook.api.ficbookExtensions.ficbookUrl(block))

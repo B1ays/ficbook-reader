@@ -28,7 +28,7 @@ interface NotificationsApi {
     suspend fun readAll(): ApiResult<Unit>
 }
 
-class NotificationsApiImpl(
+internal class NotificationsApiImpl(
     private val client: OkHttpClient
 ): NotificationsApi {
     private val notificationsParser = NotificationsParser()

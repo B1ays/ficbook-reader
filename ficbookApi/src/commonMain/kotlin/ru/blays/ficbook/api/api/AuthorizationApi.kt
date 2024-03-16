@@ -22,7 +22,7 @@ interface AuthorizationApi {
     suspend fun checkAuthorization(): ApiResult<UserModel>
 }
 
-class AuthorizationApiImpl(
+internal class AuthorizationApiImpl(
     private val client: OkHttpClient
 ): AuthorizationApi {
     private val userParser = UserParser()

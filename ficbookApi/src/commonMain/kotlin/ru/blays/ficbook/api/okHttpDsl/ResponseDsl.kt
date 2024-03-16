@@ -2,7 +2,7 @@ package ru.blays.ficbook.api.okHttpDsl
 
 import okhttp3.*
 
-suspend fun OkHttpClient.get(url: HttpUrl): Response {
+internal suspend fun OkHttpClient.get(url: HttpUrl): Response {
     return newCall(
         request = Request.Builder()
             .url(url)
@@ -10,7 +10,7 @@ suspend fun OkHttpClient.get(url: HttpUrl): Response {
     ).execute()
 }
 
-suspend fun OkHttpClient.get(
+internal suspend fun OkHttpClient.get(
     block: Request.Builder.() -> Unit
 ): Response {
     val builder = Request.Builder().apply(block)
@@ -19,7 +19,7 @@ suspend fun OkHttpClient.get(
     ).execute()
 }
 
-suspend fun OkHttpClient.get(
+internal suspend fun OkHttpClient.get(
     url: String,
     block: Request.Builder.() -> Unit
 ) {
@@ -31,7 +31,7 @@ suspend fun OkHttpClient.get(
     ).execute()
 }
 
-suspend fun OkHttpClient.post(
+internal suspend fun OkHttpClient.post(
     url: HttpUrl,
     body: RequestBody
 ): Response {
@@ -43,7 +43,7 @@ suspend fun OkHttpClient.post(
     ).execute()
 }
 
-suspend fun OkHttpClient.post(
+internal suspend fun OkHttpClient.post(
     body: RequestBody,
     block: Request.Builder.() -> Unit
 ): Response {

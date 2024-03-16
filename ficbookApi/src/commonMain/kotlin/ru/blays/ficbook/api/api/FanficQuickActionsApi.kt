@@ -15,7 +15,7 @@ interface FanficQuickActionsApi {
     suspend fun get(fanficID: String): ApiResult<FanficQuickActionsModel>
 }
 
-class FanficQuickActionsApiImpl(
+internal class FanficQuickActionsApiImpl(
     val client: OkHttpClient
 ): FanficQuickActionsApi {
     override suspend fun get(fanficID: String): ApiResult<FanficQuickActionsModel> = coroutineScope {
