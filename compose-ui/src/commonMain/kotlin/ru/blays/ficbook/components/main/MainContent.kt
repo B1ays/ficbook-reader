@@ -1,26 +1,31 @@
 package ru.blays.ficbook.components.main
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
@@ -35,6 +40,9 @@ import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaratio
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
 import ru.blays.ficbook.reader.shared.data.sections.UserSectionsStable
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
+import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.CornerSmoothing
+import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.SquircleShape
+import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
@@ -162,8 +170,13 @@ private fun PortraitContent(
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.requiredWidth(5.dp))
-                            UserIconButton(component)
+                            HorizontalSpacer(5.dp)
+                            UserIconButton(
+                                component = component,
+                                modifier = Modifier
+                                    .padding(3.dp)
+                                    .size(42.dp),
+                            )
                         },
                         collapsingTitle = CollapsingTitle.large(stringResource(Res.string.app_name)),
                         insets = WindowInsets.statusBars,
@@ -280,15 +293,24 @@ private fun DrawerLandscape(
             modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            UserIconButton(component)
+            UserIconButton(
+                component = component,
+                modifier = Modifier
+                    .padding(3.dp)
+                    .size(50.dp),
+            )
             currentUser?.let {
-                Spacer(modifier = Modifier.width(2.dp))
+                HorizontalSpacer(5.dp)
                 Text(
                     text = it.name,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
-            Spacer(modifier = Modifier.width(5.dp))
+            Spacer(modifier = Modifier.weight(1F))
             CustomIconButton(
                 onClick = {
                     component.onOutput(
@@ -542,29 +564,41 @@ private fun DrawerContent(
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun UserIconButton(
-    component: MainScreenComponent
+    component: MainScreenComponent,
+    shape: Shape = SquircleShape(cornerSmoothing = CornerSmoothing.High),
+    modifier: Modifier = Modifier
 ) {
     val currentUser by component.state.collectAsState()
-    IconButton(
-        onClick = {
-            component.onOutput(MainScreenComponent.Output.UserProfile)
-        }
-    ) {
-        currentUser?.let {
+
+    AnimatedContent(
+        targetState = currentUser,
+        transitionSpec = {
+            fadeIn() togetherWith fadeOut()
+        },
+        modifier = modifier
+            .clip(shape)
+            .clickable {
+                component.onOutput(MainScreenComponent.Output.UserProfile)
+            },
+    ) { user ->
+        if(user != null) {
             AsyncImage(
-                model = File(it.avatarPath),
+                model = File(user.avatarPath),
                 contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(2.dp)
+                modifier = Modifier.fillMaxSize()
             )
-        } ?: Icon(
-            modifier = Modifier
-                .size(40.dp)
-                .padding(2.dp),
-            painter = painterResource(Res.drawable.ic_user),
-            contentDescription = stringResource(Res.string.content_description_icon_author_avatar_stub)
-        )
+        } else {
+            Icon(
+                painter = painterResource(Res.drawable.ic_user),
+                contentDescription = stringResource(Res.string.content_description_icon_author_avatar_stub),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp),
+                        shape = shape
+                    ),
+            )
+        }
     }
 }
