@@ -3,6 +3,7 @@ package ru.blays.ficbook.api.parsers
 import kotlinx.coroutines.coroutineScope
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
+import org.jsoup.select.Elements
 import org.jsoup.select.Evaluator
 import ru.blays.ficbook.api.ATTR_HREF
 import ru.blays.ficbook.api.ATTR_SRC
@@ -159,18 +160,20 @@ internal class FanficPageParser {
 
         val dedication = mb5
             .select("div:contains(Посвящение:)")
-            .wholeText
-            .trim(' ', '\n')
-            .replace(
+            .takeIf(Elements::isNotEmpty)
+            ?.wholeText
+            ?.trim(' ', '\n')
+            ?.replace(
                 regex = Regex("Посвящение:\\s*"),
                 replacement = ""
             )
 
         val authorComment = mb5
             .select("div:contains(Примечания:)")
-            .wholeText
-            .trim(' ', '\n')
-            .replace(
+            .takeIf(Elements::isNotEmpty)
+            ?.wholeText
+            ?.trim(' ', '\n')
+            ?.replace(
                 regex = Regex("Примечания:\\s*"),
                 replacement = ""
             )
@@ -188,7 +191,7 @@ internal class FanficPageParser {
             .select(".fanfic-hat")
             .select("fanfic-cover")
             .attr("src-desktop")
-            .let { CoverUrl(it) }
+            .let(::CoverUrl)
 
         val tags = mb5
             .select(".tags")
@@ -201,23 +204,25 @@ internal class FanficPageParser {
             )
         }
 
-        val parts = data.select(
-            Evaluator.Class("article mb-15")
-        )
-        .select(".part")
+        val parts = data
+            .select(Evaluator.Class("article mb-15"))
+            .select(".part")
 
         val fanficChapters = if (parts.isNotEmpty()) {
             val chapters = parts.map { element ->
-                val partInfo = element.select(
-                    Evaluator.Class("part-info text-muted")
-                )
+                val partInfo = element
+                    .select(Evaluator.Class("part-info text-muted"))
 
-                val href = element.select("a").attr(ATTR_HREF)
-                val chapterID = href.substringAfterLast('/').substringBefore('#')
+                val href = element
+                    .select("a")
+                    .attr(ATTR_HREF)
+                val chapterID = href
+                    .substringAfterLast('/')
+                    .substringBefore('#')
 
-                val chapterName = element.select(
-                    Evaluator.Class("part-title word-break")
-                ).text()
+                val chapterName = element
+                    .select(Evaluator.Class("part-title word-break"))
+                    .text()
 
                 val date = partInfo.select("span").text()
 
@@ -261,10 +266,11 @@ internal class FanficPageParser {
         val liked = bottomAction
             .select("span")
             .run {
-                val first = firstOrNull {
+                firstOrNull {
                     it.outerHtml().contains("js-like")
+                }.let {
+                    it?.outerHtml()?.contains("btn-success") == true
                 }
-                first?.outerHtml()?.contains("btn-success") == true
             }
 
         val subscribed = bottomAction
