@@ -111,8 +111,7 @@ fun SettingsExpandableCard(
             )
             {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth(0.7F)
+                    modifier = Modifier.fillMaxWidth(0.7F)
                 ) {
                     Text(
                         text = title,
