@@ -16,7 +16,8 @@ interface UserProfileComponent {
     sealed class Output {
         data object NavigateBack: Output()
         data object ManageAccounts: Output()
-        data class OpenProfile(val href: String): Output()
-
+        class OpenProfile: Output() {
+            internal var href: String = ""
+        }
     }
 }

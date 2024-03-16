@@ -6,8 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import org.koin.mp.KoinPlatform.getKoin
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileComponent
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
 
 class DefaultUserProfileComponent(
     componentContext: ComponentContext,
@@ -28,7 +28,15 @@ class DefaultUserProfileComponent(
     }
 
     override fun onOutput(output: UserProfileComponent.Output) {
-        this.output(output)
+        when(output) {
+            is UserProfileComponent.Output.OpenProfile -> {
+                state.value?.let {
+                    output.href = "authors/${it.id}"
+                    this.output(output)
+                }
+            }
+            else -> this.output(output)
+        }
     }
 
     init {

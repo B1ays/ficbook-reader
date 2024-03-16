@@ -1,8 +1,10 @@
 package ru.blays.ficbook.components.userProfile
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -10,24 +12,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
 import com.moriatsushi.insetsx.systemBarsPadding
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileComponent
-import ru.blays.ficbook.utils.surfaceColorAtAlpha
+import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.CornerSmoothing
+import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.SquircleShape
+import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
+import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
-import java.io.File
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -61,7 +64,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                 .padding(top = padding.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            val widthFill = when(maxWidth) {
+            val widthFill = when (maxWidth) {
                 in 1500.dp..Dp.Infinity -> 0.5F
                 in 1200.dp..1500.dp -> 0.6F
                 in 1000.dp..1200.dp -> 0.7F
@@ -70,76 +73,107 @@ fun UserProfileContent(component: UserProfileComponent) {
                 else -> 1F
             }
 
-            val avatarPainter = state?.let {
-                rememberAsyncImagePainter(model = File(it.avatarPath))
-            } ?: painterResource(Res.drawable.ic_incognito)
+            val avatarShape = SquircleShape(
+                cornerSmoothing = CornerSmoothing.High
+            )
 
-            Card(
-                onClick = {
-                    state?.let {
-                        component.onOutput(
-                            UserProfileComponent.Output.OpenProfile("authors/${it.id}") // TODO - remove href generation from ui
-                        )
-                    }
-                },
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.3F)
-                ),
-                modifier = Modifier
-                    .padding(DefaultPadding.CardDefaultPadding)
-                    .padding(
-                        top = 40.dp,
-                        bottom = 100.dp
-                    )
-                    .align(Alignment.TopCenter)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(widthFill),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = avatarPainter,
-                            contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
-                            contentScale = if(state == null) {
-                                ContentScale.Inside
-                            } else ContentScale.Crop,
-                            colorFilter = if(state == null) {
-                                ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                            } else null,
-                            modifier = Modifier
-                                .size(65.dp)
-                                .clip(CircleShape)
-                        )
-                        Spacer(modifier = Modifier.requiredWidth(12.dp))
-                        Text(
-                            modifier = Modifier,
-                            text = state?.name ?: stringResource(Res.string.anonymous_user),
-                            style = MaterialTheme.typography.titleLarge,
-                            textAlign = TextAlign.Start,
-                        )
-                    }
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_back),
-                        contentDescription = null,
-                        modifier = Modifier.rotate(180F).padding(10.dp)
+            val textBlock: @Composable ColumnScope.() -> Unit = {
+                Text(
+                    modifier = Modifier,
+                    text = state?.name ?: stringResource(Res.string.anonymous_user),
+                    style = MaterialTheme.typography.headlineMedium,
+                    maxLines = 1
+                )
+                state?.id?.let { id ->
+                    VerticalSpacer(4.dp)
+                    Text(
+                        modifier = Modifier,
+                        text = "ID: $id",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Light,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
                     )
                 }
             }
+
+            val avatarImage: @Composable (modifier: Modifier) -> Unit = { modifier ->
+                SubcomposeAsyncImage(
+                    model = state?.avatarPath,
+                    contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
+                    contentScale = ContentScale.Crop,
+                    success = { state ->
+                        Image(
+                            painter = state.painter,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp)
+                                )
+                        )
+                    },
+                    error = {
+                        Image(
+                            painter = painterResource(Res.drawable.ic_incognito),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                        )
+                    },
+                    modifier = modifier
+                )
+            }
+
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(
-                        bottom = 40.dp,
-                        start = 12.dp,
-                        end = 12.dp
-                    ),
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth(widthFill),
             ) {
+                AnimatedContent(
+                    targetState = widthFill > 0.9F,
+                    modifier = Modifier.weight(1F)
+                ) { inColumn ->
+                    if (inColumn) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Spacer(modifier = Modifier.fillMaxHeight(0.1F))
+                            avatarImage(
+                                Modifier
+                                    .size(140.dp)
+                                    .clip(avatarShape)
+                                    .clickable {
+                                        component.onOutput(
+                                            UserProfileComponent.Output.OpenProfile()
+                                        )
+                                    }
+                            )
+                            VerticalSpacer(16.dp)
+                            textBlock()
+                        }
+                    } else {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier,
+                        ) {
+                            avatarImage(
+                                Modifier
+                                    .size(140.dp * widthFill)
+                                    .clip(avatarShape)
+                                    .clickable {
+                                        component.onOutput(
+                                            UserProfileComponent.Output.OpenProfile()
+                                        )
+                                    }
+                            )
+                            HorizontalSpacer(20.dp)
+                            Column(content = textBlock)
+                        }
+                    }
+                }
+
                 Button(
                     shape = MaterialTheme.shapes.medium,
                     onClick = {
@@ -148,6 +182,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                         )
                     },
                     modifier = Modifier
+                        .padding(horizontal = DefaultPadding.CardHorizontalPadding)
                         .height(44.dp)
                         .fillMaxWidth()
                 ) {
@@ -170,6 +205,7 @@ fun UserProfileContent(component: UserProfileComponent) {
                         )
                     },
                     modifier = Modifier
+                        .padding(horizontal = DefaultPadding.CardHorizontalPadding)
                         .height(44.dp)
                         .fillMaxWidth()
                 ) {
@@ -183,8 +219,8 @@ fun UserProfileContent(component: UserProfileComponent) {
                         text = stringResource(Res.string.anonymous_mode)
                     )
                 }
+                VerticalSpacer(40.dp)
             }
-
         }
     }
 }
