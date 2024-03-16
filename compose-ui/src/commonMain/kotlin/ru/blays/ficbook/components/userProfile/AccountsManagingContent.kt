@@ -1,9 +1,15 @@
 package ru.blays.ficbook.components.userProfile
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,17 +19,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.moriatsushi.insetsx.systemBarsPadding
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.data.dto.SavedUserModel
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileManagingComponent
+import ru.blays.ficbook.reader.shared.data.dto.SavedUserModel
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
-import ru.blays.ficbook.utils.surfaceColorAtAlpha
+import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.CornerSmoothing
+import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.SquircleShape
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
@@ -116,28 +123,35 @@ private fun SavedUserItem(
     onDelete: () -> Unit,
     onSelect: () -> Unit
 ) {
-    if(selected) {
-        Card(
-            onClick = onSelect,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceColorAtAlpha(0.3F)
-            ),
-            modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingLarge)
-        ) {
-            UserCardContent(
-                user = user,
-                onDelete = onDelete
-            )
+    AnimatedContent(
+        targetState = selected,
+        transitionSpec = {
+            fadeIn(spring()) togetherWith fadeOut(spring())
         }
-    } else {
-        OutlinedCard(
-            onClick = onSelect,
-            modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingLarge)
-        ) {
-            UserCardContent(
-                user = user,
-                onDelete = onDelete
-            )
+    ) {
+        if(it) {
+            Card(
+                onClick = onSelect,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(0.3F)
+                ),
+                modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingLarge)
+            ) {
+                UserCardContent(
+                    user = user,
+                    onDelete = onDelete
+                )
+            }
+        } else {
+            OutlinedCard(
+                onClick = onSelect,
+                modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingLarge)
+            ) {
+                UserCardContent(
+                    user = user,
+                    onDelete = onDelete
+                )
+            }
         }
     }
 }
@@ -148,6 +162,12 @@ fun UserCardContent(
     user: SavedUserModel,
     onDelete: () -> Unit
 ) {
+    val avatarShape = SquircleShape(
+        cornerSmoothing = CornerSmoothing.High
+    )
+
+    val imageContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(10.dp)
+
     Row(
         modifier = Modifier
             .padding(14.dp)
@@ -155,13 +175,24 @@ fun UserCardContent(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
+        SubcomposeAsyncImage(
             model = File(user.avatarPath),
             contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
             contentScale = ContentScale.Crop,
+            success = { state ->
+                Image(
+                    painter = state.painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = imageContainerColor
+                        )
+                )
+            },
             modifier = Modifier
                 .size(65.dp)
-                .clip(CircleShape)
+                .clip(avatarShape)
         )
         Spacer(modifier = Modifier.requiredWidth(12.dp))
         Column(
@@ -185,12 +216,13 @@ fun UserCardContent(
         CustomIconButton(
             onClick = onDelete,
             contentColor = MaterialTheme.colorScheme.primary,
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = imageContainerColor,
+            minSize = 42.dp
         ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_delete),
                 contentDescription = stringResource(Res.string.content_description_icon_delete),
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(30.dp),
             )
         }
     }
