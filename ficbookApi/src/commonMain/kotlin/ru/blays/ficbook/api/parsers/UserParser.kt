@@ -1,7 +1,6 @@
 package ru.blays.ficbook.api.parsers
 
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.StateFlow
 import org.jsoup.nodes.Document
 import org.jsoup.select.Evaluator
 import ru.blays.ficbook.api.ATTR_HREF
@@ -11,8 +10,8 @@ import ru.blays.ficbook.api.AUTHORS_HREF
 import ru.blays.ficbook.api.dataModels.PopularAuthorModel
 import ru.blays.ficbook.api.dataModels.UserModel
 
-internal class UserParser: IDataParser<Document, UserModel> {
-    override suspend fun parse(data: Document): UserModel = coroutineScope {
+internal class UserParser {
+    suspend fun parse(data: Document): UserModel = coroutineScope {
         val profileHolder = data.select(
             Evaluator.Class("dropdown profile-holder")
         )
@@ -26,7 +25,7 @@ internal class UserParser: IDataParser<Document, UserModel> {
         val href = profileHolder.select("li a").run {
             forEach { a ->
                 val href = a.attr(ATTR_HREF)
-                if(href.contains(AUTHORS_HREF)) {
+                if (href.contains(AUTHORS_HREF)) {
                     return@run href
                 }
             }
@@ -34,19 +33,15 @@ internal class UserParser: IDataParser<Document, UserModel> {
         }
 
         return@coroutineScope UserModel(
-            name= name,
+            name = name,
             avatarUrl = avatarUrl,
             href = href
         )
     }
-
-    override fun parseSynchronously(data: Document): StateFlow<UserModel?> {
-        TODO("Not yet implemented")
-    }
 }
 
-internal class FavouriteAuthorsParser: IDataParser<Document, List<UserModel>> {
-    override suspend fun parse(data: Document): List<UserModel> {
+internal class FavouriteAuthorsParser {
+    suspend fun parse(data: Document): List<UserModel> {
         val userElements = data.select("div.data-table div[class=\"data-table-row d-flex justify-content-between\"]")
         val users = userElements.map { element ->
             val (name, href) = element.select("a").let {
@@ -59,13 +54,10 @@ internal class FavouriteAuthorsParser: IDataParser<Document, List<UserModel>> {
         }
         return users
     }
-    override fun parseSynchronously(data: Document): StateFlow<List<UserModel>?> {
-        TODO("Not yet implemented")
-    }
 }
 
-internal class PopularAuthorsParser: IDataParser<Document, List<PopularAuthorModel>> {
-    override suspend fun parse(data: Document): List<PopularAuthorModel> {
+internal class PopularAuthorsParser {
+    suspend fun parse(data: Document): List<PopularAuthorModel> {
         val topAuthors = data.select(".top-authors")
         val tr = topAuthors.select("tbody tr")
         val authors = tr.map { element ->
@@ -87,10 +79,6 @@ internal class PopularAuthorsParser: IDataParser<Document, List<PopularAuthorMod
             )
         }
         return authors
-    }
-
-    override fun parseSynchronously(data: Document): StateFlow<List<PopularAuthorModel>?> {
-        TODO("Not yet implemented")
     }
 }
 

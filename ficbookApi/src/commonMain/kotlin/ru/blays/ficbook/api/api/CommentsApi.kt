@@ -24,7 +24,7 @@ interface CommentsApi {
     suspend fun delete(commentID: String): ApiResult<Boolean>
 }
 
-class CommentsApiImpl(
+internal class CommentsApiImpl(
     private val client: OkHttpClient
 ): CommentsApi {
     private val commentsParser = CommentParser()

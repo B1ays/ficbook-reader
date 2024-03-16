@@ -1,6 +1,5 @@
 package ru.blays.ficbook.api.parsers
 
-import kotlinx.coroutines.flow.StateFlow
 import org.jsoup.nodes.Document
 import org.jsoup.select.Evaluator
 import ru.blays.ficbook.api.ATTR_HREF
@@ -8,8 +7,8 @@ import ru.blays.ficbook.api.dataModels.NotificationCategory
 import ru.blays.ficbook.api.dataModels.NotificationModel
 import ru.blays.ficbook.api.dataModels.NotificationType
 
-class NotificationsParser: IDataParser<Document, List<NotificationModel>> {
-    override suspend fun parse(data: Document): List<NotificationModel> {
+class NotificationsParser {
+    suspend fun parse(data: Document): List<NotificationModel> {
         val elements = data.select(
             Evaluator.Class("notification-item js-read-notification")
         )
@@ -58,9 +57,5 @@ class NotificationsParser: IDataParser<Document, List<NotificationModel>> {
             title.contains("Оповещения о новых блогах") -> NotificationType.NEW_BLOGS
             else -> NotificationType.UNKNOWN
         }
-    }
-
-    override fun parseSynchronously(data: Document): StateFlow<List<NotificationModel>?> {
-        TODO("Not yet implemented")
     }
 }

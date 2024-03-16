@@ -23,7 +23,7 @@ interface CollectionsApi {
     suspend fun removeFromCollection(collectionID: String, fanficID: String): Boolean
 }
 
-class CollectionsApiImpl(
+internal class CollectionsApiImpl(
     private val client: OkHttpClient
 ): CollectionsApi {
     private val collectionsListParser = CollectionListParser()

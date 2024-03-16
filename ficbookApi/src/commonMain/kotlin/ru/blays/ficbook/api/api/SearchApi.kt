@@ -22,7 +22,7 @@ interface SearchApi {
     suspend fun findTags(query: String): ApiResult<SearchedTagsModel>
 }
 
-class SearchApiImpl(
+internal class SearchApiImpl(
     private val client: OkHttpClient
 ): SearchApi {
     override suspend fun findFandoms(

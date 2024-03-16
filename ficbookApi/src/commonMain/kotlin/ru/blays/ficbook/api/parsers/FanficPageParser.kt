@@ -1,9 +1,6 @@
 package ru.blays.ficbook.api.parsers
 
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
 import org.jsoup.select.Evaluator
@@ -14,10 +11,10 @@ import ru.blays.ficbook.api.json
 import ru.blays.ficbook.api.notNumberRegex
 import java.net.URLDecoder
 
-internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
+internal class FanficPageParser {
     private val chapterTextParser = ChapterParser()
 
-    override suspend fun parse(data: Document): FanficPageModel = coroutineScope {
+    suspend fun parse(data: Document): FanficPageModel = coroutineScope {
         val outputSettings: Document.OutputSettings = Document.OutputSettings()
         outputSettings.prettyPrint(false)
         outputSettings.escapeMode(Entities.EscapeMode.extended)
@@ -46,16 +43,16 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         val trophies = fanficMainInfo?.select(
             Evaluator.Class("badge-with-icon badge-secondary badge-reward")
         )
-        ?.select(".badge-text")
-        ?.text()
-        ?.toIntOrNull()
-        ?: 0
+            ?.select(".badge-text")
+            ?.text()
+            ?.toIntOrNull()
+            ?: 0
 
         val rating = fanficMainInfo?.run {
             val divs = select("div:not(.fanfic-main-info)")
 
-            for(div in divs) {
-                if(div.outerHtml().contains("badge-rating")) {
+            for (div in divs) {
+                if (div.outerHtml().contains("badge-rating")) {
                     return@run FanficRating.getForName(div.text())
                 }
             }
@@ -65,8 +62,8 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         val direction = fanficMainInfo?.run {
             val divs = select("div:not(.fanfic-main-info)")
 
-            for(div in divs) {
-                if(div.outerHtml().contains("direction")) {
+            for (div in divs) {
+                if (div.outerHtml().contains("direction")) {
                     return@run FanficDirection.getForName(div.text())
                 }
             }
@@ -76,8 +73,8 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         val status = fanficMainInfo?.run {
             val divs = select("div:not(.fanfic-main-info)")
 
-            for(div in divs) {
-                if(div.outerHtml().contains("status")) {
+            for (div in divs) {
+                if (div.outerHtml().contains("status")) {
                     return@run FanficCompletionStatus.getForName(div.text())
                 }
             }
@@ -98,7 +95,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             ?.select(".mb-10")
             ?.run {
                 forEach { element ->
-                    if(element.html().contains("ic_book")) {
+                    if (element.html().contains("ic_book")) {
                         val a = element.select("a")
                         return@run a.map {
                             FandomModel(
@@ -133,65 +130,59 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         val pairings = data.select(
             Evaluator.Class("description word-break")
         )
-        .select("a")
-        .filter { element ->
-            element.className().contains("pairing-link")
-        }
-        .map {
-            val character = it.text()
-            val href = it.attr(ATTR_HREF).let { url ->
-                URLDecoder.decode(url, "UTF-8")
+            .select("a")
+            .filter { element ->
+                element.className().contains("pairing-link")
             }
+            .map {
+                val character = it.text()
+                val href = it.attr(ATTR_HREF).let { url ->
+                    URLDecoder.decode(url, "UTF-8")
+                }
 
-            val isHighlighted = it.className().contains("pairing-highlight")
-            PairingModel(
-                href = href,
-                character = character,
-                isHighlighted = isHighlighted
-            )
-        }
+                val isHighlighted = it.className().contains("pairing-highlight")
+                PairingModel(
+                    href = href,
+                    character = character,
+                    isHighlighted = isHighlighted
+                )
+            }
 
         val description = mb5
             .select("div:contains(Описание:)")
-            .firstOrNull()
-            ?.wholeText()
-            ?.trim(' ', '\n')
-            ?.replace(
+            .wholeText
+            .trim(' ', '\n')
+            .replace(
                 regex = Regex("Описание:\\s*"),
                 replacement = ""
             )
-            ?: ""
 
         val dedication = mb5
             .select("div:contains(Посвящение:)")
-            .firstOrNull()
-            ?.wholeText()
-            ?.trim(' ', '\n')
-            ?.replace(
+            .wholeText
+            .trim(' ', '\n')
+            .replace(
                 regex = Regex("Посвящение:\\s*"),
                 replacement = ""
             )
 
         val authorComment = mb5
             .select("div:contains(Примечания:)")
-            .firstOrNull()
-            ?.wholeText()
-            ?.trim(' ', '\n')
-            ?.replace(
+            .wholeText
+            .trim(' ', '\n')
+            .replace(
                 regex = Regex("Примечания:\\s*"),
                 replacement = ""
             )
 
         val publicationRules = mb5
             .select("div:contains(Публикация на других ресурсах:)")
-            .firstOrNull()
-            ?.wholeText()
-            ?.trim(' ', '\n')
-            ?.replace(
+            .wholeText
+            .trim(' ', '\n')
+            .replace(
                 regex = Regex("Публикация на других ресурсах:\\s*"),
                 replacement = ""
             )
-            ?: ""
 
         val coverUrl = data
             .select(".fanfic-hat")
@@ -215,7 +206,7 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
         )
         .select(".part")
 
-        val fanficChapters = if(parts.isNotEmpty()) {
+        val fanficChapters = if (parts.isNotEmpty()) {
             val chapters = parts.map { element ->
                 val partInfo = element.select(
                     Evaluator.Class("part-info text-muted")
@@ -361,13 +352,5 @@ internal class FanficPageParser: IDataParser<Document, FanficPageModel> {
             rewards = rewards,
             pagesCount = pagesCount
         )
-    }
-
-    override fun parseSynchronously(data: Document): StateFlow<FanficPageModel?> {
-        val resultFlow = MutableStateFlow<FanficPageModel?>(null)
-        launch {
-            resultFlow.value = parse(data)
-        }
-        return resultFlow
     }
 }

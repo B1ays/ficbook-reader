@@ -1,6 +1,5 @@
 package ru.blays.ficbook.api.parsers
 
-import kotlinx.coroutines.flow.StateFlow
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -9,18 +8,14 @@ import ru.blays.ficbook.api.ATTR_HREF
 import ru.blays.ficbook.api.ATTR_SRC
 import ru.blays.ficbook.api.dataModels.*
 
-internal class CommentListParser: IDataParser<Document, Elements> {
-    override suspend fun parse(data: Document): Elements {
+internal class CommentListParser {
+    suspend fun parse(data: Document): Elements {
         return data.select(".comment-container")
-    }
-
-    override fun parseSynchronously(data: Document): StateFlow<Elements?> {
-        TODO("Not yet implemented")
     }
 }
 
-class CommentParser: IDataParser<Element, CommentModel> {
-    override suspend fun parse(data: Element): CommentModel {
+class CommentParser {
+    suspend fun parse(data: Element): CommentModel {
         val commentID = data.select(
             Evaluator.Class("mt-5 js quote btn btn-sm btn-link")
         ).attr("data-comment_id")
@@ -28,9 +23,7 @@ class CommentParser: IDataParser<Element, CommentModel> {
         val avatarUrl = data.select(".comment-avatar img").attr(ATTR_SRC)
         val (href, userName) = data.select(".author")
             .select("a")
-            .let {
-                it.attr(ATTR_HREF) to it.text()
-            }
+            .let { it.attr(ATTR_HREF) to it.text() }
 
         val isOwnComment = data.select(
             Evaluator.Class("btn btn-link delete js_delete_comment")
@@ -55,7 +48,7 @@ class CommentParser: IDataParser<Element, CommentModel> {
                 )
             }
 
-        val blocks = if(commentMessage != null) {
+        val blocks = if (commentMessage != null) {
             val wholeText = commentMessage.wholeText()
             parseBlocks(wholeText)
         } else {
@@ -88,27 +81,31 @@ class CommentParser: IDataParser<Element, CommentModel> {
         return stringBlocks.map { parseBlock(it) }
     }
 
-    private suspend fun parseStringBlocks(lines: List<String>): MutableList<List<String>> {
-        val blocks = mutableListOf<List<String>>()
+    private suspend fun parseStringBlocks(lines: List<String>): List<List<String>> {
         var blockStartIndex = 0
         var blockEndIndex = 0
         var blockEnded = false
-        lines.forEachIndexed { index, line ->
-            if(line.startsWith('>')) {
+        val blocks = lines.mapIndexedNotNull { index, line ->
+            if (line.startsWith('>')) {
                 if (blockEnded) {
-                    blocks += lines.slice(blockStartIndex..blockEndIndex)
+                    val block = lines.slice(blockStartIndex..blockEndIndex)
                     blockStartIndex = index
                     blockEndIndex = index
                     blockEnded = false
+                    block
+                } else {
+                    null
                 }
             } else {
                 blockEndIndex = index
                 blockEnded = true
+                null
             }
         }
-        blocks += lines.slice(blockStartIndex..lines.lastIndex)
 
-        return blocks
+        val lastBlock = lines.slice(blockStartIndex..lines.lastIndex)
+
+        return blocks + listOf(lastBlock)
     }
 
     private suspend fun parseBlock(block: List<String>): CommentBlockModel {
@@ -124,7 +121,7 @@ class CommentParser: IDataParser<Element, CommentModel> {
     private suspend fun quoteParser(block: List<String>, level: Int = 1): QuoteModel? {
         val prefix = ">".repeat(level)
         val linesOnLevel = block.filter { it.matches("(?<!>)>{$level}[^>]+".toRegex()) }
-        if(linesOnLevel.isEmpty()) return null
+        if (linesOnLevel.isEmpty()) return null
         var userNameIndex: Short = NO_USER_NAME
         val userName = linesOnLevel.firstOrNull { it.startsWith("$prefix**") }
             ?.also {
@@ -135,11 +132,11 @@ class CommentParser: IDataParser<Element, CommentModel> {
             ?: ""
 
         val text = linesOnLevel.run {
-            if(userNameIndex == NO_USER_NAME) {
+            if (userNameIndex == NO_USER_NAME) {
                 linesOnLevel.joinToString("\n") { it.trim('>') }
             } else {
                 linesOnLevel.slice(
-            (userNameIndex + 1)..(linesOnLevel.lastIndex)
+                    (userNameIndex + 1)..(linesOnLevel.lastIndex)
                 )
                 .joinToString("\n") {
                     it.trim('>')
@@ -181,14 +178,14 @@ class CommentParser: IDataParser<Element, CommentModel> {
         val prefix = ">".repeat(level)
         val text = quoteModel.text
         val userName = quoteModel.userName
-        if(userName.isNotEmpty()) {
+        if (userName.isNotEmpty()) {
             stringBuilder.appendLine("$prefix**$userName**")
         }
         quoteModel.quote?.let {
             stringBuilder.append(quoteToText(it, level + 1))
         }
         val textLines = text.lines()
-        if(textLines.isNotEmpty()) {
+        if (textLines.isNotEmpty()) {
             textLines.forEach { line ->
                 stringBuilder.appendLine("$prefix$line")
                 stringBuilder.appendLine('>')
@@ -200,8 +197,4 @@ class CommentParser: IDataParser<Element, CommentModel> {
 
     @Suppress("PrivatePropertyName")
     private val NO_USER_NAME: Short = -1
-
-    override fun parseSynchronously(data: Element): StateFlow<CommentModel?> {
-        TODO("Not yet implemented")
-    }
 }

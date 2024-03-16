@@ -5,7 +5,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.blays.ficbook.api.api.*
 
-val apiModule = module {
+val ficbookApiModule = module {
     factoryOf(::AuthorizationApiImpl) bind AuthorizationApi::class
     factoryOf(::AuthorProfileApiImpl) bind AuthorProfileApi::class
     factoryOf(::ChaptersApiImpl) bind ChaptersApi::class
