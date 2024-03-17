@@ -28,10 +28,10 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.onPointerEventPlatform
+import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.PopularSectionsComponent
 import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
-import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.PopularSectionsComponent
-import ru.blays.ficbook.theme.getColorForDirection
+import ru.blays.ficbook.theme.color
 import ru.blays.ficbook.values.DefaultPadding
 
 @Composable
@@ -87,7 +87,7 @@ private fun CategoryListItem(
     direction: FanficDirection,
     onClick: () -> Unit
 ) {
-    val primaryColor = remember(direction) { getColorForDirection(direction) }
+    val primaryColor = direction.color
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
     var isFocused by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
@@ -148,7 +148,7 @@ private fun CategoryGridItem(
     direction: FanficDirection,
     onClick: () -> Unit
 ) {
-    val primaryColor = remember(direction) { getColorForDirection(direction) }
+    val primaryColor = direction.color
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
     var isFocused by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(

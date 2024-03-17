@@ -19,7 +19,7 @@ val flameGradient = Brush.verticalGradient(
     )
 )
 
-val lightGreen = likeColor
+val lightGreen = Color(0xff63a75a)
 
 // Fanfic direction colors
 val genColor = Color(0xFF986a43)
@@ -30,31 +30,13 @@ val articleColor = Color(0xFF525252)
 val mixedColor = Color(0xFFC49930)
 val otherColor = Color(0xFF08917C)
 
-fun getColorForDirection(direction: FanficDirection): Color = when (direction) {
-    FanficDirection.GEN -> genColor
-    FanficDirection.HET -> hetColor
-    FanficDirection.SLASH -> slashColor
-    FanficDirection.FEMSLASH -> femslashColor
-    FanficDirection.ARTICLE -> articleColor
-    FanficDirection.MIXED -> mixedColor
-    FanficDirection.OTHER -> otherColor
-    FanficDirection.UNKNOWN -> Color.Unspecified
-}
-
 // Fanfic status colors
 val inProgressColor = Color(0xFFCEB952)
 val completeColor = likeColor
 val frozenColor = Color(0xFF1DAEB9)
 
-fun getColorForStatus(status: FanficCompletionStatus): Color = when(status) {
-    FanficCompletionStatus.IN_PROGRESS -> inProgressColor
-    FanficCompletionStatus.COMPLETE -> completeColor
-    FanficCompletionStatus.FROZEN -> frozenColor
-    FanficCompletionStatus.UNKNOWN -> Color.Unspecified
-}
-
 // Rainbow colors for gradient
-val rainbowColors = listOf(
+val rainbowColors = arrayOf(
     Color.Red,
     Color.Magenta,
     Color.Blue,
@@ -65,7 +47,7 @@ val rainbowColors = listOf(
 )
 
 // Default primary colors
-val defaultAccentColorsList: Array<Color> = arrayOf(
+val defaultAccentColors = arrayOf(
     Color(0xFFE23939),
     Color(0xFF5D7ED3),
     Color(0xFFE0277E),
@@ -76,4 +58,22 @@ val defaultAccentColorsList: Array<Color> = arrayOf(
     Color(0xFF4DA551),
 )
 
+val FanficDirection.color: Color
+    get() = when (this) {
+        FanficDirection.GEN -> genColor
+        FanficDirection.HET -> hetColor
+        FanficDirection.SLASH -> slashColor
+        FanficDirection.FEMSLASH -> femslashColor
+        FanficDirection.ARTICLE -> articleColor
+        FanficDirection.MIXED -> mixedColor
+        FanficDirection.OTHER -> otherColor
+        FanficDirection.UNKNOWN -> Color.Unspecified
+    }
 
+val FanficCompletionStatus.color: Color
+    get() = when (this) {
+        FanficCompletionStatus.IN_PROGRESS -> inProgressColor
+        FanficCompletionStatus.COMPLETE -> completeColor
+        FanficCompletionStatus.FROZEN -> frozenColor
+        FanficCompletionStatus.UNKNOWN -> Color.Unspecified
+    }

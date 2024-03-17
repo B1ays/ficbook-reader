@@ -31,7 +31,7 @@ import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsUnitComponent
 import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
-import ru.blays.ficbook.theme.defaultAccentColorsList
+import ru.blays.ficbook.theme.defaultAccentColors
 import ru.blays.ficbook.ui_components.LazyItems.itemWithHeader
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
@@ -244,7 +244,7 @@ private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
                 .fillMaxWidth(),
             state = lazyListState
         ) {
-            itemsIndexed(defaultAccentColorsList) { index, color ->
+            itemsIndexed(defaultAccentColors) { index, color ->
                 ColorPickerItem(
                     color = color,
                     index = index,
