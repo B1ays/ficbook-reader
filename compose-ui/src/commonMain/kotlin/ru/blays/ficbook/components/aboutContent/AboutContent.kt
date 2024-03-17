@@ -80,14 +80,10 @@ fun AboutContent(onBack: () -> Unit) {
             modifier = Modifier,
         ) {
             item { Header() }
-            itemWithHeader(
-                title = appGroupTitle
-            ) {
+            itemWithHeader(appGroupTitle) {
                 AppGroup()
             }
-            itemWithHeader(
-                title = developerGroupTitle
-            ) {
+            itemWithHeader(developerGroupTitle) {
                 DeveloperGroup()
             }
         }
@@ -211,6 +207,7 @@ fun ItemCard(
     colors: CardColors = CardDefaults.elevatedCardColors(
         contentColor = MaterialTheme.colorScheme.primary.copy(0.8F)
     ),
+    elevation: Dp = 10.dp,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
@@ -218,7 +215,8 @@ fun ItemCard(
         modifier = modifier.clip(shape),
         onClick = onClick,
         shape = shape,
-        colors = colors
+        colors = colors,
+        elevation = CardDefaults.cardElevation(defaultElevation = elevation)
     ) {
         Row(
             modifier = Modifier
@@ -257,12 +255,14 @@ fun InfoCard(
     colors: CardColors = CardDefaults.elevatedCardColors(
         contentColor = MaterialTheme.colorScheme.primary.copy(0.8F)
     ),
+    elevation: Dp = 10.dp,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
         modifier = modifier.clip(shape),
         shape = shape,
-        colors = colors
+        colors = colors,
+        elevation = CardDefaults.cardElevation(defaultElevation = elevation)
     ) {
         Row(
             modifier = Modifier
@@ -315,7 +315,6 @@ fun CreditCard(
                 text = creditFor,
                 style = MaterialTheme.typography.labelLarge
             )
-
         }
     }
 }
