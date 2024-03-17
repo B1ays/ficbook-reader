@@ -36,8 +36,8 @@ actual fun AppTheme(
     val colorAccentIndex = state.defaultAccentIndex
 
     val primaryColor = remember(colorAccentIndex) {
-        defaultAccentColorsList.getOrElse(colorAccentIndex) {
-            defaultAccentColorsList.first()
+        defaultAccentColors.getOrElse(colorAccentIndex) {
+            defaultAccentColors.first()
         }
     }
 

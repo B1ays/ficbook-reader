@@ -260,7 +260,7 @@ fun CardWithDirectionIndicator(
     indicator: @Composable () -> Unit = {
         Box(
             modifier = Modifier.background(
-                color = getColorForDirection(direction)
+                color = direction.color
             )
         )
     },
@@ -358,8 +358,7 @@ fun FanficChips(
                         FanficCompletionStatus.UNKNOWN -> rememberVectorPainter(Icons.Rounded.Close)
                     },
                     contentDescription = stringResource(Res.string.content_description_icon_status),
-                    tint = getColorForStatus(status.status)
-
+                    tint = status.status.color
                 )
             }
         }

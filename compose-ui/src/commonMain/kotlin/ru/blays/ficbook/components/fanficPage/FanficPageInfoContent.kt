@@ -788,7 +788,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                         .scale(1.5F),
                     painter = getIconForDirection(status.direction),
                     contentDescription = stringResource(Res.string.content_description_icon_direction),
-                    tint = getColorForDirection(status.direction)
+                    tint = status.direction.color
                 )
             }
         }
@@ -814,7 +814,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                         .size(20.dp),
                     painter = getIconForStatus(status.status),
                     contentDescription = stringResource(Res.string.content_description_icon_status),
-                    tint = getColorForStatus(status.status)
+                    tint = status.status.color
 
                 )
             }
