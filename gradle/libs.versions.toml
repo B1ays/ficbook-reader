@@ -30,7 +30,6 @@ realm = "1.14.0"
 compose-jetbrains = "1.6.1"
 androidx-activityCompose = "1.8.2"
 composeColorPicker = "0.7.0"
-insetsx = "0.1.0-alpha10"
 browser = "1.8.0"
 coil = "3.0.0-alpha06"
 cache-fix = "3.0.1"
@@ -60,7 +59,6 @@ kotlinx-coroutines-core-android = { module = "org.jetbrains.kotlinx:kotlinx-coro
 kotlinx-coroutines-core-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
-moriatsushi-insetsx = { module = "com.moriatsushi.insetsx:insetsx", version.ref = "insetsx" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
 multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }

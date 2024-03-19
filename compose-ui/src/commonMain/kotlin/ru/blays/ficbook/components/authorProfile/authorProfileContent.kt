@@ -34,7 +34,6 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
-import com.moriatsushi.insetsx.navigationBars
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource

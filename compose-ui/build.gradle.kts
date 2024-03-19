@@ -45,9 +45,6 @@ kotlin {
                 // Color-picker
                 implementation(libs.compose.color.picker)
 
-                //InsetsX
-                implementation(libs.moriatsushi.insetsx)
-
                 // Decompose Libraries
                 implementation(libs.decompose.decompose)
                 implementation(libs.decompose.extensionsComposeJetbrains)
