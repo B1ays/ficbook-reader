@@ -23,7 +23,7 @@ import ru.blays.ficbook.api.UrlProcessor.getUrlForHref
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorProfileComponent
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation.DefaultAuthorProfileComponent
-import ru.blays.ficbook.reader.shared.components.collectionSortComponent.DefaultCollectionFanficsListComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.DefaultCollectionPageComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageComponent
@@ -176,9 +176,11 @@ class DefaultRootComponent private constructor(
             )
             is RootComponent.Config.Collection -> {
                 RootComponent.Child.Collection(
-                    DefaultCollectionFanficsListComponent(
+                    DefaultCollectionPageComponent(
                         componentContext = componentContext,
-                        initialSection = configuration.section,
+                        relativeID = configuration.relativeID,
+                        realID = configuration.realID,
+                        initialDialogConfig = configuration.initialDialogConfig,
                         output = ::onFanficsListOutput
                     )
                 )
@@ -285,7 +287,11 @@ class DefaultRootComponent private constructor(
             }
             is MainScreenComponent.Output.OpenCollection -> {
                 navigation.push(
-                    RootComponent.Config.Collection(output.section)
+                    RootComponent.Config.Collection(
+                        relativeID = output.relativeID,
+                        realID = output.realID,
+                        initialDialogConfig = output.initialDialogConfig
+                    )
                 )
             }
             is MainScreenComponent.Output.OpenUsersScreen -> {
@@ -386,7 +392,9 @@ class DefaultRootComponent private constructor(
             is AuthorProfileComponent.Output.OpenCollection -> {
                 navigation.push(
                     RootComponent.Config.Collection(
-                        section = output.section
+                        relativeID = output.relativeID,
+                        realID = output.realID,
+                        initialDialogConfig = null
                     )
                 )
             }

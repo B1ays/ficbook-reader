@@ -2,6 +2,8 @@ package ru.blays.ficbook.reader.shared.components.mainScreenComponents.declarati
 
 import kotlinx.coroutines.flow.StateFlow
 import ru.blays.ficbook.api.data.SectionWithQuery
+import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.EditCollectionDialogConfig
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserLogInComponent
 import ru.blays.ficbook.reader.shared.data.dto.SavedUserModel
 import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
@@ -14,7 +16,7 @@ interface MainScreenComponent {
 
     val feedComponent: FeedComponent
     val popularSectionsComponent: PopularSectionsComponent
-    val collectionsComponent: CollectionsComponent
+    val collectionsComponent: CollectionsListComponent
     val savedFanficsComponent: SavedFanficsComponent
     val logInComponent: UserLogInComponent
 
@@ -26,7 +28,11 @@ interface MainScreenComponent {
                 sectionWithQuery = sectionWithQuery.toApiModel()
             )
         }
-        data class OpenCollection(val section: SectionWithQuery): Output()
+        data class OpenCollection(
+            val relativeID: String,
+            val realID: String,
+            val initialDialogConfig: EditCollectionDialogConfig?
+        ): Output()
         data class OpenFanficPage(val href: String): Output()
         data class OpenUrl(val url: String) : Output()
         data class OpenAuthor(val href: String) : Output()

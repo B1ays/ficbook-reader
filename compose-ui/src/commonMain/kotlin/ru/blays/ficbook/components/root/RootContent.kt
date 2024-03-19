@@ -15,7 +15,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.aboutContent.AboutContent
 import ru.blays.ficbook.components.authorProfile.AuthorProfileContent
-import ru.blays.ficbook.components.collectionContent.CollectionContent
+import ru.blays.ficbook.components.collectionContent.CollectionPageContent
 import ru.blays.ficbook.components.fanficPage.FanficPageContent
 import ru.blays.ficbook.components.fanficsList.FanficsListScreenContent
 import ru.blays.ficbook.components.landingScreenContent.LandingScreenContent
@@ -92,7 +92,7 @@ fun RootContent(component: RootComponent) {
                     is RootComponent.Child.Settings -> SettingsContent(child.component)
                     is RootComponent.Child.FanficsList -> FanficsListScreenContent(child.component)
                     is RootComponent.Child.AuthorProfile -> AuthorProfileContent(child.component)
-                    is RootComponent.Child.Collection -> CollectionContent(child.component)
+                    is RootComponent.Child.Collection -> CollectionPageContent(child.component)
                     is RootComponent.Child.Users -> UsersRootContent(child.component)
                     is RootComponent.Child.Notifications -> NotificationsContent(child.component)
                     is RootComponent.Child.Search -> SearchContent(child.component)

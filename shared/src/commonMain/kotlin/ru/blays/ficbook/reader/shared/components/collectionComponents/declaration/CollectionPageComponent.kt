@@ -1,19 +1,23 @@
-package ru.blays.ficbook.reader.shared.components.collectionSortComponent
+package ru.blays.ficbook.reader.shared.components.collectionComponents.declaration
 
+import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
-import ru.blays.ficbook.reader.shared.data.dto.CollectionSortParamsStable
+import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.EditCollectionComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.EditCollectionDialogConfig
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.data.dto.CollectionPageModelStable
 
-interface CollectionFanficsListComponent {
+interface CollectionPageComponent {
     val state: Value<State>
 
     val fanficsListComponent: FanficsListComponent
 
-    fun onIntent(intent: Intent)
+    val editDialog: Value<ChildSlot<EditCollectionDialogConfig, EditCollectionComponent>>
+
+    fun sendIntent(intent: Intent)
 
     data class State(
-        val collectionName: String,
-        val availableParams: CollectionSortParamsStable?,
+        val collectionPage: CollectionPageModelStable?,
         val currentParams: SelectedSortParams,
         val loading: Boolean,
         val error: Boolean,
@@ -26,8 +30,11 @@ interface CollectionFanficsListComponent {
         data class ChangeDirection(val directionCode: Pair<String, String>): Intent()
         data class ChangeSortType(val sortTypeCode: Pair<String, String>): Intent()
         data object Search: Intent()
-        data object Clear: Intent()
+        data object ClearFilter: Intent()
         data object Refresh: Intent()
+        data object Edit: Intent()
+        data object Delete: Intent()
+        data class ChangeSubscription(val follow: Boolean): Intent()
     }
 
     data class SelectedSortParams(

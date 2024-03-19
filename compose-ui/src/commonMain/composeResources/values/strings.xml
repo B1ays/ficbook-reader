@@ -54,6 +54,7 @@
     <string name="password">Пароль</string>
     <string name="anonymous_user">Анонимный пользователь</string>
     <string name="cover_copied">Обложка скопирована в буфер обмена</string>
+    <string name="sort">Сортировка</string>
 
     <!--  Author profile screen  -->
     <string name="author_profile_tab_main">Информация</string>
@@ -76,6 +77,16 @@
     <string name="collection_search_every_fandom">любой фэндом</string>
     <string name="collection_search_every_direction">любая направленность</string>
     <string name="collection_search_sort_default">по умолчанию</string>
+
+    <string name="collection_action_follow">Подписаться на сборник</string>
+    <string name="collection_action_unfollow">Отписаться от сборника</string>
+    <string name="collection_action_create">Создать сборник</string>
+
+    <string name="collection_delete_confirm">Вы уверены, что хотите удалить коллекцию?</string>
+    <string name="collection_create">Создать сборник</string>
+    <string name="collection_edit">Редактирование сборника</string>
+
+    <string name="collection_visibility_type">Публичный (виден всем)</string>
 
     <!--  Comments screen  -->
     <string name="comments_textfield_placeholder">Оставьте свой отзыв</string>
@@ -284,6 +295,10 @@
     <string name="action_add">Добавить</string>
     <string name="action_exclude">Исключить</string>
     <string name="action_log_in">Войти</string>
+    <string name="action_change">Изменить</string>
+    <string name="action_create">Создать</string>
+    <string name="action_follow">Подписаться</string>
+    <string name="action_unfollow">Отписаться</string>
 
     <!--  Content descriptions  -->
     <string name="content_description_fanfic_cover">Обложка фанфика</string>

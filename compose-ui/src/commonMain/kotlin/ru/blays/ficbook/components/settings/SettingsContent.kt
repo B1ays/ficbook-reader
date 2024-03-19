@@ -384,6 +384,7 @@ fun BlurSetting(
         SettingsSwitchWithTitle(
             title = stringResource(Res.string.enabled),
             state = enabled,
+            modifier = Modifier.padding(DefaultPadding.CardDefaultPadding),
             action = { newValue ->
                 enabledComponent.onIntent(
                     SettingsUnitComponent.Intent.ChangeValue(newValue)
