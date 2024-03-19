@@ -20,6 +20,16 @@ class DefaultCollectionsListComponent(
     private val sections: Array<SectionWithQuery>,
     private val onOutput: (CollectionsListComponent.Output) -> Unit
 ): CollectionsListComponentInternal, ComponentContext by componentContext {
+    constructor(
+        componentContext: ComponentContext,
+        section: SectionWithQuery,
+        onOutput: (CollectionsListComponent.Output) -> Unit
+    ): this(
+        componentContext = componentContext,
+        sections = arrayOf(section),
+        onOutput = onOutput
+    )
+
     private val collectionsRepo: ICollectionsRepo by getKoin().inject()
 
     private val _state: MutableValue<CollectionsListComponent.State> = MutableValue(

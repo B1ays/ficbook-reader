@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
+import ru.blays.ficbook.components.collectionContent.CollectionsScreenContent
 import ru.blays.ficbook.components.commentsContent.CommentsScreenContent
 import ru.blays.ficbook.components.commentsContent.PartCommentsContent
 import ru.blays.ficbook.components.fanficPage.reader.FanficReaderContent
@@ -25,6 +26,7 @@ fun FanficPageContent(component: FanficPageComponent) {
             is FanficPageComponent.Child.PartComments -> PartCommentsContent(child.component)
             is FanficPageComponent.Child.AllComments -> CommentsScreenContent(child.component)
             is FanficPageComponent.Child.DownloadFanfic -> FanficDownloadContent(child.component)
+            is FanficPageComponent.Child.AssociatedCollections -> CollectionsScreenContent(child.component)
         }
     }
 }

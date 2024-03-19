@@ -39,9 +39,9 @@ import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import ru.blays.ficbook.components.collectionContent.CollectionsContent
 import ru.blays.ficbook.components.commentsContent.CommentsContent
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
-import ru.blays.ficbook.components.collectionContent.CollectionsContent
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.*
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation.DefaultAuthorFollowComponent
 import ru.blays.ficbook.reader.shared.data.dto.AuthorMainInfoStable
@@ -353,7 +353,7 @@ private fun ProfilePager(
                 component = page.component,
                 hideAvatar = true
             )
-            is AuthorProfileComponent.Tabs.Collections -> CollectionsContent(page.component, null)
+            is AuthorProfileComponent.Tabs.Collections -> CollectionsContent(component = page.component, contentPadding = null)
         }
     }
 }

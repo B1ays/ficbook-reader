@@ -13,12 +13,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -33,9 +37,13 @@ import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
 import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
+import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.primaryColorAtAlpha
+import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
+import ru.hh.toolbar.custom_toolbar.CollapsingTitle
+import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 @Composable
 fun CollectionsContentExtended(
@@ -54,6 +62,7 @@ fun CollectionsContentExtended(
 
 @Composable
 fun CollectionsContent(
+    modifier: Modifier = Modifier,
     component: CollectionsListComponent,
     contentPadding: PaddingValues?
 ) {
@@ -83,7 +92,7 @@ fun CollectionsContent(
     }
 
     BoxWithConstraints {
-        val columnsCount = when (maxWidth) {
+        val columnsCount = when(maxWidth) {
             in 800.dp..Dp.Infinity -> 3
             in 500.dp..800.dp -> 2
             else -> 1
@@ -93,7 +102,7 @@ fun CollectionsContent(
             contentPadding = contentPadding ?: PaddingValues(0.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier
+            modifier = modifier
                 .padding(DefaultPadding.CardDefaultPadding)
                 .fillMaxSize()
                 .nestedScroll(pullRefreshState.nestedScrollConnection),
@@ -111,6 +120,56 @@ fun CollectionsContent(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = contentPadding?.calculateTopPadding() ?: 0.dp)
+        )
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun CollectionsScreenContent(component: CollectionsListComponent) {
+    val blurConfig = LocalGlassEffectConfig.current
+    val hazeState = remember(::HazeState)
+
+    Scaffold(
+        topBar = {
+            CollapsingToolbar(
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            component.onOutput(
+                                CollectionsListComponent.Output.NavigateBack
+                            )
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_arrow_back),
+                            contentDescription = stringResource(Res.string.content_description_icon_back)
+                        )
+                    }
+                },
+                collapsingTitle = CollapsingTitle.small(stringResource(Res.string.author_profile_tab_collections)),
+                containerColor = if(blurConfig.blurEnabled) {
+                    Color.Transparent
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
+                insets = WindowInsets.statusBars,
+                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                    hazeChild(
+                        state = hazeState,
+                        style = blurConfig.style
+                    )
+                },
+            )
+        }
+    ) { padding ->
+        CollectionsContent(
+            component = component,
+            contentPadding = padding,
+            modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                haze(hazeState)
+            },
         )
     }
 }
@@ -211,7 +270,8 @@ private fun OwnCollectionContent(
         }
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .height(36.dp)
+                .widthIn(min = 36.dp, max = 50.dp)
                 .background(
                     MaterialTheme.colorScheme.background,
                     CardShape.CardStandalone,
@@ -220,7 +280,10 @@ private fun OwnCollectionContent(
         ) {
             Text(
                 text = "${collection.size}",
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(2.dp),
             )
         }
     }
@@ -349,7 +412,8 @@ private fun OtherCollectionContent(
         }
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .height(36.dp)
+                .widthIn(min = 36.dp, max = 50.dp)
                 .background(
                     MaterialTheme.colorScheme.background,
                     CardShape.CardStandalone,
@@ -358,7 +422,10 @@ private fun OtherCollectionContent(
         ) {
             Text(
                 text = "${collection.size}",
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(2.dp),
             )
         }
     }

@@ -3,7 +3,9 @@ package ru.blays.ficbook.reader.shared.components.fanficPageComponents.implement
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.*
 import com.arkivanov.decompose.value.Value
-import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
+import ru.blays.ficbook.api.data.SectionWithQuery
+import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.DefaultCollectionsListComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.implementation.DefaultAllCommentsComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.implementation.DefaultPartCommentsComponent
@@ -11,6 +13,7 @@ import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaratio
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageInfoComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.implementation.DefaultMainReaderComponent
+import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 
 class DefaultFanficPageComponent(
     componentContext: ComponentContext,
@@ -71,6 +74,17 @@ class DefaultFanficPageComponent(
                         fanficName = configuration.fanficName,
                         close = navigation::pop
                     )
+                )
+            }
+            is FanficPageComponent.Config.AssociatedCollections -> {
+                FanficPageComponent.Child.AssociatedCollections(
+                    DefaultCollectionsListComponent(
+                        componentContext = childContext,
+                        section = SectionWithQuery(
+                            href = "collections/${configuration.fanficID}/list"
+                        ),
+                        onOutput = ::onCollectionsOutput
+                    ).apply { refresh() }
                 )
             }
         }
@@ -135,6 +149,14 @@ class DefaultFanficPageComponent(
                     )
                 )
             }
+            is FanficPageInfoComponent.Output.OpenAssociatedCollections -> {
+                println("Open associated collections for ${output.fanficID}")
+                navigation.push(
+                    FanficPageComponent.Config.AssociatedCollections(
+                        fanficID = output.fanficID
+                    )
+                )
+            }
         }
     }
 
@@ -191,6 +213,25 @@ class DefaultFanficPageComponent(
     private fun onReaderOutput(output: MainReaderComponent.Output) {
         when(output) {
             is MainReaderComponent.Output.NavigateBack -> navigation.pop()
+        }
+    }
+
+    private fun onCollectionsOutput(output: CollectionsListComponent.Output) {
+        when(output) {
+            is CollectionsListComponent.Output.OpenCollection -> {
+                onOutput(
+                    FanficPageComponent.Output.OpenCollection(
+                        relativeID = output.relativeID,
+                        realID = output.realID
+                    )
+                )
+            }
+            is CollectionsListComponent.Output.OpenUser -> {
+                onOutput(
+                    FanficPageComponent.Output.OpenAuthor(output.owner.href)
+                )
+            }
+            CollectionsListComponent.Output.NavigateBack -> navigation.pop()
         }
     }
 }

@@ -50,7 +50,10 @@ import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaratio
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
 import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.reader.shared.platformUtils.shareSupported
-import ru.blays.ficbook.theme.*
+import ru.blays.ficbook.theme.color
+import ru.blays.ficbook.theme.flameGradient
+import ru.blays.ficbook.theme.likeColor
+import ru.blays.ficbook.theme.trophyColor
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
@@ -61,8 +64,11 @@ import ru.blays.ficbook.ui_components.GradientIcon.GradientIcon
 import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
+import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.primaryColorAtAlpha
+import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -255,7 +261,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     transition.AnimatedContent(
                         transitionSpec = {
                             slideInVertically { height -> -height } + fadeIn() togetherWith
-                                    slideOutVertically { height -> -height } + fadeOut()
+                                slideOutVertically { height -> -height } + fadeOut()
                         }
                     ) { value ->
                         when (value) {
@@ -373,7 +379,7 @@ private fun LandscapeContent(
             BoxWithConstraints(
                 modifier = Modifier.fillMaxSize()
             ) {
-                var scaffoldModifier: Modifier = Modifier
+                var scaffoldModifier: Modifier = remember { Modifier }
 
                 if (
                     coverPainter != null &&
@@ -496,12 +502,47 @@ private fun FanficHeader(
                                         }
                                     }
                                 }
-
                                 else -> {}
                             }
                         }
                     )
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+private fun CollectionsInfo(
+    inCollectionsCount: Int,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.primary
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.primaryColorAtAlpha(0.2F))
+                    .clickable(onClick = onClick)
+                    .padding(3.dp),
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_stack),
+                    contentDescription = stringResource(Res.string.content_description_icon_stack),
+                    modifier = Modifier.size(20.dp),
+                )
+                HorizontalSpacer(4.dp)
+                Text(
+                    text = stringResource(Res.string.fanficPage_in_collections, inCollectionsCount),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
         }
     }
 }
@@ -545,7 +586,20 @@ private fun FanficDescription(
             }
             item {
                 FanficActionsContent(component = component.actionsComponent)
-                Spacer(modifier = Modifier.height(8.dp))
+                VerticalSpacer(10.dp)
+            }
+            item {
+                CollectionsInfo(
+                    inCollectionsCount = fanfic.inCollectionsCount,
+                    onClick = {
+                        component.onOutput(
+                            FanficPageInfoComponent.Output.OpenAssociatedCollections(
+                                fanficID = fanfic.fanficID
+                            )
+                        )
+                    }
+                )
+                VerticalSpacer(6.dp)
             }
             item {
                 FanficTags(
@@ -1057,7 +1111,7 @@ fun BottomSheetContentOpened(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ChapterItem(
     index: Int,
@@ -1093,19 +1147,23 @@ private fun ChapterItem(
                             shape = CircleShape
                         )
                         .clip(CircleShape)
-                        .then(
-                            if (isReaded) Modifier.border(
-                                2.dp,
-                                MaterialTheme.colorScheme.outline,
-                                CircleShape
-                            ) else Modifier
-                        ),
+                        .thenIf(isReaded) {
+                            border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.outline,
+                                shape = CircleShape
+                            )
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = index.toString(),
-                        color = if (isReaded) MaterialTheme.colorScheme.onSurface
-                        else MaterialTheme.colorScheme.onPrimary
+                        color = if (isReaded) {
+                            MaterialTheme.colorScheme.onSurface
+                        }
+                        else {
+                            MaterialTheme.colorScheme.onPrimary
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -1123,20 +1181,24 @@ private fun ChapterItem(
                 }
             }
             CircleChip(
-                color = MaterialTheme.colorScheme.primaryContainer, //TODO "surfaceContainerLowest"
+                color = MaterialTheme.colorScheme.primary, //TODO "surfaceContainerLowest"
                 modifier = Modifier.clickable(onClick = onCommentsClicked)
             ) {
-                Spacer(modifier = Modifier.width(2.dp))
-                Icon(
-                    painter = painterResource(Res.drawable.ic_comment),
-                    contentDescription = stringResource(Res.string.content_description_icon_comment),
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                Text(text = chapter.commentsCount.toString())
-                Spacer(modifier = Modifier.width(2.dp))
+                CompositionLocalProvider(
+                    LocalContentColor provides MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_comment),
+                        contentDescription = stringResource(Res.string.content_description_icon_comment),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(text = chapter.commentsCount.toString())
+                    Spacer(modifier = Modifier.width(2.dp))
+                }
             }
         }
     }
@@ -1184,7 +1246,7 @@ private fun AuthorItem(
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun RowScope.TopBarActions(component: FanficPageInfoComponent) {
+private fun TopBarActions(component: FanficPageInfoComponent) {
     var dropDownMenuState by remember { mutableStateOf(false) }
     IconButton(
         onClick = {

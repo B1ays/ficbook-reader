@@ -26,9 +26,8 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageCollectionsComponent
 import ru.blays.ficbook.reader.shared.data.dto.AvailableCollectionsModel
-import ru.blays.ficbook.theme.lockColor
-import ru.blays.ficbook.theme.unlockColor
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
+import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
@@ -184,7 +183,7 @@ private fun CollectionsDialog(
             if(!loading) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall)
+                    modifier = Modifier.padding(DefaultPadding.CardDefaultPadding)
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_stack_plus),
@@ -202,12 +201,6 @@ private fun CollectionsDialog(
                     LazyColumn {
                         items(availableCollections) { collection ->
                             CollectionItem(
-                                modifier = Modifier
-                                    .background(
-                                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
-                                        shape = CardDefaults.shape
-                                    )
-                                    .clip(CardDefaults.shape),
                                 collection = collection,
                                 selected = collection.isInThisCollection == AvailableCollectionsModel.Data.Collection.IN_COLLECTION,
                                 onSelect = { add ->
@@ -222,9 +215,11 @@ private fun CollectionsDialog(
                         }
                     }
                 }
+                VerticalSpacer(6.dp)
             } else {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(DefaultPadding.CardDefaultPadding)
                 ) {
                     CircularProgressIndicator()
                     HorizontalSpacer(10.dp)
@@ -252,15 +247,19 @@ private fun CollectionItem(
     } else {
         painterResource(Res.drawable.ic_lock)
     }
-    val indicatorIconColor = if(collection.isPublic) unlockColor else lockColor
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(DefaultPadding.CardDefaultPadding)
             .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.background.copy(alpha = 0.7f),
+                shape = CardDefaults.shape
+            )
+            .clip(CardDefaults.shape)
             .thenIf(selected) {
                 border(
-                    width = 2.dp,
+                    width = 1.5.dp,
                     color = MaterialTheme.colorScheme.outline,
                     shape = CardDefaults.shape
                 )
@@ -268,8 +267,7 @@ private fun CollectionItem(
             .toggleable(
                 value = selected,
                 onValueChange = onSelect
-            )
-            .then(modifier),
+            ),
     ) {
         Row(
             modifier = Modifier.padding(10.dp).fillMaxWidth(),
@@ -283,7 +281,7 @@ private fun CollectionItem(
                 Icon(
                     painter = indicatorIcon,
                     contentDescription = stringResource(Res.string.content_description_icon_lock),
-                    tint = indicatorIconColor,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(30.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -297,7 +295,8 @@ private fun CollectionItem(
             }
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+                    .height(36.dp)
+                    .widthIn(min = 36.dp, max = 50.dp)
                     .background(
                         MaterialTheme.colorScheme.surfaceVariant,
                         CardShape.CardStandalone,
@@ -307,7 +306,10 @@ private fun CollectionItem(
                 Text(
                     text = collection.count.toString(),
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(vertical = 2.dp),
                 )
             }
         }
