@@ -77,6 +77,7 @@ fun ContextMenu(
             onDismissRequest = state::hide
         ) {
             DropdownMenuContent(
+                modifier = modifier,
                 expandedState = expandedState,
                 transformOriginState = remember { mutableStateOf(TransformOrigin.Center) },
                 scrollState = scrollState,

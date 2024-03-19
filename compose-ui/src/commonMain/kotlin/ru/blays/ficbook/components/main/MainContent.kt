@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import ru.blays.ficbook.components.collectionContent.CollectionsContentExtended
 import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.MainScreenComponent
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
@@ -261,7 +262,7 @@ private fun PagerContent(
                 )
             }
             2 -> {
-                CollectionsComponent(
+                CollectionsContentExtended(
                     component.collectionsComponent,
                     contentPadding
                 )

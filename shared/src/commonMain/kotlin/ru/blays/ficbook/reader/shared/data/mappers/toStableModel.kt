@@ -11,17 +11,38 @@ import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.reader.shared.data.dto.FanficShortcut
 import ru.blays.ficbook.reader.shared.data.dto.NotificationType
 
-fun CollectionModel.toStableModel() = CollectionModelStable(
-    href = href,
-    name = name,
-    size = size,
-    private = private,
-    owner = UserModelStable(
-        name = owner.name,
-        avatarUrl = owner.avatarUrl,
-        href = owner.href
+fun CollectionCardModel.toStableModel() = when(this) {
+    is CollectionCardModel.Own -> CollectionCardModelStable.Own(
+        relativeID = relativeID,
+        realID = realID,
+        name = name,
+        size = size,
+        public = public,
     )
-)
+    is CollectionCardModel.Other -> CollectionCardModelStable.Other(
+        relativeID = relativeID,
+        realID = realID,
+        name = name,
+        size = size,
+        owner = owner.toStableModel(),
+        subscribed = subscribed
+    )
+}
+
+fun CollectionPageModel.toStableModel() = when(this) {
+    is CollectionPageModel.Own -> CollectionPageModelStable.Own(
+        name = name,
+        description = description,
+        filterParams = filterParams.toStableModel()
+    )
+    is CollectionPageModel.Other -> CollectionPageModelStable.Other(
+        name = name,
+        description = description,
+        owner = owner.toStableModel(),
+        subscribed = subscribed,
+        filterParams = filterParams.toStableModel()
+    )
+}
 
 fun FandomModel.toStableModel() = FandomModelStable(
     href = href,
@@ -297,7 +318,7 @@ fun AvailableCollectionsModel.Data.Collection.toStableModel() = ru.blays.ficbook
     slug = slug
 )
 
-fun CollectionSortParams.toStableModel() = CollectionSortParamsStable(
+fun CollectionFilterParams.toStableModel() = CollectionFilterParamsStable(
     availableDirections = availableDirections,
     availableFandoms = availableFandoms,
     availableSortParams = availableSortParams

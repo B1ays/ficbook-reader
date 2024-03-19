@@ -7,3 +7,7 @@ import androidx.compose.ui.graphics.compositeOver
 fun ColorScheme.surfaceColorAtAlpha(
     alpha: Float,
 ): Color = surfaceTint.copy(alpha = alpha).compositeOver(surface)
+
+fun ColorScheme.primaryColorAtAlpha(
+    alpha: Float,
+): Color = primary.copy(alpha = alpha).compositeOver(surface)

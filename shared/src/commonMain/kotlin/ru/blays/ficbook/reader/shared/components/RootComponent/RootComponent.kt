@@ -6,7 +6,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorProfileComponent
-import ru.blays.ficbook.reader.shared.components.collectionSortComponent.CollectionFanficsListComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionPageComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.EditCollectionDialogConfig
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageComponent
 import ru.blays.ficbook.reader.shared.components.landingScreenComponent.LandingScreenComponent
@@ -62,7 +63,9 @@ interface RootComponent {
 
         @Serializable
         data class Collection(
-            val section: SectionWithQuery,
+            val relativeID: String,
+            val realID: String,
+            val initialDialogConfig: EditCollectionDialogConfig?,
             private val uuid: String = UUID.randomUUID().toString()
         ): Config()
 
@@ -92,7 +95,7 @@ interface RootComponent {
         data class UserProfile(val component: UserProfileRootComponent): Child()
         data class FanficPage(val component: FanficPageComponent): Child()
         data class FanficsList(val component: FanficsListComponent): Child()
-        data class Collection(val component: CollectionFanficsListComponent): Child()
+        data class Collection(val component: CollectionPageComponent): Child()
         data class AuthorProfile(val component: AuthorProfileComponent): Child()
         data class Users(val component: UsersRootComponent): Child()
         data class Notifications(val component: NotificationComponent): Child()

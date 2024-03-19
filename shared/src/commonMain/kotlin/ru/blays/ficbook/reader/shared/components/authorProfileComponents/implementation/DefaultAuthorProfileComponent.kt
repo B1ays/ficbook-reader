@@ -19,12 +19,12 @@ import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogComponent
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorPresentsComponent
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorProfileComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.DefaultCollectionsListComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.implementation.DefaultAllCommentsComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
-import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.CollectionsComponent
-import ru.blays.ficbook.reader.shared.components.mainScreenComponents.implemenatation.DefaultCollectionsComponent
 import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
 
@@ -128,7 +128,7 @@ class DefaultAuthorProfileComponent private constructor(
     private var worksAsCoauthorComponent: FanficsListComponent? = null
     private var worksAsBetaComponent: FanficsListComponent? = null
     private var worksAsGammaComponent: FanficsListComponent? = null
-    private var collectionsComponent: CollectionsComponent? = null
+    private var collectionsComponent: CollectionsListComponent? = null
 
     override var followComponent: DefaultAuthorFollowComponent = DefaultAuthorFollowComponent(
         componentContext = childContext(
@@ -294,11 +294,21 @@ class DefaultAuthorProfileComponent private constructor(
         }
     }
 
-    private fun collectionsOutput(output: CollectionsComponent.Output) {
+    private fun collectionsOutput(output: CollectionsListComponent.Output) {
         when (output) {
-            is CollectionsComponent.Output.OpenCollection -> {
+            is CollectionsListComponent.Output.OpenCollection -> {
                 this.output(
-                    AuthorProfileComponent.Output.OpenCollection(output.section)
+                    AuthorProfileComponent.Output.OpenCollection(
+                        relativeID = output.relativeID,
+                        realID = output.realID,
+                    )
+                )
+            }
+            is CollectionsListComponent.Output.OpenUser -> {
+                this.output(
+                    AuthorProfileComponent.Output.OpenAnotherProfile(
+                        href = output.owner.href
+                    )
                 )
             }
         }
@@ -408,7 +418,7 @@ class DefaultAuthorProfileComponent private constructor(
                 }
                 AuthorProfileTabs.REQUESTS -> {}
                 AuthorProfileTabs.COLLECTIONS -> {
-                    collectionsComponent = DefaultCollectionsComponent(
+                    collectionsComponent = DefaultCollectionsListComponent(
                         componentContext = childContext("collectionsComponent"),
                         sections = arrayOf(
                             SectionWithQuery(

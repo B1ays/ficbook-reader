@@ -10,6 +10,9 @@ import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.data.CollectionsTypes
 import ru.blays.ficbook.api.data.SectionWithQuery
+import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponentInternal
+import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.DefaultCollectionsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.*
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserLogInComponent
@@ -29,8 +32,8 @@ class DefaultMainScreenComponent private constructor(
     private val collections: (
         componentContext: ComponentContext,
         sections: Array<SectionWithQuery>,
-        output: (CollectionsComponent.Output) -> Unit
-    ) -> CollectionsComponentInternal,
+        output: (CollectionsListComponent.Output) -> Unit
+    ) -> CollectionsListComponentInternal,
     private val saved: (
         componentContext: ComponentContext,
         output: (SavedFanficsComponent.Output) -> Unit
@@ -58,7 +61,7 @@ class DefaultMainScreenComponent private constructor(
             )
         },
         collections = { componentContext, sections, output ->
-            DefaultCollectionsComponent(
+            DefaultCollectionsListComponent(
                 componentContext = componentContext,
                 sections = sections,
                 onOutput = output
@@ -110,18 +113,15 @@ class DefaultMainScreenComponent private constructor(
                     MainScreenComponent.Output.OpenFanficPage(output.href)
                 )
             }
-
-            FanficsListComponent.Output.NavigateBack -> {}
+            is FanficsListComponent.Output.NavigateBack -> {}
             is FanficsListComponent.Output.OpenAnotherSection -> {
                 onMainOutput(
                     MainScreenComponent.Output.OpenFanficsList(output.section)
                 )
             }
-
             is FanficsListComponent.Output.OpenUrl -> onMainOutput(
                 MainScreenComponent.Output.OpenUrl(output.url)
             )
-
             is FanficsListComponent.Output.OpenAuthor -> {
                 onMainOutput(
                     MainScreenComponent.Output.OpenAuthor(output.href)
@@ -142,11 +142,20 @@ class DefaultMainScreenComponent private constructor(
         }
     }
 
-    private fun onCollectionsOutput(output: CollectionsComponent.Output) {
+    private fun onCollectionsOutput(output: CollectionsListComponent.Output) {
         when(output) {
-            is CollectionsComponent.Output.OpenCollection -> {
+            is CollectionsListComponent.Output.OpenCollection -> {
                 onMainOutput(
-                    MainScreenComponent.Output.OpenCollection(output.section)
+                    MainScreenComponent.Output.OpenCollection(
+                        relativeID = output.relativeID,
+                        realID = output.realID,
+                        initialDialogConfig = output.initialDialogConfig
+                    )
+                )
+            }
+            is CollectionsListComponent.Output.OpenUser -> {
+                onMainOutput(
+                    MainScreenComponent.Output.OpenAuthor(output.owner.href)
                 )
             }
         }
@@ -166,22 +175,20 @@ class DefaultMainScreenComponent private constructor(
         ::onFeedOutput
     )
     override val feedComponent: FeedComponent = _feedComponent
-
     override val popularSectionsComponent: PopularSectionsComponent = popular(
         childContext(
             key = "popular"
         ),
         ::onPopularOutput
     )
-    private val _collectionsComponent: CollectionsComponentInternal = collections(
+    private val _collectionsComponent: CollectionsListComponentInternal = collections(
         childContext(
             key = "collections"
         ),
         getCollectionSections(),
         ::onCollectionsOutput
     )
-    override val collectionsComponent: CollectionsComponent = _collectionsComponent
-
+    override val collectionsComponent: CollectionsListComponent = _collectionsComponent
     override val savedFanficsComponent: SavedFanficsComponent = saved(
         childContext(
             key = "saved"

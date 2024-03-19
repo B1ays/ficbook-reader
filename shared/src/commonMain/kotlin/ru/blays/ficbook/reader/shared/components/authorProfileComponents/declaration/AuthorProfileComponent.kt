@@ -8,7 +8,7 @@ import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation.DefaultAuthorFollowComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
-import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaration.CollectionsComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
 import ru.blays.ficbook.reader.shared.data.dto.AuthorProfileModelStable
 
 @OptIn(ExperimentalDecomposeApi::class)
@@ -33,7 +33,7 @@ interface AuthorProfileComponent {
         data class OpenAnotherProfile(val href: String): Output()
         data class OpenFanfic(val href: String): Output()
         data class OpenFanficsList(val section: SectionWithQuery): Output()
-        data class OpenCollection(val section: SectionWithQuery): Output()
+        data class OpenCollection(val relativeID: String, val realID: String): Output()
     }
 
     sealed class Tabs {
@@ -45,7 +45,7 @@ interface AuthorProfileComponent {
         data class WorksAsGamma(val component: FanficsListComponent): Tabs()
         data class Comments(val component: CommentsComponent): Tabs()
         data class Presents(val component: AuthorPresentsComponent): Tabs()
-        data class Collections(val component: CollectionsComponent): Tabs()
+        data class Collections(val component: CollectionsListComponent): Tabs()
     }
 
     @Serializable

@@ -297,11 +297,11 @@ fun SettingsSwitchWithTitle(
     title: String,
     state: Boolean,
     enabled: Boolean = true,
+    modifier: Modifier = Modifier,
     action: (Boolean) -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .padding(DefaultPadding.CardDefaultPadding)
+        modifier = modifier
             .fillMaxWidth()
             .clip(CardShape.CardStandalone)
             .toggleable(
