@@ -144,6 +144,7 @@ class DefaultMainScreenComponent private constructor(
 
     private fun onCollectionsOutput(output: CollectionsListComponent.Output) {
         when(output) {
+            is CollectionsListComponent.Output.NavigateBack -> Unit
             is CollectionsListComponent.Output.OpenCollection -> {
                 onMainOutput(
                     MainScreenComponent.Output.OpenCollection(

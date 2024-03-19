@@ -295,7 +295,8 @@ class DefaultAuthorProfileComponent private constructor(
     }
 
     private fun collectionsOutput(output: CollectionsListComponent.Output) {
-        when (output) {
+        when(output) {
+            is CollectionsListComponent.Output.NavigateBack -> Unit
             is CollectionsListComponent.Output.OpenCollection -> {
                 this.output(
                     AuthorProfileComponent.Output.OpenCollection(

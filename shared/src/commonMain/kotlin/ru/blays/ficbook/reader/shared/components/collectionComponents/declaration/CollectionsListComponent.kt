@@ -33,6 +33,7 @@ interface CollectionsListComponent {
     }
 
     sealed class Output {
+        data object NavigateBack : Output()
         data class OpenCollection(
             val relativeID: String,
             val realID: String,

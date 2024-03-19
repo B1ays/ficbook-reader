@@ -104,7 +104,8 @@
     <string name="fanficPage_pages_count">Страниц: %1$d</string>
     <string name="fanficPage_reward_from">«%1$s» от %2$s</string>
     <string name="fanficPage_reverse_chapters_order">Обратный порядок глав</string>
-    
+    <string name="fanficPage_in_collections">Смотреть работу в %1$d сборниках</string>
+
     <!--  Landing screen  -->
     <string name="landing_title">Добро пожаловать в Ficbook Reader</string>
     <string name="landing_title">Добро пожаловать в Ficbook Reader</string>
@@ -348,6 +349,7 @@
     <string name="content_description_icon_eye_crossed">Иконка сокрытия</string>
     <string name="content_description_icon_globe">Иконка глобуса</string>
     <string name="content_description_icon_info">Иконка информации</string>
+    <string name="content_description_icon_stack">Иконка сборника</string>
     <string name="content_description_icon_stack_plus">Иконка стопки с плюсом</string>
 
     <!--  Errors  -->

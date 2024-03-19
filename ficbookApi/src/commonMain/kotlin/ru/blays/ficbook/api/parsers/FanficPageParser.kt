@@ -275,10 +275,14 @@ internal class FanficPageParser {
 
         val subscribed = bottomAction
             .select("fanfic-follow-button")
-            .run {
-                val isFollowed = attr(":is-followed")
-                isFollowed == "true"
-            }
+            .attr(":is-followed").toBoolean()
+
+        val inCollectionsCount = bottomAction
+            .select("fanfic-collections-modal")
+            .attr(":initial-count-of-fanfic-collection")
+            .toIntOrNull()
+            ?: 0
+
 
         val pagesCount: Int = mb5.run {
             val sizeElements = select("div:contains(Размер:)")
@@ -353,7 +357,7 @@ internal class FanficPageParser {
             commentCount = 0,
             liked = liked,
             subscribed = subscribed,
-            inCollectionsCount = 0,
+            inCollectionsCount = inCollectionsCount,
             chapters = fanficChapters,
             rewards = rewards,
             pagesCount = pagesCount

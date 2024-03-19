@@ -244,6 +244,15 @@ class DefaultRootComponent private constructor(
                     configuration = RootComponent.Config.FanficPage(output.href)
                 )
             }
+            is FanficPageComponent.Output.OpenCollection -> {
+                navigation.push(
+                    configuration = RootComponent.Config.Collection(
+                        relativeID = output.relativeID,
+                        realID = output.realID,
+                        initialDialogConfig = null
+                    )
+                )
+            }
         }
     }
 
