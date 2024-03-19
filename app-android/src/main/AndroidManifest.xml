@@ -6,6 +6,10 @@
 
     <queries>
         <package android:name="com.android.chrome"/>
+        <package android:name="com.chrome.beta"/>
+        <package android:name="com.chrome.canary"/>
+        <package android:name="com.chrome.dev"/>
+
     </queries>
 
     <application
