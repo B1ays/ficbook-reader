@@ -5,7 +5,7 @@ projectVersion = "1.0.6"
 versionCode = "15"
 versionNameSuffix = "-rc5"
 kotlin = "1.9.23"
-agp = "8.3.0"
+agp = "8.3.1"
 jvmTarget = "18"
 
 # Android
