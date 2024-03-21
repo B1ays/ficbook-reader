@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
@@ -231,7 +233,7 @@ private fun OwnCollectionContent(
         painterResource(Res.drawable.ic_lock)
     }
 
-    Row(
+    ConstraintLayout(
         modifier = modifier
             .combinedClickable(
                 onClick = {
@@ -243,31 +245,33 @@ private fun OwnCollectionContent(
                 },
                 onLongClick = contextMenuState::show
             )
-            .padding(horizontal = 8.dp)
             .heightIn(min = minItemContentHeight)
             .fillMaxWidth()
-            .contextMenuAnchor(contextMenuState),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .contextMenuAnchor(contextMenuState)
     ) {
-        Row(
-            modifier = Modifier.weight(1F),
-        ) {
-            Icon(
-                painter = indicatorIcon,
-                contentDescription = stringResource(Res.string.content_description_icon_lock),
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(30.dp)
-            )
-            HorizontalSpacer(8.dp)
-            Text(
-                text = collection.name,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        val (icon, title, size) = createRefs()
+
+        Icon(
+            painter = indicatorIcon,
+            contentDescription = stringResource(Res.string.content_description_icon_lock),
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .size(30.dp)
+                .constrainAs(icon) {
+                    start.linkTo(parent.start, margin = 8.dp)
+                    centerVerticallyTo(parent)
+                }
+        )
+        Text(
+            text = collection.name,
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.constrainAs(title) {
+                start.linkTo(icon.end, margin = 8.dp)
+                centerVerticallyTo(icon)
+            },
+        )
         Box(
             modifier = Modifier
                 .height(36.dp)
@@ -275,7 +279,11 @@ private fun OwnCollectionContent(
                 .background(
                     MaterialTheme.colorScheme.background,
                     CardShape.CardStandalone,
-                ),
+                )
+                .constrainAs(size) {
+                    end.linkTo(parent.end, margin = 8.dp)
+                    centerVerticallyTo(parent)
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -357,59 +365,67 @@ private fun OtherCollectionContent(
     } else {
         painterResource(Res.drawable.ic_star_outlined)
     }
-    Row(
+
+    ConstraintLayout(
         modifier = modifier
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = contextMenuState::show
             )
-            .padding(
-                horizontal = 8.dp,
-            )
             .heightIn(min = minItemContentHeight)
             .fillMaxWidth()
             .contextMenuAnchor(contextMenuState),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            modifier = Modifier.weight(1F),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = indicatorIcon,
-                contentDescription = stringResource(Res.string.content_description_icon_star),
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(30.dp)
-            )
-            HorizontalSpacer(8.dp)
-            Column {
-                Text(
-                    text = collection.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.small)
-                        .clickable(onClick = onUserClick)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_user),
-                        contentDescription = stringResource(Res.string.content_description_icon_user),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    HorizontalSpacer(4.dp)
-                    Text(
-                        text = collection.owner.name,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
+        val (
+            icon,
+            title,
+            ownerIcon,
+            ownerName,
+            size
+        ) = createRefs()
+
+        Icon(
+            painter = indicatorIcon,
+            contentDescription = stringResource(Res.string.content_description_icon_star),
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .size(30.dp)
+                .constrainAs(icon) {
+                    start.linkTo(parent.start, margin = 8.dp)
+                    centerVerticallyTo(parent)
                 }
-            }
-        }
+        )
+        Text(
+            text = collection.name,
+            style = MaterialTheme.typography.titleMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.constrainAs(title) {
+                start.linkTo(icon.end, margin = 8.dp)
+                end.linkTo(size.start)
+                width = Dimension.fillToConstraints
+            },
+        )
+        Icon(
+            painter = painterResource(Res.drawable.ic_user),
+            contentDescription = stringResource(Res.string.content_description_icon_user),
+            modifier = Modifier
+                .size(16.dp)
+                .constrainAs(ownerIcon) {
+                    start.linkTo(title.start)
+                    top.linkTo(title.bottom, margin = 4.dp)
+                }
+        )
+        Text(
+            text = collection.owner.name,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .constrainAs(ownerName) {
+                    start.linkTo(ownerIcon.end, margin = 4.dp)
+                    centerVerticallyTo(ownerIcon)
+                }
+                .clickable(onClick = onUserClick)
+        )
         Box(
             modifier = Modifier
                 .height(36.dp)
@@ -417,7 +433,11 @@ private fun OtherCollectionContent(
                 .background(
                     MaterialTheme.colorScheme.background,
                     CardShape.CardStandalone,
-                ),
+                )
+                .constrainAs(size) {
+                    end.linkTo(parent.end, margin = 8.dp)
+                    centerVerticallyTo(parent)
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(

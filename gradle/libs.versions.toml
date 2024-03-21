@@ -26,7 +26,7 @@ appcompat = "1.6.1"
 materialKolor = "1.4.4"
 multiplatform-settings = "1.1.1"
 okhttp = "4.12.0"
-realm = "1.14.0"
+realm = "1.14.1"
 compose-jetbrains = "1.6.1"
 androidx-activityCompose = "1.8.2"
 composeColorPicker = "0.7.0"
@@ -35,6 +35,7 @@ coil = "3.0.0-alpha06"
 cache-fix = "3.0.1"
 lwjgl = "3.3.3"
 build-konfig = "0.15.1"
+constraintLayout-multiplatform = "0.3.1"
 
 [libraries]
 androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -47,6 +48,7 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = 
 compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }
 compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPicker" }
 compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-color-picker-jvm", version.ref = "composeColorPicker" }
+compose-constraintLayout-multiplatform = { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintLayout-multiplatform" }
 decompose-decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensionsComposeJetbrains = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }

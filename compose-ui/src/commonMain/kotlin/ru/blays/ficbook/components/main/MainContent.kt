@@ -93,7 +93,12 @@ private fun LandscapeContent(
     ) {
         DrawerLandscape(
             component = component,
-            modifier = Modifier.fillMaxWidth(0.3F)
+            modifier = Modifier
+                .widthIn(
+                    min = 250.dp,
+                    max = 1100.dp
+                )
+                .fillMaxWidth(0.3F)
         )
         Column {
             PagerChips(tabs, pagerState)

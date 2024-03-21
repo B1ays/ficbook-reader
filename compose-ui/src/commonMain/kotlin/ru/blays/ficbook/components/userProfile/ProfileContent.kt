@@ -1,22 +1,22 @@
 package ru.blays.ficbook.components.userProfile
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.*
+import androidx.constraintlayout.core.widgets.Optimizer
 import coil3.compose.SubcomposeAsyncImage
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -58,45 +58,96 @@ fun UserProfileContent(component: UserProfileComponent) {
         },
         modifier = Modifier.systemBarsPadding(),
     ) { padding ->
-        BoxWithConstraints(
-            modifier = Modifier
-                .padding(top = padding.calculateTopPadding())
-                .fillMaxSize()
-        ) {
-            val widthFill = when (maxWidth) {
-                in 1500.dp..Dp.Infinity -> 0.5F
-                in 1200.dp..1500.dp -> 0.6F
-                in 1000.dp..1200.dp -> 0.7F
-                in 800.dp..1000.dp -> 0.8F
-                in 500.dp..800.dp -> 0.9F
-                else -> 1F
-            }
+        BoxWithConstraints {
+            val useLandscapeConstraints = maxWidth > maxHeight
+            val constraintsSet = remember(useLandscapeConstraints) {
+                ConstraintSet {
+                    val avatar = createRefFor(LayoutIds.Avatar)
+                    val name = createRefFor(LayoutIds.Name)
+                    val id = createRefFor(LayoutIds.Id)
+                    val changeButton = createRefFor(LayoutIds.ChangeButton)
+                    val anonymousButton = createRefFor(LayoutIds.AnonymousButton)
+                    val horizontalSpacer = createRefFor(LayoutIds.HorizontalSpacer)
+                    val verticalSpacer = createRefFor(LayoutIds.VerticalSpacer)
 
-            val avatarShape = SquircleShape(
-                cornerSmoothing = CornerSmoothing.High
-            )
+                    val bottomGuideline = if(useLandscapeConstraints) {
+                        createGuidelineFromBottom(10.dp)
+                    } else {
+                        createGuidelineFromBottom(40.dp)
+                    }
 
-            val textBlock: @Composable ColumnScope.() -> Unit = {
-                Text(
-                    modifier = Modifier,
-                    text = state?.name ?: stringResource(Res.string.anonymous_user),
-                    style = MaterialTheme.typography.headlineMedium,
-                    maxLines = 1
-                )
-                state?.id?.let { id ->
-                    VerticalSpacer(4.dp)
-                    Text(
-                        modifier = Modifier,
-                        text = "ID: $id",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Light,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
-                    )
+                    if(useLandscapeConstraints) {
+                        val horizontalChain = createHorizontalChain(
+                            avatar,
+                            horizontalSpacer,
+                            name,
+                            chainStyle = ChainStyle.Packed
+                        )
+                        val verticalChain = createVerticalChain(
+                            name,
+                            verticalSpacer,
+                            id,
+                            chainStyle = ChainStyle.Packed
+                        )
+                        constrain(horizontalSpacer) {
+                            width = Dimension.value(14.dp)
+                        }
+                        constrain(verticalSpacer) {
+                            height = Dimension.value(6.dp)
+                        }
+                        constrain(horizontalChain) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                        constrain(verticalChain) {
+                            top.linkTo(avatar.top)
+                            bottom.linkTo(avatar.bottom)
+                        }
+                    }
+                    constrain(avatar) {
+                        if(useLandscapeConstraints) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(changeButton.top, 8.dp)
+                            height = Dimension.fillToConstraints.atMost(260.dp)
+                            width = Dimension.ratio("1:1")
+                        } else {
+                            centerHorizontallyTo(parent)
+                            centerVerticallyTo(parent, bias = 0.2F)
+                            width = Dimension.percent(0.4F)
+                            height = Dimension.ratio("1:1")
+                        }
+                    }
+                    constrain(name) {
+                        if(!useLandscapeConstraints) {
+                            top.linkTo(avatar.bottom, margin = 16.dp)
+                            centerHorizontallyTo(avatar)
+                        }
+                    }
+                    constrain(id) {
+                        if(useLandscapeConstraints) {
+                            start.linkTo(name.start)
+                        } else {
+                            top.linkTo(name.bottom, 4.dp)
+                            bottom.linkTo(changeButton.top, 4.dp)
+                            height = Dimension.fillToConstraints
+                            centerHorizontallyTo(name)
+                        }
+                    }
+                    constrain(anonymousButton) {
+                        bottom.linkTo(bottomGuideline)
+                    }
+                    constrain(changeButton) {
+                        bottom.linkTo(anonymousButton.top, margin = 10.dp)
+                    }
                 }
             }
-
-            val avatarImage: @Composable (modifier: Modifier) -> Unit = { modifier ->
+            ConstraintLayout(
+                modifier = Modifier
+                    .padding(top = padding.calculateTopPadding())
+                    .fillMaxSize(),
+                constraintSet = constraintsSet,
+                animateChanges = true,
+            ) {
                 SubcomposeAsyncImage(
                     model = state?.avatarPath,
                     contentDescription = stringResource(Res.string.content_description_icon_author_avatar),
@@ -120,59 +171,27 @@ fun UserProfileContent(component: UserProfileComponent) {
                             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                         )
                     },
-                    modifier = modifier
+                    modifier = Modifier
+                        .clip(SquircleShape(cornerSmoothing = CornerSmoothing.High))
+                        .layoutId(LayoutIds.Avatar)
                 )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth(widthFill),
-            ) {
-                AnimatedContent(
-                    targetState = widthFill > 0.9F,
-                    modifier = Modifier.weight(1F)
-                ) { inColumn ->
-                    if (inColumn) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier.fillMaxHeight(0.1F))
-                            avatarImage(
-                                Modifier
-                                    .size(140.dp)
-                                    .clip(avatarShape)
-                                    .clickable {
-                                        component.onOutput(
-                                            UserProfileComponent.Output.OpenProfile()
-                                        )
-                                    }
-                            )
-                            VerticalSpacer(16.dp)
-                            textBlock()
-                        }
-                    } else {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier,
-                        ) {
-                            avatarImage(
-                                Modifier
-                                    .size(140.dp * widthFill)
-                                    .clip(avatarShape)
-                                    .clickable {
-                                        component.onOutput(
-                                            UserProfileComponent.Output.OpenProfile()
-                                        )
-                                    }
-                            )
-                            HorizontalSpacer(20.dp)
-                            Column(content = textBlock)
-                        }
-                    }
+                Text(
+                    modifier = Modifier.layoutId(LayoutIds.Name),
+                    text = state?.name ?: stringResource(Res.string.anonymous_user),
+                    style = MaterialTheme.typography.headlineMedium,
+                    maxLines = 1
+                )
+                state?.id?.let { id ->
+                    VerticalSpacer(4.dp)
+                    Text(
+                        modifier = Modifier.layoutId(LayoutIds.Id),
+                        text = "ID: $id",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Light,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
                 }
-
                 Button(
                     shape = MaterialTheme.shapes.medium,
                     onClick = {
@@ -184,18 +203,18 @@ fun UserProfileContent(component: UserProfileComponent) {
                         .padding(horizontal = DefaultPadding.CardHorizontalPadding)
                         .height(44.dp)
                         .fillMaxWidth()
+                        .layoutId(LayoutIds.ChangeButton)
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_replace),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
+                    HorizontalSpacer(5.dp)
                     Text(
                         text = stringResource(Res.string.action_change_account)
                     )
                 }
-                Spacer(modifier = Modifier.height(9.dp))
                 OutlinedButton(
                     shape = MaterialTheme.shapes.medium,
                     onClick = {
@@ -207,19 +226,29 @@ fun UserProfileContent(component: UserProfileComponent) {
                         .padding(horizontal = DefaultPadding.CardHorizontalPadding)
                         .height(44.dp)
                         .fillMaxWidth()
+                        .layoutId(LayoutIds.AnonymousButton)
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_incognito),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
+                    HorizontalSpacer(5.dp)
                     Text(
                         text = stringResource(Res.string.anonymous_mode)
                     )
                 }
-                VerticalSpacer(40.dp)
             }
         }
     }
+}
+
+private enum class LayoutIds {
+    Avatar,
+    Name,
+    Id,
+    ChangeButton,
+    AnonymousButton,
+    HorizontalSpacer,
+    VerticalSpacer
 }
