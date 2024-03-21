@@ -35,7 +35,7 @@ import ru.blays.ficbook.ui_components.ContextMenu.ContextMenuState
 import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
 import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
 import ru.blays.ficbook.ui_components.FAB.ScrollToStartFAB
-import ru.blays.ficbook.ui_components.FanficComponents.FanficCard
+import ru.blays.ficbook.ui_components.FanficComponents.FanficCard2
 import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
@@ -112,7 +112,7 @@ fun FanficsListContent(
                     }
                 )
 
-                FanficCard(
+                FanficCard2(
                     modifier = Modifier.contextMenuAnchor(contextMenuState),
                     fanfic = fanfic,
                     onClick = {

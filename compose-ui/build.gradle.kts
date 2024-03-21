@@ -36,6 +36,9 @@ kotlin {
                 // KotlinX
                 implementation(libs.kotlinx.serialization.json)
 
+                // ConstraintLayout
+                implementation(libs.compose.constraintLayout.multiplatform)
+
                 // materialKolor
                 implementation(libs.materialKolor)
 
