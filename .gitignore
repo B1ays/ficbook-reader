@@ -23,3 +23,5 @@ venv
 /app-desktop/default.realm
 /app-desktop/default.realm.lock
 /app-desktop/cache/
+/app-android/arm7/
+/app-android/arm64/
