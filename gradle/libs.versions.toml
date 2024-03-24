@@ -37,7 +37,6 @@ cache-fix = "3.0.1"
 lwjgl = "3.3.3"
 build-konfig = "0.15.1"
 constraintLayout-multiplatform = "0.3.1"
-epub4j = "4.2.1"
 
 [libraries]
 androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -69,7 +68,7 @@ multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-sett
 multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 realm-library-base = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
-epub4j-core = { module = "io.documentnode:epub4j-core", version.ref = "epub4j" }
+haze = { module = "dev.chrisbanes.haze:haze" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

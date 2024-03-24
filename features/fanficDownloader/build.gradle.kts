@@ -23,12 +23,9 @@ kotlin {
                 implementation(libs.koin.core)
 
                 // epub4j
-                implementation(projects.epub4j.epub4jCore) {
+                implementation("io.documentnode.epub4j:epub4j-core") {
                     exclude(group = "xmlpull")
                 }
-                /*implementation("io.documentnode:epub4j-core:4.2.1") {
-                    exclude(group = "xmlpull")
-                }*/
 
                 implementation(projects.features.mpfilepicker)
                 implementation(projects.ficbookApi)
