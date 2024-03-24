@@ -18,7 +18,7 @@ class FanficPageRepo(
         href: String
     ): ApiResult<FanficPageModelStable> {
         return when(
-            val result = api.get(href)
+            val result = api.getByHref(href)
         ) {
             is ApiResult.Error -> ApiResult.failure(result.exception)
             is ApiResult.Success -> {

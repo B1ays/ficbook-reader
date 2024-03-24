@@ -72,7 +72,8 @@ class DefaultFanficPageComponent(
                         componentContext = childContext,
                         fanficID = configuration.fanficID,
                         fanficName = configuration.fanficName,
-                        close = navigation::pop
+                        onClose = navigation::pop,
+
                     )
                 )
             }
@@ -145,7 +146,7 @@ class DefaultFanficPageComponent(
                 navigation.push(
                     FanficPageComponent.Config.DownloadFanfic(
                         fanficID = output.fanficID,
-                        fanficName = output.fanficName
+                        fanficName = output.fanficName,
                     )
                 )
             }

@@ -14,3 +14,11 @@ sealed class ApiResult<T: Any> {
         fun <T: Any> failure(exception: Throwable): ApiResult<T> = Error(exception)
     }
 }
+
+sealed class ResponseResult<T: Any> {
+    data class Success<T: Any>(val value: T): ResponseResult<T>()
+    data class Error<T: Any>(val code: Int): ResponseResult<T>()
+
+    fun getOrNull(): T? = if(this is Success) value else null
+    fun getOrElse(defaultValue: T): T = if(this is Success) value else defaultValue
+}

@@ -59,6 +59,7 @@ kotlin {
                 // features
                 api(projects.features.fileDownloadFeature)
                 api(projects.features.mpfilepicker)
+                api(projects.features.fanficDownloader)
             }
         }
         val jvmMain by getting {

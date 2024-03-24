@@ -1327,13 +1327,13 @@ private fun TopBarActions(component: FanficPageInfoComponent) {
                     )
                 },
                 onClick = {
-                    dropDownMenuState = false
                     component.onOutput(
                         FanficPageInfoComponent.Output.DownloadFanfic(
                             fanficID = component.fanficHref.substringAfterLast('/'),
-                            fanficName = it.name
+                            fanficName = it.name,
                         )
                     )
+                    dropDownMenuState = false
                 }
             )
         }

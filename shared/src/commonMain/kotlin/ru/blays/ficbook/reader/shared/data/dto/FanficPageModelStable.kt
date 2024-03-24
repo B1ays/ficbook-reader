@@ -69,6 +69,7 @@ data class RewardModelStable(
     val awardDate: String
 )
 
+@Serializable
 @Immutable
 data class FanficAuthorModelStable(
     val user: UserModelStable,

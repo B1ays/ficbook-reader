@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="download_in_progress">Идет загрузка...</string>
+    <string name="download_complete">Загрузка завершена</string>
+
+    <string name="download_chapter">Загрузка главы: %1$s</string>
+    <string name="download_chapter_error">Ошибка загрузки главы, ожидание новой попытки...</string>
+
+    <string name="notification_channel_name">Загрузка фанфика</string>
+
+    <string name="chapter_default_name">Глава 1</string>
+</resources>
