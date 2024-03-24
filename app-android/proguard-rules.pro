@@ -20,5 +20,10 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+-dontwarn org.xmlpull.v1.**
+-dontwarn org.kxml2.io.**
+-dontwarn android.content.res.**
 
 -keepnames class ** { *; }
+-keep class org.xmlpull.** { *; }
+-keepclassmembers class org.xmlpull.** { *; }
