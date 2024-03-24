@@ -31,7 +31,7 @@ sealed class FanficChapter {
     @Serializable
     data class SeparateChaptersModel(
         val chapters: List<Chapter>,
-       val chaptersCount: Int
+        val chaptersCount: Int
     ): FanficChapter() {
         @Serializable
         data class Chapter(
@@ -49,6 +49,12 @@ sealed class FanficChapter {
         val date: String,
         val text: String
     ): FanficChapter()
+
+    val size: Int
+        get() = when(this) {
+            is SeparateChaptersModel -> chapters.size
+            is SingleChapterModel -> 1
+        }
 }
 
 @Serializable

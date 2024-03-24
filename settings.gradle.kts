@@ -37,8 +37,20 @@ include(":haze:haze", ":haze:haze-materials")
 project(":haze:haze").projectDir = file("${rootDir}/haze/haze")
 project(":haze:haze-materials").projectDir = file("${rootDir}/haze/haze-materials")
 
+include(":epub4j", "epub4j:epub4j-core")
+project(":epub4j").apply {
+    projectDir = file("../epub4j-kotlin/")
+    children += project(":epub4j:epub4j-core").apply {
+        projectDir = file("../epub4j-kotlin/epub4j-core")
+    }
+}
+
+println(file("../epub4j-kotlin").path)
+
 include("features")
 include("features:fileDownloadFeature")
 include("features:mpfilepicker")
 include("features:copyImageFeature")
 findProject(":features:copyImageFeature")?.name = "copyImageFeature"
+include("features:fanficDownloader")
+findProject(":features:fanficDownloader")?.name = "fanficDownloader"

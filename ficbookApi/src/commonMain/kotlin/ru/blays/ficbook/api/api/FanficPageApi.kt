@@ -14,7 +14,8 @@ import ru.blays.ficbook.api.result.ApiResult
 
 
 interface FanficPageApi {
-    suspend fun get(href: String): ApiResult<FanficPageModel>
+    suspend fun getByHref(href: String): ApiResult<FanficPageModel>
+    suspend fun getById(id: String): ApiResult<FanficPageModel>
 
     suspend fun mark(mark: Boolean, fanficID: String): Boolean
     suspend fun follow(follow: Boolean, fanficID: String): Boolean
@@ -27,9 +28,7 @@ internal class FanficPageApiImpl(
 ): FanficPageApi {
     private val fanficPageParser = FanficPageParser()
 
-    override suspend fun get(
-        href: String
-    ): ApiResult<FanficPageModel> = coroutineScope {
+    override suspend fun getByHref(href: String): ApiResult<FanficPageModel> = coroutineScope {
         return@coroutineScope try {
             val response = client.get(
                 url = ficbookUrl {
@@ -43,6 +42,10 @@ internal class FanficPageApiImpl(
         } catch (e: Exception) {
             ApiResult.failure(e)
         }
+    }
+
+    override suspend fun getById(id: String): ApiResult<FanficPageModel> {
+        return getByHref("readfic/$id")
     }
 
     override suspend fun mark(

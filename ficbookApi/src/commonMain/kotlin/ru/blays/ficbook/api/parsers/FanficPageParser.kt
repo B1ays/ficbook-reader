@@ -254,7 +254,7 @@ internal class FanficPageParser {
                 .select(".part-date")
                 .text()
 
-            val text = chapterTextParser.parse(data)
+            val text = chapterTextParser.parseText(data)
 
             FanficChapter.SingleChapterModel(
                 chapterID = chapterID,

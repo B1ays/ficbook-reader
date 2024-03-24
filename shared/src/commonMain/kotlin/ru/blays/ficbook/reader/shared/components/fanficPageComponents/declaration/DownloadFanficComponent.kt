@@ -4,7 +4,8 @@ import com.arkivanov.decompose.value.Value
 import com.darkrockstudios.libraries.mpfilepicker.PlatformFile
 
 interface DownloadFanficComponent {
-    val formats: Array<FileFormat>
+    val formatsOnSite: Array<String>
+    val formatsInApp: Array<String>
 
     val state: Value<State>
 
@@ -13,18 +14,14 @@ interface DownloadFanficComponent {
     sealed class Intent {
         data object Close: Intent()
         data object CloseFilePicker: Intent()
-        data class PickFile(val format: FileFormat): Intent()
+        data class PickFile(val format: String): Intent()
         data class Download(val file: PlatformFile): Intent()
+        data class SelectMethod(val method: Int): Intent()
     }
 
     data class State(
         val showFilePicker: Boolean,
         val fanficName: String,
         val selectedFormat: String?
-    )
-
-    data class FileFormat(
-        val extension: String,
-        val description: String
     )
 }

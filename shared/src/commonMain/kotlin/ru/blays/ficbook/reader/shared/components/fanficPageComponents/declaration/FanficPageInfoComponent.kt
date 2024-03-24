@@ -51,7 +51,10 @@ interface FanficPageInfoComponent {
         }
         data class OpenUrl(val url: String): Output()
         data class OpenAuthor(val href: String) : Output()
-        data class DownloadFanfic(val fanficID: String, val fanficName: String): Output()
+        data class DownloadFanfic(
+            val fanficID: String,
+            val fanficName: String,
+        ): Output()
         data class OpenAssociatedCollections(val fanficID: String): Output()
     }
 

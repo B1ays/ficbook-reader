@@ -46,7 +46,10 @@ interface FanficPageComponent {
         @Serializable
         data class AllComments(val href: String): Config()
         @Serializable
-        data class DownloadFanfic(val fanficID: String, val fanficName: String): Config()
+        data class DownloadFanfic(
+            val fanficID: String,
+            val fanficName: String,
+        ): Config()
         @Serializable
         data class AssociatedCollections(val fanficID: String): Config()
     }
