@@ -50,7 +50,7 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = 
 compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }
 compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPicker" }
 compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-color-picker-jvm", version.ref = "composeColorPicker" }
-compose-constraintLayout-multiplatform = { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintLayout-multiplatform" }
+compose-constraintLayout-multiplatform = { module = "tech.annexflow.compose:compose" } # { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintLayout-multiplatform" }
 decompose-decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensionsComposeJetbrains = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
