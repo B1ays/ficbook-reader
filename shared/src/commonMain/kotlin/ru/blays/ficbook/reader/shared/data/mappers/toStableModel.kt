@@ -218,7 +218,8 @@ fun AuthorProfileModel.toStableModel() = AuthorProfileModelStable(
 
 fun AuthorMainInfo.toStableModel() = AuthorMainInfoStable(
     name = name,
-    id = id,
+    realID = realID,
+    relativeID = relativeID,
     avatarUrl = avatarUrl,
     profileCoverUrl = profileCoverUrl,
     subscribers = subscribers,

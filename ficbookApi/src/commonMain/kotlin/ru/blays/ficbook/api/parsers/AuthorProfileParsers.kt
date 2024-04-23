@@ -21,7 +21,7 @@ internal class AuthorMainInfoParser {
             .text()
             .trim()
 
-        val id: String = data.run {
+        val realID: String = data.run {
             val first = select("[name=userId]").attr("value")
             if (first.isNotEmpty()) return@run first
             val second = select(".user-name-box div").getOrNull(1)?.text()
@@ -32,6 +32,12 @@ internal class AuthorMainInfoParser {
                 )
             } else ""
         }
+        val relativeID = profileHeader
+            .select(".avatar-cropper")
+            .select("a")
+            .attr(ATTR_HREF)
+            .substringAfterLast('/')
+
 
         val avatarUrl = profileHeader
             .select(".avatar-cropper")
@@ -58,16 +64,14 @@ internal class AuthorMainInfoParser {
             .toBooleanStrictOrNull()
             ?: false
 
-        val availableTabs = tabsParser.parse(data)
-
         return AuthorMainInfo(
             name = name,
-            id = id,
+            realID = realID,
+            relativeID = relativeID,
             avatarUrl = avatarUrl,
             profileCoverUrl = profileCoverUrl,
             subscribers = subscribers,
-            subscribed = subscribed,
-            availableTabs = availableTabs
+            subscribed = subscribed
         )
     }
 }

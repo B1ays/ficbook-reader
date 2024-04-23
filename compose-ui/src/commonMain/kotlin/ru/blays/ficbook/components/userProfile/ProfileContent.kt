@@ -16,7 +16,6 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
-import androidx.constraintlayout.core.widgets.Optimizer
 import coil3.compose.SubcomposeAsyncImage
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
