@@ -337,12 +337,12 @@ class DefaultAuthorProfileComponent private constructor(
 
             is ApiResult.Success -> {
                 val availableTabs = createComponentsForProfile(
-                    userID = result.value.authorMain.id,
+                    relativeID = result.value.authorMain.relativeID,
                     tabs = result.value.availableTabs
                 )
                 transformTabsStack(availableTabs)
                 followComponent.update(
-                    authorID = result.value.authorMain.id,
+                    authorID = result.value.authorMain.realID,
                     currentValue = result.value.authorMain.subscribed
                 )
                 _state.update {
@@ -358,92 +358,88 @@ class DefaultAuthorProfileComponent private constructor(
     }
 
     private suspend fun createComponentsForProfile(
-        userID: String,
+        relativeID: String,
         tabs: List<AuthorProfileTabs>
     ): List<AuthorProfileComponent.TabConfig> {
-        val availableTabs: MutableList<AuthorProfileComponent.TabConfig> = mutableListOf()
-
-        tabs.forEach { tab ->
+        return tabs.mapNotNull { tab ->
             when(tab) {
                 AuthorProfileTabs.BLOG -> {
                     blogComponent = blogFactory(
                         childContext("blogComponent"),
-                        userID,
+                        relativeID,
                         ::blogOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.Blog
+                    AuthorProfileComponent.TabConfig.Blog
                 }
                 AuthorProfileTabs.WORKS -> {
                     val section = SectionWithQuery(
-                        href = "authors/$userID/profile/works"
+                        href = "authors/$relativeID/profile/works"
                     )
                     worksComponent = fanficsListFactory(
                         childContext("worksComponent"),
                         section,
                         ::fanficsListOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.Works
+                    AuthorProfileComponent.TabConfig.Works
                 }
                 AuthorProfileTabs.WORKS_COAUTHOR -> {
                     val section = SectionWithQuery(
-                        href = "authors/$userID/profile/coauthor"
+                        href = "authors/$relativeID/profile/coauthor"
                     )
                     worksAsCoauthorComponent = fanficsListFactory(
                         childContext("worksAsCoauthorComponent"),
                         section,
                         ::fanficsListOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsCoauthor
+                    AuthorProfileComponent.TabConfig.WorksAsCoauthor
                 }
                 AuthorProfileTabs.WORKS_BETA -> {
                     val section = SectionWithQuery(
-                        href = "authors/$userID/profile/beta"
+                        href = "authors/$relativeID/profile/beta"
                     )
                     worksAsBetaComponent = fanficsListFactory(
                         childContext("worksAsBetaComponent"),
                         section,
                         ::fanficsListOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsBeta
+                    AuthorProfileComponent.TabConfig.WorksAsBeta
                 }
                 AuthorProfileTabs.WORKS_GAMMA -> {
                     val section = SectionWithQuery(
-                        href = "authors/$userID/profile/gamma"
+                        href = "authors/$relativeID/profile/gamma"
                     )
                     worksAsGammaComponent = fanficsListFactory(
                         childContext("worksAsGammaComponent"),
                         section,
                         ::fanficsListOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.WorksAsGamma
+                    AuthorProfileComponent.TabConfig.WorksAsGamma
                 }
-                AuthorProfileTabs.REQUESTS -> {}
                 AuthorProfileTabs.COLLECTIONS -> {
                     collectionsComponent = DefaultCollectionsListComponent(
                         componentContext = childContext("collectionsComponent"),
                         sections = arrayOf(
                             SectionWithQuery(
-                                href = "authors/$userID/collections"
+                                href = "authors/$relativeID/collections"
                             )
                         ),
                         onOutput = ::collectionsOutput
                     ).apply {
                         refresh()
                     }
-                    availableTabs += AuthorProfileComponent.TabConfig.Collections
+                    AuthorProfileComponent.TabConfig.Collections
                 }
-                AuthorProfileTabs.PRESENTS -> {}
                 AuthorProfileTabs.COMMENTS -> {
                     commentsComponent = commentsFactory(
                         childContext("commentsComponent"),
-                        userID,
+                        relativeID,
                         ::commentsOutput
                     )
-                    availableTabs += AuthorProfileComponent.TabConfig.Comments
+                    AuthorProfileComponent.TabConfig.Comments
                 }
+                else -> null
             }
         }
-        return availableTabs
     }
 
     private fun clearComponents() {

@@ -19,12 +19,12 @@ data class AuthorProfileModel(
 
 data class AuthorMainInfo(
     val name: String,
-    val id: String,
+    val realID: String,
+    val relativeID: String,
     val avatarUrl: String,
     val profileCoverUrl: String,
     val subscribers: Int,
-    val subscribed: Boolean,
-    internal val availableTabs: List<AuthorProfileTabs>
+    val subscribed: Boolean
 )
 
 data class AuthorInfoModel(

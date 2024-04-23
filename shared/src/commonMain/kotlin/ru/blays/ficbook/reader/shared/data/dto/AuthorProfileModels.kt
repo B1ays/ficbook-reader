@@ -13,7 +13,8 @@ data class AuthorProfileModelStable(
 @Immutable
 data class AuthorMainInfoStable(
     val name: String,
-    val id: String,
+    val realID: String,
+    val relativeID: String,
     val avatarUrl: String,
     val profileCoverUrl: String,
     val subscribers: Int,
