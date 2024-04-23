@@ -54,3 +54,11 @@ includeBuild("../epub4j-kotlin") {
         ).using(project(":epub4j-core"))
     }
 }
+includeBuild("../constraintlayout-compose-multiplatform") {
+    name = "constraintlayout-compose-multiplatform"
+    dependencySubstitution {
+        substitute(
+            module("tech.annexflow.compose:compose")
+        ).using(project(":compose"))
+    }
+}
