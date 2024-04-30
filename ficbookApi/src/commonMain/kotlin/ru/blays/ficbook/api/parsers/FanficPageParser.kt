@@ -208,10 +208,11 @@ internal class FanficPageParser {
             .select(Evaluator.Class("article mb-15"))
             .select(".part")
 
-        val fanficChapters = if (parts.isNotEmpty()) {
+        val fanficChapters = if(parts.isNotEmpty()) {
             val chapters = parts.map { element ->
-                val partInfo = element
-                    .select(Evaluator.Class("part-info text-muted"))
+                val partInfo = element.select(
+                    Evaluator.Class("part-info")
+                )
 
                 val href = element
                     .select("a")
