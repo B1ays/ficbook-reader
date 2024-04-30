@@ -108,7 +108,6 @@
 
     <!--  Landing screen  -->
     <string name="landing_title">Добро пожаловать в Ficbook Reader</string>
-    <string name="landing_title">Добро пожаловать в Ficbook Reader</string>
     
     <string name="landing_dialog_title_confirm_am">Пропустить авторизацию?</string>
     <string name="landing_dialog_title_confirm_migration">Добавить сохранённый аккаунт?</string>
@@ -330,7 +329,6 @@
     <string name="content_description_icon_more">Иконка три точки</string>
     <string name="content_description_icon_comment">Иконка комментария</string>
     <string name="content_description_icon_star">Иконка избранное</string>
-    <string name="content_description_icon_book">Иконка книги</string>
     <string name="content_description_icon_error">Иконка ошибки</string>
     <string name="content_description_icon_user">Иконка пользователя</string>
     <string name="content_description_icon_users">Иконка пользователи</string>

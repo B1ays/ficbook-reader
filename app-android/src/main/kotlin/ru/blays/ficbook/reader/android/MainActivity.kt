@@ -9,10 +9,10 @@ import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.retainedComponent
 import ru.blays.ficbook.components.fanficPage.reader.LocalVolumeKeysEventSource
@@ -46,7 +46,9 @@ class MainActivity: ComponentActivity() {
             )
         }
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
+
+        println("MainActivity: created")
 
         setContent {
             AppTheme(rootComponent!!.themeComponent) {
@@ -63,8 +65,7 @@ class MainActivity: ComponentActivity() {
         super.onDestroy()
         rootComponent = null
     }
-
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         val newLink: String = getLinkFromIntent(intent) ?: return
         rootComponent?.sendIntent(
@@ -73,9 +74,9 @@ class MainActivity: ComponentActivity() {
     }
 
     @SuppressLint("RestrictedApi")
-    override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
-        val keyCode = event?.keyCode
-        val actionKeyDown = event?.action == KeyEvent.ACTION_DOWN
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val keyCode = event.keyCode
+        val actionKeyDown = event.action == KeyEvent.ACTION_DOWN
 
         return when {
             keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && actionKeyDown -> {
@@ -98,8 +99,8 @@ class MainActivity: ComponentActivity() {
         }
     }
 
-    private fun getLinkFromIntent(intent: Intent?): String? {
-        return when(intent?.action) {
+    private fun getLinkFromIntent(intent: Intent): String? {
+        return when(intent.action) {
             Intent.ACTION_VIEW -> {
                 intent.data.toString()
             }

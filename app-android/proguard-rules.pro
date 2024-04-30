@@ -27,3 +27,5 @@
 -keepnames class ** { *; }
 -keep class org.xmlpull.** { *; }
 -keepclassmembers class org.xmlpull.** { *; }
+-keepclassmembers class androidx.compose.material3.DrawerValue { *; }
+-keepclassmembers class androidx.activity.compose.ComponentActivityKt { *; }
