@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -50,7 +51,6 @@ import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu
 import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
 import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
 import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
-import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
@@ -88,19 +88,11 @@ fun CommentsContent(
         }
     }
 
-    LaunchedEffect(isLoading) {
-        when {
-            isLoading && !pullRefreshState.isRefreshing -> {
-                pullRefreshState.startRefresh()
-            }
-            !isLoading && pullRefreshState.isRefreshing -> {
-                pullRefreshState.endRefresh()
-            }
-        }
-    }
-
-    Box(
+    PullToRefreshBox(
         modifier = Modifier.fillMaxSize(),
+        isRefreshing = isLoading,
+        state = pullRefreshState,
+        onRefresh = {}
     ) {
         LazyColumn(
             modifier = modifier.padding(end = defaultScrollbarPadding),
@@ -142,13 +134,6 @@ fun CommentsContent(
                 )
             }
         }
-        PullToRefreshContainer(
-            state = pullRefreshState,
-            contentColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = contentPadding?.calculateTopPadding() ?: 0.dp),
-        )
         VerticalScrollbar(
             modifier = Modifier
                 .align(Alignment.CenterEnd)

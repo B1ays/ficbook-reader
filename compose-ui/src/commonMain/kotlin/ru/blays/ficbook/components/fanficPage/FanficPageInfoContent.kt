@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -61,7 +62,6 @@ import ru.blays.ficbook.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbook.ui_components.FanficComponents.FanficTagChip
 import ru.blays.ficbook.ui_components.GradientIcon.GradientIcon
 import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
-import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
@@ -125,27 +125,15 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
         bottomEnd = 0.dp
     )
 
-    LaunchedEffect(isLoading) {
-        when {
-            isLoading && !pullRefreshState.isRefreshing -> {
-                pullRefreshState.startRefresh()
-            }
-
-            !isLoading && pullRefreshState.isRefreshing -> {
-                pullRefreshState.endRefresh()
-            }
-        }
-    }
-    LaunchedEffect(pullRefreshState.isRefreshing) {
-        if (pullRefreshState.isRefreshing && !isLoading) {
+    PullToRefreshBox(
+        modifier = Modifier.fillMaxSize(),
+        isRefreshing = isLoading,
+        state = pullRefreshState,
+        onRefresh = {
             component.sendIntent(
                 FanficPageInfoComponent.Intent.Refresh
             )
         }
-    }
-
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
     ) {
         if (fanfic != null && !isLoading) {
             val coverPainter: AsyncImagePainter? = if (fanfic.coverUrl.isNotEmpty()) {
@@ -303,16 +291,10 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                             top = padding.calculateTopPadding(),
                             bottom = padding.calculateBottomPadding()
                         )
-                        .nestedScroll(pullRefreshState.nestedScrollConnection)
                         .nestedScroll(scrollBehavior.nestedScrollConnection)
                 )
             }
         }
-        PullToRefreshContainer(
-            state = pullRefreshState,
-            contentColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
     }
 }
 

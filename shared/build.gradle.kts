@@ -4,6 +4,7 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.realm.plugin)

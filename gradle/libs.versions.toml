@@ -4,8 +4,8 @@ applicationId = "ru.blays.ficbook.reader"
 projectVersion = "1.0.6"
 versionCode = "18"
 versionNameSuffix = "-rc8"
-kotlin = "1.9.23"
-agp = "8.2.0"
+kotlin = "2.0.0"
+agp = "8.2.2"
 jvmTarget = "18"
 
 # Android
@@ -14,25 +14,25 @@ android-compileSdk = "34"
 android-targetSdk = "34"
 
 # Decompose
-decompose = "3.0.0-alpha05"
-essenty = "2.0.0-alpha03"
+decompose = "3.1.0"
+essenty = "2.1.0"
 # Project Dependencies
 jsoup = "1.17.2"
 koin = "3.6.0-wasm-alpha2"
-kotlinx-coroutines = "1.8.0"
-kotlinx-serialization = "1.6.3"
-ktxCore = "1.13.0"
+kotlinx-coroutines = "1.8.1"
+kotlinx-serialization = "1.7.0"
+ktxCore = "1.13.1"
 workManager = "2.9.0"
-appcompat = "1.6.1"
-materialKolor = "1.4.4"
+appcompat = "1.7.0"
+materialKolor = "1.7.0"
 multiplatform-settings = "1.1.1"
 okhttp = "4.12.0"
-realm = "1.14.1"
-compose-jetbrains = "1.6.2"
+realm = "2.0.0"
+compose-jetbrains = "1.7.0-dev1698"
 androidx-activityCompose = "1.9.0"
 composeColorPicker = "0.7.0"
 browser = "1.8.0"
-coil = "3.0.0-alpha06"
+coil = "3.0.0-alpha07"
 cache-fix = "3.0.1"
 lwjgl = "3.3.3"
 build-konfig = "0.15.1"
@@ -82,3 +82,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 realm-plugin = { id = "io.realm.kotlin", version.ref = "realm" }
 gradle-cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cache-fix" }
 build-konfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

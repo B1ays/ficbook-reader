@@ -40,9 +40,9 @@ includeBuild("./haze") {
         substitute(
             module("dev.chrisbanes.haze:haze")
         ).using(project(":haze"))
-        substitute(
+        /*substitute(
             module("dev.chrisbanes.haze:haze-materials")
-        ).using(project(":haze-materials"))
+        ).using(project(":haze-materials"))*/
     }
 }
 

@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.compose)
 }
 
 group = "ru.blays"
@@ -21,10 +20,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                // Compose
-                implementation(compose.runtime)
-                implementation(compose.runtimeSaveable)
-
                 // Koin
                 implementation(libs.koin.core)
 

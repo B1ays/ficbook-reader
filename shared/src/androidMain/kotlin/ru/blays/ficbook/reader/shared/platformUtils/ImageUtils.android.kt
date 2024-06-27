@@ -2,10 +2,10 @@ package ru.blays.ficbook.reader.shared.platformUtils
 
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.core.graphics.drawable.toBitmap
 import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.request.ImageRequest
+import coil3.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -28,8 +28,7 @@ actual suspend fun downloadImageToFile(
                     .build()
             ).image
             ?: return@coroutineScope false
-        val drawable = image.asDrawable(resources)
-        val bitmap = drawable.toBitmap()
+        val bitmap = image.toBitmap()
         withContext(Dispatchers.IO) {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, file.outputStream())
         }

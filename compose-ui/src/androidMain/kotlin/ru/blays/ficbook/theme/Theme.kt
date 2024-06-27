@@ -7,7 +7,6 @@ import android.os.Build
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -64,6 +63,7 @@ actual fun AppTheme(
                 else -> dynamicColorScheme(
                     seedColor = primaryColor,
                     isDark = darkTheme,
+                    isAmoled = false,
                     style = PaletteStyle.Content
                 )
             }
@@ -136,19 +136,13 @@ actual fun AppTheme(
         windowsInsetsController.isAppearanceLightNavigationBars = !darkTheme
     }
 
-
-    val rippleTheme = remember(animatedColorScheme) {
-        PrimaryRippleTheme(
-            primaryColor = animatedColorScheme.primary,
-            isDarkTheme = { darkTheme }
-        )
-    }
+    val rippleConfiguration = createRippleConfig(animatedColorScheme.primary, darkTheme)
 
     MaterialTheme(
         colorScheme = animatedColorScheme,
         content = {
             CompositionLocalProvider(
-                LocalRippleTheme provides rippleTheme,
+                LocalRippleConfiguration provides rippleConfiguration,
                 LocalDynamicMaterialThemeSeed provides primaryColor,
                 content = content
             )

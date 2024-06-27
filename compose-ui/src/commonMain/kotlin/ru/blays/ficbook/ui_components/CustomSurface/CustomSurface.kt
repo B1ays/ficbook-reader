@@ -1,12 +1,12 @@
 package ru.blays.ficbook.ui_components.CustomSurface
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -54,7 +54,7 @@ fun CustomSurface(
                 )
                 .clickable(
                     interactionSource = interactionSource,
-                    indication = rememberRipple(),
+                    indication = LocalIndication.current,
                     enabled = enabled,
                     onClick = onClick
                 ),

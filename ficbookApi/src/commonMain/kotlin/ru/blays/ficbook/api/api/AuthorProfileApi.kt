@@ -166,7 +166,7 @@ internal class AuthorProfileApiImpl(
         id: String,
         tab: Int,
         page: Int,
-        parser: KSuspendFunction1<Document, List<T>>
+        crossinline parser: KSuspendFunction1<Document, List<T>>
     ): ApiResult<ListResult<T>> = coroutineScope {
         return@coroutineScope try {
             val response = client.get {

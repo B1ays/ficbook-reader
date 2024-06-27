@@ -6,7 +6,7 @@ package ru.blays.ficbook.theme
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -26,26 +26,22 @@ expect fun ReaderTheme(
     content: @Composable () -> Unit
 )
 
-class PrimaryRippleTheme(
-    private val primaryColor: Color,
-    private val isDarkTheme: () -> Boolean
-): RippleTheme {
-    @Composable
-    override fun defaultColor() = primaryColor
-
-    @Composable
-    override fun rippleAlpha() = when {
-        isDarkTheme() -> {
+fun createRippleConfig(
+    color: Color,
+    darkTheme: Boolean
+): RippleConfiguration {
+    return RippleConfiguration(
+        color = color,
+        rippleAlpha = if(darkTheme) {
             DarkThemeRippleAlpha
-        }
-        else -> {
-            if (primaryColor.luminance() > 0.5) {
+        } else {
+            if (color.luminance() > 0.5) {
                 LightThemeHighContrastRippleAlpha
             } else {
                 LightThemeLowContrastRippleAlpha
             }
         }
-    }
+    )
 }
 
 private val LightThemeHighContrastRippleAlpha = RippleAlpha(

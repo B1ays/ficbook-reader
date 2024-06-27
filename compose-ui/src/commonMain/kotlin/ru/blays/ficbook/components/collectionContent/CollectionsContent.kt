@@ -8,13 +8,13 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -36,7 +36,6 @@ import ru.blays.ficbook.reader.shared.data.dto.CollectionCardModelStable
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu
 import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
 import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
-import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
@@ -74,55 +73,38 @@ fun CollectionsContent(
 
     val pullRefreshState = rememberPullToRefreshState()
 
-    LaunchedEffect(isLoading) {
-        when {
-            isLoading && !pullRefreshState.isRefreshing -> {
-                pullRefreshState.startRefresh()
-            }
-
-            !isLoading && pullRefreshState.isRefreshing -> {
-                pullRefreshState.endRefresh()
-            }
-        }
-    }
-    LaunchedEffect(pullRefreshState.isRefreshing) {
-        if (pullRefreshState.isRefreshing && !isLoading) {
-            component.sendIntent(
-                CollectionsListComponent.Intent.Refresh
-            )
-        }
-    }
-
     BoxWithConstraints {
         val columnsCount = when(maxWidth) {
             in 800.dp..Dp.Infinity -> 3
             in 500.dp..800.dp -> 2
             else -> 1
         }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(columnsCount),
-            contentPadding = contentPadding ?: PaddingValues(0.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = modifier
-                .padding(DefaultPadding.CardDefaultPadding)
-                .fillMaxSize()
-                .nestedScroll(pullRefreshState.nestedScrollConnection),
-        ) {
-            items(list) { collection ->
-                CollectionItem(
-                    collectionModel = collection,
-                    component = component
+        PullToRefreshBox(
+            state = pullRefreshState,
+            isRefreshing = isLoading,
+            onRefresh = {
+                component.sendIntent(
+                    CollectionsListComponent.Intent.Refresh
                 )
             }
+        ) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columnsCount),
+                contentPadding = contentPadding ?: PaddingValues(0.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = modifier
+                    .padding(DefaultPadding.CardDefaultPadding)
+                    .fillMaxSize(),
+            ) {
+                items(list) { collection ->
+                    CollectionItem(
+                        collectionModel = collection,
+                        component = component
+                    )
+                }
+            }
         }
-        PullToRefreshContainer(
-            state = pullRefreshState,
-            contentColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = contentPadding?.calculateTopPadding() ?: 0.dp)
-        )
     }
 }
 

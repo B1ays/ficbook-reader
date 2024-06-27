@@ -9,6 +9,7 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
 import coil3.Image
 import coil3.annotation.ExperimentalCoilApi
+import coil3.asDrawable
 import org.koin.mp.KoinPlatform.getKoin
 import java.io.File
 

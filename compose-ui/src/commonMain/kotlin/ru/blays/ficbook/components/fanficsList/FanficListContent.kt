@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,7 +37,6 @@ import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
 import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
 import ru.blays.ficbook.ui_components.FAB.ScrollToStartFAB
 import ru.blays.ficbook.ui_components.FanficComponents.FanficCard2
-import ru.blays.ficbook.ui_components.PullToRefresh.PullToRefreshContainer
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.thenIf
@@ -59,24 +59,6 @@ fun FanficsListContent(
 
     val pullRefreshState = rememberPullToRefreshState()
 
-    LaunchedEffect(isLoading) {
-        when {
-            isLoading && !pullRefreshState.isRefreshing -> {
-                pullRefreshState.startRefresh()
-            }
-            !isLoading && pullRefreshState.isRefreshing -> {
-                pullRefreshState.endRefresh()
-            }
-        }
-    }
-    LaunchedEffect(pullRefreshState.isRefreshing) {
-        if(pullRefreshState.isRefreshing && !isLoading) {
-            component.sendIntent(
-                FanficsListComponent.Intent.Refresh
-            )
-        }
-    }
-
     val canScrollForward = lazyListState.canScrollForward
     val canScrollBackward = lazyListState.canScrollBackward
 
@@ -88,8 +70,14 @@ fun FanficsListContent(
         }
     }
 
-    Box(
-        modifier = Modifier.nestedScroll(pullRefreshState.nestedScrollConnection),
+    PullToRefreshBox(
+        state = pullRefreshState,
+        isRefreshing = isLoading,
+        onRefresh = {
+            component.sendIntent(
+                FanficsListComponent.Intent.Refresh
+            )
+        }
     ) {
         LazyColumn(
             modifier = modifier
@@ -159,13 +147,6 @@ fun FanficsListContent(
                 Spacer(modifier = Modifier.height(7.dp))
             }
         }
-        PullToRefreshContainer(
-            state = pullRefreshState,
-            contentColor = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = contentPadding?.calculateTopPadding() ?: 0.dp),
-        )
         VerticalScrollbar(
             modifier = Modifier
                 .align(Alignment.CenterEnd)

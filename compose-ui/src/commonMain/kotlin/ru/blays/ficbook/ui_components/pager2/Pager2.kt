@@ -1,7 +1,7 @@
 package ru.blays.ficbook.ui_components.pager2
 
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.snapping.SnapFlingBehavior
+import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.pager.*
 import androidx.compose.runtime.Composable
@@ -17,10 +17,9 @@ fun <T: Any> HorizontalPager2(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     pageSize: PageSize = PageSize.Fill,
-    beyondBoundsPageCount: Int = 0,
     pageSpacing: Dp = 0.dp,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
-    flingBehavior: SnapFlingBehavior = PagerDefaults.flingBehavior(state = state),
+    flingBehavior: TargetedFlingBehavior = PagerDefaults.flingBehavior(state = state),
     userScrollEnabled: Boolean = true,
     reverseLayout: Boolean = false,
     key: ((index: Int) -> Any)? = null,
@@ -35,7 +34,6 @@ fun <T: Any> HorizontalPager2(
         modifier = modifier,
         contentPadding = contentPadding,
         pageSize = pageSize,
-        beyondBoundsPageCount = beyondBoundsPageCount,
         pageSpacing = pageSpacing,
         verticalAlignment = verticalAlignment,
         flingBehavior = flingBehavior,
@@ -57,10 +55,9 @@ fun <T: Any> VerticalPager2(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     pageSize: PageSize = PageSize.Fill,
-    beyondBoundsPageCount: Int = 0,
     pageSpacing: Dp = 0.dp,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
-    flingBehavior: SnapFlingBehavior = PagerDefaults.flingBehavior(state = state),
+    flingBehavior: TargetedFlingBehavior = PagerDefaults.flingBehavior(state = state),
     userScrollEnabled: Boolean = true,
     reverseLayout: Boolean = false,
     key: ((index: Int) -> Any)? = null,
@@ -75,7 +72,6 @@ fun <T: Any> VerticalPager2(
         modifier = modifier,
         contentPadding = contentPadding,
         pageSize = pageSize,
-        beyondBoundsPageCount = beyondBoundsPageCount,
         pageSpacing = pageSpacing,
         horizontalAlignment = horizontalAlignment,
         flingBehavior = flingBehavior,
