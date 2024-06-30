@@ -36,9 +36,10 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.theme.*
 import ru.blays.ficbook.ui_components.GradientIcon.GradientIcon
+import com.theapache64.rebugger.Rebugger
 import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FanficCard2(
     fanfic: FanficCardModelStable,
@@ -201,6 +202,18 @@ fun FanficCard2(
                 }
             }
         }
+        Rebugger(
+            trackMap = mapOf(
+                "fanfic" to fanfic,
+                "modifier" to modifier,
+                "onClick" to onClick,
+                "onLongClick" to onLongClick,
+                "onPairingClick" to onPairingClick,
+                "onFandomClick" to onFandomClick,
+                "onAuthorClick" to onAuthorClick,
+                "onUrlClicked" to onUrlClicked,
+            ),
+        )
         ConstraintLayout(
             constraintSet = constraints,
             animateChanges = true,

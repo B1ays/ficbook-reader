@@ -89,7 +89,8 @@ fun FanficsListContent(
             contentPadding = contentPadding ?: PaddingValues(0.dp)
         ) {
             items(
-                items = list
+                items = list,
+                key = { it.id }
             ) { fanfic ->
                 val contextMenuState = rememberContextMenuState()
 
@@ -157,7 +158,6 @@ fun FanficsListContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FanficsListScreenContent(
     component: FanficsListComponent

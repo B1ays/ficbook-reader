@@ -32,9 +32,8 @@ import ru.blays.ficbook.reader.shared.components.collectionComponents.declaratio
 import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.EditCollectionComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.data.dto.CollectionPageModelStable
-import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
-import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue.Expanded
-import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue.PartiallyExpanded
+import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.EnhancedBottomSheetScaffold
+import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberSheetState
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
@@ -164,7 +163,7 @@ private fun PortraitContent(component: CollectionPageComponent) {
     val state by component.state.subscribeAsState()
     val bottomSheetState = rememberSheetState(
         skipPartiallyExpanded = false,
-        initialValue = PartiallyExpanded
+        initialValue = SheetValue.PartiallyExpanded
     )
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
     val coroutineScope = rememberCoroutineScope()
@@ -172,7 +171,7 @@ private fun PortraitContent(component: CollectionPageComponent) {
     val glassEffectConfig = LocalGlassEffectConfig.current
     val hazeState = remember { HazeState() }
 
-    BottomSheetScaffold(
+    EnhancedBottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
         sheetPeekHeight = 0.dp,
         sheetContent = {
@@ -221,7 +220,7 @@ private fun PortraitContent(component: CollectionPageComponent) {
                     insets = WindowInsets.statusBars
                 )
                 state.collectionPage?.let { Header(it) }
-                when(
+                when (
                     val page = state.collectionPage
                 ) {
                     is CollectionPageModelStable.Other -> OtherCollectionActions(
@@ -229,7 +228,7 @@ private fun PortraitContent(component: CollectionPageComponent) {
                         component = component,
                         sortParamsOpenedChange = {
                             coroutineScope.launch {
-                                if(bottomSheetState.currentValue == Expanded) {
+                                if (bottomSheetState.currentValue == SheetValue.Expanded) {
                                     bottomSheetState.partialExpand()
                                 } else {
                                     bottomSheetState.expand()
@@ -237,12 +236,13 @@ private fun PortraitContent(component: CollectionPageComponent) {
                             }
                         }
                     )
+
                     is CollectionPageModelStable.Own -> OwnCollectionActions(
                         page = page,
                         component = component,
                         sortParamsOpenedChange = {
                             coroutineScope.launch {
-                                if(bottomSheetState.currentValue == Expanded) {
+                                if (bottomSheetState.currentValue == SheetValue.Expanded) {
                                     bottomSheetState.partialExpand()
                                 } else {
                                     bottomSheetState.expand()
@@ -250,6 +250,7 @@ private fun PortraitContent(component: CollectionPageComponent) {
                             }
                         }
                     )
+
                     else -> {}
                 }
                 VerticalSpacer(3.dp)

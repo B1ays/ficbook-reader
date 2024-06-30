@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -53,6 +52,9 @@ kotlin {
                 // Decompose Libraries
                 implementation(libs.decompose.decompose)
                 implementation(libs.decompose.extensionsComposeJetbrains)
+
+                // Rebugger
+                implementation(libs.rebugger)
 
                 // Koin
                 implementation(libs.koin.core)

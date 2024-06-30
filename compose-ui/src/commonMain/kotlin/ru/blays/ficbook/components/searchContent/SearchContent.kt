@@ -42,7 +42,7 @@ import ru.blays.ficbook.platformUtils.BackHandler
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.*
 import ru.blays.ficbook.reader.shared.data.dto.*
-import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
+import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.EnhancedBottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberSheetState
@@ -217,7 +217,7 @@ private fun PortraitContent(component: SearchComponent) {
         }
     }
 
-    BottomSheetScaffold(
+    EnhancedBottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
         sheetPeekHeight = 0.dp,
         sheetContent = {

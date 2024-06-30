@@ -19,13 +19,15 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.landingScreenComponent.ConfirmDialogComponent
 import ru.blays.ficbook.reader.shared.components.landingScreenComponent.ConfirmDialogConfig
 import ru.blays.ficbook.reader.shared.components.landingScreenComponent.LandingScreenComponent
+import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.EnhancedBottomSheetScaffold
+import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LandingScreenContent(component: LandingScreenComponent) {
     val dialogState by component.confirmDialog.subscribeAsState()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
-    BottomSheetScaffold(
+    EnhancedBottomSheetScaffold(
         sheetContent = {
             dialogState.child?.let {
                 ConfirmDialogContent(it.instance, it.configuration)

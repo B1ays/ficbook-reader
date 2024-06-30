@@ -37,6 +37,7 @@ cache-fix = "3.0.1"
 lwjgl = "3.3.3"
 build-konfig = "0.15.1"
 constraintLayout-multiplatform = "0.3.1"
+rebugger = "1.0.0-rc03"
 
 [libraries]
 androidx-activity-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -69,6 +70,7 @@ multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-s
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 realm-library-base = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
 haze = { module = "dev.chrisbanes.haze:haze" }
+rebugger = { group = "io.github.theapache64", name = "rebugger", version.ref = "rebugger" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

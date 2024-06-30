@@ -54,10 +54,9 @@ import ru.blays.ficbook.theme.color
 import ru.blays.ficbook.theme.flameGradient
 import ru.blays.ficbook.theme.likeColor
 import ru.blays.ficbook.theme.trophyColor
-import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetScaffold
+import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.*
+import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.BottomSheetDefaults
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
-import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
-import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberStandardBottomSheetState
 import ru.blays.ficbook.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbook.ui_components.FanficComponents.FanficTagChip
 import ru.blays.ficbook.ui_components.GradientIcon.GradientIcon
@@ -180,7 +179,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                 .asPaddingValues()
                 .calculateBottomPadding()
 
-            BottomSheetScaffold(
+            EnhancedBottomSheetScaffold(
                 scaffoldState = bottomSheetScaffoldState,
                 sheetPeekHeight = 110.dp + navigationBarHeight,
                 containerColor = Color.Transparent,
@@ -248,7 +247,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     transition.AnimatedContent(
                         transitionSpec = {
                             slideInVertically { height -> -height } + fadeIn() togetherWith
-                                slideOutVertically { height -> -height } + fadeOut()
+                                    slideOutVertically { height -> -height } + fadeOut()
                         }
                     ) { value ->
                         when (value) {
@@ -472,7 +471,7 @@ private fun FanficHeader(
                     .combinedClickable(
                         onClick = { isCoverExpanded = !isCoverExpanded },
                         onLongClick = {
-                            when (val state = coverPainter.state) {
+                            when (val state = coverPainter.state.value) {
                                 is AsyncImagePainter.State.Success -> {
                                     scope.launch {
                                         val success = copyImageToClipboard(state.result.image)
