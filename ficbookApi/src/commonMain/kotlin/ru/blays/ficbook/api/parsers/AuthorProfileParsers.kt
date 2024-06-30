@@ -11,8 +11,6 @@ import ru.blays.ficbook.api.notNumberRegex
 
 
 internal class AuthorMainInfoParser {
-    private val tabsParser = AuthorProfileTabsParser()
-
     suspend fun parse(data: Document): AuthorMainInfo {
         val profileHeader = data.select(".profile-header")
 
@@ -111,7 +109,9 @@ internal class AuthorInfoParser {
 
     suspend fun parse(data: Document): AuthorInfoModel {
         data.outputSettings(documentSettings)
-        val mb30 = data.select(".profile-container").select("section .mb-30")
+        val mb30 = data.select(
+            Evaluator.Class("d-flex flex-column gap-xs")
+        )
 
         val about: String = mb30.find {
             it.select("h2:contains(О себе)").isNotEmpty()
@@ -190,7 +190,9 @@ internal class AuthorBlogPostsParser {
 
 internal class AuthorBlogPostParser {
     suspend fun parse(data: Document): BlogPostPageModel {
-        val container = data.select(".profile-container")
+        val container = data.select(
+            Evaluator.Class("d-flex flex-column gap-md")
+        )
         val title = container.select("h1.mb-10").text().trim()
         val date = container.select("div[class=\"small-text text-muted mb-10\"]").text()
         val text = container.select("div[class=\"text-preline mb-15\"]")
