@@ -28,10 +28,10 @@ import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.reader.shared.data.dto.NotificationModelStable
-import ru.blays.ficbook.reader.shared.data.dto.NotificationType
 import ru.blays.ficbook.reader.shared.components.notificationComponents.NotificationComponent
 import ru.blays.ficbook.reader.shared.components.notificationComponents.NotificationConfirmDialogComponent
+import ru.blays.ficbook.reader.shared.data.dto.NotificationModelStable
+import ru.blays.ficbook.reader.shared.data.dto.NotificationType
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.utils.thenIf
@@ -176,7 +176,6 @@ private fun LandscapeContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PortraitContent(
     component: NotificationComponent,
@@ -221,7 +220,9 @@ fun PortraitContent(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .menuAnchor(),
+                                    .menuAnchor(
+                                        type = MenuAnchorType.PrimaryNotEditable
+                                    ),
                             ) {
                                 Text(
                                     text = getCategoryName(state.selectedCategory),
@@ -329,7 +330,6 @@ fun PortraitContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun Actions(
     modifier: Modifier = Modifier,
@@ -379,7 +379,6 @@ private fun Actions(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun NotificationItem(
     modifier: Modifier = Modifier,
@@ -443,8 +442,7 @@ fun NotificationItem(
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = shape2
                 )
-                .clip(shape2)
-                .clickable(onClick = onClick),
+                .clip(shape2),
         ) {
             Text(
                 text = notification.text,
