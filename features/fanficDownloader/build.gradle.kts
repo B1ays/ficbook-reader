@@ -1,3 +1,8 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
@@ -8,14 +13,12 @@ version = "1"
 
 kotlin {
     applyDefaultHierarchyTemplate()
-    jvm()
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = libs.versions.jvmTarget.get()
-            }
-        }
+    jvm {
+        compilerOptions.jvmTarget.set(
+            JvmTarget.fromTarget(libs.versions.jvmTarget.get())
+        )
     }
+    androidTarget()
     sourceSets {
         commonMain {
             dependencies {
@@ -41,12 +44,9 @@ kotlin {
             }
         }
     }
-    targets.all {
-        compilations.all {
-            compilerOptions.configure {
-                allWarningsAsErrors = false
-            }
-        }
+
+    compilerOptions {
+        allWarningsAsErrors = false
     }
 }
 
@@ -59,7 +59,7 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_18
-        targetCompatibility = JavaVersion.VERSION_18
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
     }
 }

@@ -1,3 +1,8 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
 	alias(libs.plugins.kotlin.multiplatform)
 	alias(libs.plugins.android.library)
@@ -8,12 +13,12 @@ plugins {
 
 kotlin {
 	applyDefaultHierarchyTemplate()
-	androidTarget {
-        compilations.all {
-            kotlinOptions.jvmTarget = libs.versions.jvmTarget.get()
-        }
+	jvm {
+		compilerOptions.jvmTarget.set(
+			JvmTarget.fromTarget(libs.versions.jvmTarget.get())
+		)
 	}
-    jvm()
+	androidTarget()
 
 	sourceSets {
 		commonMain.dependencies {
@@ -58,9 +63,10 @@ kotlin {
 		}
 	}
 
-	@Suppress("OPT_IN_USAGE")
 	compilerOptions {
-		freeCompilerArgs = listOf("-Xexpect-actual-classes")
+		freeCompilerArgs.addAll(
+			"-Xexpect-actual-classes"
+		)
 	}
 }
 
@@ -68,11 +74,13 @@ android {
 	namespace = "com.darkrockstudios.libraries.mpfilepicker"
 	compileSdk = libs.versions.android.compileSdk.get().toInt()
 	sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
 	defaultConfig {
 		minSdk = libs.versions.android.minSdk.get().toInt()
 	}
+
 	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_18
-		targetCompatibility = JavaVersion.VERSION_18
+		sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+		targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
 	}
 }

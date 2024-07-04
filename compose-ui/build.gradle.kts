@@ -1,3 +1,8 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -6,24 +11,18 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     applyDefaultHierarchyTemplate()
-    jvm()
-
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = libs.versions.jvmTarget.get()
-            }
-        }
+    jvm {
+        compilerOptions.jvmTarget.set(
+            JvmTarget.fromTarget(libs.versions.jvmTarget.get())
+        )
     }
+    androidTarget()
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
-                implementation(projects.shared)
-
                 // Compose Libraries
                 implementation(compose.runtime)
                 implementation(compose.ui)
@@ -60,18 +59,19 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
 
-                // Projects
+                // Modules
+                implementation(projects.shared)
                 implementation(projects.features.copyImageFeature)
             }
         }
 
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
                 implementation(libs.compose.color.picker.jvm)
             }
         }
 
-        val androidMain by getting {
+        androidMain {
             dependencies {
                 implementation(libs.androidx.core)
                 implementation(libs.androidx.activity.activityCompose)
@@ -79,21 +79,14 @@ kotlin {
                 implementation(libs.compose.color.picker.android)
             }
         }
-
-        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-            kotlinOptions.jvmTarget = libs.versions.jvmTarget.get()
-        }
     }
 
-    targets.all {
-        compilations.all {
-            compilerOptions.configure {
-                allWarningsAsErrors = false
-                freeCompilerArgs = listOf(
-                    "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-                    "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi")
-            }
-        }
+    compilerOptions {
+        allWarningsAsErrors = false
+        freeCompilerArgs.addAll(
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
+        )
     }
 }
 
@@ -108,7 +101,7 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_18
-        targetCompatibility = JavaVersion.VERSION_18
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
     }
 }

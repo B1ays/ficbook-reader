@@ -1,4 +1,8 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -13,18 +17,15 @@ plugins {
 
 kotlin {
     applyDefaultHierarchyTemplate()
-    jvm()
-
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = libs.versions.jvmTarget.get()
-            }
-        }
+    jvm {
+        compilerOptions.jvmTarget.set(
+            JvmTarget.fromTarget(libs.versions.jvmTarget.get())
+        )
     }
+    androidTarget()
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 // Decompose
                 api(libs.decompose.decompose)
@@ -63,12 +64,12 @@ kotlin {
                 api(projects.features.fanficDownloader)
             }
         }
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
 
             }
         }
-        val androidMain by getting {
+        androidMain {
             dependencies {
                 // AndroidX
                 implementation(libs.androidx.browser)
@@ -77,10 +78,6 @@ kotlin {
                 implementation(libs.koin.android)
             }
         }
-    }
-
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions.jvmTarget = libs.versions.jvmTarget.get()
     }
 }
 
@@ -95,8 +92,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_18
-        targetCompatibility = JavaVersion.VERSION_18
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
     }
 }
 

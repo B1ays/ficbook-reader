@@ -8,20 +8,20 @@ kotlin {
     jvm()
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 // KotlinX
                 implementation(libs.kotlinx.coroutines.core.jvm)
                 implementation(libs.kotlinx.serialization.json)
 
                 // JSoup
-                api(libs.jsoup)
+                implementation(libs.jsoup)
 
                 // OkHttp
                 api(libs.okhttp)
 
                 // Koin
-                api(libs.koin.core)
+                implementation(libs.koin.core)
             }
         }
     }
