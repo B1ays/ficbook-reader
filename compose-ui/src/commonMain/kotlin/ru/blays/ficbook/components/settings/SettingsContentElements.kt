@@ -38,6 +38,7 @@ import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
+import java.lang.String.format
 
 const val ANIMATION_DURATION_MILLIS = 300
 
@@ -360,11 +361,9 @@ fun SettingsSliderWithTitle(
                 ),
                 modifier = Modifier.weight(1F),
             )
-            Text(
-                text = String.format("%.2f", value)
-            )
+            HorizontalSpacer(6.dp)
+            Text(format("%.2f", value))
         }
-
     }
 }
 
