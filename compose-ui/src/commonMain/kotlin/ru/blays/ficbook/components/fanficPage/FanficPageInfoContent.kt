@@ -33,6 +33,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.materialkolor.ktx.darken
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
@@ -84,7 +85,7 @@ fun FanficPageInfoContent(component: FanficPageInfoComponent) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PortraitContent(component: FanficPageInfoComponent) {
     val state by component.state.subscribeAsState()
@@ -1218,20 +1219,17 @@ private fun AuthorItem(
             Text(
                 text = authorModel.role,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.surfaceTint
+                color = MaterialTheme.colorScheme.primary.darken(1.3F)
             )
         }
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun TopBarActions(component: FanficPageInfoComponent) {
     var dropDownMenuState by remember { mutableStateOf(false) }
     IconButton(
-        onClick = {
-            dropDownMenuState = !dropDownMenuState
-        }
+        onClick = { dropDownMenuState = !dropDownMenuState }
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_more_vertical),
