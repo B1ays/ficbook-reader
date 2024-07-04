@@ -6,7 +6,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.Children
+import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.androidPredictiveBackAnimatable
+import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.predictiveBackAnimation
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import dev.chrisbanes.haze.HazeStyle
 import ficbook_reader.compose_ui.generated.resources.Res
@@ -34,6 +37,7 @@ import ru.blays.ficbook.utils.BlurConfig
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
 import ru.blays.ficbook.utils.LocalStackAnimator
 
+@OptIn(ExperimentalDecomposeApi::class)
 @Composable
 fun RootContent(component: RootComponent) {
     val glassEffectConfig by component.glassEffectConfig.collectAsState()
@@ -80,7 +84,12 @@ fun RootContent(component: RootComponent) {
         ) {
             Children(
                 stack = component.childStack,
-                animation = stackAnimation(LocalStackAnimator.current),
+                animation = predictiveBackAnimation(
+                    backHandler = component.backHandler,
+                    fallbackAnimation = stackAnimation(LocalStackAnimator.current),
+                    selector = { backEvent, _, _ -> androidPredictiveBackAnimatable(backEvent) },
+                    onBack = component::navigateBack,
+                ),
                 modifier = Modifier.landscapeInsetsPadding()
             ) {
                 when(

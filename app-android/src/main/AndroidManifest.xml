@@ -18,6 +18,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Ficbook Reader"
         android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
         tools:ignore="DataExtractionRules">
 
         <activity

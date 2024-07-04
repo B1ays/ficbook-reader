@@ -145,6 +145,10 @@ class DefaultRootComponent private constructor(
         }
     }
 
+    override fun navigateBack() {
+        navigation.pop()
+    }
+
     private fun childFactory(
         configuration: RootComponent.Config,
         componentContext: ComponentContext

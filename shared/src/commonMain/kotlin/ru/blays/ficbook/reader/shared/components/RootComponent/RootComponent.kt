@@ -2,6 +2,7 @@ package ru.blays.ficbook.reader.shared.components.RootComponent
 
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.backhandler.BackHandlerOwner
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import ru.blays.ficbook.api.data.SectionWithQuery
@@ -21,7 +22,7 @@ import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.User
 import ru.blays.ficbook.reader.shared.preferences.json.GlassEffectConfig
 import java.util.*
 
-interface RootComponent {
+interface RootComponent: BackHandlerOwner {
 
     val childStack: Value<ChildStack<*, Child>>
 
@@ -34,6 +35,8 @@ interface RootComponent {
     }
 
     fun sendIntent(intent: Intent)
+
+    fun navigateBack()
 
     @Serializable
     sealed class Config {
