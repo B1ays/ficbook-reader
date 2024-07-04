@@ -20,6 +20,8 @@ object DefaultPadding {
     val CardDefaultPaddingLarge = PaddingValues(horizontal = 16.dp, vertical = 7.dp)
     val CardDefaultPaddingSmall = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
     val CardPaddingSmallVertical = PaddingValues(horizontal = 12.dp, vertical = 2.dp)
+
+    val Zero = PaddingValues(0.dp)
 }
 
 expect val defaultScrollbarPadding: Dp
