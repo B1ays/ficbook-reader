@@ -11,8 +11,8 @@ import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.Utils.ExternalStateUpdatable
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.InternalSearchPairingsComponent
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchPairingsComponent
-import ru.blays.ficbook.reader.shared.data.dto.SearchedCharacterModel
-import ru.blays.ficbook.reader.shared.data.dto.SearchedPairingModel
+import ru.blays.ficbook.reader.shared.data.SearchedCharacterModel
+import ru.blays.ficbook.reader.shared.data.SearchedPairingModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
 
 class DefaultSearchPairingsComponent(

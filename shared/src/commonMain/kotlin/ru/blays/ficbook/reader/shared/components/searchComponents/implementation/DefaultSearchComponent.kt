@@ -9,9 +9,9 @@ import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchComponent
-import ru.blays.ficbook.reader.shared.data.dto.IntRangeSimple
-import ru.blays.ficbook.reader.shared.data.dto.SearchParams
-import ru.blays.ficbook.reader.shared.data.dto.SearchedFandomModel
+import ru.blays.ficbook.reader.shared.data.IntRangeSimple
+import ru.blays.ficbook.reader.shared.data.SearchParams
+import ru.blays.ficbook.reader.shared.data.SearchedFandomModel
 import ru.blays.ficbook.reader.shared.data.realm.entity.*
 
 class DefaultSearchComponent(
@@ -114,6 +114,12 @@ class DefaultSearchComponent(
         }
     }
 
+    override fun setMinComments(value: Int) {
+        _state.update {
+            it.copy(minComments = value)
+        }
+    }
+
     override fun setDateRange(value: LongRange) {
         _state.update {
             it.copy(dateRange = value)
@@ -146,8 +152,7 @@ class DefaultSearchComponent(
 
             val fandomsState = searchFandomsComponent.state.value
             when(fandomsFilter) {
-                SearchParams.FANDOM_FILTER_CATEGORY -> {
-                    queryParams.add("fandom_group_id" to "$fandomsGroup")
+                SearchParams.FANDOM_FILTER_ALL -> {
                     fandomsState.excludedFandoms.forEach { fandom ->
                         queryParams.add("fandom_exclude_ids[]" to fandom.id)
                     }
@@ -219,11 +224,13 @@ class DefaultSearchComponent(
             tagsState.excludedTags.forEach { tag ->
                 queryParams.add("tags_exclude[]" to tag.id)
             }
+            queryParams.add("tags_search_options" to "${tagsState.behavior}")
 
             queryParams.add("likes_min" to "${likesRange.start.let { if(it == 0) "" else it }}")
             queryParams.add("likes_max" to "${likesRange.end.let { if(it == 0) "" else it }}")
 
             queryParams.add("rewards_min" to "$minRewards")
+            queryParams.add("comments_min" to "$minComments")
 
             queryParams.add("title" to title)
 
@@ -258,6 +265,7 @@ class DefaultSearchComponent(
                 IntRangeSimple(it.start, it.end)
             } ?: IntRangeSimple.EMPTY,
             minRewards = searchParamsEntity.minRewards,
+            minComments = searchParamsEntity.minComments,
             dateRange = searchParamsEntity.dateRange?.let {
                 it.start..it.end
             } ?: LongRange.EMPTY,

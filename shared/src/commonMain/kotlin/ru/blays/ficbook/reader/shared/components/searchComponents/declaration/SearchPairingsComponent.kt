@@ -1,9 +1,9 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.declaration
 
 import com.arkivanov.decompose.value.Value
-import ru.blays.ficbook.reader.shared.data.dto.SearchedCharacterModel
-import ru.blays.ficbook.reader.shared.data.dto.SearchedCharactersGroup
-import ru.blays.ficbook.reader.shared.data.dto.SearchedPairingModel
+import ru.blays.ficbook.reader.shared.data.SearchedCharacterModel
+import ru.blays.ficbook.reader.shared.data.SearchedCharactersGroup
+import ru.blays.ficbook.reader.shared.data.SearchedPairingModel
 
 interface SearchPairingsComponent {
     val state: Value<State>

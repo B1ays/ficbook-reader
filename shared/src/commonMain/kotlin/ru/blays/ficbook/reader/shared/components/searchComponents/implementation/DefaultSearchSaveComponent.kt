@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchSaveComponent
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
-import ru.blays.ficbook.reader.shared.data.dto.SearchParamsEntityShortcut
+import ru.blays.ficbook.reader.shared.data.SearchParamsEntityShortcut
 import ru.blays.ficbook.reader.shared.data.realm.entity.SearchParamsEntity
 import ru.blays.ficbook.reader.shared.data.realm.entity.toShortcut
 import ru.blays.ficbook.reader.shared.di.injectRealm

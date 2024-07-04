@@ -34,14 +34,13 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
 import ru.blays.ficbook.platformUtils.BackHandler
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.*
-import ru.blays.ficbook.reader.shared.data.dto.*
+import ru.blays.ficbook.reader.shared.data.*
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.EnhancedBottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
@@ -72,7 +71,6 @@ fun SearchContent(component: SearchComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(component: SearchComponent) {
     val coroutineScope = rememberCoroutineScope()
@@ -156,7 +154,7 @@ private fun LandscapeContent(component: SearchComponent) {
                 Column(
                     modifier = Modifier
                         .background(
-                            color = DrawerDefaults.containerColor,
+                            color = DrawerDefaults.standardContainerColor,
                             shape = DrawerDefaults.shape
                         )
                         .padding(
@@ -190,7 +188,6 @@ private fun LandscapeContent(component: SearchComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun PortraitContent(component: SearchComponent) {
     val bottomSheetState = rememberSheetState(
@@ -295,7 +292,6 @@ private fun PortraitContent(component: SearchComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SearchMenuRoot(
     component: SearchComponent,
@@ -371,7 +367,6 @@ private fun SearchMenuRoot(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SearchParamsSelector(
     component: SearchComponent,
@@ -422,18 +417,7 @@ fun SearchParamsSelector(
             )
             VerticalCategorySpacer()
             AnimatedVisibility(
-                visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CATEGORY,
-                enter = expandVertically(spring()),
-                exit = shrinkVertically(spring())
-            ) {
-                FandomGroupSelector(
-                    value = state.fandomsGroup,
-                    onValueChange = component::setFandomsGroup
-                )
-                VerticalCategorySpacer()
-            }
-            AnimatedVisibility(
-                visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CATEGORY ||
+                visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_ALL ||
                         state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
                 enter = expandVertically(spring()),
                 exit = shrinkVertically(spring())
@@ -495,6 +479,11 @@ fun SearchParamsSelector(
                 onSelect = component::setMinRewards
             )
             VerticalCategorySpacer()
+            CommentsCountSelector(
+                value = state.minComments,
+                onSelect = component::setMinComments
+            )
+            VerticalCategorySpacer()
             CheckboxWithTitle(
                 checked = state.filterReaded,
                 title = stringResource(Res.string.search_selector_dont_show_readed),
@@ -554,7 +543,6 @@ private fun SavedSearches(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SavedSearchItem(
     shortcut: SearchParamsEntityShortcut,
@@ -711,7 +699,6 @@ private fun SavedSearchItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FandomFilter(
     value: String,
@@ -735,13 +722,6 @@ private fun FandomFilter(
             }
         )
         RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_FILTER_CATEGORY,
-            title = stringResource(Res.string.fandom_filter_all_in_group),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_FILTER_CATEGORY)
-            }
-        )
-        RadioButtonWithTitle(
             selected = value == SearchParams.FANDOM_FILTER_CONCRETE,
             title = stringResource(Res.string.fandom_filter_concrete_fandom),
             onClick = {
@@ -751,90 +731,6 @@ private fun FandomFilter(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
-@Composable
-fun FandomGroupSelector(
-    value: Int,
-    onValueChange: (Int) -> Unit
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
-    ) {
-        Text(
-            text = stringResource(Res.string.search_selector_fandom_group),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_ANIME_AND_MANGA,
-            title = stringResource(Res.string.fandom_group_anime_and_manga),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_ANIME_AND_MANGA)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_BOOKS,
-            title = stringResource(Res.string.fandom_group_books),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_BOOKS)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_CARTOONS,
-            title = stringResource(Res.string.fandom_group_cartoons),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_CARTOONS)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_GAMES,
-            title = stringResource(Res.string.fandom_group_games),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_GAMES)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_MOVIES,
-            title = stringResource(Res.string.fandom_group_movies),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_MOVIES)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_OTHER,
-            title = stringResource(Res.string.fandom_group_other),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_OTHER)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_RPF,
-            title = stringResource(Res.string.fandom_group_rpf),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_RPF)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_COMICS,
-            title = stringResource(Res.string.fandom_group_comics),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_COMICS)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_GROUP_MUSICALS,
-            title = stringResource(Res.string.fandom_group_musicals),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_GROUP_MUSICALS)
-            }
-        )
-    }
-}
-
-
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FandomsSelector(
     component: SearchFandomsComponent,
@@ -965,7 +861,7 @@ private fun FandomsSelector(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PairingSelector(component: SearchPairingsComponent) {
     val state by component.state.subscribeAsState()
@@ -1236,7 +1132,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun TagsSelector(
     component: SearchTagsComponent
@@ -1330,6 +1226,20 @@ private fun TagsSelector(
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
+        RadioButtonWithTitle(
+            selected = state.behavior == SearchParams.TAGS_ANY_SELECTED,
+            title = stringResource(Res.string.search_action_tagsBehavior_any),
+            onClick = {
+                component.changeSearchBehavior(SearchParams.TAGS_ANY_SELECTED)
+            }
+        )
+        RadioButtonWithTitle(
+            selected = state.behavior == SearchParams.TAGS_ALL_SELECTED,
+            title = stringResource(Res.string.search_action_tagsBehavior_all),
+            onClick = {
+                component.changeSearchBehavior(SearchParams.TAGS_ALL_SELECTED)
+            }
+        )
     }
     if (selectIncludedTagDialogVisible) {
         FindTagDialog(
@@ -1427,7 +1337,7 @@ fun OutlinedCardWithCornerButton(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun StatusSelector(
     value: List<Int>,
@@ -1485,7 +1395,7 @@ private fun StatusSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun RatingSelector(
     value: List<Int>,
@@ -1569,7 +1479,7 @@ private fun RatingSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun DirectionSelector(
     value: List<Int>,
@@ -1679,7 +1589,7 @@ private fun DirectionSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun TranslateSelector(
     value: Int,
@@ -1719,7 +1629,7 @@ private fun TranslateSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 fun PagesRangeSelector(
     value: IntRangeSimple,
@@ -1742,7 +1652,7 @@ fun PagesRangeSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 fun LikesRangeSelector(
     value: IntRangeSimple,
@@ -1765,7 +1675,7 @@ fun LikesRangeSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 fun RewardsCountSelector(
     value: Int,
@@ -1797,7 +1707,37 @@ fun RewardsCountSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun CommentsCountSelector(
+    value: Int,
+    onSelect: (Int) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
+    ) {
+        Text(
+            text = stringResource(Res.string.search_selector_comments_count),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        OutlinedTextField(
+            value = if (value == 0) "" else "$value",
+            onValueChange = {
+                onSelect(it.toIntOrNull() ?: 0)
+            },
+            label = {
+                Text(text = stringResource(Res.string.from))
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            shape = CardDefaults.shape,
+            modifier = Modifier.fillMaxWidth(0.4F)
+        )
+    }
+}
+
 @Composable
 fun SortTypeSelector(
     value: Int,
@@ -1865,7 +1805,7 @@ fun SortTypeSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 fun RangeSelector(
     value: IntRangeSimple,
@@ -1914,7 +1854,7 @@ fun RangeSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun FindFandomDialog(
     component: SearchFandomsComponent,
@@ -1980,7 +1920,7 @@ private fun FindFandomDialog(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun FindTagDialog(
     component: SearchTagsComponent,
@@ -2046,7 +1986,7 @@ private fun FindTagDialog(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 fun SelectCharacterDialog(
     component: SearchPairingsComponent,
@@ -2105,7 +2045,7 @@ fun SelectCharacterDialog(
                 val lazyColumnState = rememberLazyListState()
 
                 val ranges = remember(filteredList) {
-                    var previousGroupEnd: Int = 0
+                    var previousGroupEnd = 0
                     filteredList.map { group ->
                         val groupEnd = previousGroupEnd + group.characters.lastIndex
                         val range = previousGroupEnd .. groupEnd
@@ -2193,7 +2133,7 @@ private fun SearchedFandomItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun SearchedTagItem(
     tag: SearchedTagModel,
@@ -2267,7 +2207,7 @@ private fun SearchedCharacterItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun CharacterItem(
     character: SearchedPairingModel.Character,
@@ -2421,7 +2361,7 @@ private fun CharacterItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun ItemChip(
     modifier: Modifier = Modifier,
@@ -2535,7 +2475,7 @@ private fun CheckboxWithTitle(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
+
 @Composable
 private fun BottomButtonContent(
     component: SearchSaveComponent,

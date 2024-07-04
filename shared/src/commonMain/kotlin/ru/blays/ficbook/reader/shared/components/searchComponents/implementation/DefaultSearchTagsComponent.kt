@@ -6,10 +6,11 @@ import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.dto.SearchedTagModel
-import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
 import ru.blays.ficbook.reader.shared.components.Utils.ExternalStateUpdatable
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchTagsComponent
+import ru.blays.ficbook.reader.shared.data.SearchParams
+import ru.blays.ficbook.reader.shared.data.SearchedTagModel
+import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
 import kotlin.time.Duration.Companion.seconds
 
 class DefaultSearchTagsComponent(
@@ -24,7 +25,8 @@ class DefaultSearchTagsComponent(
             searchedName = "",
             searchedTags = emptySet(),
             selectedTags = emptySet(),
-            excludedTags = emptySet()
+            excludedTags = emptySet(),
+            behavior = SearchParams.TAGS_ANY_SELECTED
         )
     )
 
@@ -73,6 +75,12 @@ class DefaultSearchTagsComponent(
     }
 
     override fun changeSearchedName(name: String) = search(name)
+
+    override fun changeSearchBehavior(behavior: Int) {
+        _state.update {
+            it.copy(behavior = behavior)
+        }
+    }
 
     override fun clear() {
         _state.update {

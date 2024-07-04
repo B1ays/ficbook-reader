@@ -1,7 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.declaration
 
 import com.arkivanov.decompose.value.Value
-import ru.blays.ficbook.reader.shared.data.dto.SearchedFandomModel
+import ru.blays.ficbook.reader.shared.data.SearchedFandomModel
 
 interface SearchFandomsComponent {
     val state: Value<State>

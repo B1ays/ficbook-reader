@@ -169,6 +169,7 @@
     <string name="search_selector_pages_count">Количество страниц</string>
     <string name="search_selector_likes_count">Количество лайков</string>
     <string name="search_selector_rewards_count">Количество наград</string>
+    <string name="search_selector_comments_count">Количество комментариев</string>
     <string name="search_selector_sort_type">Отсортировать результат</string>
 
     <string name="search_included_pairings">Пейринги</string>
@@ -177,8 +178,12 @@
     <string name="search_action_add_fandom">Добавить фэндом</string>
     <string name="search_action_exclude_fandom">Исключить фэндом</string>
     <string name="search_action_add_character">Добавить персонажа</string>
+
     <string name="search_action_add_tag">Добавить метку</string>
     <string name="search_action_exclude_tag">Исключить метку</string>
+    <string name="search_action_tagsBehavior_any">Любая из выбранных</string>
+    <string name="search_action_tagsBehavior_all">Обязательно все выбранные метки</string>
+
     <string name="search_action_add_your">Добавить свой</string>
     <string name="search_action_save_search">Сохранить поиск</string>
 

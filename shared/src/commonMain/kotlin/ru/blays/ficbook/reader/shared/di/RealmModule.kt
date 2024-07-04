@@ -11,20 +11,22 @@ import kotlin.reflect.KClass
 internal val realmModule = module {
     single<Realm> {
         val configuration = RealmConfiguration.Builder(entities)
-            .schemaVersion(2)
+            .schemaVersion(3)
+            /*.migration(
+                AutomaticSchemaMigration {
+
+                }
+            )*/
             .build()
 
         Realm.open(configuration)
     }
 }
 
-fun getRealm(): Realm {
-    return getKoin().get()
-}
+fun getRealm() = getKoin().get<Realm>()
 
-fun injectRealm(): Lazy<Realm> {
-    return getKoin().inject()
-}
+
+fun injectRealm() = getKoin().inject<Realm>()
 
 private val entities: Set<KClass<out RealmObject>>
     get() = setOf(

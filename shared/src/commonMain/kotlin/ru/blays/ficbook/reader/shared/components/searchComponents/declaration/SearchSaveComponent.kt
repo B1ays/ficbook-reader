@@ -1,7 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.declaration
 
 import com.arkivanov.decompose.value.Value
-import ru.blays.ficbook.reader.shared.data.dto.SearchParamsEntityShortcut
+import ru.blays.ficbook.reader.shared.data.SearchParamsEntityShortcut
 
 interface SearchSaveComponent {
     val state: Value<State>

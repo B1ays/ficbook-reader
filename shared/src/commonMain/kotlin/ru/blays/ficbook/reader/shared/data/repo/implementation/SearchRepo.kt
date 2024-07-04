@@ -5,9 +5,9 @@ import ru.blays.ficbook.api.dataModels.SearchedCharactersModel
 import ru.blays.ficbook.api.dataModels.SearchedFandomsModel
 import ru.blays.ficbook.api.dataModels.SearchedTagsModel
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.dto.SearchedCharactersGroup
-import ru.blays.ficbook.reader.shared.data.dto.SearchedFandomModel
-import ru.blays.ficbook.reader.shared.data.dto.SearchedTagModel
+import ru.blays.ficbook.reader.shared.data.SearchedCharactersGroup
+import ru.blays.ficbook.reader.shared.data.SearchedFandomModel
+import ru.blays.ficbook.reader.shared.data.SearchedTagModel
 import ru.blays.ficbook.reader.shared.data.mappers.toStableModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
 

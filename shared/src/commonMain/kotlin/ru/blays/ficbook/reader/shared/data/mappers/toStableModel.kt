@@ -7,6 +7,10 @@ import ru.blays.ficbook.api.dataModels.AvailableCollectionsModel
 import ru.blays.ficbook.api.dataModels.FanficCompletionStatus
 import ru.blays.ficbook.api.dataModels.FanficDirection
 import ru.blays.ficbook.api.dataModels.FanficRating
+import ru.blays.ficbook.reader.shared.data.SearchedCharacterModel
+import ru.blays.ficbook.reader.shared.data.SearchedCharactersGroup
+import ru.blays.ficbook.reader.shared.data.SearchedFandomModel
+import ru.blays.ficbook.reader.shared.data.SearchedTagModel
 import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.reader.shared.data.dto.FanficShortcut
 import ru.blays.ficbook.reader.shared.data.dto.NotificationType

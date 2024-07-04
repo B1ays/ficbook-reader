@@ -1,9 +1,9 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.declaration
 
 import com.arkivanov.decompose.value.Value
-import ru.blays.ficbook.reader.shared.data.dto.IntRangeSimple
-import ru.blays.ficbook.reader.shared.data.dto.SearchParams
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
+import ru.blays.ficbook.reader.shared.data.IntRangeSimple
+import ru.blays.ficbook.reader.shared.data.SearchParams
 
 interface SearchComponent {
     val state: Value<SearchParams>
@@ -30,6 +30,7 @@ interface SearchComponent {
     fun setOnlyPremium(value: Boolean)
     fun setLikesRange(value: IntRangeSimple)
     fun setMinRewards(value: Int)
+    fun setMinComments(value: Int)
     fun setDateRange(value: LongRange)
     fun setTitle(value: String)
     fun setFilterReaded(value: Boolean)

@@ -10,7 +10,7 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.RealmSet
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
-import ru.blays.ficbook.reader.shared.data.dto.*
+import ru.blays.ficbook.reader.shared.data.*
 
 class SearchParamsEntity(): RealmObject {
     @PrimaryKey var _id: ObjectId = ObjectId()
@@ -36,6 +36,7 @@ class SearchParamsEntity(): RealmObject {
     var onlyPremium: Boolean = false
     var likesRange: IntRangeEntity? = null
     var minRewards: Int = 0
+    var minComments: Int = 0
     var dateRange: LongRangeEntity? = null
     var title: String = ""
     var filterReaded: Boolean = false

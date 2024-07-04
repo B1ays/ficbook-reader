@@ -7,7 +7,7 @@ import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.dto.SearchedFandomModel
+import ru.blays.ficbook.reader.shared.data.SearchedFandomModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
 import ru.blays.ficbook.reader.shared.components.Utils.ExternalStateUpdatable
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchFandomsComponent

@@ -1,4 +1,4 @@
-package ru.blays.ficbook.reader.shared.data.dto
+package ru.blays.ficbook.reader.shared.data
 
 data class SearchParams(
     val fandomsFilter: String,
@@ -11,6 +11,7 @@ data class SearchParams(
     val onlyPremium: Boolean,
     val likesRange: IntRangeSimple,
     val minRewards: Int,
+    val minComments: Int,
     val dateRange: LongRange,
     val title: String,
     val filterReaded: Boolean,
@@ -22,6 +23,7 @@ data class SearchParams(
         **/
         const val FANDOM_FILTER_ALL = "any"
         const val FANDOM_FILTER_ORIGINALS = "originals"
+        @Deprecated("Deleted from site", level = DeprecationLevel.ERROR)
         const val FANDOM_FILTER_CATEGORY = "group"
         const val FANDOM_FILTER_CONCRETE = "fandom"
 
@@ -73,6 +75,12 @@ data class SearchParams(
         const val DIRECTION_ARTICLE = 5
 
         /**
+         * Tags flags
+        **/
+        const val TAGS_ANY_SELECTED = 1
+        const val TAGS_ALL_SELECTED = 2
+
+        /**
         * Sort flags
         **/
         const val SORT_BY_LIKES_COUNT = 1
@@ -108,6 +116,7 @@ data class SearchParams(
             onlyPremium = false,
             likesRange = IntRangeSimple.EMPTY,
             minRewards = 0,
+            minComments = 0,
             dateRange = LongRange.EMPTY,
             title = "",
             filterReaded = false,
