@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.utils.ScrollDirection
 import ru.blays.ficbook.utils.rememberDirectionalLazyListState
+import ru.blays.ficbook.values.ZeroElevation
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -63,11 +65,12 @@ fun ScrollToStartFAB(lazyListState: LazyListState) {
         FloatingActionButton(
             onClick = {
                 scope.launch {
-                    lazyListState.animateScrollToItem(0)
+                    lazyListState.scrollToItem(0)
                     showFAB = false
                 }
             },
             shape = CircleShape,
+            elevation = FloatingActionButtonDefaults.ZeroElevation
         ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_up),
