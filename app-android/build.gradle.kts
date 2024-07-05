@@ -16,7 +16,9 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.projectVersion.get()
-        versionNameSuffix = libs.versions.versionNameSuffix.get()
+        libs.versions.versionNameSuffix.get()
+            .takeIf(String::isNotBlank)
+            ?.let(::versionNameSuffix::set)
 
         resourceConfigurations += "ru"
 
