@@ -4,10 +4,12 @@ package ru.blays.ficbook.theme
 
 import android.app.Activity
 import android.os.Build
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -50,14 +52,14 @@ actual fun AppTheme(
 
     val animationSpec: AnimationSpec<Color> = spring(stiffness = 300F, dampingRatio = .6F)
 
-    val colors: ColorScheme by remember(
+    val colorScheme: ColorScheme by remember(
         primaryColor,
         darkTheme,
         isAmoledTheme,
         monetTheme
     ) {
         derivedStateOf {
-            val scheme = when {
+            when {
                 monetTheme && darkTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> dynamicDarkColorScheme(context)
                 monetTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> dynamicLightColorScheme(context)
                 else -> dynamicColorScheme(
@@ -66,8 +68,7 @@ actual fun AppTheme(
                     isAmoled = false,
                     style = PaletteStyle.Content
                 )
-            }
-            scheme.let {
+            }.let {
                 if(isAmoledTheme && darkTheme) it.copy(
                     background = Color.Black,
                     surface = Color.Black,
@@ -79,43 +80,43 @@ actual fun AppTheme(
         }
     }
 
-    val animatedColorScheme = colors.copy(
-        primary = colors.primary.animate(animationSpec),
-        primaryContainer = colors.primaryContainer.animate(animationSpec),
-        secondary = colors.secondary.animate(animationSpec),
-        secondaryContainer = colors.secondaryContainer.animate(animationSpec),
-        tertiary = colors.tertiary.animate(animationSpec),
-        tertiaryContainer = colors.tertiaryContainer.animate(animationSpec),
-        background = colors.background.animate(animationSpec),
-        surface = colors.surface.animate(animationSpec),
-        surfaceTint = colors.surfaceTint.animate(animationSpec),
-        surfaceBright = colors.surfaceBright.animate(animationSpec),
-        surfaceDim = colors.surfaceDim.animate(animationSpec),
-        surfaceContainer = colors.surfaceContainer.animate(animationSpec),
-        surfaceContainerHigh = colors.surfaceContainerHigh.animate(animationSpec),
-        surfaceContainerHighest = colors.surfaceContainerHighest.animate(animationSpec),
-        surfaceContainerLow = colors.surfaceContainerLow.animate(animationSpec),
-        surfaceContainerLowest = colors.surfaceContainerLowest.animate(animationSpec),
-        surfaceVariant = colors.surfaceVariant.animate(animationSpec),
-        error = colors.error.animate(animationSpec),
-        errorContainer = colors.errorContainer.animate(animationSpec),
-        onPrimary = colors.onPrimary.animate(animationSpec),
-        onPrimaryContainer = colors.onPrimaryContainer.animate(animationSpec),
-        onSecondary = colors.onSecondary.animate(animationSpec),
-        onSecondaryContainer = colors.onSecondaryContainer.animate(animationSpec),
-        onTertiary = colors.onTertiary.animate(animationSpec),
-        onTertiaryContainer = colors.onTertiaryContainer.animate(animationSpec),
-        onBackground = colors.onBackground.animate(animationSpec),
-        onSurface = colors.onSurface.animate(animationSpec),
-        onSurfaceVariant = colors.onSurfaceVariant.animate(animationSpec),
-        onError = colors.onError.animate(animationSpec),
-        onErrorContainer = colors.onErrorContainer.animate(animationSpec),
-        inversePrimary = colors.inversePrimary.animate(animationSpec),
-        inverseSurface = colors.inverseSurface.animate(animationSpec),
-        inverseOnSurface = colors.inverseOnSurface.animate(animationSpec),
-        outline = colors.outline.animate(animationSpec),
-        outlineVariant = colors.outlineVariant.animate(animationSpec),
-        scrim = colors.scrim.animate(animationSpec),
+    val animatedColorScheme = ColorScheme(
+        primary = animateColorAsState(colorScheme.primary, animationSpec).value,
+        onPrimary = animateColorAsState(colorScheme.onPrimary, animationSpec).value,
+        primaryContainer = animateColorAsState(colorScheme.primaryContainer, animationSpec).value,
+        onPrimaryContainer = animateColorAsState(colorScheme.onPrimaryContainer, animationSpec).value,
+        inversePrimary = animateColorAsState(colorScheme.inversePrimary, animationSpec).value,
+        secondary = animateColorAsState(colorScheme.secondary, animationSpec).value,
+        onSecondary = animateColorAsState(colorScheme.onSecondary, animationSpec).value,
+        secondaryContainer = animateColorAsState(colorScheme.secondaryContainer, animationSpec).value,
+        onSecondaryContainer = animateColorAsState(colorScheme.onSecondaryContainer, animationSpec).value,
+        tertiary = animateColorAsState(colorScheme.tertiary, animationSpec).value,
+        onTertiary = animateColorAsState(colorScheme.onTertiary, animationSpec).value,
+        tertiaryContainer = animateColorAsState(colorScheme.tertiaryContainer, animationSpec).value,
+        onTertiaryContainer = animateColorAsState(colorScheme.onTertiaryContainer, animationSpec).value,
+        background = animateColorAsState(colorScheme.background, animationSpec).value,
+        onBackground = animateColorAsState(colorScheme.onBackground, animationSpec).value,
+        surface = animateColorAsState(colorScheme.surface, animationSpec).value,
+        onSurface = animateColorAsState(colorScheme.onSurface, animationSpec).value,
+        surfaceVariant = animateColorAsState(colorScheme.surfaceVariant, animationSpec).value,
+        onSurfaceVariant = animateColorAsState(colorScheme.onSurfaceVariant, animationSpec).value,
+        surfaceTint = animateColorAsState(colorScheme.surfaceTint, animationSpec).value,
+        inverseSurface = animateColorAsState(colorScheme.inverseSurface, animationSpec).value,
+        inverseOnSurface = animateColorAsState(colorScheme.inverseOnSurface, animationSpec).value,
+        error = animateColorAsState(colorScheme.error, animationSpec).value,
+        onError = animateColorAsState(colorScheme.onError, animationSpec).value,
+        errorContainer = animateColorAsState(colorScheme.errorContainer, animationSpec).value,
+        onErrorContainer = animateColorAsState(colorScheme.onErrorContainer, animationSpec).value,
+        outline = animateColorAsState(colorScheme.outline, animationSpec).value,
+        outlineVariant = animateColorAsState(colorScheme.outlineVariant, animationSpec).value,
+        scrim = animateColorAsState(colorScheme.scrim, animationSpec).value,
+        surfaceBright = animateColorAsState(colorScheme.surfaceBright, animationSpec).value,
+        surfaceDim = animateColorAsState(colorScheme.surfaceDim, animationSpec).value,
+        surfaceContainer = animateColorAsState(colorScheme.surfaceContainer, animationSpec).value,
+        surfaceContainerHigh = animateColorAsState(colorScheme.surfaceContainerHigh, animationSpec).value,
+        surfaceContainerHighest = animateColorAsState(colorScheme.surfaceContainerHighest, animationSpec).value,
+        surfaceContainerLow = animateColorAsState(colorScheme.surfaceContainerLow, animationSpec).value,
+        surfaceContainerLowest = animateColorAsState(colorScheme.surfaceContainerLowest, animationSpec).value,
     )
 
     val view = LocalView.current
@@ -158,7 +159,7 @@ actual fun ReaderTheme(
     lightColor: Color,
     content: @Composable () -> Unit
 ) {
-    val parentColorScheme = MaterialTheme.colorScheme
+    val parentColorScheme = colorScheme
 
     val colorScheme = when {
         darkTheme -> darkColorScheme(

@@ -12,11 +12,6 @@ internal val realmModule = module {
     single<Realm> {
         val configuration = RealmConfiguration.Builder(entities)
             .schemaVersion(3)
-            /*.migration(
-                AutomaticSchemaMigration {
-
-                }
-            )*/
             .build()
 
         Realm.open(configuration)

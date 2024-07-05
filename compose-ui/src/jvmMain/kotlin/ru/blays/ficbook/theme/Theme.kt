@@ -7,13 +7,7 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -69,50 +63,55 @@ actual fun AppTheme(
         ) else this
     }
 
-    val animatedColorScheme = colorScheme.copy(
+    val animatedColorScheme = ColorScheme(
         primary = animateColorAsState(colorScheme.primary, animationSpec).value,
-        primaryContainer = animateColorAsState(colorScheme.primaryContainer, animationSpec).value,
-        secondary = animateColorAsState(colorScheme.secondary, animationSpec).value,
-        secondaryContainer = animateColorAsState(colorScheme.secondaryContainer, animationSpec).value,
-        tertiary = animateColorAsState(colorScheme.tertiary, animationSpec).value,
-        tertiaryContainer = animateColorAsState(colorScheme.tertiaryContainer, animationSpec).value,
-        background = animateColorAsState(colorScheme.background, animationSpec).value,
-        surface = animateColorAsState(colorScheme.surface, animationSpec).value,
-        error = animateColorAsState(colorScheme.error, animationSpec).value,
         onPrimary = animateColorAsState(colorScheme.onPrimary, animationSpec).value,
-        onSecondary = animateColorAsState(colorScheme.onSecondary, animationSpec).value,
-        onTertiary = animateColorAsState(colorScheme.onTertiary, animationSpec).value,
-        onBackground = animateColorAsState(colorScheme.onBackground, animationSpec).value,
-        onSurface = animateColorAsState(colorScheme.onSurface, animationSpec).value,
-        onError = animateColorAsState(colorScheme.onError, animationSpec).value,
+        primaryContainer = animateColorAsState(colorScheme.primaryContainer, animationSpec).value,
         onPrimaryContainer = animateColorAsState(colorScheme.onPrimaryContainer, animationSpec).value,
         inversePrimary = animateColorAsState(colorScheme.inversePrimary, animationSpec).value,
+        secondary = animateColorAsState(colorScheme.secondary, animationSpec).value,
+        onSecondary = animateColorAsState(colorScheme.onSecondary, animationSpec).value,
+        secondaryContainer = animateColorAsState(colorScheme.secondaryContainer, animationSpec).value,
         onSecondaryContainer = animateColorAsState(colorScheme.onSecondaryContainer, animationSpec).value,
+        tertiary = animateColorAsState(colorScheme.tertiary, animationSpec).value,
+        onTertiary = animateColorAsState(colorScheme.onTertiary, animationSpec).value,
+        tertiaryContainer = animateColorAsState(colorScheme.tertiaryContainer, animationSpec).value,
         onTertiaryContainer = animateColorAsState(colorScheme.onTertiaryContainer, animationSpec).value,
+        background = animateColorAsState(colorScheme.background, animationSpec).value,
+        onBackground = animateColorAsState(colorScheme.onBackground, animationSpec).value,
+        surface = animateColorAsState(colorScheme.surface, animationSpec).value,
+        onSurface = animateColorAsState(colorScheme.onSurface, animationSpec).value,
         surfaceVariant = animateColorAsState(colorScheme.surfaceVariant, animationSpec).value,
         onSurfaceVariant = animateColorAsState(colorScheme.onSurfaceVariant, animationSpec).value,
         surfaceTint = animateColorAsState(colorScheme.surfaceTint, animationSpec).value,
         inverseSurface = animateColorAsState(colorScheme.inverseSurface, animationSpec).value,
         inverseOnSurface = animateColorAsState(colorScheme.inverseOnSurface, animationSpec).value,
+        error = animateColorAsState(colorScheme.error, animationSpec).value,
+        onError = animateColorAsState(colorScheme.onError, animationSpec).value,
         errorContainer = animateColorAsState(colorScheme.errorContainer, animationSpec).value,
         onErrorContainer = animateColorAsState(colorScheme.onErrorContainer, animationSpec).value,
         outline = animateColorAsState(colorScheme.outline, animationSpec).value,
         outlineVariant = animateColorAsState(colorScheme.outlineVariant, animationSpec).value,
-        scrim = animateColorAsState(colorScheme.scrim, animationSpec).value
+        scrim = animateColorAsState(colorScheme.scrim, animationSpec).value,
+        surfaceBright = animateColorAsState(colorScheme.surfaceBright, animationSpec).value,
+        surfaceDim = animateColorAsState(colorScheme.surfaceDim, animationSpec).value,
+        surfaceContainer = animateColorAsState(colorScheme.surfaceContainer, animationSpec).value,
+        surfaceContainerHigh = animateColorAsState(colorScheme.surfaceContainerHigh, animationSpec).value,
+        surfaceContainerHighest = animateColorAsState(colorScheme.surfaceContainerHighest, animationSpec).value,
+        surfaceContainerLow = animateColorAsState(colorScheme.surfaceContainerLow, animationSpec).value,
+        surfaceContainerLowest = animateColorAsState(colorScheme.surfaceContainerLowest, animationSpec).value,
     )
 
-    val rippleTheme = remember(animatedColorScheme) {
-        PrimaryRippleTheme(
-            primaryColor = animatedColorScheme.primary,
-            isDarkTheme = { darkTheme }
-        )
-    }
+    val rippleConfig = createRippleConfig(
+        color = animatedColorScheme.primary,
+        darkTheme = darkTheme
+    )
 
     MaterialTheme(
         colorScheme = animatedColorScheme,
         content = {
             CompositionLocalProvider(
-                LocalRippleTheme provides rippleTheme,
+                LocalRippleConfiguration provides rippleConfig,
                 LocalDynamicMaterialThemeSeed provides primaryColor,
                 content = content
             )
@@ -139,23 +138,14 @@ actual fun ReaderTheme(
         )
     }
 
-    class CustomRippleTheme(private val rippleColor: Color) : RippleTheme {
+    val rippleConfig = createRippleConfig(
+        color = colorScheme.primary,
+        darkTheme = darkTheme
+    )
 
-        @Composable
-        override fun defaultColor(): Color =
-            RippleTheme.defaultRippleColor(
-                rippleColor,
-                lightTheme = !darkTheme
-            )
-
-        @Composable
-        override fun rippleAlpha(): RippleAlpha =
-            RippleTheme.defaultRippleAlpha(
-                rippleColor.copy(alpha = 0.75f),
-                lightTheme = !darkTheme
-            )
-    }
-    CompositionLocalProvider(LocalRippleTheme provides CustomRippleTheme(colorScheme.primary)) {
+    CompositionLocalProvider(
+        LocalRippleConfiguration provides rippleConfig
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,

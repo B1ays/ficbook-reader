@@ -2,6 +2,7 @@ package ru.blays.ficbook.reader.feature.copyImageFeature
 
 import coil3.Image
 import coil3.annotation.ExperimentalCoilApi
+import coil3.toBitmap
 import org.jetbrains.skiko.toBufferedImage
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
