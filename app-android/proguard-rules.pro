@@ -29,6 +29,10 @@
 -keepclassmembers class androidx.compose.material3.DrawerValue { *; }
 -keepclassmembers class androidx.activity.compose.ComponentActivityKt { *; }
 
+-keepclassmembers class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator CREATOR;
+}
+
 ######
 
 -dontusemixedcaseclassnames
