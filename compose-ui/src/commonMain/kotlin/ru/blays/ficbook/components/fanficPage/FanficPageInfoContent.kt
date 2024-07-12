@@ -149,6 +149,13 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
             ) {
                 val hazeState = remember { HazeState() }
 
+                /*LaunchedEffect(hazeState, glassEffectConfig) {
+                    hazeModifier = Modifier.hazeChild(
+                        state = hazeState,
+                        style = glassEffectConfig.style
+                    )
+                }*/
+
                 hazeModifier = Modifier.hazeChild(
                     state = hazeState,
                     style = glassEffectConfig.style
@@ -287,10 +294,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     fanfic = fanfic,
                     coverPainter = coverPainter,
                     modifier = Modifier
-                        .padding(
-                            top = padding.calculateTopPadding(),
-                            bottom = padding.calculateBottomPadding()
-                        )
+                        .padding(padding)
                         .nestedScroll(scrollBehavior.nestedScrollConnection)
                 )
             }

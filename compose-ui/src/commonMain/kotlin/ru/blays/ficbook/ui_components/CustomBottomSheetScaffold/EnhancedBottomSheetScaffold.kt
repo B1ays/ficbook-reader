@@ -17,26 +17,10 @@
 package ru.blays.ficbook.ui_components.CustomBottomSheetScaffold
 
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.requiredHeightIn
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.material3.ScaffoldDefaults.contentWindowInsets
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.contentColorFor
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,11 +36,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
-import androidx.compose.ui.util.fastMapNotNull
-import androidx.compose.ui.util.fastMaxBy
-import androidx.compose.ui.util.fastMaxOfOrNull
+import androidx.compose.ui.util.*
 import kotlinx.coroutines.launch
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue.*
 import ru.blays.ficbook.utils.thenIf
@@ -377,12 +357,11 @@ private fun BottomSheetScaffoldLayout(
 ) {
     val contentWindowInsets = contentWindowInsets
     Layout(
-        contents =
-        listOf<@Composable () -> Unit>(
+        modifier = modifier,
+        contents = listOf<@Composable () -> Unit>(
             topBar ?: {},
             {
                 Surface(
-                    modifier = modifier,
                     color = containerColor,
                     contentColor = contentColor,
                     content = body
@@ -392,8 +371,7 @@ private fun BottomSheetScaffoldLayout(
             snackbarHost,
             floatingActionButton
         )
-    ) {
-            (topBarMeasurables, bodyMeasurables, bottomSheetMeasurables, snackbarHostMeasurables, floatingActionButton),
+    ) { (topBarMeasurables, bodyMeasurables, bottomSheetMeasurables, snackbarHostMeasurables, floatingActionButton),
             constraints,
         ->
         val layoutWidth = constraints.maxWidth
