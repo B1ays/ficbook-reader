@@ -5,6 +5,11 @@ import org.koin.mp.KoinPlatform.getKoin
 import java.io.File
 
 actual fun getCacheDir(): File {
-    val context: Context by getKoin().inject()
+    val context: Context = getKoin().get()
     return context.cacheDir
+}
+
+actual fun getFilesDir(): File {
+    val context: Context = getKoin().get()
+    return context.filesDir
 }

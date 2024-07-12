@@ -24,7 +24,7 @@ import ru.blays.ficbook.reader.shared.data.realm.entity.UserEntity
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbook.reader.shared.di.getRealm
 import ru.blays.ficbook.reader.shared.platformUtils.downloadImageToFile
-import ru.blays.ficbook.reader.shared.platformUtils.getCacheDir
+import ru.blays.ficbook.reader.shared.platformUtils.getFilesDir
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.settings
 import java.io.File
@@ -167,7 +167,7 @@ class AuthorizationRepo(
             .find()
         if(savedUser != null) return savedUser
 
-        val avatarFile = File(getCacheDir(), "/user_avatar/$id.png").also {
+        val avatarFile = File(getFilesDir(), "/user_avatar/$id.png").also {
             it.parentFile?.mkdirs()
         }
         val successfulSaved = downloadImageToFile(
