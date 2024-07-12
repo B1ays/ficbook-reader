@@ -101,10 +101,7 @@ fun FanficsListContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = padding
         ) {
-            items(
-                items = list,
-                key = { it.id }
-            ) { fanfic ->
+            items(items = list) { fanfic ->
                 val contextMenuState = rememberContextMenuState()
 
                 FanficQuickActions(
