@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.darkrockstudios.libraries.mpfilepicker.FileSaver
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.DownloadFanficComponent
@@ -26,7 +25,6 @@ import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FanficDownloadContent(component: DownloadFanficComponent) {
     val state by component.state.subscribeAsState()
@@ -109,7 +107,6 @@ fun FanficDownloadContent(component: DownloadFanficComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CardWithFormats(
     title: String,
@@ -175,7 +172,6 @@ private fun CardWithFormats(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FormatItem(
     format: String,

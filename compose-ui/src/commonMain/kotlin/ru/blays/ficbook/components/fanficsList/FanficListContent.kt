@@ -26,7 +26,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
@@ -267,7 +266,6 @@ fun FanficsListScreenContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FanficQuickActions(
     contextMenuState: ContextMenuState,

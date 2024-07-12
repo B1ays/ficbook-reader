@@ -29,7 +29,6 @@ import ficbook_reader.compose_ui.generated.resources.ic_clock
 import ficbook_reader.compose_ui.generated.resources.ic_settings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.VoteReaderComponent
@@ -37,7 +36,6 @@ import ru.blays.ficbook.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
 
-@OptIn(ExperimentalResourceApi::class)
 @Suppress("AnimateAsStateLabel")
 @Composable
 fun ReaderControl(

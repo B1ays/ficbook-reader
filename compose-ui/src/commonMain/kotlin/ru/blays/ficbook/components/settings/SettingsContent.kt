@@ -22,7 +22,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.WindowSize
@@ -41,7 +40,6 @@ import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SettingsContent(component: SettingsMainComponent) {
     val windowSize = WindowSize()
@@ -139,7 +137,6 @@ fun SettingsContent(component: SettingsMainComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
     val state by component.state.collectAsState()
@@ -190,7 +187,6 @@ private fun ThemeSetting(component: SettingsUnitComponent<Int>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun DynamicColorsSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
@@ -208,7 +204,6 @@ private fun DynamicColorsSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AmoledThemeSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
@@ -226,7 +221,6 @@ private fun AmoledThemeSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
     val state by component.state.collectAsState()
@@ -261,7 +255,6 @@ private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
     val state by component.state.collectAsState()
@@ -314,7 +307,6 @@ private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
@@ -331,7 +323,6 @@ private fun AutoVoteSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
@@ -348,7 +339,6 @@ private fun CustomTabsSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
     val state by component.state.collectAsState()
@@ -365,7 +355,6 @@ fun TypografSetting(component: SettingsUnitComponent<Boolean>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun BlurSetting(
     enabledComponent: SettingsUnitComponent<Boolean>,

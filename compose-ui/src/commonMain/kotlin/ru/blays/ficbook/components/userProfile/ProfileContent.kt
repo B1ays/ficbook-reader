@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
 import coil3.compose.SubcomposeAsyncImage
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileComponent
@@ -31,7 +30,6 @@ import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun UserProfileContent(component: UserProfileComponent) {
     val state by component.state.collectAsState()

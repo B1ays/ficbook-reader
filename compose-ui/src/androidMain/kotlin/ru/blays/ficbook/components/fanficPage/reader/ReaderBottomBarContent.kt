@@ -18,12 +18,10 @@ import androidx.compose.ui.unit.dp
 import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ic_battery
 
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.platformUtils.rememberBatteryObserver
 import ru.blays.ficbook.platformUtils.rememberTimeObserver
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ReaderBottomContent(
     pagerState: PagerState,

@@ -30,7 +30,6 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.atMost
 import coil3.compose.AsyncImage
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.*
@@ -422,7 +421,7 @@ fun FanficCard2(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FanficChips(
     modifier: Modifier = Modifier,

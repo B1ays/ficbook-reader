@@ -42,7 +42,6 @@ import java.lang.String.format
 
 const val ANIMATION_DURATION_MILLIS = 300
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun SettingsExpandableCard(
     title: String,

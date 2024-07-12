@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ic_copy
 import ficbook_reader.compose_ui.generated.resources.ic_share
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
@@ -35,7 +34,6 @@ fun LogView(
     )
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LogView(
     log: AnnotatedString,

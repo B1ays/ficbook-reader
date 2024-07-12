@@ -32,7 +32,6 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.collectionContent.CollectionsContentExtended
@@ -107,7 +106,6 @@ private fun LandscapeContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalResourceApi::class)
 @Composable
 private fun PortraitContent(
     component: MainScreenComponent,
@@ -282,7 +280,6 @@ private fun PagerContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun DrawerLandscape(
     modifier: Modifier = Modifier,
@@ -356,7 +353,6 @@ private fun DrawerPortrait(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun DrawerContent(
     component: MainScreenComponent
@@ -567,7 +563,6 @@ private fun DrawerContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun UserIconButton(
     component: MainScreenComponent,

@@ -18,7 +18,6 @@ import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.platformUtils.scaleContent
@@ -28,7 +27,7 @@ import ru.blays.ficbook.values.Zero
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
-@OptIn(ExperimentalDecomposeApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalDecomposeApi::class)
 @Composable
 fun UsersRootContent(component: UsersRootComponent) {
     val pagesState = component.tabs.subscribeAsState()
@@ -213,7 +212,6 @@ fun RailTabs(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getIconForTab(tabs: UsersRootComponent.TabConfig): Painter {
     return when(tabs) {
@@ -224,7 +222,6 @@ private fun getIconForTab(tabs: UsersRootComponent.TabConfig): Painter {
 }
 
 @Composable
-@OptIn(ExperimentalResourceApi::class)
 private fun getTitleForTab(tab: UsersRootComponent.TabConfig): String {
     return when(tab) {
         UsersRootComponent.TabConfig.FavouriteAuthors -> stringResource(Res.string.authors_favourite)

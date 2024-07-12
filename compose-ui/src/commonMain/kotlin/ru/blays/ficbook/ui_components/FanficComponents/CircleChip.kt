@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbook.ui_components.FanficComponents
 
 import androidx.compose.foundation.background
@@ -14,11 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import ficbook_reader.compose_ui.generated.resources.Res
+import ficbook_reader.compose_ui.generated.resources.ic_18
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.reader.shared.data.dto.FanficTagStable
 
 @Composable

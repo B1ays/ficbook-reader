@@ -38,7 +38,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
@@ -144,7 +143,6 @@ fun CommentsContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CommentItem(
     comment: CommentModelStable,
@@ -399,7 +397,6 @@ private fun QuoteElement(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun CommentsScreenContent(
     component: CommentsComponent,
@@ -451,7 +448,6 @@ fun CommentsScreenContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PartCommentsContent(component: ExtendedCommentsComponent) {
     val hazeState = remember { HazeState() }
@@ -520,7 +516,6 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun WriteCommentContent(
     component: WriteCommentComponent,

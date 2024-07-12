@@ -35,7 +35,6 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.collectionContent.CollectionsContent
@@ -154,7 +153,6 @@ private fun PortraitContent(component: AuthorProfileComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ProfileHeader(
     followComponent: DefaultAuthorFollowComponent,
@@ -426,7 +424,6 @@ fun RailTabs(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ProfileMainInfo(component: AuthorProfileComponent) {
     val state by component.state.subscribeAsState()
@@ -518,7 +515,6 @@ private fun BlogPostsRoot(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun BlogPostsList(component: AuthorBlogPostsComponent) {
     val state by component.state.subscribeAsState()
@@ -574,7 +570,6 @@ private fun BlogPostsList(component: AuthorBlogPostsComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun BlogPostPage(
     component: AuthorBlogPageComponent
@@ -734,7 +729,6 @@ private fun BlogPostCard(
 @Composable
 fun PresentsContent(component: AuthorPresentsComponent) = Unit // TODO
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getTitleForTab(tab: AuthorProfileComponent.TabConfig): String {
     return when(tab) {
@@ -750,7 +744,6 @@ private fun getTitleForTab(tab: AuthorProfileComponent.TabConfig): String {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getIconForTab(tab: AuthorProfileComponent.TabConfig): Painter {
     return when(tab) {

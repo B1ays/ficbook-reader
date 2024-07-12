@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package ru.blays.ficbook.components.fanficPage.reader
 
 import androidx.compose.animation.*
@@ -42,7 +40,6 @@ import com.godaddy.android.colorpicker.HsvColor
 import org.jetbrains.compose.resources.painterResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.VoteReaderComponent

@@ -20,7 +20,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -36,7 +35,6 @@ import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AboutContent(onBack: () -> Unit) {
     val hazeState = remember { HazeState() }
@@ -90,7 +88,6 @@ fun AboutContent(onBack: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun Header() {
     Column(
@@ -119,7 +116,6 @@ private fun Header() {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AppGroup() {
     val scope = rememberCoroutineScope()
@@ -145,7 +141,6 @@ fun AppGroup() {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun DeveloperGroup() {
     val scope = rememberCoroutineScope()

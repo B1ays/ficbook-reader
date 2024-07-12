@@ -26,7 +26,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.searchContent.DialogPlatform
@@ -108,7 +107,6 @@ fun CollectionsContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun CollectionsScreenContent(component: CollectionsListComponent) {
     val blurConfig = LocalGlassEffectConfig.current
@@ -200,7 +198,6 @@ private fun CollectionItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun OwnCollectionContent(
     modifier: Modifier = Modifier,
@@ -331,7 +328,6 @@ private fun OwnCollectionContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun OtherCollectionContent(
     modifier: Modifier = Modifier,
@@ -464,7 +460,6 @@ private fun OtherCollectionContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CollectionsControlContent(component: CollectionsListComponent) {
     var showCreateCollectionDialog by remember { mutableStateOf(false) }
@@ -498,7 +493,6 @@ private fun CollectionsControlContent(component: CollectionsListComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun DeleteCollectionConfirmDialog(
     onConfirm: () -> Unit,
@@ -530,7 +524,6 @@ fun DeleteCollectionConfirmDialog(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CreateCollectionDialog(
     component: CollectionsListComponent,

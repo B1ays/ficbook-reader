@@ -80,7 +80,7 @@ fun PopularCategoriesContent(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun CategoryListItem(
     section: SectionWithQuery,
@@ -202,7 +202,6 @@ private fun CategoryGridItem(
 
 @NonRestartableComposable
 @Composable
-@OptIn(ExperimentalResourceApi::class)
 private fun getIconForDirection(direction: FanficDirection): Painter {
     return when (direction) {
         FanficDirection.GEN -> painterResource(Res.drawable.ic_direction_gen)

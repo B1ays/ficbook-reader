@@ -40,7 +40,6 @@ import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -303,7 +302,6 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
 }
 
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(
     component: FanficPageInfoComponent
@@ -427,7 +425,7 @@ private fun LandscapeContent(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class, ExperimentalCoilApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalCoilApi::class)
 @Composable
 private fun FanficHeader(
     fanficPage: FanficPageModelStable,
@@ -496,7 +494,6 @@ private fun FanficHeader(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CollectionsInfo(
     inCollectionsCount: Int,
@@ -532,7 +529,6 @@ private fun CollectionsInfo(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun FanficDescription(
     component: FanficPageInfoComponent,
@@ -730,7 +726,7 @@ private fun FanficDescription(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun Fandoms(
     fandoms: List<FandomModelStable>,
@@ -760,7 +756,7 @@ private fun Fandoms(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun Pairings(
     pairings: List<PairingModelStable>,
@@ -807,7 +803,7 @@ private fun Pairings(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FanficInfo(fanfic: FanficPageModelStable) {
     val status = fanfic.status
@@ -918,7 +914,6 @@ private fun FanficTags(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalAnimationApi::class)
 @Composable
 private fun BottomSheetContentClosed(
     component: FanficPageInfoComponent,
@@ -1096,7 +1091,6 @@ fun BottomSheetContentOpened(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ChapterItem(
     index: Int,
@@ -1189,7 +1183,6 @@ private fun ChapterItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AuthorItem(
     authorModel: FanficAuthorModelStable,
@@ -1323,7 +1316,6 @@ private fun TopBarActions(component: FanficPageInfoComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun getIconForDirection(direction: FanficDirection): Painter {
     return when (direction) {
@@ -1338,7 +1330,6 @@ fun getIconForDirection(direction: FanficDirection): Painter {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun getIconForStatus(status: FanficCompletionStatus): Painter {
     return when (status) {

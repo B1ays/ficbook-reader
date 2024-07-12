@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ficbook_reader.compose_ui.generated.resources.*
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.landingScreenComponent.ConfirmDialogComponent
@@ -22,7 +21,6 @@ import ru.blays.ficbook.reader.shared.components.landingScreenComponent.LandingS
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.EnhancedBottomSheetScaffold
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LandingScreenContent(component: LandingScreenComponent) {
     val dialogState by component.confirmDialog.subscribeAsState()
@@ -141,7 +139,6 @@ fun LandingScreenContent(component: LandingScreenComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ConfirmDialogContent(
     instance: ConfirmDialogComponent,
@@ -206,7 +203,6 @@ private fun ConfirmDialogContent(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getTitleForConfig(config: ConfirmDialogConfig): String {
     return when(config) {
@@ -217,7 +213,6 @@ private fun getTitleForConfig(config: ConfirmDialogConfig): String {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getDescriptionForConfig(config: ConfirmDialogConfig): String {
     return when(config) {
@@ -228,7 +223,6 @@ private fun getDescriptionForConfig(config: ConfirmDialogConfig): String {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getActionNameForConfig(config: ConfirmDialogConfig): String {
     return when(config) {

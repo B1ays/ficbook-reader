@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageActionsComponent
@@ -32,7 +31,6 @@ import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FanficActionsContent(
     component: FanficPageActionsComponent
@@ -166,7 +164,6 @@ private fun FanficActionItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CollectionsDialog(
     component: FanficPageCollectionsComponent,
@@ -233,7 +230,6 @@ private fun CollectionsDialog(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun CollectionItem(
     modifier: Modifier = Modifier,

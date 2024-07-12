@@ -16,14 +16,12 @@ import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.content_description_icon_up
 import ficbook_reader.compose_ui.generated.resources.ic_arrow_up
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.utils.ScrollDirection
 import ru.blays.ficbook.utils.rememberDirectionalLazyListState
 import ru.blays.ficbook.values.ZeroElevation
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ScrollToStartFAB(lazyListState: LazyListState) {
     val scrollDirectionProvider = rememberDirectionalLazyListState(lazyListState)

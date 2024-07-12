@@ -25,7 +25,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.notificationComponents.NotificationComponent
@@ -76,7 +75,6 @@ fun NotificationsContent(component: NotificationComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(
     component: NotificationComponent,
@@ -454,7 +452,6 @@ fun NotificationItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ConfirmDialogContent(component: NotificationConfirmDialogComponent) {
     AlertDialog(
@@ -495,7 +492,6 @@ fun ConfirmDialogContent(component: NotificationConfirmDialogComponent) {
 }
 
 @Composable
-@OptIn(ExperimentalResourceApi::class)
 private fun getCategoryName(category: NotificationType): String {
     return when(category) {
         NotificationType.ALL_NOTIFICATIONS -> stringResource(Res.string.notifications_category_all)
@@ -528,7 +524,6 @@ private fun getCategoryName(category: NotificationType): String {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun getCategoryIcon(category: NotificationType): Painter {
     return when(category) {

@@ -22,7 +22,6 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
@@ -57,7 +56,6 @@ fun CollectionPageContent(component: CollectionPageComponent) {
     dialogComponent?.let { EditCollectionDialog(it) }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun LandscapeContent(component: CollectionPageComponent) {
     val state by component.state.subscribeAsState()
@@ -157,7 +155,6 @@ private fun LandscapeContent(component: CollectionPageComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun PortraitContent(component: CollectionPageComponent) {
     val state by component.state.subscribeAsState()
@@ -268,7 +265,6 @@ private fun PortraitContent(component: CollectionPageComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun SortParamContent(
     modifier: Modifier = Modifier,
@@ -465,7 +461,6 @@ private fun DropDownSelector(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun EditCollectionDialog(component: EditCollectionComponent) {
     val state by component.state.subscribeAsState()
@@ -543,7 +538,6 @@ private fun EditCollectionDialog(component: EditCollectionComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun Header(
     page: CollectionPageModelStable
@@ -570,7 +564,6 @@ private fun Header(
     )
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun OwnCollectionActions(
     page: CollectionPageModelStable.Own,
@@ -655,7 +648,6 @@ private fun OwnCollectionActions(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun OtherCollectionActions(
     page: CollectionPageModelStable.Other,

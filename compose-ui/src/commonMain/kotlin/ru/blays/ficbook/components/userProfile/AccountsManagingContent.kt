@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileManagingComponent
@@ -35,7 +34,6 @@ import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 import java.io.File
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AccountsManagingContent(component: UserProfileManagingComponent) {
     val state by component.state.subscribeAsState()
@@ -155,7 +153,6 @@ private fun SavedUserItem(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun UserCardContent(
     user: SavedUserModel,

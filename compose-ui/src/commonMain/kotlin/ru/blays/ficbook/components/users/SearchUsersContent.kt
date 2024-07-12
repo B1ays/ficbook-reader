@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ficbook_reader.compose_ui.generated.resources.*
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
@@ -25,7 +24,6 @@ import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.User
 import ru.blays.ficbook.reader.shared.data.dto.UserModelStable
 import ru.blays.ficbook.values.DefaultPadding
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SearchUsersContent(component: UsersSearchComponent) {
     val state by component.state.subscribeAsState()
@@ -93,7 +91,6 @@ fun SearchUsersContent(component: UsersSearchComponent) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun AuthorItem(
     author: UserModelStable,
