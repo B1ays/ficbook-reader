@@ -41,7 +41,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 
 
 @Composable
-fun SettingsContent(component: SettingsMainComponent) {
+fun SettingsMainContent(component: SettingsMainComponent) {
     val windowSize = WindowSize()
     val widthFill = if(scaleContent) {
         when (windowSize.width) {
@@ -125,6 +125,11 @@ fun SettingsContent(component: SettingsMainComponent) {
                     }
                 }
                 itemWithHeader(commonGroupTitle) {
+                    ProxySettings {
+                        component.onOutput(
+                            SettingsMainComponent.Output.ProxySettings
+                        )
+                    }
                     SuperfilterSetting(component.superfilterSetting)
                     AutoVoteSetting(component.autoVoteSetting)
                     TypografSetting(component.typografSetting)
@@ -253,6 +258,18 @@ private fun AccentColorSetting(component: SettingsUnitComponent<Int>) {
             }
         }
     }
+}
+
+@Composable
+private fun ProxySettings(
+    onClick: () -> Unit
+) {
+    SettingsClickableCard(
+        onClick = onClick,
+        title = stringResource(Res.string.proxy_title),
+        subtitle = stringResource(Res.string.proxy_subtitle),
+        icon = painterResource(Res.drawable.ic_cloud_proxy)
+    )
 }
 
 @Composable

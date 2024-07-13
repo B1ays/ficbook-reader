@@ -22,5 +22,6 @@ interface SettingsMainComponent {
 
     sealed class Output {
         data object NavigateBack: Output()
+        data object ProxySettings: Output()
     }
 }

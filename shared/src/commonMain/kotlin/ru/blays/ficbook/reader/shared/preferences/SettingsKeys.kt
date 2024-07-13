@@ -34,6 +34,11 @@ object SettingsKeys {
     const val ANONYMOUS_MODE_KEY: String = "anonymous_mode"
     const val ACTIVE_USER_ID_KEY: String = "active_user_id"
 
+    // Proxy
+    const val PROXY_ENABLED_KEY = "proxy_enabled"
+    const val PROXY_USE_CUSTOM_KEY = "proxy_use_custom"
+    const val PROXY_CONFIG_KEY = "proxy_config"
+
     // Internal
     const val FIRST_START_KEY = "first_start"
 

@@ -5,11 +5,15 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.blays.ficbook.reader.shared.data.cookieStorage.DynamicCookieJar
 import ru.blays.ficbook.reader.shared.platformUtils.getCacheDir
+import ru.blays.ficbook.reader.shared.proxy.IProxyHolder
+import ru.blays.ficbook.reader.shared.proxy.ProxyHolder
 
 
 val okHttpModule = module {
-    single { ru.blays.ficbook.reader.shared.data.cookieStorage.DynamicCookieJar() } bind CookieJar::class
+    single { DynamicCookieJar() } bind CookieJar::class
+    single { ProxyHolder(get()) } bind IProxyHolder::class
     single {
+        val proxyHolder = get<ProxyHolder>()
         OkHttpClient.Builder()
             .cache(
                 cache = Cache(
@@ -22,6 +26,8 @@ val okHttpModule = module {
                     userAgent = USER_AGENT
                 )
             )
+            .proxySelector(proxyHolder)
+            .proxyAuthenticator(proxyHolder.authenticator)
             .cookieJar(get())
             .build()
     }
@@ -37,4 +43,5 @@ class UserAgentInterceptor(private val userAgent: String) : Interceptor {
     }
 }
 
-private const val USER_AGENT = "AppleWebKit/605.1"/*"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3346.8 Safari/537.36"*/
+private const val USER_AGENT = "AppleWebKit/605.1"
+/*"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3346.8 Safari/537.36"*/

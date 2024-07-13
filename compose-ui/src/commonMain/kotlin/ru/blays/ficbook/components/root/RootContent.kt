@@ -24,7 +24,7 @@ import ru.blays.ficbook.components.landingScreenContent.LandingScreenContent
 import ru.blays.ficbook.components.main.MainContent
 import ru.blays.ficbook.components.notifications.NotificationsContent
 import ru.blays.ficbook.components.searchContent.SearchContent
-import ru.blays.ficbook.components.settings.SettingsContent
+import ru.blays.ficbook.components.settings.SettingsRootContent
 import ru.blays.ficbook.components.userProfile.UserProfileRootContent
 import ru.blays.ficbook.components.users.UsersRootContent
 import ru.blays.ficbook.platformUtils.landscapeInsetsPadding
@@ -97,7 +97,7 @@ fun RootContent(component: RootComponent) {
                     is RootComponent.Child.FanficPage -> FanficPageContent(child.component)
                     is RootComponent.Child.UserProfile -> UserProfileRootContent(child.component)
                     is RootComponent.Child.Main -> MainContent(child.component)
-                    is RootComponent.Child.Settings -> SettingsContent(child.component)
+                    is RootComponent.Child.Settings -> SettingsRootContent(child.component)
                     is RootComponent.Child.FanficsList -> FanficsListScreenContent(child.component)
                     is RootComponent.Child.AuthorProfile -> AuthorProfileContent(child.component)
                     is RootComponent.Child.Collection -> CollectionPageContent(child.component)

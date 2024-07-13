@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ic_arrow_down
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import ficbook_reader.compose_ui.generated.resources.ic_arrow_forward
 import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.ui_components.CustomButton.BackgroundedIcon
 import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.CornerSmoothing
@@ -41,6 +41,81 @@ import ru.blays.ficbook.values.DefaultPadding
 import java.lang.String.format
 
 const val ANIMATION_DURATION_MILLIS = 300
+
+@Composable
+fun SettingsClickableCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    title: String,
+    subtitle: String? = null,
+    icon: Painter? = null,
+    shape: Shape = CardDefaults.shape,
+) {
+    ElevatedCard(
+        modifier = modifier
+            .padding(DefaultPadding.CardPaddingSmallVertical)
+            .fillMaxWidth(),
+        shape = shape,
+        enabled = enabled,
+        onClick = onClick,
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if(icon != null) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .size(50.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = SquircleShape(
+                                cornerSmoothing = CornerSmoothing.High
+                            ),
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary.copy(.6F),
+                        modifier = Modifier.fillMaxSize(0.5F)
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(0.7F)
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    if (subtitle != null) Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Icon(
+                    painter = painterResource(Res.drawable.ic_arrow_forward),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun SettingsExpandableCard(

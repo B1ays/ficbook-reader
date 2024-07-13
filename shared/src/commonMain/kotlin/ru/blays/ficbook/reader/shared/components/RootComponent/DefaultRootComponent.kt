@@ -37,8 +37,8 @@ import ru.blays.ficbook.reader.shared.components.notificationComponents.Notifica
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileRootComponent
 import ru.blays.ficbook.reader.shared.components.profileComponents.implementation.DefaultUserProfileRootComponent
 import ru.blays.ficbook.reader.shared.components.searchComponents.implementation.DefaultSearchComponent
-import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
-import ru.blays.ficbook.reader.shared.components.settingsComponents.implementation.DefaultSettingsMainComponent
+import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsRootComponent
+import ru.blays.ficbook.reader.shared.components.settingsComponents.implementation.DefaultSettingsRootComponent
 import ru.blays.ficbook.reader.shared.components.themeComponents.DefaultThemeComponent
 import ru.blays.ficbook.reader.shared.components.themeComponents.ThemeComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
@@ -161,7 +161,7 @@ class DefaultRootComponent private constructor(
                 main(componentContext, ::onMainOutput)
             )
             is RootComponent.Config.Settings -> RootComponent.Child.Settings(
-                DefaultSettingsMainComponent(
+                DefaultSettingsRootComponent(
                     componentContext, ::onSettingsOutput
                 )
             )
@@ -367,9 +367,9 @@ class DefaultRootComponent private constructor(
         }
     }
 
-    private fun onSettingsOutput(output: SettingsMainComponent.Output) {
+    private fun onSettingsOutput(output: SettingsRootComponent.Output) {
         when(output) {
-            SettingsMainComponent.Output.NavigateBack -> navigation.pop()
+            SettingsRootComponent.Output.NavigateBack -> navigation.pop()
         }
     }
 
@@ -526,7 +526,7 @@ class DefaultRootComponent private constructor(
     }
 
     private fun getGlassEffectConfigFlow(): StateFlow<GlassEffectConfig> {
-        val defaultValue = GlassEffectConfig()
+        val defaultValue = GlassEffectConfig.DEFAULT
         val enabledFlow = settings.getBooleanFlow(
             SettingsKeys.GLASS_EFFECT_ENABLED_KEY,
             defaultValue.enabled

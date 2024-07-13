@@ -25,3 +25,4 @@ venv
 /app-desktop/cache/
 /app-android/arm7/
 /app-android/arm64/
+/shared/src/commonMain/kotlin/ru/blays/ficbook/reader/shared/proxy/ProxyData.kt

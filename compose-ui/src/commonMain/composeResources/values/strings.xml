@@ -305,6 +305,18 @@
     <string name="action_follow">Подписаться</string>
     <string name="action_unfollow">Отписаться</string>
 
+    <!--  Proxy  -->
+    <string name="proxy_title">Прокси</string>
+    <string name="proxy_subtitle">Настройка прокси используемого приложением</string>
+    <string name="proxy_enabled">Использовать прокси</string>
+    <string name="proxy_source_builtIn">Встроенный</string>
+    <string name="proxy_source_custom">Свой прокси</string>
+    <string name="proxy_type_title">Тип прокси:</string>
+    <string name="proxy_hostname">Хост</string>
+    <string name="proxy_port">Порт</string>
+    <string name="proxy_username">Имя пользователя</string>
+    <string name="proxy_password">Пароль</string>
+
     <!--  Content descriptions  -->
     <string name="content_description_fanfic_cover">Обложка фанфика</string>
     <string name="content_description_icon_author_avatar">Аватарка автора</string>

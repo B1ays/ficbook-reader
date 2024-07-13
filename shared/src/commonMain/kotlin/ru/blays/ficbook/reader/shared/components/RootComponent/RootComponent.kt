@@ -16,7 +16,7 @@ import ru.blays.ficbook.reader.shared.components.mainScreenComponents.declaratio
 import ru.blays.ficbook.reader.shared.components.notificationComponents.NotificationComponent
 import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserProfileRootComponent
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchComponent
-import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
+import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsRootComponent
 import ru.blays.ficbook.reader.shared.components.themeComponents.ThemeComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbook.reader.shared.preferences.json.GlassEffectConfig
@@ -94,7 +94,7 @@ interface RootComponent: BackHandlerOwner {
     sealed class Child {
         data class Landing(val component: LandingScreenComponent): Child()
         data class Main(val component: MainScreenComponent): Child()
-        data class Settings(val component: SettingsMainComponent): Child()
+        data class Settings(val component: SettingsRootComponent): Child()
         data class UserProfile(val component: UserProfileRootComponent): Child()
         data class FanficPage(val component: FanficPageComponent): Child()
         data class FanficsList(val component: FanficsListComponent): Child()
