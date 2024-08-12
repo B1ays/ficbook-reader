@@ -23,6 +23,8 @@ venv
 /app-desktop/default.realm
 /app-desktop/default.realm.lock
 /app-desktop/cache/
+/app-desktop/files/
 /app-android/arm7/
 /app-android/arm64/
 /shared/src/commonMain/kotlin/ru/blays/ficbook/reader/shared/proxy/ProxyData.kt
+/.kotlin/
