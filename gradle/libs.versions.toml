@@ -4,8 +4,8 @@ applicationId = "ru.blays.ficbook.reader"
 projectVersion = "1.0.8"
 versionCode = "21"
 versionNameSuffix = " "
-kotlin = "2.0.0"
-agp = "8.2.2"
+kotlin = "2.0.10"
+agp = "8.5.2"
 jvmTarget = "18"
 
 # Android
@@ -14,29 +14,30 @@ android-compileSdk = "34"
 android-targetSdk = "34"
 
 # Decompose
-decompose = "3.1.0"
-essenty = "2.1.0"
+decompose = "3.2.0-alpha04"
+essenty = "2.2.0-alpha04"
 # Project Dependencies
-jsoup = "1.17.2"
-koin = "3.6.0-wasm-alpha2"
-kotlinx-coroutines = "1.8.1"
+jsoup = "1.18.1"
+koin = "4.0.0-RC1"
+kotlinx-coroutines = "1.9.0-RC"
 kotlinx-serialization = "1.7.1"
 ktxCore = "1.13.1"
-workManager = "2.9.0"
+workManager = "2.10.0-alpha02"
 appcompat = "1.7.0"
 materialKolor = "1.7.0"
 multiplatform-settings = "1.1.1"
-okhttp = "4.12.0"
-realm = "2.0.0"
-compose-jetbrains = "1.7.0-dev1727"
-androidx-activityCompose = "1.9.0"
+okhttp = "5.0.0-alpha.14"
+realm = "2.1.0"
+compose-jetbrains = "1.7.0-dev1756"
+androidx-activityCompose = "1.9.1"
 composeColorPicker = "0.7.0"
 browser = "1.8.0"
-coil = "3.0.0-alpha07"
+coil = "3.0.0-alpha10"
 cache-fix = "3.0.1"
-lwjgl = "3.3.3"
+lwjgl = "3.3.4"
 build-konfig = "0.15.1"
-constraintLayout-multiplatform = "0.3.1"
+constraintLayout = "0.5.0-alpha01"
+haze = "0.9.0-alpha06"
 rebugger = "1.0.0-rc03"
 chucker = "4.0.0"
 
@@ -52,7 +53,7 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = 
 compose-color-picker = { module = "com.godaddy.android.colorpicker:compose-color-picker", version.ref = "composeColorPicker" }
 compose-color-picker-android = { module = "com.godaddy.android.colorpicker:compose-color-picker-android", version.ref = "composeColorPicker" }
 compose-color-picker-jvm = { module = "com.godaddy.android.colorpicker:compose-color-picker-jvm", version.ref = "composeColorPicker" }
-compose-constraintLayout-multiplatform = { module = "tech.annexflow.compose:compose" } # { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintLayout-multiplatform" }
+compose-constraintLayout = { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintLayout" }
 decompose-decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
 decompose-extensionsComposeJetbrains = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 essenty-lifecycle = { module = "com.arkivanov.essenty:lifecycle", version.ref = "essenty" }
@@ -70,7 +71,7 @@ multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-sett
 multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 realm-library-base = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
-haze = { module = "dev.chrisbanes.haze:haze" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 rebugger = { group = "io.github.theapache64", name = "rebugger", version.ref = "rebugger" }
 chucker-debug = { group = "com.github.chuckerteam.chucker", name = "library", version.ref = "chucker" }
 chucker-noOp = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chucker" }

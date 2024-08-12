@@ -36,7 +36,9 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
 
                 // ConstraintLayout
-                implementation(libs.compose.constraintLayout.multiplatform)
+                implementation(libs.compose.constraintLayout.get().toString()) {
+                    exclude(group = "org.jetbrains.compose.annotation-internal")
+                }
 
 
                 // materialKolor

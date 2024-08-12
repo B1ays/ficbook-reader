@@ -32,15 +32,8 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -51,13 +44,7 @@ import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
-import androidx.constraintlayout.compose.platform.annotation.FloatRange
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -350,7 +337,6 @@ internal class AnchoredDraggableState<T>(
      * The fraction of the progress going from [currentValue] to [closestValue], within [0f..1f]
      * bounds, or 1f if the [AnchoredDraggableState] is in a settled state.
      */
-    @get:FloatRange(from = 0.0, to = 1.0)
     val progress: Float by
     derivedStateOf(structuralEqualityPolicy()) {
         val a = anchors.positionOf(currentValue)

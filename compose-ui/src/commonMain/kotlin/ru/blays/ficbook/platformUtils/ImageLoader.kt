@@ -7,7 +7,6 @@ import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.request.crossfade
 import coil3.util.DebugLogger
-import kotlinx.coroutines.Dispatchers
 import okio.FileSystem
 
 fun createImageLoader(
@@ -27,7 +26,6 @@ fun createImageLoader(
         .diskCache(::newDiskCache)
         // Show a short crossfade when loading images asynchronously.
         .crossfade(true)
-        .dispatcher(Dispatchers.IO)
         // Enable logging if this is a debug build.
         .apply {
             if (debug) {

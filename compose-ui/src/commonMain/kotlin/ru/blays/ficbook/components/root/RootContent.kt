@@ -45,7 +45,8 @@ fun RootContent(component: RootComponent) {
         HazeStyle(
             tint = backgroundColor.copy(alpha = glassEffectConfig.alpha),
             blurRadius = glassEffectConfig.blurRadius.dp,
-            noiseFactor = glassEffectConfig.noiseFactor
+            noiseFactor = glassEffectConfig.noiseFactor,
+            backgroundColor = backgroundColor
         )
     }
 

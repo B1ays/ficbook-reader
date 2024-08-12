@@ -34,17 +34,17 @@ include("features:mpfilepicker")
 include("features:copyImageFeature")
 include("features:fanficDownloader")
 
-includeBuild("./haze") {
+/*includeBuild("./haze") {
     name = "haze-root"
     dependencySubstitution {
         substitute(
             module("dev.chrisbanes.haze:haze")
         ).using(project(":haze"))
-        /*substitute(
+        *//*substitute(
             module("dev.chrisbanes.haze:haze-materials")
-        ).using(project(":haze-materials"))*/
+        ).using(project(":haze-materials"))*//*
     }
-}
+}*/
 
 includeBuild("../epub4j-kotlin") {
     name = "epub4j"
@@ -54,6 +54,7 @@ includeBuild("../epub4j-kotlin") {
         ).using(project(":epub4j-core"))
     }
 }
+/*
 includeBuild("../constraintlayout-compose-multiplatform") {
     name = "constraintlayout-compose-multiplatform"
     dependencySubstitution {
@@ -61,4 +62,4 @@ includeBuild("../constraintlayout-compose-multiplatform") {
             module("tech.annexflow.compose:compose")
         ).using(project(":compose"))
     }
-}
+}*/
