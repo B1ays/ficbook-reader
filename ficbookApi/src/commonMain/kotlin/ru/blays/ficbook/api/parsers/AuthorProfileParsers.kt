@@ -109,12 +109,23 @@ internal class AuthorInfoParser {
 
     suspend fun parse(data: Document): AuthorInfoModel {
         data.outputSettings(documentSettings)
-        val mb30 = data.select(
-            Evaluator.Class("d-flex flex-column gap-xs")
-        )
+        val column = data.select("[class^='col-xs-16']")
+        .last()
 
-        val about: String = mb30.find {
-            it.select("h2:contains(О себе)").isNotEmpty()
+        if(column == null) {
+            return AuthorInfoModel(
+                about = "",
+                contacts = "",
+                support = ""
+            )
+        }
+
+        val sections = column.select("section > section")
+
+        println("Sections:\n${sections.joinToString("\nSection:") { it.html() }}")
+
+        val about: String = sections.find {
+            it.select("[class^='text-t1']:contains(О себе)").isNotEmpty()
         }.let {
             it?.select("div")
                 ?.wholeText
@@ -122,8 +133,8 @@ internal class AuthorInfoParser {
                 ?: ""
         }
 
-        val contacts: String = mb30.find {
-            it.select("h2:contains(Контактная)").isNotEmpty()
+        val contacts: String = sections.find {
+            it.select("[class^='text-t1']:contains(Контактная)").isNotEmpty()
         }.let {
             it?.select("div")
                 ?.wholeText
@@ -131,8 +142,8 @@ internal class AuthorInfoParser {
                 ?: ""
         }
 
-        val support: String = mb30.find {
-            it.select("h2:contains(Поддержать)").isNotEmpty()
+        val support: String = sections.find {
+            it.select("[class^='text-t1']:contains(Поддержать)").isNotEmpty()
         }.let {
             it?.select("div")
                 ?.wholeText
