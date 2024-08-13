@@ -22,6 +22,7 @@ interface CommentsApi {
     suspend fun getAll(href: String, page: Int): ApiResult<ListResult<CommentModel>>
     suspend fun post(partID: String, text: String, followType: Int): ApiResult<Boolean>
     suspend fun delete(commentID: String): ApiResult<Boolean>
+    suspend fun like(commentID: String,like: Boolean): ApiResult<Boolean>
 }
 
 internal class CommentsApiImpl(
@@ -55,6 +56,7 @@ internal class CommentsApiImpl(
                 )
             )
         } catch (e: Exception) {
+            e.printStackTrace()
             ApiResult.Error(e)
         }
     }
@@ -83,6 +85,7 @@ internal class CommentsApiImpl(
                 )
             )
         } catch (e: Exception) {
+            e.printStackTrace()
             ApiResult.Error(e)
         }
     }
@@ -141,6 +144,27 @@ internal class CommentsApiImpl(
                 }
             )
             val body: String = response.body.stringOrThrow()
+            val result: AjaxSimpleResult = json.decodeFromString(body)
+            ApiResult.Success(result.result)
+        } catch (e: Exception) {
+            ApiResult.Error(e)
+        }
+    }
+
+    override suspend fun like(commentID: String,like: Boolean): ApiResult<Boolean> = coroutineScope {
+        return@coroutineScope try {
+            val method = if(like) "like" else "unlike"
+
+            val response = client.post(
+                body = formBody {
+                    add("commentId", commentID)
+                },
+                url = ficbookUrl {
+                    href("ajax/comments/$method")
+                }
+            )
+
+            val body = response.body.stringOrThrow()
             val result: AjaxSimpleResult = json.decodeFromString(body)
             ApiResult.Success(result.result)
         } catch (e: Exception) {

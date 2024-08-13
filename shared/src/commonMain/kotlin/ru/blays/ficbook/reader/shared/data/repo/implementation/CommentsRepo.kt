@@ -60,4 +60,8 @@ class CommentsRepo(
     override suspend fun delete(commentID: String): ApiResult<Boolean> {
         return api.delete(commentID)
     }
+
+    override suspend fun like(commentID: String, like: Boolean): ApiResult<Boolean> {
+        return api.like(commentID, like)
+    }
 }

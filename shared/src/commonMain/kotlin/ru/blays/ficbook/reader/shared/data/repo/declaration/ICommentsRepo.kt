@@ -9,4 +9,5 @@ interface ICommentsRepo {
     suspend fun getAll(href: String, page: Int): ApiResult<ListResult<CommentModelStable>>
     suspend fun postComment(partID: String, text: String, followType: Int): ApiResult<Boolean>
     suspend fun delete(commentID: String): ApiResult<Boolean>
+    suspend fun like(commentID: String, like: Boolean): ApiResult<Boolean>
 }

@@ -8,8 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.repo.declaration.ICommentsRepo
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
+import ru.blays.ficbook.reader.shared.data.repo.declaration.ICommentsRepo
 
 abstract class BaseCommentsComponent(
     componentContext: ComponentContext,
@@ -44,6 +44,34 @@ abstract class BaseCommentsComponent(
                 is ApiResult.Error -> Unit
                 is ApiResult.Success -> refresh()
 
+            }
+        }
+    }
+
+    fun likeComment(commentID: String, like: Boolean) {
+        coroutineScope.launch {
+            when(
+                val result = repository.like(commentID, like)
+            ) {
+                is ApiResult.Error -> Unit
+                is ApiResult.Success -> {
+                    val success = result.value
+                    if(success) {
+                        _state.update { oldState ->
+                            val newComments = oldState.comments.map {
+                                if(it.commentID == commentID) {
+                                    it.copy(
+                                        isLiked = like,
+                                        likes = if(like) it.likes + 1 else it.likes - 1
+                                    )
+                                } else {
+                                    it
+                                }
+                            }
+                            oldState.copy(comments = newComments)
+                        }
+                    }
+                }
             }
         }
     }

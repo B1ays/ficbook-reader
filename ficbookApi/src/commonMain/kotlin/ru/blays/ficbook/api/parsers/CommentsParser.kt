@@ -7,6 +7,7 @@ import org.jsoup.select.Evaluator
 import ru.blays.ficbook.api.ATTR_HREF
 import ru.blays.ficbook.api.ATTR_SRC
 import ru.blays.ficbook.api.dataModels.*
+import ru.blays.ficbook.api.json
 
 internal class CommentListParser {
     suspend fun parse(data: Document): Elements {
@@ -29,14 +30,31 @@ class CommentParser {
             Evaluator.Class("btn btn-link delete js_delete_comment")
         ).isNotEmpty()
 
+        val likeButton = data.select("comment-like").first()
+        val metadata = likeButton?.attr(":comment")
+
+        val metadataModel: CommentMetadata? = metadata?.let(json::decodeFromString)
+
+        val likes = metadataModel?.likeCnt ?: 0
+
+        val isLiked: Boolean = metadataModel?.liked ?: false
+
+        val likedBy: List<FanficAuthorModel> = metadataModel?.likeBadges?.map { badge ->
+            FanficAuthorModel(
+                user = UserModel(
+                    name = badge.username,
+                    href = "authors/${badge.id}",
+                    avatarUrl = badge.avatarUrl
+                ),
+                role = badge.type
+            )
+        } ?: emptyList()
+
         val commentMessage = data.select(
             Evaluator.Class("comment_message urlize js-comment-message")
         ).first()
+
         val date = data.select("time").text()
-        val likes = data.select("like-button")
-            .attr(":like-count")
-            .toIntOrNull()
-            ?: 0
 
         val forFanfic: FanficShortcut? = data.select(".comment_link_to_fic")
             .first()
@@ -63,9 +81,11 @@ class CommentParser {
                 avatarUrl = avatarUrl
             ),
             isOwnComment = isOwnComment,
+            isLiked = isLiked,
             date = date,
             blocks = blocks,
             likes = likes,
+            likedBy = likedBy,
             forFanfic = forFanfic
         )
     }

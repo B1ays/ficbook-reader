@@ -6,10 +6,10 @@ import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
-import ru.blays.ficbook.reader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.ExtendedCommentsComponent
+import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
+import ru.blays.ficbook.reader.shared.data.dto.QuoteModelStable
 
 class DefaultPartCommentsComponent(
     componentContext: ComponentContext,
@@ -71,7 +71,9 @@ class DefaultPartCommentsComponent(
                 userName = intent.userName,
                 blocks = intent.blocks
             )
+            is CommentsComponent.Intent.LikeComment -> likeComment(intent.commentID, intent.newValue)
             is CommentsComponent.Intent.DeleteComment -> deleteComment(intent.commentID)
+            CommentsComponent.Intent.Refresh -> refresh()
         }
     }
 

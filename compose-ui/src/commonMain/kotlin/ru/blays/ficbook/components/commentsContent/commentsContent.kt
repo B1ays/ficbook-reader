@@ -4,26 +4,24 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,12 +44,13 @@ import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.W
 import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbook.reader.shared.data.dto.CommentModelStable
 import ru.blays.ficbook.reader.shared.data.dto.QuoteModelStable
-import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu
-import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
-import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
+import ru.blays.ficbook.theme.likeColor
 import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
+import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
+import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.drawWithLayer
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
 import ru.blays.ficbook.values.defaultScrollbarPadding
@@ -69,6 +68,9 @@ fun CommentsContent(
         blocks: List<CommentBlockModelStable>
     ) -> Unit = { _, _ -> }
 ) {
+    @Suppress("NAME_SHADOWING")
+    val contentPadding = contentPadding ?: PaddingValues(0.dp)
+
     val state by component.state.subscribeAsState()
     val comments = state.comments
     val isLoading = state.loading
@@ -91,16 +93,33 @@ fun CommentsContent(
         modifier = Modifier.fillMaxSize(),
         isRefreshing = isLoading,
         state = pullRefreshState,
-        onRefresh = {}
+        onRefresh = {
+            component.sendIntent(
+                CommentsComponent.Intent.Refresh
+            )
+        },
+        indicator = {
+            PullToRefreshDefaults.Indicator(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(contentPadding.calculateTopPadding()),
+                state = pullRefreshState,
+                isRefreshing = isLoading,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     ) {
         LazyColumn(
             modifier = modifier.padding(end = defaultScrollbarPadding),
             state = lazyListState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = contentPadding ?: PaddingValues(0.dp),
+            contentPadding = contentPadding,
         ) {
-            items(comments) { comment ->
-                Spacer(modifier = Modifier.height(7.dp))
+            items(
+                items = comments,
+                //key = CommentModelStable::commentID
+            ) { comment ->
+                VerticalSpacer(8.dp)
                 CommentItem(
                     comment = comment,
                     hideAvatar = hideAvatar,
@@ -117,6 +136,11 @@ fun CommentsContent(
                     onUrlClick = { url ->
                         component.onOutput(
                             CommentsComponent.Output.OpenUrl(url)
+                        )
+                    },
+                    onLikeClick = {
+                        component.sendIntent(
+                            CommentsComponent.Intent.LikeComment(comment.commentID, !comment.isLiked)
                         )
                     },
                     onAddReply = {
@@ -150,12 +174,11 @@ private fun CommentItem(
     onUserClick: () -> Unit,
     onFanficClick: (href: String) -> Unit,
     onUrlClick: (url: String) -> Unit,
+    onLikeClick: () -> Unit,
     onAddReply: () -> Unit,
     onDelete: () -> Unit = {}
 ) {
     val user = comment.user
-
-    val contextMenuState = rememberContextMenuState()
 
     Row(
         modifier = Modifier
@@ -179,12 +202,7 @@ private fun CommentItem(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(CardDefaults.shape)
-                .combinedClickable(
-                    onClick = {},
-                    onLongClick = contextMenuState::show
-                )
-                .contextMenuAnchor(contextMenuState),
+                .clip(CardDefaults.shape),
             shape = CardDefaults.shape
         ) {
             Row(
@@ -212,7 +230,7 @@ private fun CommentItem(
                     modifier = Modifier.weight(0.5F),
                 )
             }
-            Spacer(modifier = Modifier.requiredHeight(3.dp))
+            VerticalSpacer(3.dp)
             comment.blocks.forEach { block ->
                 CommentBlockElement(
                     block = block,
@@ -225,13 +243,12 @@ private fun CommentItem(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.requiredHeight(2.dp))
-                ClickableText(
-                    modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
-                    onClick = {
-                        onFanficClick(fanfic.href)
-                    },
-                    text = AnnotatedString(fanfic.name),
+                VerticalSpacer(2.dp)
+                Text(
+                    modifier = Modifier
+                        .padding(DefaultPadding.CardDefaultPaddingSmall)
+                        .clickable { onFanficClick(fanfic.href) },
+                    text = fanfic.name,
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = MaterialTheme.colorScheme.primary
                     ),
@@ -240,34 +257,140 @@ private fun CommentItem(
                 )
             }
 
-            ContextMenu(state = contextMenuState) {
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_reply),
-                            contentDescription = stringResource(Res.string.content_description_icon_reply),
-                            modifier = Modifier.size(18.dp),
-                        )
-                    },
-                    text = {
-                        Text(text = stringResource(Res.string.reply))
-                    },
-                    onClick = onAddReply
+            val iconTint by animateColorAsState(
+                targetValue = if(comment.isLiked) likeColor else MaterialTheme.colorScheme.onSurface
+            )
+
+            Row(
+                modifier = Modifier.padding(DefaultPadding.CardDefaultPaddingSmall),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val buttonShape = MaterialTheme.shapes.medium
+                val avatarShape = CircleShape
+                val density = LocalDensity.current
+                val layoutDirection = LocalLayoutDirection.current
+
+                val avatarSize = 30.dp
+                val avatarOffset = 12.dp
+                val sizePx = with(density) { avatarSize.toPx() }
+                val avatarOffsetPx = with(density) { 12.dp.toPx() }
+                val outline = avatarShape.createOutline(
+                    size = Size(sizePx, sizePx),
+                    layoutDirection = layoutDirection,
+                    density = density
                 )
-                if (comment.isOwnComment) {
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(Res.drawable.ic_delete),
-                                contentDescription = stringResource(Res.string.content_description_icon_delete),
-                                modifier = Modifier.size(18.dp),
-                            )
-                        },
-                        text = {
-                            Text(text = stringResource(Res.string.delete))
-                        },
-                        onClick = onDelete
+
+                TextButton(
+                    onClick = onLikeClick,
+                    enabled = !comment.isOwnComment,
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = iconTint,
+                        disabledContainerColor = MaterialTheme.colorScheme.surface,
+                        disabledContentColor = iconTint
+                    ),
+                    contentPadding = PaddingValues(
+                        horizontal = 8.dp
+                    ),
+                    shape = buttonShape
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_like_outlined),
+                        contentDescription = stringResource(Res.string.content_description_icon_like),
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(18.dp),
                     )
+                    HorizontalSpacer(8.dp)
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        text = comment.likes.toString()
+                    )
+                }
+                if(comment.likedBy.isNotEmpty()) {
+                    HorizontalSpacer(4.dp)
+                    LazyRow(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        horizontalArrangement = Arrangement.spacedBy(-avatarOffset / 2)
+                    ) {
+                        itemsIndexed(comment.likedBy) { index, author ->
+                            AsyncImage(
+                                model = author.user.avatarUrl,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(avatarSize)
+                                    .clip(avatarShape)
+                                    .thenIf(index != comment.likedBy.lastIndex) {
+                                        drawWithLayer {
+                                            drawContent()
+                                            translate(
+                                                left = drawContext.size.width - avatarOffsetPx
+                                            ) {
+                                                drawOutline(
+                                                    outline = outline,
+                                                    color = Color.Transparent,
+                                                    blendMode = BlendMode.Clear
+                                                )
+                                            }
+                                        }
+                                    }
+
+                            )
+                        }
+                    }
+                }
+                HorizontalSpacer(8.dp)
+                TextButton(
+                    onClick = onAddReply,
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    contentPadding = PaddingValues(
+                        horizontal = 8.dp
+                    ),
+                    shape = buttonShape
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_reply),
+                        contentDescription = stringResource(Res.string.content_description_icon_reply),
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(18.dp),
+                    )
+                    HorizontalSpacer(8.dp)
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        text = stringResource(Res.string.reply)
+                    )
+                }
+                if(comment.isOwnComment) {
+                    HorizontalSpacer(8.dp)
+                    TextButton(
+                        onClick = onDelete,
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        contentPadding = PaddingValues(
+                            horizontal = 8.dp
+                        ),
+                        shape = buttonShape
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_delete),
+                            contentDescription = stringResource(Res.string.content_description_icon_delete),
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .size(18.dp),
+                        )
+                        HorizontalSpacer(8.dp)
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            text = stringResource(Res.string.delete)
+                        )
+                    }
+                    HorizontalSpacer(8.dp)
                 }
             }
         }

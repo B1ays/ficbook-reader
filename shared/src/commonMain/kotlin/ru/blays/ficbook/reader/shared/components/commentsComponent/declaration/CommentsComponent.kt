@@ -12,8 +12,10 @@ interface CommentsComponent {
 
     sealed class Intent {
         data object LoadNextPage: Intent()
+        data object Refresh : Intent()
         data class AddReply(val userName: String, val blocks: List<CommentBlockModelStable>): Intent()
         class DeleteComment(val commentID: String) : Intent()
+        data class LikeComment(val commentID: String, val newValue: Boolean) : Intent()
     }
 
     sealed class Output {

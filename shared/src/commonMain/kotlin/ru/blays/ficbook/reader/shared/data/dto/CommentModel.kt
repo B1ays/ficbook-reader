@@ -7,6 +7,8 @@ data class CommentModelStable(
     val commentID: String,
     val user: UserModelStable,
     val isOwnComment: Boolean,
+    val isLiked: Boolean,
+    val likedBy: List<FanficAuthorModelStable>,
     val date: String,
     val blocks: List<CommentBlockModelStable>,
     val likes: Int,

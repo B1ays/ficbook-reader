@@ -55,6 +55,8 @@ class DefaultAllCommentsComponent(
     override fun sendIntent(intent: CommentsComponent.Intent) {
         when(intent) {
             is CommentsComponent.Intent.LoadNextPage -> loadNextPage()
+            is CommentsComponent.Intent.LikeComment -> likeComment(intent.commentID, intent.newValue)
+            is CommentsComponent.Intent.Refresh -> refresh()
             else -> Unit
         }
     }
