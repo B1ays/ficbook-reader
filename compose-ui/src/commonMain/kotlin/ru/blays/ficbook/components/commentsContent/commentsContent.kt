@@ -45,7 +45,7 @@ import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbook.reader.shared.data.dto.CommentModelStable
 import ru.blays.ficbook.reader.shared.data.dto.QuoteModelStable
 import ru.blays.ficbook.theme.likeColor
-import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
+import ru.blays.ficbook.ui_components.Text.HyperlinkText
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer

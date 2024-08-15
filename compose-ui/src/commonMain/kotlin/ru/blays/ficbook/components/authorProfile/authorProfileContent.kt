@@ -45,7 +45,7 @@ import ru.blays.ficbook.reader.shared.components.authorProfileComponents.impleme
 import ru.blays.ficbook.reader.shared.data.dto.AuthorMainInfoStable
 import ru.blays.ficbook.reader.shared.data.dto.BlogPostCardModelStable
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
-import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
+import ru.blays.ficbook.ui_components.Text.HyperlinkText
 import ru.blays.ficbook.ui_components.decomposePager.Pages
 import ru.blays.ficbook.utils.LocalStackAnimator
 import ru.blays.ficbook.utils.surfaceColorAtAlpha

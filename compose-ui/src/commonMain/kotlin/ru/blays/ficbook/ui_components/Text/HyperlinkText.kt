@@ -1,4 +1,4 @@
-package ru.blays.ficbook.ui_components.HyperlinkText
+package ru.blays.ficbook.ui_components.Text
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

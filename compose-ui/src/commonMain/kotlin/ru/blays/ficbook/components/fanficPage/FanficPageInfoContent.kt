@@ -60,8 +60,8 @@ import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbook.ui_components.FanficComponents.CircleChip
 import ru.blays.ficbook.ui_components.FanficComponents.FanficTagChip
 import ru.blays.ficbook.ui_components.GradientIcon.GradientIcon
-import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
+import ru.blays.ficbook.ui_components.Text.TextWithInlineImages
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
@@ -147,13 +147,6 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                 glassEffectConfig.blurEnabled
             ) {
                 val hazeState = remember { HazeState() }
-
-                /*LaunchedEffect(hazeState, glassEffectConfig) {
-                    hazeModifier = Modifier.hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
-                }*/
 
                 hazeModifier = Modifier.hazeChild(
                     state = hazeState,
@@ -625,7 +618,7 @@ private fun FanficDescription(
                     text = stringResource(Res.string.fanficPage_description),
                     style = MaterialTheme.typography.titleMedium
                 )
-                HyperlinkText(
+                TextWithInlineImages(
                     fullText = fanfic.description,
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface
@@ -644,7 +637,7 @@ private fun FanficDescription(
                         text = stringResource(Res.string.fanficPage_dedication),
                         style = MaterialTheme.typography.titleMedium
                     )
-                    HyperlinkText(
+                    TextWithInlineImages(
                         fullText = dedication,
                         textStyle = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.onSurface
@@ -664,7 +657,7 @@ private fun FanficDescription(
                         text = stringResource(Res.string.fanficPage_author_comment),
                         style = MaterialTheme.typography.titleMedium
                     )
-                    HyperlinkText(
+                    TextWithInlineImages(
                         fullText = authorComment,
                         textStyle = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.onSurface

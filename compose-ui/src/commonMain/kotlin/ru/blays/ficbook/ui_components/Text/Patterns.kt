@@ -1,4 +1,4 @@
-package ru.blays.ficbook.ui_components.HyperlinkText
+package ru.blays.ficbook.ui_components.Text
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern

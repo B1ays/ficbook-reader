@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.reader.shared.data.dto.*
 import ru.blays.ficbook.theme.*
 import ru.blays.ficbook.ui_components.GradientIcon.GradientIcon
-import ru.blays.ficbook.ui_components.HyperlinkText.HyperlinkText
+import ru.blays.ficbook.ui_components.Text.HyperlinkText
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
