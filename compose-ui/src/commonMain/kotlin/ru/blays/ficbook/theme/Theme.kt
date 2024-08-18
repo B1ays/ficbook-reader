@@ -9,7 +9,6 @@ import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import ru.blays.ficbook.reader.shared.components.themeComponents.ThemeComponent
 
 @Composable
@@ -26,43 +25,17 @@ expect fun ReaderTheme(
     content: @Composable () -> Unit
 )
 
-fun createRippleConfig(
+expect fun createRippleConfig(
     color: Color,
     darkTheme: Boolean
-): RippleConfiguration {
-    return RippleConfiguration(
-        color = color,
-        rippleAlpha = if(darkTheme) {
-            DarkThemeRippleAlpha
-        } else {
-            if (color.luminance() > 0.5) {
-                LightThemeHighContrastRippleAlpha
-            } else {
-                LightThemeLowContrastRippleAlpha
-            }
-        }
-    )
-}
+): RippleConfiguration
 
-private val LightThemeHighContrastRippleAlpha = RippleAlpha(
-    pressedAlpha = 0.64f,
-    focusedAlpha = 0.64f,
-    draggedAlpha = 0.56f,
-    hoveredAlpha = 0.48f
-)
-
-private val LightThemeLowContrastRippleAlpha = RippleAlpha(
-    pressedAlpha = 0.52f,
-    focusedAlpha = 0.52f,
-    draggedAlpha = 0.48f,
-    hoveredAlpha = 0.44f
-)
-
-private val DarkThemeRippleAlpha = RippleAlpha(
-    pressedAlpha = 0.60f,
-    focusedAlpha = 0.62f,
-    draggedAlpha = 0.58f,
-    hoveredAlpha = 0.54f
+internal fun RippleConfiguration.copy(
+    color: Color = this.color,
+    rippleAlpha: RippleAlpha? = this.rippleAlpha
+) = RippleConfiguration(
+    color = color,
+    rippleAlpha = rippleAlpha
 )
 
 @Composable

@@ -1,5 +1,6 @@
 package ru.blays.ficbook.ui_components.FanficComponents
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -202,7 +203,6 @@ fun FanficCard2(
         }
         ConstraintLayout(
             constraintSet = constraints,
-            animateChanges = true,
             modifier = modifier
                 .fillMaxWidth()
                 .clip(CardDefaults.shape)
@@ -210,6 +210,7 @@ fun FanficCard2(
                     onClick = onClick,
                     onLongClick = onLongClick
                 ),
+            animateChangesSpec = tween()
         ) {
             val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
             val cardColor = remember {
@@ -219,9 +220,7 @@ fun FanficCard2(
                     surfaceVariant
                 }
             }
-
-
-            if(useLandscapeLayout) {
+            if (useLandscapeLayout) {
                 Box(
                     modifier = Modifier
                         .background(
@@ -255,7 +254,6 @@ fun FanficCard2(
                         .layoutId(LayoutIds.Background)
                 )
             }
-
             Box(
                 modifier = Modifier
                     .background(
@@ -263,18 +261,15 @@ fun FanficCard2(
                     )
                     .layoutId(LayoutIds.Indicator)
             )
-
             FanficChips(
                 modifier = Modifier.layoutId(LayoutIds.ChipsRow),
                 status = fanfic.status
             )
-
             Text(
                 text = fanfic.title,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.layoutId(LayoutIds.Title),
             )
-
             FlowRow(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.layoutId(LayoutIds.Authors)
@@ -309,7 +304,6 @@ fun FanficCard2(
                     )
                 }
             }
-
             FlowRow(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.layoutId(LayoutIds.Fandoms),
@@ -332,7 +326,6 @@ fun FanficCard2(
                     Spacer(modifier = Modifier.width(2.dp))
                 }
             }
-
             if (fanfic.pairings.isNotEmpty()) {
                 FlowRow(
                     verticalArrangement = Arrangement.Center,
@@ -376,7 +369,6 @@ fun FanficCard2(
                     }
                 }
             }
-
             if (fanfic.tags.isNotEmpty()) {
                 Text(
                     text = stringResource(Res.string.fanficCard_tags),
@@ -392,19 +384,16 @@ fun FanficCard2(
                     }
                 }
             }
-
             Text(
                 text = stringResource(Res.string.fanficCard_updated, fanfic.updateDate),
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.layoutId(LayoutIds.UpdateInfo),
             )
-
             Text(
                 text = stringResource(Res.string.fanficCard_size, fanfic.size),
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.layoutId(LayoutIds.SizeInfo),
             )
-
             HyperlinkText(
                 modifier = Modifier.layoutId(LayoutIds.Description),
                 fullText = fanfic.description,
