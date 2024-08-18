@@ -1,9 +1,16 @@
+import java.util.*
+
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
+}
+
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    load(keystorePropsFile.reader())
 }
 
 android {
@@ -33,17 +40,28 @@ android {
 
     flavorDimensions += arrayOf("abi")
 
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProps["keyAlias"] as String
+            keyPassword = keystoreProps["keyPassword"] as String
+            storeFile = rootProject.file(keystoreProps["storeFile"] as String)
+            storePassword = keystoreProps["storePassword"] as String
+        }
+    }
+
     //noinspection ChromeOsAbiSupport
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
+            isMinifyEnabled = false
             ndk {
                 abiFilters += setOf("arm64-v8a", "x86")
             }
-            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 

@@ -28,3 +28,5 @@ venv
 /app-android/arm64/
 /shared/src/commonMain/kotlin/ru/blays/ficbook/reader/shared/proxy/ProxyData.kt
 /.kotlin/
+/keystore.jks
+/keystore.properties
