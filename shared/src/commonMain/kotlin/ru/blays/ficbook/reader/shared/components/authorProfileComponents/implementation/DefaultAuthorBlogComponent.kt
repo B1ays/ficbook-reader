@@ -4,19 +4,23 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
+import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.arkivanov.essenty.lifecycle.doOnStart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogComponent
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogPageComponent
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogPostsComponent
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultAuthorBlogComponent(
     componentContext: ComponentContext,
@@ -69,7 +73,7 @@ class DefaultAuthorBlogComponent(
                 )
             }
             is AuthorBlogPostsComponent.Output.OpenPostPage -> {
-                navigation.push(
+                navigation.pushNew(
                     AuthorBlogComponent.Config.PostPage(
                         postID = output.postID
                     )
@@ -98,8 +102,9 @@ class DefaultAuthorBlogPosts(
     private val userID: String,
     private val output: (output: AuthorBlogPostsComponent.Output) -> Unit
 ): AuthorBlogPostsComponent, ComponentContext by componentContext {
-    private val _state: MutableValue<AuthorBlogPostsComponent.State> = MutableValue(
-        AuthorBlogPostsComponent.State(
+    private val _state: MutableValue<AuthorBlogPostsComponent.State> = SaveableMutableValue(
+        serializer = AuthorBlogPostsComponent.State.serializer(),
+        initialValue = AuthorBlogPostsComponent.State(
             loading = false,
             error = false,
             errorMessage = null,
@@ -155,14 +160,19 @@ class DefaultAuthorBlogPosts(
                             posts = posts
                         )
                     }
-                    nextPage += 1
+                    nextPage++
                 }
             }
         }
     }
 
     init {
-        loadPage(nextPage)
+        lifecycle.doOnStart(true) {
+            val state = state.value
+            if(state.posts.isEmpty() && !state.error) {
+                loadPage(nextPage)
+            }
+        }
     }
 }
 
@@ -173,8 +183,9 @@ class DefaultAuthorBlogPageComponent(
     private val postID: String,
     private val output: (output: AuthorBlogPageComponent.Output) -> Unit
 ): AuthorBlogPageComponent, ComponentContext by componentContext {
-    private val _state: MutableValue<AuthorBlogPageComponent.State> = MutableValue(
-        AuthorBlogPageComponent.State(
+    private val _state: MutableValue<AuthorBlogPageComponent.State> = SaveableMutableValue(
+        serializer = AuthorBlogPageComponent.State.serializer(),
+        initialValue = AuthorBlogPageComponent.State(
             loading = true,
             error = false,
             errorMessage = null,
@@ -223,6 +234,14 @@ class DefaultAuthorBlogPageComponent(
     }
 
     init {
-        loadPage()
+        lifecycle.doOnStart(true) {
+            val state = _state.value
+            if(state.post == null && !state.error) {
+                loadPage()
+            }
+        }
+        lifecycle.doOnDestroy {
+            coroutineScope.cancel()
+        }
     }
 }

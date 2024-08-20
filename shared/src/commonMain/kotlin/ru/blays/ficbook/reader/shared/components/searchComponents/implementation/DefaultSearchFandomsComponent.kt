@@ -1,16 +1,16 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.SearchedFandomModel
-import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
 import ru.blays.ficbook.reader.shared.components.Utils.ExternalStateUpdatable
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchFandomsComponent
+import ru.blays.ficbook.reader.shared.data.SearchedFandomModel
+import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 import kotlin.time.Duration.Companion.seconds
 
 class DefaultSearchFandomsComponent(
@@ -20,8 +20,9 @@ class DefaultSearchFandomsComponent(
     ComponentContext by componentContext {
     private val repository: ISearchRepo by getKoin().inject()
 
-    private val _state = MutableValue(
-        SearchFandomsComponent.State(
+    private val _state = SaveableMutableValue(
+        serializer = SearchFandomsComponent.State.serializer(),
+        initialValue = SearchFandomsComponent.State(
             searchedName = "",
             searchedFandoms = emptySet(),
             selectedFandoms = emptySet(),

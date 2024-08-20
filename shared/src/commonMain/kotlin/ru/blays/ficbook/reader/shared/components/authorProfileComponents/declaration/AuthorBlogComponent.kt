@@ -44,6 +44,7 @@ interface AuthorBlogPostsComponent {
         data class OpenUrl(val url: String): Output()
     }
 
+    @Serializable
     data class State(
         val loading: Boolean,
         val error: Boolean,
@@ -62,6 +63,7 @@ interface AuthorBlogPageComponent {
         data class OpenUrl(val url: String): Output()
     }
 
+    @Serializable
     data class State(
         val loading: Boolean,
         val error: Boolean,

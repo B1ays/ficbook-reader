@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.declaration
 
 import com.arkivanov.decompose.value.Value
+import kotlinx.serialization.Serializable
 import ru.blays.ficbook.reader.shared.data.SearchedTagModel
 
 interface SearchTagsComponent {
@@ -12,6 +13,7 @@ interface SearchTagsComponent {
     fun changeSearchBehavior(behavior: Int)
     fun clear()
 
+    @Serializable
     data class State(
         val searchedName: String,
         val searchedTags: Set<SearchedTagModel>,

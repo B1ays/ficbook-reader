@@ -1,7 +1,6 @@
 package ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,9 +8,10 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficQuickActionsRepo
-import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultFanficQuickActionsComponent(
     componentContext: ComponentContext,
@@ -24,8 +24,9 @@ class DefaultFanficQuickActionsComponent(
 
     private var initialized: Boolean = false
 
-    private val _state = MutableValue(
-        FanficQuickActionsComponent.State(
+    private val _state = SaveableMutableValue(
+        serializer = FanficQuickActionsComponent.State.serializer(),
+        initialValue = FanficQuickActionsComponent.State(
             liked = false,
             subscribed = false,
             readed = false,

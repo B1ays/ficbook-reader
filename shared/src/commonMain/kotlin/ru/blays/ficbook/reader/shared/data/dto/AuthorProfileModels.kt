@@ -1,8 +1,10 @@
 package ru.blays.ficbook.reader.shared.data.dto
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 import ru.blays.ficbook.api.dataModels.AuthorProfileTabs
 
+@Serializable
 @Immutable
 data class AuthorProfileModelStable(
     val authorMain: AuthorMainInfoStable,
@@ -10,6 +12,7 @@ data class AuthorProfileModelStable(
     internal val availableTabs: List<AuthorProfileTabs>
 )
 
+@Serializable
 @Immutable
 data class AuthorMainInfoStable(
     val name: String,
@@ -21,6 +24,7 @@ data class AuthorMainInfoStable(
     val subscribed: Boolean
 )
 
+@Serializable
 @Immutable
 data class AuthorInfoModelStable(
     val about: String,
@@ -28,6 +32,7 @@ data class AuthorInfoModelStable(
     val support: String
 )
 
+@Serializable
 @Immutable
 data class BlogPostCardModelStable(
     val id: String,
@@ -37,12 +42,16 @@ data class BlogPostCardModelStable(
     val likes: Int
 )
 
+@Serializable
+@Immutable
 data class BlogPostModelStable(
     val title: String,
     val date: String,
     val text: String,
     val likes: Int
 )
+
+@Serializable
 @Immutable
 data class AuthorPresentModelStable(
     val pictureUrl: String,
@@ -50,6 +59,7 @@ data class AuthorPresentModelStable(
     val user: UserModelStable
 )
 
+@Serializable
 @Immutable
 data class AuthorFanficPresentModelStable(
     val pictureUrl: String,
@@ -58,6 +68,7 @@ data class AuthorFanficPresentModelStable(
     val forWork: Section
 )
 
+@Serializable
 @Immutable
 data class AuthorCommentPresentModelStable(
     val pictureUrl: String,

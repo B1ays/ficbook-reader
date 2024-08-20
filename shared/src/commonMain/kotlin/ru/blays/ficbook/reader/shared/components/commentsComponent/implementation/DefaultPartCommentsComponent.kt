@@ -3,6 +3,7 @@ package ru.blays.ficbook.reader.shared.components.commentsComponent.implementati
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.arkivanov.essenty.lifecycle.doOnStart
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.blays.ficbook.api.result.ApiResult
@@ -104,11 +105,14 @@ class DefaultPartCommentsComponent(
     }
 
     init {
-        lifecycle.doOnDestroy {
-            coroutineScope.launch {
-                coroutineScope.cancel()
+        lifecycle.doOnStart(true) {
+            val state = state.value
+            if(state.comments.isEmpty() && !state.error) {
+                loadNextPage()
             }
         }
-        loadNextPage()
+        lifecycle.doOnDestroy {
+            coroutineScope.cancel()
+        }
     }
 }

@@ -2,6 +2,7 @@ package ru.blays.ficbook.reader.shared.components.collectionComponents.declarati
 
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
+import kotlinx.serialization.Serializable
 import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.EditCollectionComponent
 import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.EditCollectionDialogConfig
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
@@ -16,6 +17,7 @@ interface CollectionPageComponent {
 
     fun sendIntent(intent: Intent)
 
+    @Serializable
     data class State(
         val collectionPage: CollectionPageModelStable?,
         val currentParams: SelectedSortParams,
@@ -37,6 +39,7 @@ interface CollectionPageComponent {
         data class ChangeSubscription(val follow: Boolean): Intent()
     }
 
+    @Serializable
     data class SelectedSortParams(
         val searchText: String? = null,
         val fandom: Pair<String, String>? = null,

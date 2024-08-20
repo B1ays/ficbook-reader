@@ -2,8 +2,8 @@ package ru.blays.ficbook.reader.shared.components.searchComponents.implementatio
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
+import com.arkivanov.essenty.lifecycle.doOnStart
 import ru.blays.ficbook.api.SEARCH_HREF
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
@@ -13,6 +13,7 @@ import ru.blays.ficbook.reader.shared.data.IntRangeSimple
 import ru.blays.ficbook.reader.shared.data.SearchParams
 import ru.blays.ficbook.reader.shared.data.SearchedFandomModel
 import ru.blays.ficbook.reader.shared.data.realm.entity.*
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultSearchComponent(
     componentContext: ComponentContext,
@@ -34,7 +35,10 @@ class DefaultSearchComponent(
         componentContext = childContext("SearchTagsComponent")
     )
 
-    private val _state = MutableValue(SearchParams.default)
+    private val _state = SaveableMutableValue(
+        serializer = SearchParams.serializer(),
+        initialValue = SearchParams.default
+    )
 
     override val state get() = _state
 
@@ -329,6 +333,8 @@ class DefaultSearchComponent(
     }
 
     init {
-        observeFandomsChange()
+        lifecycle.doOnStart(true) {
+            observeFandomsChange()
+        }
     }
 }

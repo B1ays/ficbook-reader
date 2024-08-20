@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.commentsComponent.declaration
 
 import com.arkivanov.decompose.value.Value
+import kotlinx.serialization.Serializable
 import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbook.reader.shared.data.dto.CommentModelStable
 
@@ -25,6 +26,7 @@ interface CommentsComponent {
         class OpenFanfic(val href: String) : Output()
     }
 
+    @Serializable
     data class State(
         val loading: Boolean,
         val error: Boolean,

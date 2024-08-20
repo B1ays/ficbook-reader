@@ -2,11 +2,11 @@ package ru.blays.ficbook.reader.shared.components.fanficListComponents.implement
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.router.slot.*
-import com.arkivanov.decompose.value.MutableValue
-import com.arkivanov.decompose.value.Value
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.arkivanov.essenty.lifecycle.doOnStart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -28,6 +28,7 @@ import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficsListRepo
 import ru.blays.ficbook.reader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.repositiry.ISettingsRepository
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultFanficsListComponent(
     componentContext: ComponentContext,
@@ -39,8 +40,9 @@ class DefaultFanficsListComponent(
 
     private val _quickActionComponents: MutableMap<String, FanficQuickActionsComponent> = mutableMapOf()
 
-    private val _state: MutableValue<FanficsListComponent.State> = MutableValue(
-        FanficsListComponent.State(
+    private val _state = SaveableMutableValue(
+        serializer = FanficsListComponent.State.serializer(),
+        initialValue = FanficsListComponent.State(
             section = section.toStableModel(),
             list = emptyList(),
             isLoading = false
@@ -48,18 +50,6 @@ class DefaultFanficsListComponent(
     )
 
     private val navigation = SlotNavigation<FanficsListComponent.DialogConfig>()
-
-    override val dialog: Value<ChildSlot<*, FanficsListDialogComponent>> = childSlot(
-        source = navigation,
-        serializer = FanficsListComponent.DialogConfig.serializer(),
-
-    ) { configuration, childContext ->
-        FanficsListDialogComponent(
-            componentContext = childContext,
-            message = configuration.message,
-            onOutput = navigation::dismiss
-        )
-    }
 
     override fun setSection(section: SectionWithQuery) {
         _state.update {
@@ -180,19 +170,14 @@ class DefaultFanficsListComponent(
     }
 
     init {
-        if(loadAtCreate) {
-            refresh()
+        lifecycle.doOnStart(true) {
+            val state = state.value
+            if(state.list.isEmpty() && loadAtCreate) {
+                refresh()
+            }
         }
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }
     }
-}
-
-class FanficsListDialogComponent(
-    val componentContext: ComponentContext,
-    private val message: String,
-    private val onOutput: () -> Unit
-): ComponentContext by componentContext {
-
 }

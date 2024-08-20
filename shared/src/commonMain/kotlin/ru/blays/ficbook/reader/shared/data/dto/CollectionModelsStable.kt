@@ -2,7 +2,9 @@ package ru.blays.ficbook.reader.shared.data.dto
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Immutable
 sealed class CollectionCardModelStable {
     @Stable
@@ -30,6 +32,7 @@ sealed class CollectionCardModelStable {
     abstract val size: Int
 }
 
+@Serializable
 @Stable
 sealed class CollectionPageModelStable {
     @Stable

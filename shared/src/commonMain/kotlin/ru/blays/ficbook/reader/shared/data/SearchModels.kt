@@ -1,5 +1,9 @@
 package ru.blays.ficbook.reader.shared.data
 
+import kotlinx.serialization.Serializable
+import ru.blays.ficbook.reader.shared.data.serializers.LongRangeSerializer
+
+@Serializable
 data class SearchParams(
     val fandomsFilter: String,
     val fandomsGroup: Int,
@@ -12,6 +16,7 @@ data class SearchParams(
     val likesRange: IntRangeSimple,
     val minRewards: Int,
     val minComments: Int,
+    @Serializable(with = LongRangeSerializer::class)
     val dateRange: LongRange,
     val title: String,
     val filterReaded: Boolean,
@@ -125,6 +130,7 @@ data class SearchParams(
     }
 }
 
+@Serializable
 data class SearchedFandomModel(
     val title: String,
     val description: String,
@@ -132,11 +138,13 @@ data class SearchedFandomModel(
     val id: String
 )
 
+@Serializable
 data class SearchedCharactersGroup(
     val fandomName: String,
     val characters: List<SearchedCharacterModel>
 )
 
+@Serializable
 data class SearchedCharacterModel(
     val fandomId: String,
     val id: String,
@@ -144,9 +152,11 @@ data class SearchedCharacterModel(
     val aliases: List<String>,
 )
 
+@Serializable
 data class SearchedPairingModel(
     val characters: Set<Character>
 ) {
+    @Serializable
     data class Character(
         val fandomId: String,
         val id: String,
@@ -155,6 +165,7 @@ data class SearchedPairingModel(
     )
 }
 
+@Serializable
 data class SearchedTagModel(
     val title: String,
     val description: String,
@@ -163,6 +174,7 @@ data class SearchedTagModel(
     val id: String
 )
 
+@Serializable
 data class IntRangeSimple(
     val start: Int,
     val end: Int
@@ -172,6 +184,7 @@ data class IntRangeSimple(
     }
 }
 
+@Serializable
 data class SearchParamsEntityShortcut(
     val idHex: String,
     val name: String,

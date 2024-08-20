@@ -1,7 +1,9 @@
 package ru.blays.ficbook.reader.shared.data.dto
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Immutable
 data class FanficCardModelStable(
     val href: String,
@@ -20,6 +22,7 @@ data class FanficCardModelStable(
     val coverUrl: String
 )
 
+@Serializable
 @Immutable
 data class FanficStatusStable(
     val direction: FanficDirection,
@@ -30,6 +33,8 @@ data class FanficStatusStable(
     val trophies: Int
 )
 
+
+@Serializable
 @Immutable
 data class FanficTagStable(
     val name: String,
@@ -37,6 +42,7 @@ data class FanficTagStable(
     val href: String
 )
 
+@Serializable
 @Immutable
 data class ReadBadgeModelStable(
     val readDate: String,

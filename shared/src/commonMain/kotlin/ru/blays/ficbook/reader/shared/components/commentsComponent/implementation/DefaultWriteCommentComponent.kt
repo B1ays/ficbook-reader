@@ -1,18 +1,18 @@
 package ru.blays.ficbook.reader.shared.components.commentsComponent.implementation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.dataModels.CommentBlockModel
 import ru.blays.ficbook.api.parsers.CommentParser
 import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.WriteCommentComponent
 import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
 import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
 import ru.blays.ficbook.reader.shared.data.mappers.toStableModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.ICommentsRepo
-import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.WriteCommentComponent
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 import kotlin.time.Duration.Companion.seconds
 
 class DefaultWriteCommentComponent(
@@ -26,8 +26,9 @@ class DefaultWriteCommentComponent(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private var generateModelJob: Job? = null
 
-    private val _state = MutableValue(
-        WriteCommentComponent.State(
+    private val _state = SaveableMutableValue(
+        serializer = WriteCommentComponent.State.serializer(),
+        initialValue = WriteCommentComponent.State(
             text = "",
             renderedBlocks = emptyList(),
             followType = 1,

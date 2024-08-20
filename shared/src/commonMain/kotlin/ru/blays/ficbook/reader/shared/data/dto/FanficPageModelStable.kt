@@ -3,6 +3,7 @@ package ru.blays.ficbook.reader.shared.data.dto
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
+@Serializable
 @Immutable
 data class FanficPageModelStable(
     val fanficID: String,

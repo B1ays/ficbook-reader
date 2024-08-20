@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.declaration
 
 import com.arkivanov.decompose.value.Value
+import kotlinx.serialization.Serializable
 import ru.blays.ficbook.reader.shared.data.SearchedCharacterModel
 import ru.blays.ficbook.reader.shared.data.SearchedCharactersGroup
 import ru.blays.ficbook.reader.shared.data.SearchedPairingModel
@@ -25,6 +26,7 @@ interface SearchPairingsComponent {
 
     fun changeCharacterModifier(character: SearchedPairingModel.Character, modifier: String)
 
+    @Serializable
     data class State(
         val searchedCharacters: List<SearchedCharactersGroup>,
         val buildedPairing: SearchedPairingModel?,

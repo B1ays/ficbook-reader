@@ -10,6 +10,7 @@ import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.russhwolf.settings.nullableString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +29,7 @@ import ru.blays.ficbook.reader.shared.data.repo.declaration.ICollectionsRepo
 import ru.blays.ficbook.reader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.settings
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultCollectionPageComponent(
     componentContext: ComponentContext,
@@ -44,8 +46,9 @@ class DefaultCollectionPageComponent(
         key = SettingsKeys.COLLECTION_SORT_TYPE_KEY
     )
 
-    private val _state = MutableValue(
-        CollectionPageComponent.State(
+    private val _state = SaveableMutableValue(
+        serializer = CollectionPageComponent.State.serializer(),
+        initialValue = CollectionPageComponent.State(
             collectionPage = null,
             currentParams = CollectionPageComponent.SelectedSortParams(
                 sort = getSavedSortParameter()
@@ -55,6 +58,7 @@ class DefaultCollectionPageComponent(
             errorMessage = null
         )
     )
+
     private val _fanficsList: FanficsListComponentInternal = DefaultFanficsListComponent(
         componentContext = childContext("fanfics_list"),
         section = createSection(),
@@ -257,10 +261,15 @@ class DefaultCollectionPageComponent(
     }
 
     init {
+        lifecycle.doOnStart(true) {
+            val state = state.value
+            if(state.collectionPage == null && !state.error) {
+                loadPage()
+            }
+        }
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }
-        loadPage()
     }
 }
 
@@ -278,11 +287,14 @@ class EditCollectionComponent(
 
     fun onNameChange(newValue: String) {
         _state.update {
-            it.copy(
-                name = newValue.let { name ->
-                    if(name.length > DESC_MAX_SIZE) name.substring(0, NAME_MAX_SIZE) else name
+            val newName = newValue.let { name ->
+                if(name.length > DESC_MAX_SIZE) {
+                    name.substring(0, NAME_MAX_SIZE)
+                } else {
+                    name
                 }
-            )
+            }
+            it.copy(name = newName)
         }
     }
 
@@ -356,11 +368,17 @@ class EditCollectionComponent(
     }
 
     init {
-        coroutineScope.launch {
-            loadInfo()
+        lifecycle.doOnStart(true) {
+            coroutineScope.launch {
+                loadInfo()
+            }
+        }
+        lifecycle.doOnDestroy {
+            coroutineScope.cancel()
         }
     }
 
+    @Serializable
     data class State(
         val name: String = "",
         val descriptor: String = "",

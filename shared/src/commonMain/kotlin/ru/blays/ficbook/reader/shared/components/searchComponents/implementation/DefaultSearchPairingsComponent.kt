@@ -1,7 +1,6 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +13,7 @@ import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.Se
 import ru.blays.ficbook.reader.shared.data.SearchedCharacterModel
 import ru.blays.ficbook.reader.shared.data.SearchedPairingModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultSearchPairingsComponent(
     componentContext: ComponentContext,
@@ -22,8 +22,9 @@ class DefaultSearchPairingsComponent(
     ComponentContext by componentContext {
     private val repository: ISearchRepo by getKoin().inject()
 
-    private val _state = MutableValue(
-        SearchPairingsComponent.State(
+    private val _state = SaveableMutableValue(
+        serializer = SearchPairingsComponent.State.serializer(),
+        initialValue = SearchPairingsComponent.State(
             searchedCharacters = emptyList(),
             buildedPairing = null,
             selectedPairings = setOf(),

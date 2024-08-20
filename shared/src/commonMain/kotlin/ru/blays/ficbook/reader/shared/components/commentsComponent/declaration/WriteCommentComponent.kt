@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.commentsComponent.declaration
 
 import com.arkivanov.decompose.value.Value
+import kotlinx.serialization.Serializable
 import ru.blays.ficbook.reader.shared.data.dto.CommentBlockModelStable
 
 interface WriteCommentComponent {
@@ -12,6 +13,7 @@ interface WriteCommentComponent {
 
     fun post()
 
+    @Serializable
     data class State(
         val text: String,
         val renderedBlocks: List<CommentBlockModelStable>,

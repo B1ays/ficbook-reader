@@ -6,9 +6,9 @@ import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation.DefaultAuthorFollowComponent
+import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
-import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
 import ru.blays.ficbook.reader.shared.data.dto.AuthorProfileModelStable
 
 @OptIn(ExperimentalDecomposeApi::class)
@@ -70,6 +70,7 @@ interface AuthorProfileComponent {
         data object Collections: TabConfig()
     }
 
+    @Serializable
     data class State(
         val loading: Boolean,
         val error: Boolean,

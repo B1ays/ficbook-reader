@@ -6,20 +6,23 @@ import com.arkivanov.decompose.router.slot.SlotNavigation
 import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
+import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.russhwolf.settings.boolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IChaptersRepo
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.repositiry.ISettingsJsonRepository
 import ru.blays.ficbook.reader.shared.preferences.settings
-import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultMainReaderComponent(
     componentContext: ComponentContext,
@@ -42,8 +45,9 @@ class DefaultMainReaderComponent(
         defaultValue = true
     )
 
-    private val _state = MutableValue(
-        createState(
+    private val _state = SaveableMutableValue(
+        serializer = MainReaderComponent.State.serializer(),
+        initialValue = createState(
             chapters = chapters,
             initialChapterIndex = initialChapterIndex
         )
@@ -78,10 +82,6 @@ class DefaultMainReaderComponent(
     )
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-    init {
-        openChapter(initialChapterIndex)
-    }
 
     override fun sendIntent(intent: MainReaderComponent.Intent) {
         when (intent) {
@@ -245,6 +245,18 @@ class DefaultMainReaderComponent(
     } catch (e: Exception) {
         e.printStackTrace()
         input
+    }
+
+    init {
+        lifecycle.doOnStart(true) {
+            val state = state.value
+            if(state.text.isEmpty() && !state.error) {
+                openChapter(initialChapterIndex)
+            }
+        }
+        lifecycle.doOnDestroy {
+            coroutineScope.cancel()
+        }
     }
 
     companion object {

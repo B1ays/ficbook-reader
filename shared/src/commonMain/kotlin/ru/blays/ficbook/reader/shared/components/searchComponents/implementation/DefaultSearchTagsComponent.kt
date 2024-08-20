@@ -1,7 +1,6 @@
 package ru.blays.ficbook.reader.shared.components.searchComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
 import org.koin.mp.KoinPlatform
@@ -11,6 +10,7 @@ import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.Se
 import ru.blays.ficbook.reader.shared.data.SearchParams
 import ru.blays.ficbook.reader.shared.data.SearchedTagModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.ISearchRepo
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 import kotlin.time.Duration.Companion.seconds
 
 class DefaultSearchTagsComponent(
@@ -20,8 +20,9 @@ class DefaultSearchTagsComponent(
     ComponentContext by componentContext {
     private val repository: ISearchRepo by KoinPlatform.getKoin().inject()
 
-    private val _state = MutableValue(
-        SearchTagsComponent.State(
+    private val _state = SaveableMutableValue(
+        serializer = SearchTagsComponent.State.serializer(),
+        initialValue = SearchTagsComponent.State(
             searchedName = "",
             searchedTags = emptySet(),
             selectedTags = emptySet(),

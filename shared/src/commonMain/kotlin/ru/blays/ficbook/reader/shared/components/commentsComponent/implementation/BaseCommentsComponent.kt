@@ -1,7 +1,6 @@
 package ru.blays.ficbook.reader.shared.components.commentsComponent.implementation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +9,7 @@ import org.koin.mp.KoinPlatform
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.data.repo.declaration.ICommentsRepo
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 abstract class BaseCommentsComponent(
     componentContext: ComponentContext,
@@ -17,8 +17,9 @@ abstract class BaseCommentsComponent(
 ): CommentsComponent, ComponentContext by componentContext {
     val repository: ICommentsRepo = KoinPlatform.getKoin().get()
 
-    internal val _state = MutableValue(
-        CommentsComponent.State(
+    internal val _state = SaveableMutableValue(
+        serializer = CommentsComponent.State.serializer(),
+        initialValue = CommentsComponent.State(
             loading = false,
             error = false,
             errorMessage = null,

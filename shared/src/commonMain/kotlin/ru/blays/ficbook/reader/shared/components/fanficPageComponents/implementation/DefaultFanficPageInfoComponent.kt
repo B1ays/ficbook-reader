@@ -2,10 +2,10 @@ package ru.blays.ficbook.reader.shared.components.fanficPageComponents.implement
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.arkivanov.essenty.lifecycle.doOnStart
 import com.russhwolf.settings.boolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +14,9 @@ import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.UrlProcessor.getUrlForHref
 import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageActionsComponent
+import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageInfoComponent
+import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.InternalFanficPageActionsComponent
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbook.reader.shared.platformUtils.copyToClipboard
@@ -21,9 +24,7 @@ import ru.blays.ficbook.reader.shared.platformUtils.openInBrowser
 import ru.blays.ficbook.reader.shared.platformUtils.shareText
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.settings
-import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageActionsComponent
-import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageInfoComponent
-import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.InternalFanficPageActionsComponent
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultFanficPageInfoComponent(
     componentContext: ComponentContext,
@@ -37,8 +38,9 @@ class DefaultFanficPageInfoComponent(
         defaultValue = false
     )
 
-    private val _state = MutableValue(
-        FanficPageInfoComponent.State(
+    private val _state = SaveableMutableValue(
+        serializer = FanficPageInfoComponent.State.serializer(),
+        initialValue = FanficPageInfoComponent.State(
             reverseOrderEnabled = reverseChaptersOrder
         )
     )
@@ -147,7 +149,12 @@ class DefaultFanficPageInfoComponent(
     }
 
     init {
-        loadPage()
+        lifecycle.doOnStart(true) {
+            val state = state.value
+            if(state.fanfic == null && !state.isError) {
+                loadPage()
+            }
+        }
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }

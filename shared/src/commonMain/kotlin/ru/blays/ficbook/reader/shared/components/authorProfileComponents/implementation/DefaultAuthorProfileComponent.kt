@@ -1,13 +1,13 @@
 package ru.blays.ficbook.reader.shared.components.authorProfileComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.pages.*
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.arkivanov.essenty.lifecycle.doOnStart
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -27,8 +27,8 @@ import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaratio
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.DefaultFanficsListComponent
 import ru.blays.ficbook.reader.shared.data.mappers.toApiModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
+import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
-@OptIn(ExperimentalDecomposeApi::class)
 class DefaultAuthorProfileComponent private constructor(
     componentContext: ComponentContext,
     private val href: String,
@@ -94,8 +94,9 @@ class DefaultAuthorProfileComponent private constructor(
 
     private val authorProfileRepo: IAuthorProfileRepo by KoinJavaComponent.getKoin().inject()
 
-    private val _state: MutableValue<AuthorProfileComponent.State> = MutableValue(
-        AuthorProfileComponent.State(
+    private val _state: MutableValue<AuthorProfileComponent.State> = SaveableMutableValue(
+        serializer = AuthorProfileComponent.State.serializer(),
+        initialValue = AuthorProfileComponent.State(
             loading = true,
             error = false,
             errorMessage = null,
@@ -483,7 +484,12 @@ class DefaultAuthorProfileComponent private constructor(
     }
 
     init {
-        loadProfile()
+        lifecycle.doOnStart(true) {
+            val state = state.value
+            if(state.profile == null && !state.error) {
+                loadProfile()
+            }
+        }
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
             clearComponents()

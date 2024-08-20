@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration
 
 import com.arkivanov.decompose.value.Value
+import kotlinx.serialization.Serializable
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.dto.FanficPageModelStable
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
@@ -58,6 +59,7 @@ interface FanficPageInfoComponent {
         data class OpenAssociatedCollections(val fanficID: String): Output()
     }
 
+    @Serializable
     data class State(
         val fanfic: FanficPageModelStable? = null,
         val reverseOrderEnabled: Boolean,

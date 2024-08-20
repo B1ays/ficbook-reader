@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration
 
 import com.arkivanov.decompose.value.Value
+import kotlinx.serialization.Serializable
 
 interface FanficQuickActionsComponent {
     val state: Value<State>
@@ -14,6 +15,7 @@ interface FanficQuickActionsComponent {
         data object Read: Intent()
     }
 
+    @Serializable
     data class State(
         val liked: Boolean,
         val subscribed: Boolean,

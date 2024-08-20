@@ -1,7 +1,9 @@
 package ru.blays.ficbook.reader.shared.data.dto
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Immutable
 data class CommentModelStable(
     val commentID: String,
@@ -15,12 +17,14 @@ data class CommentModelStable(
     val forFanfic: FanficShortcut?
 )
 
+@Serializable
 @Immutable
 data class CommentBlockModelStable(
     val quote: QuoteModelStable?,
     val text: String
 )
 
+@Serializable
 @Immutable
 data class QuoteModelStable(
     val quote: QuoteModelStable?,
@@ -28,6 +32,7 @@ data class QuoteModelStable(
     val text: String
 )
 
+@Serializable
 @Immutable
 data class FanficShortcut(
     val name: String,

@@ -1,17 +1,13 @@
 package ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration
 
-import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
 import ru.blays.ficbook.reader.shared.data.dto.FanficCardModelStable
 import ru.blays.ficbook.reader.shared.data.dto.SectionWithQuery
-import ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation.FanficsListDialogComponent
 
 interface FanficsListComponent {
 
     val state: Value<State>
-
-    val dialog: Value<ChildSlot<*, FanficsListDialogComponent>>
 
     fun sendIntent(intent: Intent)
     fun onOutput(output: Output)
@@ -32,6 +28,7 @@ interface FanficsListComponent {
         data class OpenAuthor(val href: String) : Output()
     }
 
+    @Serializable
     data class State(
         val section: SectionWithQuery,
         val list: List<FanficCardModelStable>,
