@@ -3,12 +3,8 @@ package ru.blays.ficbook.reader.shared.data.repo.implementation
 import com.russhwolf.settings.boolean
 import com.russhwolf.settings.nullableString
 import io.realm.kotlin.ext.realmListOf
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import okhttp3.Cookie
-import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.api.AuthorizationApi
 import ru.blays.ficbook.api.dataModels.AuthorizationResult
 import ru.blays.ficbook.api.dataModels.LoginModel
@@ -30,12 +26,10 @@ import ru.blays.ficbook.reader.shared.preferences.settings
 import java.io.File
 
 class AuthorizationRepo(
-    private val api: AuthorizationApi
+    private val api: AuthorizationApi,
+    private val cookieStorage: DynamicCookieJar
 ): IAuthorizationRepo {
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     private val _currentUserModel: MutableStateFlow<SavedUserModel?> = MutableStateFlow(null)
-    private val _cookieStorage: DynamicCookieJar by getKoin().inject()
     private var _selectedUserID: String? by settings.nullableString(
         key = SettingsKeys.ACTIVE_USER_ID_KEY
     )
@@ -87,7 +81,7 @@ class AuthorizationRepo(
         if(savedUser == null) return false
         _currentUserModel.value = savedUser.toSavedUserModel()
         _selectedUserID = savedUser.id
-        _cookieStorage.addAll(
+        cookieStorage.addAll(
             savedUser.cookies.map(CookieEntity::toCookie)
         )
         anonymousMode = false
@@ -116,7 +110,7 @@ class AuthorizationRepo(
     override suspend fun migrateDB(): Boolean {
         val savedCookies = getRealm().query(CookieEntity::class).find()
         val cookies = savedCookies.map(CookieEntity::toCookie)
-        _cookieStorage.addAll(cookies)
+        cookieStorage.addAll(cookies)
         return when(
             val checkResult = api.checkAuthorization()
         ) {
@@ -139,23 +133,21 @@ class AuthorizationRepo(
     }
 
     override fun initialize() {
-        coroutineScope.launch {
-            if(!anonymousMode) {
-                val selectedUserId = _selectedUserID ?: return@launch
-                val savedUser = getRealm().query(
-                    UserEntity::class,
-                    "id = $0",
-                    selectedUserId
-                )
-                .first()
-                .find()
+        if(!anonymousMode) {
+            val selectedUserId = _selectedUserID ?: return
+            val savedUser = getRealm().query(
+                UserEntity::class,
+                "id = $0",
+                selectedUserId
+            )
+            .first()
+            .find()
 
-                if(savedUser == null) return@launch
+            if(savedUser == null) return
 
-                _currentUserModel.value = savedUser.toSavedUserModel()
-                val cookies = savedUser.cookies.map(CookieEntity::toCookie)
-                _cookieStorage.addAll(cookies)
-            }
+            _currentUserModel.value = savedUser.toSavedUserModel()
+            val cookies = savedUser.cookies.map(CookieEntity::toCookie)
+            cookieStorage.addAll(cookies)
         }
     }
 
@@ -181,7 +173,7 @@ class AuthorizationRepo(
             id = id,
             name = user.name,
             avatarPath = avatarFile.absolutePath,
-            cookies = _cookieStorage.getAll().mapTo(
+            cookies = cookieStorage.getAll().mapTo(
                 realmListOf(),
                 Cookie::toEntity
             )
