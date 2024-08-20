@@ -107,3 +107,9 @@ android {
         targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
     }
 }
+
+composeCompiler {
+    this.enableStrongSkippingMode = true
+    this.enableIntrinsicRemember = true
+    this.enableNonSkippingGroupOptimization = true
+}
