@@ -10,8 +10,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
@@ -97,13 +99,33 @@ fun SettingsProxyContent(component: SettingsProxyComponent) {
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                SettingsSwitchWithTitle(
-                    title = stringResource(Res.string.proxy_enabled),
-                    state = state.enabled
-                ) { newValue ->
-                    component.sendIntent(
-                        SettingsProxyComponent.Intent.ChangeProxyEnabled(newValue)
-                    )
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    onClick = {
+                        component.sendIntent(
+                            SettingsProxyComponent.Intent.ChangeProxyEnabled(!state.enabled)
+                        )
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier.weight(1F),
+                            text = stringResource(Res.string.proxy_enabled),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 20.sp
+                        )
+                        Switch(
+                            checked = state.enabled,
+                            onCheckedChange = null
+                        )
+                    }
                 }
                 val checkedIndex = if(useCustomProxy) 1 else 0
                 SettingsRadioButtonWithTitle(
