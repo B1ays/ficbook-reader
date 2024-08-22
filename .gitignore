@@ -30,3 +30,4 @@ venv
 /.kotlin/
 /keystore.jks
 /keystore.properties
+/proxy.properties

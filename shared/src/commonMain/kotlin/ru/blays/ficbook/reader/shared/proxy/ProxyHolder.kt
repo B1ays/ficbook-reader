@@ -2,6 +2,7 @@ package ru.blays.ficbook.reader.shared.proxy
 
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.serialization.decodeValueOrNull
+import kotlinx.serialization.ExperimentalSerializationApi
 import okhttp3.Authenticator
 import okhttp3.Credentials
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
@@ -17,7 +18,7 @@ interface IProxyHolder {
     fun disable()
 }
 
-
+@OptIn(ExperimentalSerializationApi::class)
 class ProxyHolder private constructor() : ProxySelector(), IProxyHolder {
     private var currentProxyList: List<Proxy>? = null
     private var passwordAuthentication: PasswordAuthentication? = null
@@ -37,8 +38,7 @@ class ProxyHolder private constructor() : ProxySelector(), IProxyHolder {
                     setUpConfig(config)
                 }
             } else {
-                val defaultConfig = ProxyData.defaultSocksProxyConfig
-                setUpConfig(defaultConfig)
+                setUpConfig(defaultProxyConfig)
             }
         }
 

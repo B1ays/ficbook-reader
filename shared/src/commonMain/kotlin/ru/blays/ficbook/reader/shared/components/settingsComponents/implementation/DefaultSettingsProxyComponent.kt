@@ -20,7 +20,7 @@ import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.json.ProxyConfig
 import ru.blays.ficbook.reader.shared.proxy.IProxyHolder
-import ru.blays.ficbook.reader.shared.proxy.ProxyData
+import ru.blays.ficbook.reader.shared.proxy.defaultProxyConfig
 
 class DefaultSettingsProxyComponent(
     componentContext: ComponentContext,
@@ -36,6 +36,7 @@ class DefaultSettingsProxyComponent(
     override val state: StateFlow<SettingsProxyComponent.State>
         get() = _state.asStateFlow()
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun sendIntent(intent: SettingsProxyComponent.Intent) {
         when (intent) {
             is SettingsProxyComponent.Intent.ChangeProxyEnabled -> {
@@ -48,7 +49,7 @@ class DefaultSettingsProxyComponent(
                     if (currentState.usedCustom) {
                         currentState.customProxyConfig?.let(proxyHolder::setUpConfig)
                     } else {
-                        proxyHolder.setUpConfig(ProxyData.defaultSocksProxyConfig)
+                        proxyHolder.setUpConfig(defaultProxyConfig)
                     }
                 } else {
                     proxyHolder.disable()
@@ -86,7 +87,7 @@ class DefaultSettingsProxyComponent(
                 if(currentState.usedCustom) {
                     settings.putBoolean(SettingsKeys.PROXY_USE_CUSTOM_KEY, false)
                     if(currentState.enabled) {
-                        proxyHolder.setUpConfig(ProxyData.defaultSocksProxyConfig)
+                        proxyHolder.setUpConfig(defaultProxyConfig)
                     }
                 }
             }

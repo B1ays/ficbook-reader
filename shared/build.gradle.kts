@@ -1,8 +1,10 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.*
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -97,15 +99,27 @@ android {
     }
 }
 
+val proxyPropsFile = rootProject.file("proxy.properties")
+val proxyProps = Properties().apply {
+    load(proxyPropsFile.reader())
+}
+
 buildkonfig {
     packageName = libs.versions.applicationId.get()
-    // objectName = "YourAwesomeConfig"
-     exposeObjectWithName = "SharedBuildKonfig"
+    exposeObjectWithName = "SharedBuildKonfig"
 
     defaultConfigs {
+        // Application info
         buildConfigField(STRING, "versionName", libs.versions.projectVersion.get(), const = true)
         buildConfigField(STRING, "versionNameFull", libs.versions.projectVersion.get() + libs.versions.versionNameSuffix.get(), const = true)
         buildConfigField(STRING, "versionCode", libs.versions.versionCode.get(), const = true)
         buildConfigField(STRING, "applicationId", libs.versions.applicationId.get(), const = true)
+
+        // Proxy config
+        buildConfigField(STRING, "proxyHost", proxyProps["hostname"] as String, const = true)
+        buildConfigField(INT, "proxyPort", proxyProps["port"] as String, const = true)
+        buildConfigField(STRING, "proxyType", proxyProps["type"] as String, const = true)
+        buildConfigField(STRING, "proxyUsername", proxyProps["username"] as String, const = true)
+        buildConfigField(STRING, "proxyPassword", proxyProps["password"] as String, const = true)
     }
 }
