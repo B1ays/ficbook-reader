@@ -62,18 +62,10 @@ data class FanficShortcut(
 
 @Serializable
 data class CommentMetadata(
-    @SerialName("avatar_decoration_style")
-    val avatarDecorationStyle: String,
-    @SerialName("comment")
-    val comment: String,
     @SerialName("date_create")
     val dateCreate: String,
     @SerialName("fanfic_id")
     val fanficId: Int,
-    @SerialName("fanfic_slug")
-    val fanficSlug: String,
-    @SerialName("free_rewards")
-    val freeRewards: Int,
     @SerialName("id")
     val id: Int,
     @SerialName("likeBadges")
@@ -82,22 +74,8 @@ data class CommentMetadata(
     val likeCnt: Int,
     @SerialName("liked")
     val liked: Boolean,
-    @SerialName("name")
-    val name: String?,
     @SerialName("part_id")
     val partId: Int,
-    @SerialName("user_avatar")
-    val userAvatar: String,
-    @SerialName("user_id")
-    val userId: Int,
-    @SerialName("user_is_premium")
-    val userIsPremium: Boolean,
-    @SerialName("user_slug")
-    val userSlug: String,
-    @SerialName("user_status")
-    val userStatus: Int,
-    @SerialName("user_username")
-    val userUsername: String
 ) {
     @Serializable
     data class LikeBadge(

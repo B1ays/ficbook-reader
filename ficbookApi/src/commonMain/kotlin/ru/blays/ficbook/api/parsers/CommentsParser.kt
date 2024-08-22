@@ -11,7 +11,7 @@ import ru.blays.ficbook.api.json
 
 internal class CommentListParser {
     suspend fun parse(data: Document): Elements {
-        return data.select(".comment-container")
+        return data.select("article.comment-container")
     }
 }
 
