@@ -11,7 +11,7 @@ import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.androidPredictiveBackAnimatable
 import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.predictiveBackAnimation
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
-import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeDefaults
 import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ok
 import org.jetbrains.compose.resources.stringResource
@@ -42,8 +42,7 @@ fun RootContent(component: RootComponent) {
     val glassEffectConfig by component.glassEffectConfig.collectAsState()
     val backgroundColor = MaterialTheme.colorScheme.background
     val hazeStyle = remember(glassEffectConfig, backgroundColor) {
-        HazeStyle(
-            tint = backgroundColor.copy(alpha = glassEffectConfig.alpha),
+        HazeDefaults.style(
             blurRadius = glassEffectConfig.blurRadius.dp,
             noiseFactor = glassEffectConfig.noiseFactor,
             backgroundColor = backgroundColor
