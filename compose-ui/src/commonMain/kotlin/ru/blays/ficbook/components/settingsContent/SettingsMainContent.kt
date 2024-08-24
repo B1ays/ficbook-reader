@@ -1,4 +1,4 @@
-package ru.blays.ficbook.components.settings
+package ru.blays.ficbook.components.settingsContent
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -28,7 +28,6 @@ import ru.blays.ficbook.platformUtils.WindowSize
 import ru.blays.ficbook.platformUtils.scaleContent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsUnitComponent
-import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
 import ru.blays.ficbook.theme.defaultAccentColors
 import ru.blays.ficbook.ui_components.LazyItems.itemWithHeader
@@ -38,7 +37,6 @@ import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
 import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
-
 
 @Composable
 fun SettingsMainContent(component: SettingsMainComponent) {
@@ -73,7 +71,9 @@ fun SettingsMainContent(component: SettingsMainComponent) {
                         )
                     }
                 },
-                collapsingTitle = CollapsingTitle.small("Настройки"),
+                collapsingTitle = CollapsingTitle.small(
+                    stringResource(Res.string.toolbar_title_settings)
+                ),
                 containerColor = if(blurConfig.blurEnabled) {
                     Color.Transparent
                 } else {
@@ -130,7 +130,11 @@ fun SettingsMainContent(component: SettingsMainComponent) {
                             SettingsMainComponent.Output.ProxySettings
                         )
                     }
-                    SuperfilterSetting(component.superfilterSetting)
+                    SuperfilterSetting {
+                        component.onOutput(
+                            SettingsMainComponent.Output.Superfilter
+                        )
+                    }
                     AutoVoteSetting(component.autoVoteSetting)
                     TypografSetting(component.typografSetting)
                     if(component.chromeCustomTabsSetting != null) {
@@ -273,55 +277,14 @@ private fun ProxySettings(
 }
 
 @Composable
-private fun SuperfilterSetting(component: SettingsUnitComponent<String>) {
-    val state by component.state.collectAsState()
-    val icon = painterResource(Res.drawable.ic_filter_outlined)
-    val selectedDirections: List<FanficDirection> = remember(state) {
-        val directionNames = state
-            .removeSuffix(",")
-            .split(",")
-
-        directionNames.map(FanficDirection::getForName)
-    }
-
-    fun newValue(
-        direction: FanficDirection,
-        add: Boolean,
-        list: List<FanficDirection>
-    ): String {
-        return if (add) {
-            list + direction
-        } else {
-            list.filterNot { it == direction }
-        }.joinToString("") { it.name + ',' }
-    }
-
-    SettingsExpandableCard(
+private fun SuperfilterSetting(onClick: () -> Unit) {
+    SettingsClickableCard(
         title = stringResource(Res.string.setting_title_superfilter),
         subtitle = stringResource(Res.string.setting_subtitle_superfilter),
-        icon = icon,
+        icon = painterResource(Res.drawable.ic_filter_outlined),
         shape = CardShape.CardStart,
-    ) {
-        FanficDirection.entries
-            .filterNot { it == FanficDirection.UNKNOWN }
-            .forEach { direction ->
-                SettingsCheckboxWithTitle(
-                    title = direction.direction,
-                    state = direction in selectedDirections
-                ) { add ->
-                    val newValue = newValue(
-                        direction = direction,
-                        add = add,
-                        list = selectedDirections
-                    )
-                    component.onIntent(
-                        SettingsUnitComponent.Intent.ChangeValue(
-                            value = newValue
-                        )
-                    )
-                }
-            }
-    }
+        onClick = onClick
+    )
 }
 
 @Composable

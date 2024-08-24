@@ -8,9 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.androidPredictiveBackAnimatable
-import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.predictiveBackAnimation
-import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import dev.chrisbanes.haze.HazeDefaults
 import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ok
@@ -24,7 +21,7 @@ import ru.blays.ficbook.components.landingScreenContent.LandingScreenContent
 import ru.blays.ficbook.components.main.MainContent
 import ru.blays.ficbook.components.notifications.NotificationsContent
 import ru.blays.ficbook.components.searchContent.SearchContent
-import ru.blays.ficbook.components.settings.SettingsRootContent
+import ru.blays.ficbook.components.settingsContent.SettingsRootContent
 import ru.blays.ficbook.components.userProfile.UserProfileRootContent
 import ru.blays.ficbook.components.users.UsersRootContent
 import ru.blays.ficbook.platformUtils.landscapeInsetsPadding
@@ -34,7 +31,7 @@ import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost.
 import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
 import ru.blays.ficbook.utils.BlurConfig
 import ru.blays.ficbook.utils.LocalGlassEffectConfig
-import ru.blays.ficbook.utils.LocalStackAnimator
+import ru.blays.ficbook.utils.defaultPredictiveAnimation
 
 @OptIn(ExperimentalDecomposeApi::class)
 @Composable
@@ -68,9 +65,7 @@ fun RootContent(component: RootComponent) {
                             message = visuals.message
                         )
                     }
-                    else -> {
-                        Snackbar(data)
-                    }
+                    else -> { Snackbar(data) }
                 }
             }
         }
@@ -83,11 +78,9 @@ fun RootContent(component: RootComponent) {
         ) {
             Children(
                 stack = component.childStack,
-                animation = predictiveBackAnimation(
+                animation = defaultPredictiveAnimation(
                     backHandler = component.backHandler,
-                    fallbackAnimation = stackAnimation(LocalStackAnimator.current),
-                    selector = { backEvent, _, _ -> androidPredictiveBackAnimatable(backEvent) },
-                    onBack = component::navigateBack,
+                    onBack = component::navigateBack
                 ),
                 modifier = Modifier.landscapeInsetsPadding()
             ) {

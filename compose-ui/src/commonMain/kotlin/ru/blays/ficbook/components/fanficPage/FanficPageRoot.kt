@@ -4,21 +4,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import ru.blays.ficbook.components.collectionContent.CollectionsScreenContent
 import ru.blays.ficbook.components.commentsContent.CommentsScreenContent
 import ru.blays.ficbook.components.commentsContent.PartCommentsContent
 import ru.blays.ficbook.components.fanficPage.reader.FanficReaderContent
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageComponent
-import ru.blays.ficbook.utils.LocalStackAnimator
+import ru.blays.ficbook.utils.defaultStackAnimation
 
 @Composable
 fun FanficPageContent(component: FanficPageComponent) {
-    val animator = LocalStackAnimator.current
     Children(
         stack = component.childStack,
         modifier = Modifier.fillMaxSize(),
-        animation = stackAnimation(animator)
+        animation = defaultStackAnimation()
     ) {
         when(val child = it.instance) {
             is FanficPageComponent.Child.Info -> FanficPageInfoContent(child.component)

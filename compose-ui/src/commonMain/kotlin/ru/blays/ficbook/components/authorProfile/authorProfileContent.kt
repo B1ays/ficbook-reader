@@ -47,7 +47,7 @@ import ru.blays.ficbook.reader.shared.data.dto.BlogPostCardModelStable
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.ui_components.Text.HyperlinkText
 import ru.blays.ficbook.ui_components.decomposePager.Pages
-import ru.blays.ficbook.utils.LocalStackAnimator
+import ru.blays.ficbook.utils.defaultStackAnimation
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.values.DefaultPadding
 import ru.blays.ficbook.values.Zero
@@ -500,10 +500,9 @@ private fun ProfileMainInfo(component: AuthorProfileComponent) {
 private fun BlogPostsRoot(
     component: AuthorBlogComponent
 ) {
-    val animator = LocalStackAnimator.current
     Children(
         stack = component.childStack,
-        animation = stackAnimation(animator),
+        animation = defaultStackAnimation(),
         modifier = Modifier.fillMaxSize()
     ) {
         when(

@@ -13,8 +13,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.koin.java.KoinJavaComponent.inject
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
@@ -22,9 +22,9 @@ import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaratio
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponentInternal
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarMessageType
-import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
 import ru.blays.ficbook.reader.shared.data.mappers.toStableModel
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficsListRepo
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IFiltersRepo
 import ru.blays.ficbook.reader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.repositiry.ISettingsRepository
@@ -35,8 +35,12 @@ class DefaultFanficsListComponent(
     section: SectionWithQuery,
     loadAtCreate: Boolean = true,
     private val output: (output: FanficsListComponent.Output) -> Unit
-): FanficsListComponentInternal, ComponentContext by componentContext {
-    val repository: IFanficsListRepo by getKoin().inject()
+): FanficsListComponentInternal, ComponentContext by componentContext, KoinComponent {
+    private val fanficsRepository: IFanficsListRepo by inject()
+    private val filtersRepository: IFiltersRepo by inject()
+    private val settingsRepository: ISettingsRepository by inject()
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val _quickActionComponents: MutableMap<String, FanficQuickActionsComponent> = mutableMapOf()
 
@@ -64,15 +68,6 @@ class DefaultFanficsListComponent(
 
     private var hasNextPage: Boolean = true
     private var nextPage: Int = 1
-
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-    private val settingsRepository: ISettingsRepository by inject(ISettingsRepository::class.java)
-
-    private val superfilterSetting: String by settingsRepository.getDelegate(
-        key = ISettingsRepository.stringKey(SettingsKeys.SUPERFILTER_KEY),
-        defaultValue = ""
-    )
 
     override fun sendIntent(intent: FanficsListComponent.Intent) {
         when(intent) {
@@ -113,7 +108,7 @@ class DefaultFanficsListComponent(
                 _state.update {
                     it.copy(isLoading = true)
                 }
-                val result = repository.get(
+                val result = fanficsRepository.get(
                     section = state.value.section,
                     page = nextPage
                 )
@@ -129,20 +124,14 @@ class DefaultFanficsListComponent(
                         }
                     }
                     is ApiResult.Success -> {
-                        val deniedDirections = superfilterSetting
-                            .removeSuffix(",")
-                            .split(",")
-                            .map(FanficDirection::getForName)
-
                         val fanfics = result.value.list
                         val hasNextPage = result.value.hasNextPage
 
                         this@DefaultFanficsListComponent.nextPage += 1
                         this@DefaultFanficsListComponent.hasNextPage = hasNextPage
 
-                        val filteredFanfics = fanfics.filterNot {
-                            it.status.direction in deniedDirections
-                        }
+                        val filter = filtersRepository.getFilter()
+                        val filteredFanfics = fanfics.filter(filter::filter)
 
                         _state.update {
                             it.copy(

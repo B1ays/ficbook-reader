@@ -2,13 +2,13 @@ package ru.blays.ficbook.reader.shared.components.settingsComponents.implementat
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
+import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsUnitComponent
 import ru.blays.ficbook.reader.shared.platformUtils.customTabsSupported
 import ru.blays.ficbook.reader.shared.platformUtils.dynamicColorSupported
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.json.GlassEffectConfig
 import ru.blays.ficbook.reader.shared.preferences.repositiry.ISettingsRepository
-import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
-import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsUnitComponent
 
 class DefaultSettingsMainComponent(
     componentContext: ComponentContext,
@@ -61,11 +61,6 @@ class DefaultSettingsMainComponent(
         defaultValue = GlassEffectConfig.DEFAULT.noiseFactor
     )
 
-    override val superfilterSetting = DefaultSettingsUnitComponent(
-        componentContext = childContext("superfilter_component"),
-        key = ISettingsRepository.stringKey(SettingsKeys.SUPERFILTER_KEY),
-        defaultValue = ""
-    )
     override val autoVoteSetting = DefaultSettingsUnitComponent(
         componentContext = childContext("auto_vote_component"),
         key = ISettingsRepository.booleanKey(SettingsKeys.AUTO_VOTE_FOR_CONTINUE),

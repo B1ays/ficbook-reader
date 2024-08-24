@@ -10,7 +10,7 @@ data class FanficCardModel(
     val status: FanficStatus,
     val author: UserModel,
     val originalAuthor: UserModel?,
-    val fandom: List<FandomModel>,
+    val fandoms: List<FandomModel>,
     val pairings: List<PairingModel>,
     val updateDate: String,
     val size: String,

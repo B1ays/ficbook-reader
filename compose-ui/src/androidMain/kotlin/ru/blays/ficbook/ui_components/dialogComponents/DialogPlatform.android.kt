@@ -1,4 +1,4 @@
-package ru.blays.ficbook.components.searchContent
+package ru.blays.ficbook.ui_components.dialogComponents
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable

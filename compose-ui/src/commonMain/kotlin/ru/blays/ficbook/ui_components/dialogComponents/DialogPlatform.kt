@@ -1,4 +1,4 @@
-package ru.blays.ficbook.components.searchContent
+package ru.blays.ficbook.ui_components.dialogComponents
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

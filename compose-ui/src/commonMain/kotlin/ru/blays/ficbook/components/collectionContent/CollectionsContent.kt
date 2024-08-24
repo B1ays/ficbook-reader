@@ -28,8 +28,8 @@ import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.components.searchContent.DialogPlatform
-import ru.blays.ficbook.components.settings.SettingsSwitchWithTitle
+import ru.blays.ficbook.ui_components.dialogComponents.DialogPlatform
+import ru.blays.ficbook.components.settingsContent.SettingsSwitchWithTitle
 import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
 import ru.blays.ficbook.reader.shared.data.dto.CollectionCardModelStable
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu

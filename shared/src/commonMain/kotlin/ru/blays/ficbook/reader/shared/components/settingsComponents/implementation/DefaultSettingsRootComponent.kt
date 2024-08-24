@@ -4,10 +4,12 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.stack.pushNew
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsProxyComponent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsRootComponent
+import ru.blays.ficbook.reader.shared.components.superfilterComponents.DefaultSuperfilterComponent
+import ru.blays.ficbook.reader.shared.components.superfilterComponents.SuperfilterComponent
 
 class DefaultSettingsRootComponent(
     componentContext: ComponentContext,
@@ -22,6 +24,10 @@ class DefaultSettingsRootComponent(
         serializer = SettingsRootComponent.Configuration.serializer(),
         childFactory = ::childFactory
     )
+
+    override fun onNavigateBack() {
+        navigation.pop()
+    }
 
     private fun childFactory(
         configuration: SettingsRootComponent.Configuration,
@@ -40,6 +46,12 @@ class DefaultSettingsRootComponent(
                     onOutput = ::onProxySettingsOutput
                 )
             )
+            SettingsRootComponent.Configuration.Superfilter -> SettingsRootComponent.Child.Superfilter(
+                DefaultSuperfilterComponent(
+                    componentContext = childContext,
+                    onOutput = ::onSuperfilterOutput
+                )
+            )
         }
     }
 
@@ -49,13 +61,22 @@ class DefaultSettingsRootComponent(
                 onOutput.invoke(SettingsRootComponent.Output.NavigateBack)
             }
             SettingsMainComponent.Output.ProxySettings -> {
-                navigation.push(SettingsRootComponent.Configuration.ProxySettings)
+                navigation.pushNew(SettingsRootComponent.Configuration.ProxySettings)
+            }
+            SettingsMainComponent.Output.Superfilter -> {
+                navigation.pushNew(SettingsRootComponent.Configuration.Superfilter)
             }
         }
     }
     private fun onProxySettingsOutput(output: SettingsProxyComponent.Output) {
         when(output) {
             SettingsProxyComponent.Output.NavigateBack -> navigation.pop()
+        }
+    }
+
+    private fun onSuperfilterOutput(output: SuperfilterComponent.Output) {
+        when(output) {
+            SuperfilterComponent.Output.NavigateBack -> navigation.pop()
         }
     }
 }

@@ -314,9 +314,9 @@ fun FanficCard2(
                     contentDescription = stringResource(Res.string.content_description_icon_book_opened)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                fanfic.fandom.forEachIndexed { index, it ->
+                fanfic.fandoms.forEachIndexed { index, it ->
                     Text(
-                        text = it.name.let { if (index != fanfic.fandom.lastIndex) "$it," else it },
+                        text = it.name.let { if (index != fanfic.fandoms.lastIndex) "$it," else it },
                         style = MaterialTheme.typography.labelLarge,
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable {

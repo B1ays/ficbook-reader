@@ -51,6 +51,7 @@ import ru.blays.ficbook.ui_components.LazyItems.items
 import ru.blays.ficbook.ui_components.Tabs.CustomTab
 import ru.blays.ficbook.ui_components.Tabs.CustomTabIndicator
 import ru.blays.ficbook.ui_components.Tabs.CustomTabRow
+import ru.blays.ficbook.ui_components.dialogComponents.DialogPlatform
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.utils.LocalGlassEffectConfig

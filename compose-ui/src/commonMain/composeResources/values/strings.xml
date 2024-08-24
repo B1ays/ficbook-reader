@@ -10,6 +10,8 @@
     <string name="toolbar_title_profile">Профиль</string>
     <string name="toolbar_title_authors">Авторы</string>
     <string name="toolbar_title_about">О приложении</string>
+    <string name="toolbar_title_settings">Настройки</string>
+    <string name="toolbar_title_superfilter">Суперфильтр</string>
 
     <!--  Common  -->
     <string name="reset">Сбросить</string>
@@ -55,6 +57,7 @@
     <string name="anonymous_user">Анонимный пользователь</string>
     <string name="cover_copied">Обложка скопирована в буфер обмена</string>
     <string name="sort">Сортировка</string>
+    <string name="blacklist_empty">Чёрный список пуст</string>
 
     <!--  Author profile screen  -->
     <string name="author_profile_tab_main">Информация</string>
@@ -245,7 +248,7 @@
     <string name="setting_title_accent">Цвет акцента</string>
     <string name="setting_subtitle_accent">Выбрать цвет акцента</string>
     <string name="setting_title_superfilter">Суперфильтр фанфиков</string>
-    <string name="setting_subtitle_superfilter">Скрыть выбранные направленности</string>
+    <string name="setting_subtitle_superfilter">Скрытие фанфиков по различным параметрам</string>
     <string name="setting_title_auto_vote">Авто-голосование</string>
     <string name="setting_subtitle_auto_vote">Автоматически ставить "Жду продолжения"</string>
     <string name="setting_title_custom_tabs">Chrome Custom Tabs</string>
@@ -317,6 +320,12 @@
     <string name="proxy_username">Имя пользователя</string>
     <string name="proxy_password">Пароль</string>
 
+    <!--  Superfilter  -->
+    <string name="superfilter_category_authors">Авторы</string>
+    <string name="superfilter_category_fandoms">Фэндомы</string>
+    <string name="superfilter_category_tags">Метки</string>
+    <string name="superfilter_category_directions">Направленности</string>
+
     <!--  Content descriptions  -->
     <string name="content_description_fanfic_cover">Обложка фанфика</string>
     <string name="content_description_icon_author_avatar">Аватарка автора</string>
@@ -366,6 +375,7 @@
     <string name="content_description_icon_info">Иконка информации</string>
     <string name="content_description_icon_stack">Иконка сборника</string>
     <string name="content_description_icon_stack_plus">Иконка стопки с плюсом</string>
+    <string name="content_description_icon_filter_crossed">Иконка перечёркнутого фильтра</string>
 
     <!--  Errors  -->
     <string name="error_something_went_wrong">Что-то пошло не так</string>

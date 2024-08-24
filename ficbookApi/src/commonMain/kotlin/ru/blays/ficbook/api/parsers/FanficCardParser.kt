@@ -211,7 +211,7 @@ internal class FanficCardParser {
             ),
             author = author,
             originalAuthor = originalAuthor,
-            fandom = fandom,
+            fandoms = fandom,
             pairings = pairings,
             updateDate = updateDate,
             size = size,

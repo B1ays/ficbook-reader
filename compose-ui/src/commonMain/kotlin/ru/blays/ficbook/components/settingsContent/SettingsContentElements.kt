@@ -1,4 +1,4 @@
-package ru.blays.ficbook.components.settings
+package ru.blays.ficbook.components.settingsContent
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloat

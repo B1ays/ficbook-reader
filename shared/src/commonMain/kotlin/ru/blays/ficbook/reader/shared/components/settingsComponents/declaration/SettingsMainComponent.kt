@@ -13,7 +13,6 @@ interface SettingsMainComponent {
     val blurRadius: SettingsUnitComponent<Float>
     val blurNoiseFactor: SettingsUnitComponent<Float>
 
-    val superfilterSetting: SettingsUnitComponent<String>
     val autoVoteSetting: SettingsUnitComponent<Boolean>
     val chromeCustomTabsSetting: SettingsUnitComponent<Boolean>?
     val typografSetting: SettingsUnitComponent<Boolean>
@@ -23,5 +22,6 @@ interface SettingsMainComponent {
     sealed class Output {
         data object NavigateBack: Output()
         data object ProxySettings: Output()
+        data object Superfilter: Output()
     }
 }
