@@ -35,6 +35,7 @@ sealed class CollectionCardModelStable {
 @Serializable
 @Stable
 sealed class CollectionPageModelStable {
+    @Serializable
     @Stable
     data class Own(
         override val name: String,
@@ -42,6 +43,7 @@ sealed class CollectionPageModelStable {
         override val filterParams: CollectionFilterParamsStable
     ): CollectionPageModelStable()
 
+    @Serializable
     @Stable
     data class Other(
         override val name: String,
@@ -70,6 +72,7 @@ sealed class CollectionPageModelStable {
     abstract val filterParams: CollectionFilterParamsStable
 }
 
+@Serializable
 @Immutable
 data class CollectionFilterParamsStable(
     val availableSortParams: List<Pair<String, String>>,
