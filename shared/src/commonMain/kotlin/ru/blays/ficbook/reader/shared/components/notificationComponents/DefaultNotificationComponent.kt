@@ -8,15 +8,20 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
+import com.arkivanov.essenty.lifecycle.doOnStart
+import com.arkivanov.essenty.statekeeper.ExperimentalStateKeeperApi
+import com.arkivanov.essenty.statekeeper.saveable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.serialization.builtins.serializer
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.data.dto.NotificationType
 import ru.blays.ficbook.reader.shared.data.repo.declaration.INotificationsRepo
 
+@OptIn(ExperimentalStateKeeperApi::class)
 class DefaultNotificationComponent(
     componentContext: ComponentContext,
     private val output: (output: NotificationComponent.Output) -> Unit
@@ -38,7 +43,11 @@ class DefaultNotificationComponent(
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private var nextPage: Int = 1
+    private var nextPage: Int by saveable(
+        serializer = Int.serializer(),
+        key = NEXT_PAGE_KEY,
+        init = { 1 }
+    )
 
     override val state get() = _state
 
@@ -138,11 +147,6 @@ class DefaultNotificationComponent(
         }
     }
 
-    fun init() {
-        getAvailableCategories()
-        loadNextPage()
-    }
-
     private fun deleteAll() {
         coroutineScope.launch {
             when(
@@ -182,7 +186,6 @@ class DefaultNotificationComponent(
                         )
                     }
                 }
-
                 is ApiResult.Success -> {
                     _state.update {
                         it.copy(
@@ -215,10 +218,21 @@ class DefaultNotificationComponent(
         }
     }
 
+    fun init() {
+        getAvailableCategories()
+        loadNextPage()
+    }
+
     init {
-        init()
+        lifecycle.doOnStart(true) {
+            init()
+        }
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }
+    }
+
+    companion object {
+        private const val NEXT_PAGE_KEY = "next_page"
     }
 }

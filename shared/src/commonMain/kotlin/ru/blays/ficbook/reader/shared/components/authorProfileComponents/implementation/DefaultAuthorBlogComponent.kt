@@ -10,10 +10,13 @@ import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
+import com.arkivanov.essenty.statekeeper.ExperimentalStateKeeperApi
+import com.arkivanov.essenty.statekeeper.saveable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.serialization.builtins.serializer
 import org.koin.java.KoinJavaComponent
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogComponent
@@ -96,6 +99,7 @@ class DefaultAuthorBlogComponent(
     }
 }
 
+@OptIn(ExperimentalStateKeeperApi::class)
 class DefaultAuthorBlogPosts(
     componentContext: ComponentContext,
     private val authorProfileRepo: IAuthorProfileRepo,
@@ -116,8 +120,16 @@ class DefaultAuthorBlogPosts(
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private var nextPage: Int = 1
-    private var hasNextPage = true
+    private var hasNextPage by saveable(
+        serializer = Boolean.serializer(),
+        key = HAS_NEXT_PAGE_KEY,
+        init = { true }
+    )
+    private var nextPage: Int by saveable(
+        serializer = Int.serializer(),
+        key = NEXT_PAGE_KEY,
+        init = { 1 }
+    )
 
     override fun onOutput(output: AuthorBlogPostsComponent.Output) {
         this.output(output)
@@ -152,6 +164,7 @@ class DefaultAuthorBlogPosts(
                 }
                 is ApiResult.Success -> {
                     hasNextPage = result.value.hasNextPage
+                    nextPage++
                     _state.update {
                         val posts = it.posts + result.value.list
                         it.copy(
@@ -160,7 +173,6 @@ class DefaultAuthorBlogPosts(
                             posts = posts
                         )
                     }
-                    nextPage++
                 }
             }
         }
@@ -173,6 +185,11 @@ class DefaultAuthorBlogPosts(
                 loadPage(nextPage)
             }
         }
+    }
+
+    companion object {
+        private const val HAS_NEXT_PAGE_KEY = "has_next_page"
+        private const val NEXT_PAGE_KEY = "next_page"
     }
 }
 

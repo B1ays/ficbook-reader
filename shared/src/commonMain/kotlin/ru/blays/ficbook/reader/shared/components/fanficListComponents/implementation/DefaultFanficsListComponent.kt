@@ -7,10 +7,13 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
+import com.arkivanov.essenty.statekeeper.ExperimentalStateKeeperApi
+import com.arkivanov.essenty.statekeeper.saveable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
@@ -30,6 +33,7 @@ import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.repositiry.ISettingsRepository
 import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
+@OptIn(ExperimentalStateKeeperApi::class)
 class DefaultFanficsListComponent(
     componentContext: ComponentContext,
     section: SectionWithQuery,
@@ -39,6 +43,8 @@ class DefaultFanficsListComponent(
     private val fanficsRepository: IFanficsListRepo by inject()
     private val filtersRepository: IFiltersRepo by inject()
     private val settingsRepository: ISettingsRepository by inject()
+
+    private val filter = filtersRepository.getFilter()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -66,8 +72,16 @@ class DefaultFanficsListComponent(
 
     override val state get() = _state
 
-    private var hasNextPage: Boolean = true
-    private var nextPage: Int = 1
+    private var hasNextPage: Boolean by saveable(
+        serializer = Boolean.serializer(),
+        key = HAS_NEXT_PAGE_KEY,
+        init = { true }
+    )
+    private var nextPage: Int by saveable(
+        serializer = Int.serializer(),
+        key = NEXT_PAGE_KEY,
+        init = { 1 }
+    )
 
     override fun sendIntent(intent: FanficsListComponent.Intent) {
         when(intent) {
@@ -124,14 +138,10 @@ class DefaultFanficsListComponent(
                         }
                     }
                     is ApiResult.Success -> {
-                        val fanfics = result.value.list
-                        val hasNextPage = result.value.hasNextPage
+                        nextPage++
+                        hasNextPage = result.value.hasNextPage
 
-                        this@DefaultFanficsListComponent.nextPage += 1
-                        this@DefaultFanficsListComponent.hasNextPage = hasNextPage
-
-                        val filter = filtersRepository.getFilter()
-                        val filteredFanfics = fanfics.filter(filter::filter)
+                        val filteredFanfics = result.value.list.filter(filter::filter)
 
                         _state.update {
                             it.copy(
@@ -168,5 +178,10 @@ class DefaultFanficsListComponent(
         lifecycle.doOnDestroy {
             coroutineScope.cancel()
         }
+    }
+
+    companion object {
+        private const val HAS_NEXT_PAGE_KEY = "has_next_page"
+        private const val NEXT_PAGE_KEY = "next_page"
     }
 }

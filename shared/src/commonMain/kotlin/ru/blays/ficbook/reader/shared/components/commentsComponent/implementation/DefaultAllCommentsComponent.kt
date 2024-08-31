@@ -37,14 +37,13 @@ class DefaultAllCommentsComponent(
                         }
                     }
                     is ApiResult.Success -> {
-                        val value = result.value
-                        this@DefaultAllCommentsComponent.nextPage += 1
-                        hasNextPage = value.hasNextPage
+                        nextPage++
+                        hasNextPage = result.value.hasNextPage
                         _state.update {
                             it.copy(
                                 loading = false,
                                 error = false,
-                                comments = it.comments + value.list,
+                                comments = it.comments + result.value.list,
                             )
                         }
                     }
