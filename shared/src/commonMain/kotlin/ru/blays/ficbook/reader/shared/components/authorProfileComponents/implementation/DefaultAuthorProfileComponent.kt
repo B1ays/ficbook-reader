@@ -12,7 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.api.dataModels.AuthorProfileTabs
 import ru.blays.ficbook.api.result.ApiResult
@@ -53,7 +54,7 @@ class DefaultAuthorProfileComponent private constructor(
         output: (output: FanficsListComponent.Output) -> Unit
     ) -> FanficsListComponent,
     private val output: (output: AuthorProfileComponent.Output) -> Unit
-) : AuthorProfileComponent, ComponentContext by componentContext {
+) : AuthorProfileComponent, ComponentContext by componentContext, KoinComponent {
     constructor(
         componentContext: ComponentContext,
         href: String,
@@ -92,7 +93,7 @@ class DefaultAuthorProfileComponent private constructor(
         output = output
     )
 
-    private val authorProfileRepo: IAuthorProfileRepo by KoinJavaComponent.getKoin().inject()
+    private val authorProfileRepo: IAuthorProfileRepo by inject()
 
     private val _state: MutableValue<AuthorProfileComponent.State> = SaveableMutableValue(
         serializer = AuthorProfileComponent.State.serializer(),

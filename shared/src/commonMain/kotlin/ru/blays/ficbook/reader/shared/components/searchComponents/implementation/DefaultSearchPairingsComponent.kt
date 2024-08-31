@@ -5,7 +5,8 @@ import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.Utils.ExternalStateUpdatable
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.InternalSearchPairingsComponent
@@ -19,8 +20,9 @@ class DefaultSearchPairingsComponent(
     componentContext: ComponentContext,
 ): InternalSearchPairingsComponent,
     ExternalStateUpdatable<SearchPairingsComponent.State>,
-    ComponentContext by componentContext {
-    private val repository: ISearchRepo by getKoin().inject()
+    ComponentContext by componentContext,
+    KoinComponent {
+    private val repository: ISearchRepo by inject()
 
     private val _state = SaveableMutableValue(
         serializer = SearchPairingsComponent.State.serializer(),

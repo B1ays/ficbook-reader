@@ -12,7 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.serializer
-import org.koin.mp.KoinPlatform
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersFavouriteComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
@@ -22,8 +23,8 @@ import ru.blays.ficbook.reader.shared.data.repo.declaration.IUsersRepo
 class DefaultUsersFavouriteComponent(
     componentContext: ComponentContext,
     private val output: (output: UsersRootComponent.Output) -> Unit
-): UsersFavouriteComponent, ComponentContext by componentContext {
-    private val repository: IUsersRepo by KoinPlatform.getKoin().inject()
+): UsersFavouriteComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: IUsersRepo by inject()
 
     private val _state = MutableValue(
         UsersFavouriteComponent.State(

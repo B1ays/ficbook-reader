@@ -7,7 +7,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.data.CollectionsTypes
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
@@ -42,7 +43,7 @@ class DefaultMainScreenComponent private constructor(
         componentContext: ComponentContext,
     ) -> UserLogInComponent,
     private val onMainOutput: (MainScreenComponent.Output) -> Unit
-): MainScreenComponent, ComponentContext by componentContext {
+): MainScreenComponent, ComponentContext by componentContext, KoinComponent {
     constructor(
         componentContext: ComponentContext,
         output: (MainScreenComponent.Output) -> Unit
@@ -82,8 +83,7 @@ class DefaultMainScreenComponent private constructor(
         onMainOutput = output
     )
 
-    private val authorizationRepository: IAuthorizationRepo by getKoin().inject()
-
+    private val authorizationRepository: IAuthorizationRepo by inject()
 
     override val tabs: Array<MainScreenComponent.TabModel> = arrayOf(
         MainScreenComponent.TabModel(

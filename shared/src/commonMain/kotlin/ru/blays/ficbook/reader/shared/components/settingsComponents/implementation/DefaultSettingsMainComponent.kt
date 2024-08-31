@@ -2,6 +2,7 @@ package ru.blays.ficbook.reader.shared.components.settingsComponents.implementat
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import org.koin.core.component.KoinComponent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsMainComponent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsUnitComponent
 import ru.blays.ficbook.reader.shared.platformUtils.customTabsSupported
@@ -13,7 +14,7 @@ import ru.blays.ficbook.reader.shared.preferences.repositiry.ISettingsRepository
 class DefaultSettingsMainComponent(
     componentContext: ComponentContext,
     private val output: (SettingsMainComponent.Output) -> Unit
-): SettingsMainComponent, ComponentContext by componentContext {
+): SettingsMainComponent, ComponentContext by componentContext, KoinComponent {
     override val themeSetting = DefaultSettingsUnitComponent(
         componentContext = childContext("theme_component"),
         key = ISettingsRepository.intKey(SettingsKeys.THEME_KEY),

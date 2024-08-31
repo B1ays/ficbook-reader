@@ -8,7 +8,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
@@ -19,7 +20,7 @@ class DefaultCollectionsListComponent(
     componentContext: ComponentContext,
     private val sections: Array<SectionWithQuery>,
     private val onOutput: (CollectionsListComponent.Output) -> Unit
-): CollectionsListComponentInternal, ComponentContext by componentContext {
+): CollectionsListComponentInternal, ComponentContext by componentContext, KoinComponent {
     constructor(
         componentContext: ComponentContext,
         section: SectionWithQuery,
@@ -30,7 +31,7 @@ class DefaultCollectionsListComponent(
         onOutput = onOutput
     )
 
-    private val collectionsRepo: ICollectionsRepo by getKoin().inject()
+    private val collectionsRepo: ICollectionsRepo by inject()
 
     private val _state: MutableValue<CollectionsListComponent.State> = MutableValue(
         CollectionsListComponent.State()

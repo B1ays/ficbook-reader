@@ -6,20 +6,21 @@ import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.dataModels.LoginModel
 import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserLogInComponent
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbook.reader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.settings
-import ru.blays.ficbook.reader.shared.components.profileComponents.declaration.UserLogInComponent
 
 class DefaultUserLogInComponent(
     componentContext: ComponentContext,
     private val output: (output: UserLogInComponent.Output) -> Unit
-): UserLogInComponent, ComponentContext by componentContext {
-    private val repository: IAuthorizationRepo by KoinJavaComponent.getKoin().inject()
+): UserLogInComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: IAuthorizationRepo by inject()
 
     private val _state: MutableValue<UserLogInComponent.State> = MutableValue(UserLogInComponent.State())
     override val state get() = _state

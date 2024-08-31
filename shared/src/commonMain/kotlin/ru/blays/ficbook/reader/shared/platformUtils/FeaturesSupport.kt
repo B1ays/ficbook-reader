@@ -1,8 +1,10 @@
 package ru.blays.ficbook.reader.shared.platformUtils
 
+import org.koin.core.component.KoinComponent
+
 expect val shareSupported: Boolean
 
-expect val customTabsSupported: Boolean
+expect val KoinComponent.customTabsSupported: Boolean
 
 expect val dynamicColorSupported: Boolean
 

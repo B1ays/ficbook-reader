@@ -6,16 +6,17 @@ import com.arkivanov.decompose.router.pages.Pages
 import com.arkivanov.decompose.router.pages.PagesNavigation
 import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
-import org.koin.mp.KoinPlatform.getKoin
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
 
 @OptIn(ExperimentalDecomposeApi::class)
 class DefaultUsersRootComponent(
     componentContext: ComponentContext,
     private val output: (output: UsersRootComponent.Output) -> Unit
-): UsersRootComponent, ComponentContext by componentContext {
-    private val authorizationRepo: IAuthorizationRepo by getKoin().inject()
+): UsersRootComponent, ComponentContext by componentContext, KoinComponent {
+    private val authorizationRepo: IAuthorizationRepo by inject()
 
     private val navigation = PagesNavigation<UsersRootComponent.TabConfig>()
 

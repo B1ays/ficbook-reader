@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.RANDOM_FANFIC
 import ru.blays.ficbook.api.UrlProcessor.UrlProcessor
 import ru.blays.ficbook.api.UrlProcessor.UrlProcessor.analyzeUrl
@@ -73,7 +74,7 @@ class DefaultRootComponent private constructor(
         initialConfiguration: UserProfileRootComponent.Config,
         output: (UserProfileRootComponent.Output) -> Unit
     ) -> UserProfileRootComponent
-): RootComponent, ComponentContext by componentContext {
+): RootComponent, ComponentContext by componentContext, KoinComponent {
     constructor(
         componentContext: ComponentContext,
         deepLink: String?
@@ -116,11 +117,12 @@ class DefaultRootComponent private constructor(
         deepLink = null
     )
 
-    private val authRepo: IAuthorizationRepo by getKoin().inject()
+    private val authRepo: IAuthorizationRepo by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val navigation = StackNavigation<RootComponent.Config>()
+
     override val childStack: Value<ChildStack<*, RootComponent.Child>> = childStack(
         source = navigation,
         initialStack = {

@@ -3,7 +3,8 @@ package ru.blays.ficbook.reader.shared.components.searchComponents.implementatio
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
-import org.koin.mp.KoinPlatform
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.Utils.ExternalStateUpdatable
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchTagsComponent
@@ -17,8 +18,9 @@ class DefaultSearchTagsComponent(
     componentContext: ComponentContext
 ): SearchTagsComponent,
     ExternalStateUpdatable<SearchTagsComponent.State>,
-    ComponentContext by componentContext {
-    private val repository: ISearchRepo by KoinPlatform.getKoin().inject()
+    ComponentContext by componentContext,
+    KoinComponent {
+    private val repository: ISearchRepo by inject()
 
     private val _state = SaveableMutableValue(
         serializer = SearchTagsComponent.State.serializer(),

@@ -17,7 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionPageComponent
@@ -37,8 +38,8 @@ class DefaultCollectionPageComponent(
     private val realID: String,
     private val initialDialogConfig: EditCollectionDialogConfig? = null,
     private val output: (output: FanficsListComponent.Output) -> Unit
-): CollectionPageComponent, ComponentContext by componentContext {
-    private val collectionsRepo: ICollectionsRepo by getKoin().inject()
+): CollectionPageComponent, ComponentContext by componentContext, KoinComponent {
+    private val collectionsRepo: ICollectionsRepo by inject()
 
     private val navigation = SlotNavigation<EditCollectionDialogConfig>()
 

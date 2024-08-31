@@ -13,24 +13,26 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.dto.AvailableCollectionsModel
-import ru.blays.ficbook.reader.shared.data.repo.declaration.ICollectionsRepo
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageActionsComponent
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageCollectionsComponent
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.InternalFanficPageActionsComponent
+import ru.blays.ficbook.reader.shared.data.dto.AvailableCollectionsModel
+import ru.blays.ficbook.reader.shared.data.repo.declaration.ICollectionsRepo
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
 
 class DefaultFanficPageActionsComponent(
     componentContext: ComponentContext,
     private val output: (output: FanficPageActionsComponent.Output) -> Unit
-): InternalFanficPageActionsComponent, ComponentContext by componentContext {
-    private val repository: IFanficPageRepo by getKoin().inject()
+): InternalFanficPageActionsComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: IFanficPageRepo by inject()
 
     private val navigation = SlotNavigation<FanficPageActionsComponent.ChildConfig>()
 
     private val _state = MutableValue(FanficPageActionsComponent.State())
+
     override val state: Value<FanficPageActionsComponent.State>
         get() = _state
 
@@ -124,8 +126,8 @@ class DefaultFanficPageActionsComponent(
 class DefaultFanficPageCollectionsComponent(
     componentContext: ComponentContext,
     private val fanficId: String
-): FanficPageCollectionsComponent, ComponentContext by componentContext {
-    private val repository: ICollectionsRepo by getKoin().inject()
+): FanficPageCollectionsComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: ICollectionsRepo by inject()
 
     private val _state = MutableValue(
         FanficPageCollectionsComponent.State(

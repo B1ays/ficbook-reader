@@ -3,7 +3,8 @@ package ru.blays.ficbook.reader.shared.components.commentsComponent.implementati
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.dataModels.CommentBlockModel
 import ru.blays.ficbook.api.parsers.CommentParser
 import ru.blays.ficbook.api.result.ApiResult
@@ -19,8 +20,8 @@ class DefaultWriteCommentComponent(
     componentContext: ComponentContext,
     private val partID: String,
     private val onCommentPosted: () -> Unit
-): WriteCommentComponent, ComponentContext by componentContext {
-    private val repository: ICommentsRepo by getKoin().inject()
+): WriteCommentComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: ICommentsRepo by inject()
     private val commentsParser = CommentParser()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)

@@ -8,17 +8,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IUsersRepo
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersPopularComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IUsersRepo
 
 class DefaultUsersPopularComponent(
     componentContext: ComponentContext,
     private val output: (output: UsersRootComponent.Output) -> Unit
-): UsersPopularComponent, ComponentContext by componentContext {
-    private val repository: IUsersRepo by getKoin().inject()
+): UsersPopularComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: IUsersRepo by inject()
 
     private val _state = MutableValue(
         UsersPopularComponent.State(

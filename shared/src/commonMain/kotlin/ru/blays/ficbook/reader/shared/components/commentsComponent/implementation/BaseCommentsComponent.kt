@@ -8,7 +8,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.serializer
-import org.koin.mp.KoinPlatform
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.commentsComponent.declaration.CommentsComponent
 import ru.blays.ficbook.reader.shared.data.repo.declaration.ICommentsRepo
@@ -18,8 +19,8 @@ import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 abstract class BaseCommentsComponent(
     componentContext: ComponentContext,
     private val output: (CommentsComponent.Output) -> Unit
-): CommentsComponent, ComponentContext by componentContext {
-    val repository: ICommentsRepo = KoinPlatform.getKoin().get()
+): CommentsComponent, ComponentContext by componentContext, KoinComponent {
+    val repository: ICommentsRepo by inject()
 
     internal val _state = SaveableMutableValue(
         serializer = CommentsComponent.State.serializer(),

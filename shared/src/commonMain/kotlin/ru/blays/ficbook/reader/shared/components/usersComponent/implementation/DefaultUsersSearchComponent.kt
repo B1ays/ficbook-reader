@@ -4,18 +4,19 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.update
 import kotlinx.coroutines.*
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
-import ru.blays.ficbook.reader.shared.data.repo.declaration.IUsersRepo
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersRootComponent
 import ru.blays.ficbook.reader.shared.components.usersComponent.declaration.UsersSearchComponent
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IUsersRepo
 import kotlin.time.Duration.Companion.milliseconds
 
 class DefaultUsersSearchComponent(
     componentContext: ComponentContext,
     private val output: (output: UsersRootComponent.Output) -> Unit
-): UsersSearchComponent, ComponentContext by componentContext {
-    private val repository: IUsersRepo by getKoin().inject()
+): UsersSearchComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: IUsersRepo by inject()
 
     private val _state = MutableValue(
         UsersSearchComponent.State(

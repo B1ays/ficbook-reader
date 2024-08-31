@@ -17,7 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.serializer
-import org.koin.java.KoinJavaComponent
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogComponent
 import ru.blays.ficbook.reader.shared.components.authorProfileComponents.declaration.AuthorBlogPageComponent
@@ -29,8 +30,8 @@ class DefaultAuthorBlogComponent(
     componentContext: ComponentContext,
     private val userID: String,
     private val output: (output: AuthorBlogComponent.Output) -> Unit
-): AuthorBlogComponent, ComponentContext by componentContext {
-    private val authorProfileRepo: IAuthorProfileRepo by KoinJavaComponent.getKoin().inject()
+): AuthorBlogComponent, ComponentContext by componentContext, KoinComponent {
+    private val authorProfileRepo: IAuthorProfileRepo by inject()
 
     private val navigation = StackNavigation<AuthorBlogComponent.Config>()
     override val childStack = childStack(

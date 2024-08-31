@@ -6,7 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
@@ -16,9 +17,9 @@ import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 class DefaultFanficQuickActionsComponent(
     componentContext: ComponentContext,
     private val fanficID: String
-): FanficQuickActionsComponent, ComponentContext by componentContext {
-    private val actionsRepo: IFanficPageRepo by getKoin().inject()
-    private val infoRepo: IFanficQuickActionsRepo by getKoin().inject()
+): FanficQuickActionsComponent, ComponentContext by componentContext, KoinComponent {
+    private val actionsRepo: IFanficPageRepo by inject()
+    private val infoRepo: IFanficQuickActionsRepo by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 

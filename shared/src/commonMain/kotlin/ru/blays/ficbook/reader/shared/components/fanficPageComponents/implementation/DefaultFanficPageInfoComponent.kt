@@ -11,7 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.UrlProcessor.getUrlForHref
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.FanficPageActionsComponent
@@ -30,8 +31,8 @@ class DefaultFanficPageInfoComponent(
     componentContext: ComponentContext,
     override val fanficHref: String,
     private val onOutput: (FanficPageInfoComponent.Output) -> Unit
-): FanficPageInfoComponent, ComponentContext by componentContext {
-    private val repository: IFanficPageRepo by getKoin().inject()
+): FanficPageInfoComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: IFanficPageRepo by inject()
 
     private var reverseChaptersOrder by settings.boolean(
         key = SettingsKeys.REVERSE_CHAPTERS_ORDER,

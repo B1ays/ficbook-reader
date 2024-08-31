@@ -14,7 +14,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
@@ -30,9 +31,9 @@ class DefaultMainReaderComponent(
     initialChapterIndex: Int,
     private val fanficID: String,
     private val output: (output: MainReaderComponent.Output) -> Unit
-) : MainReaderComponent, ComponentContext by componentContext {
-    private val chaptersRepository: IChaptersRepo by getKoin().inject()
-    private val settingsJsonRepository: ISettingsJsonRepository by getKoin().inject()
+) : MainReaderComponent, ComponentContext by componentContext, KoinComponent {
+    private val chaptersRepository: IChaptersRepo by inject()
+    private val settingsJsonRepository: ISettingsJsonRepository by inject()
 
     private var readerSettings by settingsJsonRepository.getDelegate(
         serializer = MainReaderComponent.Settings.serializer(),

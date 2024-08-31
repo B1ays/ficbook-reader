@@ -10,6 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
@@ -22,8 +24,8 @@ class DefaultVoteReaderComponent(
     private val chapters: FanficChapterStable,
     private val fanficID: String,
     private val lastChapter: () -> Boolean
-): VoteReaderComponent, ComponentContext by componentContext {
-    private val fanficPageRepo: IFanficPageRepo by getKoin().inject()
+): VoteReaderComponent, ComponentContext by componentContext, KoinComponent {
+    private val fanficPageRepo: IFanficPageRepo by inject()
 
     private val _state = MutableValue(calculateState())
     override val state: Value<VoteReaderComponent.State>

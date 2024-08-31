@@ -12,7 +12,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.data.SectionWithQuery
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponent
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficsListComponentInternal
@@ -35,7 +36,7 @@ class DefaultFeedComponent private constructor(
         output: (FanficsListComponent.Output) -> Unit
     ) -> FanficsListComponentInternal,
     private val output: (FanficsListComponent.Output) -> Unit
-): FeedComponentInternal, ComponentContext by componentContext {
+): FeedComponentInternal, ComponentContext by componentContext, KoinComponent {
     constructor(
         componentContext: ComponentContext,
         onOutput: (FanficsListComponent.Output) -> Unit
@@ -52,7 +53,7 @@ class DefaultFeedComponent private constructor(
         output = onOutput
     )
 
-    private val authRepository: IAuthorizationRepo by getKoin().inject()
+    private val authRepository: IAuthorizationRepo by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -62,7 +63,6 @@ class DefaultFeedComponent private constructor(
     private val feedSettingsFlow = settings.getStringOrNullFlow(
         key = SettingsKeys.FEED_SECTION_KEY
     )
-
 
     private val _fanficListComponent: FanficsListComponentInternal = fanficsList(
         childContext("fanficsList"),

@@ -8,7 +8,8 @@ import com.arkivanov.decompose.router.slot.dismiss
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.FICBOOK_REGISTER_LINK
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
 import ru.blays.ficbook.reader.shared.platformUtils.openInBrowser
@@ -20,8 +21,8 @@ import kotlin.reflect.KFunction1
 class DefaultLandingScreenComponent(
     componentContext: ComponentContext,
     private val onOutput: KFunction1<LandingScreenComponent.Output, Unit>
-): LandingScreenComponent, ComponentContext by componentContext {
-    private val repository: IAuthorizationRepo by getKoin().inject()
+): LandingScreenComponent, ComponentContext by componentContext, KoinComponent {
+    private val repository: IAuthorizationRepo by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 

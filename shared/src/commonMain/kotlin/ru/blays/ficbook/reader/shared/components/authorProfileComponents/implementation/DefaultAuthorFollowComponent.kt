@@ -6,7 +6,8 @@ import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorProfileRepo
 
@@ -14,8 +15,8 @@ class DefaultAuthorFollowComponent(
     componentContext: ComponentContext,
     initialValue: Boolean = false,
     private var authorID: String? = null,
-): ComponentContext by componentContext {
-    private val repo: IAuthorProfileRepo by getKoin().inject()
+): ComponentContext by componentContext, KoinComponent {
+    private val repo: IAuthorProfileRepo by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 

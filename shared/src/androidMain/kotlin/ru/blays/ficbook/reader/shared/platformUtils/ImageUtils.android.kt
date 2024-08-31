@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
 import coil3.SingletonImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.asDrawable
 import coil3.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +12,6 @@ import kotlinx.coroutines.withContext
 import org.koin.mp.KoinPlatform.getKoin
 import java.io.File
 
-@OptIn(ExperimentalCoilApi::class)
 actual suspend fun downloadImageToFile(
     url: String,
     file: File,
