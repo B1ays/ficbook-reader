@@ -1,5 +1,6 @@
 package ru.blays.ficbook.reader.shared.data.cookieStorage
 
+import io.realm.kotlin.Realm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -7,7 +8,6 @@ import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import ru.blays.ficbook.reader.shared.data.realm.entity.CookieEntity
-import ru.blays.ficbook.reader.shared.di.injectRealm
 
 
 interface MutableCookieJar: CookieJar {
@@ -16,13 +16,14 @@ interface MutableCookieJar: CookieJar {
     suspend fun clearAll()
 }
 
-class DynamicCookieJar: ru.blays.ficbook.reader.shared.data.cookieStorage.MutableCookieJar {
+class DynamicCookieJar(
+    private val realm: Realm
+): MutableCookieJar {
     private val storage: MutableList<Cookie> = mutableListOf()
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override suspend fun clearAll() {
         storage.clear()
-        val realm by injectRealm()
         realm.write {
             val saved = query(CookieEntity::class).find()
             delete(saved)

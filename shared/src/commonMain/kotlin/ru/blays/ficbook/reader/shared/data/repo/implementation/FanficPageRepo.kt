@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.data.repo.implementation
 
 import kotlinx.coroutines.coroutineScope
+import org.koin.core.component.KoinComponent
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.dto.FanficPageModelStable
 import ru.blays.ficbook.reader.shared.data.mappers.toStableModel
@@ -13,7 +14,9 @@ import ru.blays.ficbook.api.result.ApiResult
 
 class FanficPageRepo(
     private val api: FanficPageApi
-): IFanficPageRepo {
+): IFanficPageRepo, KoinComponent {
+    private val realm by injectRealm()
+
     override suspend fun get(
         href: String
     ): ApiResult<FanficPageModelStable> {
@@ -88,7 +91,6 @@ class FanficPageRepo(
     private suspend fun getSavedChapters(
         fanficID: String
     ): List<ChapterEntity> = coroutineScope {
-        val realm by injectRealm()
         return@coroutineScope realm.query(
             clazz = ChapterEntity::class,
             query = "fanficID = $0", fanficID

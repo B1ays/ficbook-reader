@@ -20,7 +20,7 @@ interface IAuthorizationRepo {
 
     suspend fun getAllUsers(): List<SavedUserModel>
 
-    fun switchAnonymousMode(enable: Boolean)
+    fun switchAnonymousMode(enabled: Boolean)
 
     suspend fun migrateDB(): Boolean
 

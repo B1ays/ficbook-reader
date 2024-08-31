@@ -3,8 +3,9 @@ package ru.blays.ficbook.reader.shared.di
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.types.RealmObject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.reader.shared.data.realm.entity.*
 import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistAuthorEntity
 import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistDirectionEntity
@@ -22,10 +23,7 @@ internal val realmModule = module {
     }
 }
 
-fun getRealm() = getKoin().get<Realm>()
-
-
-fun injectRealm() = getKoin().inject<Realm>()
+fun KoinComponent.injectRealm() = inject<Realm>()
 
 private val entities: Set<KClass<out RealmObject>>
     get() = setOf(

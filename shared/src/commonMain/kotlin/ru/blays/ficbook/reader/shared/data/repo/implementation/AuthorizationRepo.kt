@@ -2,6 +2,7 @@ package ru.blays.ficbook.reader.shared.data.repo.implementation
 
 import com.russhwolf.settings.boolean
 import com.russhwolf.settings.nullableString
+import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.realmListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.Cookie
@@ -18,7 +19,6 @@ import ru.blays.ficbook.reader.shared.data.dto.toSavedUserModel
 import ru.blays.ficbook.reader.shared.data.realm.entity.CookieEntity
 import ru.blays.ficbook.reader.shared.data.realm.entity.UserEntity
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IAuthorizationRepo
-import ru.blays.ficbook.reader.shared.di.getRealm
 import ru.blays.ficbook.reader.shared.platformUtils.downloadImageToFile
 import ru.blays.ficbook.reader.shared.platformUtils.getFilesDir
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
@@ -27,6 +27,7 @@ import java.io.File
 
 class AuthorizationRepo(
     private val api: AuthorizationApi,
+    private val realm: Realm,
     private val cookieStorage: DynamicCookieJar
 ): IAuthorizationRepo {
     private val _currentUserModel: MutableStateFlow<SavedUserModel?> = MutableStateFlow(null)
@@ -37,9 +38,9 @@ class AuthorizationRepo(
     override val currentUserModel = _currentUserModel
     override val selectedUserID get() = _selectedUserID
     override val hasSavedAccount: Boolean
-        get() = getRealm().query(UserEntity::class).find().isNotEmpty()
+        get() = realm.query(UserEntity::class).find().isNotEmpty()
     override val hasSavedCookies: Boolean
-        get() = getRealm().query(CookieEntity::class).find().isNotEmpty()
+        get() = realm.query(CookieEntity::class).find().isNotEmpty()
 
     override var anonymousMode by settings.boolean(
         key = SettingsKeys.ANONYMOUS_MODE_KEY,
@@ -52,7 +53,6 @@ class AuthorizationRepo(
             val result = api.logIn(loginModel)
         ) {
             is ApiResult.Error -> {
-                // TODO add message to log
                 ApiResult.Error(result.exception)
             }
             is ApiResult.Success -> {
@@ -70,11 +70,7 @@ class AuthorizationRepo(
     }
 
     override suspend fun changeCurrentUser(id: String): Boolean {
-        val savedUser = getRealm().query(
-            UserEntity::class,
-            "id = $0",
-            id
-        )
+        val savedUser = realm.query(UserEntity::class, "id = $0", id)
         .first()
         .find()
 
@@ -89,33 +85,34 @@ class AuthorizationRepo(
     }
 
     override suspend fun removeUser(id: String) {
-         getRealm().write {
-            query(UserEntity::class, "id = $0", id)
-                .first()
-                .find()
-                ?.let(::delete)
+        val entity = realm.query(UserEntity::class, "id = $0", id)
+            .first()
+            .find()
+            ?: return
+
+        realm.write {
+             findLatest(entity)?.let(::delete)
         }
     }
 
     override suspend fun getAllUsers(): List<SavedUserModel> {
-        return getRealm().query(UserEntity::class)
+        return realm.query(UserEntity::class)
             .find()
             .map(UserEntity::toSavedUserModel)
     }
 
-    override fun switchAnonymousMode(enable: Boolean) {
-        anonymousMode = enable
+    override fun switchAnonymousMode(enabled: Boolean) {
+        anonymousMode = enabled
     }
 
     override suspend fun migrateDB(): Boolean {
-        val savedCookies = getRealm().query(CookieEntity::class).find()
+        val savedCookies = realm.query(CookieEntity::class).find()
         val cookies = savedCookies.map(CookieEntity::toCookie)
         cookieStorage.addAll(cookies)
         return when(
             val checkResult = api.checkAuthorization()
         ) {
             is ApiResult.Error -> {
-                // TODO: add message to log
                 false
             }
             is ApiResult.Success -> {
@@ -135,11 +132,7 @@ class AuthorizationRepo(
     override fun initialize() {
         if(!anonymousMode) {
             val selectedUserId = _selectedUserID ?: return
-            val savedUser = getRealm().query(
-                UserEntity::class,
-                "id = $0",
-                selectedUserId
-            )
+            val savedUser = realm.query(UserEntity::class, "id = $0", selectedUserId)
             .first()
             .find()
 
@@ -154,9 +147,10 @@ class AuthorizationRepo(
     private suspend fun saveUserToDB(user: UserModel): UserEntity? {
         val id = user.href.substringAfterLast('/')
 
-        val savedUser = getRealm().query(UserEntity::class, "id = $0", id)
+        val savedUser = realm.query(UserEntity::class, "id = $0", id)
             .first()
             .find()
+
         if(savedUser != null) return savedUser
 
         val avatarFile = File(getFilesDir(), "/user_avatar/$id.png").also {
@@ -178,13 +172,11 @@ class AuthorizationRepo(
                 Cookie::toEntity
             )
         )
-        getRealm().write {
+        realm.write {
             copyToRealm(userEntity)
         }
         return userEntity
     }
 
-    init {
-        initialize()
-    }
+    init { initialize() }
 }

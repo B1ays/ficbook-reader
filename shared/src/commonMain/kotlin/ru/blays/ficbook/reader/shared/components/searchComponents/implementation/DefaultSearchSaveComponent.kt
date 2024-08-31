@@ -7,6 +7,7 @@ import io.realm.kotlin.UpdatePolicy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 import org.mongodb.kbson.ObjectId
 import ru.blays.ficbook.reader.shared.components.searchComponents.declaration.SearchSaveComponent
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost
@@ -19,7 +20,9 @@ class DefaultSearchSaveComponent(
     componentContext: ComponentContext,
     private val onSelect: (SearchParamsEntity) -> Unit,
     private val createEntity: (name: String, description: String) -> SearchParamsEntity
-) : SearchSaveComponent, ComponentContext by componentContext {
+) : SearchSaveComponent, ComponentContext by componentContext, KoinComponent {
+    private val realm by injectRealm()
+
     private val _state = MutableValue(
         SearchSaveComponent.State(
             saved = emptyList()
@@ -27,8 +30,6 @@ class DefaultSearchSaveComponent(
     )
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-    private val realm by injectRealm()
 
     override val state get() = _state
 

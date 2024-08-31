@@ -1,14 +1,15 @@
 package ru.blays.ficbook.reader.shared.data.repo.implementation
 
+import io.realm.kotlin.Realm
+import ru.blays.ficbook.api.api.ChaptersApi
+import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.realm.entity.ChapterEntity
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IChaptersRepo
-import ru.blays.ficbook.reader.shared.di.injectRealm
-import ru.blays.ficbook.api.api.ChaptersApi
-import ru.blays.ficbook.api.result.ApiResult
 
 class ChaptersRepo(
-    private val api: ChaptersApi
+    private val api: ChaptersApi,
+    private val realm: Realm
 ): IChaptersRepo {
     override suspend fun getChapterText(href: String): ApiResult<String> {
         return api.getChapterText(href)
@@ -17,16 +18,13 @@ class ChaptersRepo(
     override suspend fun markAsReaded(
         chapters: FanficChapterStable.SeparateChaptersModel.Chapter
     ): Boolean {
-        val realm by injectRealm()
-
         return realm.write {
-           val findedChapters = query(
-               clazz = ChapterEntity::class,
-               query = "href = $0", chapters.href
-           ).first().find()
+            val foundedChapters = query(ChapterEntity::class, "href = $0", chapters.href)
+               .first()
+               .find()
 
-            if(findedChapters != null) {
-                findedChapters.readed = true
+            if (foundedChapters != null) {
+                foundedChapters.readed = true
                 return@write true
             } else {
                 return@write false
@@ -39,7 +37,6 @@ class ChaptersRepo(
         fanficID: String,
         charIndex: Int
     ): Boolean {
-        val realm by injectRealm()
         return realm.write {
             val savedChapter = query(
                 clazz = ChapterEntity::class,

@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.di
 
 import okhttp3.*
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.blays.ficbook.reader.shared.data.cookieStorage.DynamicCookieJar
@@ -8,12 +9,11 @@ import ru.blays.ficbook.reader.shared.platformUtils.getCacheDir
 import ru.blays.ficbook.reader.shared.proxy.IProxyHolder
 import ru.blays.ficbook.reader.shared.proxy.ProxyHolder
 
-
 val okHttpModule = module {
-    single { DynamicCookieJar() } bind CookieJar::class
-    single { ProxyHolder(get()) } bind IProxyHolder::class
+    singleOf(::DynamicCookieJar) bind CookieJar::class
+    singleOf(::ProxyHolder) bind IProxyHolder::class
     single {
-        val proxyHolder = get<ProxyHolder>()
+        val proxyHolder: ProxyHolder = get()
         OkHttpClient.Builder()
             .cache(
                 cache = Cache(
