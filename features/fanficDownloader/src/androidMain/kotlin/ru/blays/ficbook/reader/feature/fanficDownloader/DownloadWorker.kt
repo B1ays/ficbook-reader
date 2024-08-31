@@ -6,9 +6,12 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -32,17 +35,13 @@ class DownloadWorker(
     context: Context,
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
-    @Suppress("PrivatePropertyName")
-    private val TAG = this::class.simpleName
-
-    private val notificationManager = context.getSystemService(NotificationManager::class.java)
+    private val notificationManager = context.getSystemService<NotificationManager>()!!
 
     private var notificationID = -1
 
     private var maxProgress = 0
 
     private val cancel = applicationContext.resources.getString(android.R.string.cancel)
-    // This PendingIntent can be used to cancel the worker
     private val cancelIntent = WorkManager
         .getInstance(applicationContext)
         .createCancelPendingIntent(id)
@@ -354,7 +353,15 @@ class DownloadWorker(
             content = content
         )
 
-        return ForegroundInfo(notificationID, notification)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ForegroundInfo(
+                notificationID,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            )
+        } else {
+            ForegroundInfo(notificationID, notification)
+        }
     }
 
     private fun createNotification(
@@ -372,8 +379,6 @@ class DownloadWorker(
             setSmallIcon(R.drawable.ic_download)
             setOnlyAlertOnce(true)
             setOngoing(true)
-            // Add the cancel action to the notification which can
-            // be used to cancel the worker
             addAction(android.R.drawable.ic_delete, cancel, cancelIntent)
             if (progress != null) {
                 setProgress(maxProgress, progress, false)
@@ -410,6 +415,8 @@ class DownloadWorker(
     }
 
     companion object {
+        private const val TAG = "DownloadWorker"
+
         private const val NOTIFICATION_CHANNEL_ID = "FanficDownloader"
 
         internal const val FANFIC_ID_KEY = "FANFIC_ID"
