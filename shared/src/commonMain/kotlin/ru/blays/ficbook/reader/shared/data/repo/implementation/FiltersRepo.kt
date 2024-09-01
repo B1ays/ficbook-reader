@@ -9,10 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
-import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistAuthorEntity
-import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistDirectionEntity
-import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistFandomEntity
-import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistTagEntity
+import ru.blays.ficbook.reader.shared.data.dto.FanficDirection
+import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.*
 import ru.blays.ficbook.reader.shared.data.repo.declaration.FanficFilter
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFiltersRepo
 
@@ -25,7 +23,15 @@ internal class FiltersRepo(
         realm.query<BlacklistAuthorEntity>()
             .asFlow()
             .map { it.list.map(BlacklistAuthorEntity::authorName) }
-            .stateIn(scope = scope)
+            .stateIn(scope)
+    }
+    override val fanficsInBlacklist: StateFlow<List<Pair<String, String>>> = runBlocking {
+        realm.query<BlacklistFanficEntity>()
+            .asFlow()
+            .map {
+                it.list.map { entity -> entity.fanficID to entity.fanficName }
+            }
+            .stateIn(scope)
     }
     override val fandomsBlacklist: StateFlow<List<String>> = runBlocking {
         realm.query<BlacklistFandomEntity>()
@@ -39,14 +45,17 @@ internal class FiltersRepo(
             .map { it.list.map(BlacklistTagEntity::tagName) }
             .stateIn(scope)
     }
-    override val directionsBlacklist: StateFlow<List<String>> = runBlocking {
+    override val directionsBlacklist: StateFlow<List<FanficDirection>> = runBlocking {
         realm.query<BlacklistDirectionEntity>()
             .asFlow()
-            .map { it.list.map(BlacklistDirectionEntity::direction) }
+            .map { it.list.map(BlacklistDirectionEntity::directionEnum) }
             .stateIn(scope)
     }
 
     override fun getFilter(): FanficFilter = FanficFilter { fanfic ->
+        if(fanficsInBlacklist.value.any { fanfic.id == it.first }) {
+            return@FanficFilter false
+        }
         if(fanfic.author.name in authorsBlacklist.value) {
             return@FanficFilter false
         }
@@ -56,7 +65,7 @@ internal class FiltersRepo(
         if(fanfic.fandoms.any { it.name in fandomsBlacklist.value }) {
             return@FanficFilter false
         }
-        if(fanfic.status.direction.name in directionsBlacklist.value) {
+        if(fanfic.status.direction in directionsBlacklist.value) {
             return@FanficFilter false
         }
         return@FanficFilter true
@@ -116,9 +125,37 @@ internal class FiltersRepo(
 
         realm.write {
             if(entity != null) {
-                findLatest(entity)?.let { liveEntity ->
-                    delete(liveEntity)
-                }
+                findLatest(entity)?.let(::delete)
+            }
+        }
+    }
+
+    override suspend fun addFanficToBlacklist(fanficID: String, fanficName: String) {
+        val alreadyAdded = realm
+            .query<BlacklistFanficEntity>("fanficID == $0", fanficID)
+            .count()
+            .find() > 0
+
+        if(!alreadyAdded) {
+            realm.write {
+                val entity = BlacklistFanficEntity(
+                    fanficName = fanficName,
+                    fanficID = fanficID
+                )
+                copyToRealm(entity)
+            }
+        }
+    }
+
+    override suspend fun removeFanficFromBlacklist(fanficID: String) {
+        val entity = realm
+            .query<BlacklistFanficEntity>("fanficID == $0", fanficID)
+            .first()
+            .find()
+
+        realm.write {
+            if(entity != null) {
+                findLatest(entity)?.let(::delete)
             }
         }
     }
@@ -147,9 +184,7 @@ internal class FiltersRepo(
 
         realm.write {
             if(entity != null) {
-                findLatest(entity)?.let { liveEntity ->
-                    delete(liveEntity)
-                }
+                findLatest(entity)?.let(::delete)
             }
         }
     }
@@ -178,9 +213,7 @@ internal class FiltersRepo(
 
         realm.write {
             if(entity != null) {
-                findLatest(entity)?.let { liveEntity ->
-                    delete(liveEntity)
-                }
+                findLatest(entity)?.let(::delete)
             }
         }
     }

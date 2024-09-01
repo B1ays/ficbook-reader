@@ -20,8 +20,10 @@ import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaratio
 import ru.blays.ficbook.reader.shared.components.fanficPageComponents.declaration.InternalFanficPageActionsComponent
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IFiltersRepo
 import ru.blays.ficbook.reader.shared.platformUtils.copyToClipboard
 import ru.blays.ficbook.reader.shared.platformUtils.openInBrowser
+import ru.blays.ficbook.reader.shared.platformUtils.runOnUiThread
 import ru.blays.ficbook.reader.shared.platformUtils.shareText
 import ru.blays.ficbook.reader.shared.preferences.SettingsKeys
 import ru.blays.ficbook.reader.shared.preferences.settings
@@ -32,12 +34,15 @@ class DefaultFanficPageInfoComponent(
     override val fanficHref: String,
     private val onOutput: (FanficPageInfoComponent.Output) -> Unit
 ): FanficPageInfoComponent, ComponentContext by componentContext, KoinComponent {
-    private val repository: IFanficPageRepo by inject()
+    private val pageRepo: IFanficPageRepo by inject()
+    private val filtersRepo: IFiltersRepo by inject()
 
     private var reverseChaptersOrder by settings.boolean(
         key = SettingsKeys.REVERSE_CHAPTERS_ORDER,
         defaultValue = false
     )
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val _state = SaveableMutableValue(
         serializer = FanficPageInfoComponent.State.serializer(),
@@ -58,8 +63,6 @@ class DefaultFanficPageInfoComponent(
     override val actionsComponent: FanficPageActionsComponent
         get() = _actionsComponent
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     override fun sendIntent(intent: FanficPageInfoComponent.Intent) {
         when(intent) {
             is FanficPageInfoComponent.Intent.Refresh -> loadPage()
@@ -75,6 +78,21 @@ class DefaultFanficPageInfoComponent(
             FanficPageInfoComponent.Intent.OpenInBrowser -> {
                 val link = getUrlForHref(href = fanficHref)
                 openInBrowser(link)
+            }
+            FanficPageInfoComponent.Intent.Ban -> {
+                coroutineScope.launch {
+                    val state = state.value
+                    val fanfic = state.fanfic
+                    if(fanfic != null) {
+                        filtersRepo.addFanficToBlacklist(
+                            fanficID = fanfic.fanficID,
+                            fanficName = fanfic.name
+                        )
+                        runOnUiThread {
+                            onOutput(FanficPageInfoComponent.Output.ClosePage)
+                        }
+                    }
+                }
             }
             is FanficPageInfoComponent.Intent.ChangeChaptersOrder -> setChaptersOrder(intent.reverse)
         }
@@ -123,7 +141,7 @@ class DefaultFanficPageInfoComponent(
                 it.copy(isLoading = true)
             }
             when(
-                val pageResult = repository.get(fanficHref)
+                val pageResult = pageRepo.get(fanficHref)
             ) {
                 is ApiResult.Success -> {
                     _state.update {

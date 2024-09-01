@@ -142,7 +142,7 @@ private fun TabsRow(
             selected = selectedTab == 1,
             onClick = { onTabSelected(1) },
             label = {
-                Text(text = stringResource(Res.string.superfilter_category_fandoms))
+                Text(text = stringResource(Res.string.superfilter_category_fanfics))
             }
         )
         HorizontalSpacer(8.dp)
@@ -150,13 +150,21 @@ private fun TabsRow(
             selected = selectedTab == 2,
             onClick = { onTabSelected(2) },
             label = {
-                Text(text = stringResource(Res.string.superfilter_category_tags))
+                Text(text = stringResource(Res.string.superfilter_category_fandoms))
             }
         )
         HorizontalSpacer(8.dp)
         InputChip(
             selected = selectedTab == 3,
             onClick = { onTabSelected(3) },
+            label = {
+                Text(text = stringResource(Res.string.superfilter_category_tags))
+            }
+        )
+        HorizontalSpacer(8.dp)
+        InputChip(
+            selected = selectedTab == 4,
+            onClick = { onTabSelected(4) },
             label = {
                 Text(text = stringResource(Res.string.superfilter_category_directions))
             }
@@ -223,12 +231,13 @@ private fun Page(component: SuperfilterTabComponent) {
                     haze(state = hazeState)
                 }
         ) {
-            items(state.values) { value ->
+            items(state.values) { blacklistItem ->
                 ValueCardItem(
-                    value = value,
+                    name = blacklistItem.name,
+                    value = blacklistItem.value,
                     onRemove = {
                         component.onIntent(
-                            SuperfilterTabComponent.Intent.Remove(value)
+                            SuperfilterTabComponent.Intent.Remove(blacklistItem.value)
                         )
                     }
                 )
@@ -240,6 +249,7 @@ private fun Page(component: SuperfilterTabComponent) {
 @Composable
 private fun ValueCardItem(
     modifier: Modifier = Modifier,
+    name: String?,
     value: String,
     onRemove: () -> Unit
 ) {
@@ -253,7 +263,7 @@ private fun ValueCardItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = value,
+                text = name ?: value,
                 modifier = Modifier.weight(1F)
             )
             IconButton(

@@ -7,10 +7,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.dsl.module
 import ru.blays.ficbook.reader.shared.data.realm.entity.*
-import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistAuthorEntity
-import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistDirectionEntity
-import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistFandomEntity
-import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.BlacklistTagEntity
+import ru.blays.ficbook.reader.shared.data.realm.entity.blacklist.*
 import kotlin.reflect.KClass
 
 internal val realmModule = module {
@@ -38,6 +35,7 @@ private val entities: Set<KClass<out RealmObject>>
         IntRangeEntity::class,
         LongRangeEntity::class,
         BlacklistAuthorEntity::class,
+        BlacklistFanficEntity::class,
         BlacklistFandomEntity::class,
         BlacklistTagEntity::class,
         BlacklistDirectionEntity::class

@@ -24,7 +24,13 @@ internal class SuperfilterAuthorsTabComponent(
     filtersRepo
 ) {
     override val state = filtersRepo.authorsBlacklist
-        .map(SuperfilterTabComponent::State)
+        .map {
+            SuperfilterTabComponent.State(
+                it.map { value ->
+                    SuperfilterTabComponent.BlacklistItem(value = value)
+                }
+            )
+        }
         .stateIn(
             scope = scope,
             started = SharingStarted.WhileSubscribed(1000),

@@ -24,7 +24,13 @@ class SuperfilterFandomsTabComponent(
     filtersRepo
 ) {
     override val state = filtersRepo.fandomsBlacklist
-        .map(SuperfilterTabComponent::State)
+        .map {
+            SuperfilterTabComponent.State(
+                it.map { value ->
+                    SuperfilterTabComponent.BlacklistItem(value = value)
+                }
+            )
+        }
         .stateIn(
             scope = scope,
             started = SharingStarted.WhileSubscribed(1000),

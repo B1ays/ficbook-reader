@@ -26,7 +26,7 @@ internal class DefaultSuperfilterComponent(
     override val pages = childPages(
         source = pagesNavigation,
         initialPages = {
-            Pages(listOfInts(4), 0)
+            Pages(listOfInts(5), 0)
         },
         handleBackButton = false,
         serializer = Int.serializer(),
@@ -43,17 +43,21 @@ internal class DefaultSuperfilterComponent(
                 filtersRepo = filtersRepo,
                 usersRepo = usersRepo
             )
-            1 -> SuperfilterFandomsTabComponent(
+            1 -> SuperfilterFanficsTabComponent(
+                componentContext = childContext,
+                filtersRepo = filtersRepo
+            )
+            2 -> SuperfilterFandomsTabComponent(
                 componentContext = childContext,
                 filtersRepo = filtersRepo,
                 searchRepo = searchRepo
             )
-            2 -> SuperfilterTagsTabComponent(
+            3 -> SuperfilterTagsTabComponent(
                 componentContext = childContext,
                 filtersRepo = filtersRepo,
                 searchRepo = searchRepo
             )
-            3 -> SuperfilterDirectionsTabComponent(
+            4 -> SuperfilterDirectionsTabComponent(
                 componentContext = childContext,
                 filtersRepo = filtersRepo
             )

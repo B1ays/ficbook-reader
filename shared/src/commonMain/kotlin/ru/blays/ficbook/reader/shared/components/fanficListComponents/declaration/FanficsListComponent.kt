@@ -12,7 +12,7 @@ interface FanficsListComponent {
     fun sendIntent(intent: Intent)
     fun onOutput(output: Output)
 
-    fun getQuickActionsComponent(fanficID: String): FanficQuickActionsComponent
+    fun getQuickActionsComponent(fanficID: String, fanficName: String): FanficQuickActionsComponent
 
     sealed class Intent {
         data object Refresh: Intent()

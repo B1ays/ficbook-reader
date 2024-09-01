@@ -1306,6 +1306,22 @@ private fun TopBarActions(component: FanficPageInfoComponent) {
                 }
             )
         }
+        DropdownMenuItem(
+            text = {
+                Text(text = stringResource(Res.string.action_ban))
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_ban),
+                    contentDescription = stringResource(Res.string.content_description_icon_ban),
+                    modifier = Modifier.size(24.dp)
+                )
+            },
+            onClick = {
+                dropDownMenuState = false
+                component.sendIntent(FanficPageInfoComponent.Intent.Ban)
+            }
+        )
     }
 }
 

@@ -28,7 +28,18 @@ interface SuperfilterTabComponent {
 
     @Stable
     @JvmInline
-    value class State(val values: List<String> = emptyList())
+    value class State(val values: List<BlacklistItem> = emptyList())
+
+    @Stable
+    data class BlacklistItem(
+        val name: String? = null,
+        val value: String
+    ) {
+        constructor(pair: Pair<String, String>): this(
+            pair.second,
+            pair.first
+        )
+    }
 
     abstract class AddValueDialogComponent(
         componentContext: ComponentContext

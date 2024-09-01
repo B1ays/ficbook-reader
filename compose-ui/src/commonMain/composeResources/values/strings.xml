@@ -307,6 +307,7 @@
     <string name="action_create">Создать</string>
     <string name="action_follow">Подписаться</string>
     <string name="action_unfollow">Отписаться</string>
+    <string name="action_ban">Скрыть</string>
 
     <!--  Proxy  -->
     <string name="proxy_title">Прокси</string>
@@ -322,6 +323,7 @@
 
     <!--  Superfilter  -->
     <string name="superfilter_category_authors">Авторы</string>
+    <string name="superfilter_category_fanfics">Фанфики</string>
     <string name="superfilter_category_fandoms">Фэндомы</string>
     <string name="superfilter_category_tags">Метки</string>
     <string name="superfilter_category_directions">Направленности</string>
@@ -376,6 +378,7 @@
     <string name="content_description_icon_stack">Иконка сборника</string>
     <string name="content_description_icon_stack_plus">Иконка стопки с плюсом</string>
     <string name="content_description_icon_filter_crossed">Иконка перечёркнутого фильтра</string>
+    <string name="content_description_icon_ban">Иконка блокировки</string>
 
     <!--  Errors  -->
     <string name="error_something_went_wrong">Что-то пошло не так</string>

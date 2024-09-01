@@ -21,6 +21,7 @@ interface FanficPageInfoComponent {
         data object Share: Intent()
         data object CopyLink: Intent()
         data object OpenInBrowser: Intent()
+        data object Ban: Intent()
 
         data class ChangeChaptersOrder(val reverse: Boolean): Intent()
     }

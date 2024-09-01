@@ -18,8 +18,12 @@ internal class SuperfilterDirectionsTabComponent(
     override val state = filtersRepo.directionsBlacklist
         .map {
             SuperfilterTabComponent.State(
-                it.map(FanficDirection::getForName)
-                    .map(FanficDirection::direction)
+                it.map { value ->
+                    SuperfilterTabComponent.BlacklistItem(
+                        name = value.direction,
+                        value = value.name
+                    )
+                }
             )
         }
         .stateIn(
@@ -31,9 +35,9 @@ internal class SuperfilterDirectionsTabComponent(
     override fun onIntent(intent: SuperfilterTabComponent.Intent) {
         when(intent) {
             is SuperfilterTabComponent.Intent.Remove -> {
-                val enumName = FanficDirection.getForDirection(intent.value).name
                 scope.launch {
-                    filtersRepo.removeDirectionFromBlacklist(enumName)
+                    println("Try to remove direction: ${intent.value}")
+                    filtersRepo.removeDirectionFromBlacklist(intent.value)
                 }
             }
             SuperfilterTabComponent.Intent.ShowAddDialog -> dialogNavigation.activate(Unit)
@@ -51,7 +55,7 @@ internal class SuperfilterDirectionsTabComponent(
         componentContext: ComponentContext
     ): SuperfilterTabComponent.AddValueDialogComponent(componentContext) {
         val allDirections = FanficDirection.entries - FanficDirection.UNKNOWN
-        val directionsInBlacklist = filtersRepo.directionsBlacklist.value.map(FanficDirection::getForName)
+        val directionsInBlacklist = filtersRepo.directionsBlacklist.value
         val directionsNames = (allDirections - directionsInBlacklist.toSet()).map(FanficDirection::direction)
 
         override val state: StateFlow<State> = MutableStateFlow(

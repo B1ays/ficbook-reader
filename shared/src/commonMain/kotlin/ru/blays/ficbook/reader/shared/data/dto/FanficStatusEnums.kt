@@ -8,7 +8,7 @@ enum class FanficDirection(val direction: String) {
     ARTICLE("Статья"),
     MIXED("Смешанная"),
     OTHER("Другие виды отношений"),
-    UNKNOWN("");
+    UNKNOWN("Неизвестно");
 
     companion object {
         fun getForDirection(direction: String): FanficDirection {

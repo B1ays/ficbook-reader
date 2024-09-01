@@ -13,6 +13,7 @@ interface FanficQuickActionsComponent {
         data object Like: Intent()
         data object Subscribe: Intent()
         data object Read: Intent()
+        data object Ban: Intent()
     }
 
     @Serializable

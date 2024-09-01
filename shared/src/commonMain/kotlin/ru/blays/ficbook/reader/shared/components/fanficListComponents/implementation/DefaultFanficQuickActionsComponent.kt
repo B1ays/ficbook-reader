@@ -1,6 +1,7 @@
 package ru.blays.ficbook.reader.shared.components.fanficListComponents.implementation
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.value.update
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,14 +13,18 @@ import ru.blays.ficbook.api.result.ApiResult
 import ru.blays.ficbook.reader.shared.components.fanficListComponents.declaration.FanficQuickActionsComponent
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficQuickActionsRepo
+import ru.blays.ficbook.reader.shared.data.repo.declaration.IFiltersRepo
 import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultFanficQuickActionsComponent(
     componentContext: ComponentContext,
-    private val fanficID: String
+    private val fanficID: String,
+    private val fanficName: String,
+    private val onFanficBan: (fanficID: String) -> Unit
 ): FanficQuickActionsComponent, ComponentContext by componentContext, KoinComponent {
     private val actionsRepo: IFanficPageRepo by inject()
     private val infoRepo: IFanficQuickActionsRepo by inject()
+    private val filtersRepo: IFiltersRepo by inject()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -54,7 +59,9 @@ class DefaultFanficQuickActionsComponent(
                         fanficID = fanficID
                     )
                     if(success) {
-                        _state.value = state.value.copy(liked = newValue)
+                        _state.update {
+                            it.copy(liked = newValue)
+                        }
                     }
                 }
             }
@@ -66,7 +73,9 @@ class DefaultFanficQuickActionsComponent(
                         fanficID = fanficID
                     )
                     if(success) {
-                        _state.value = state.value.copy(readed = newValue)
+                        _state.update {
+                            it.copy(readed = newValue)
+                        }
                     }
                 }
             }
@@ -78,34 +87,48 @@ class DefaultFanficQuickActionsComponent(
                         fanficID = fanficID
                     )
                     if(success) {
-                        _state.value = state.value.copy(subscribed = newValue)
+                        _state.update {
+                            it.copy(subscribed = newValue)
+                        }
                     }
+                }
+            }
+            FanficQuickActionsComponent.Intent.Ban -> {
+                coroutineScope.launch {
+                    filtersRepo.addFanficToBlacklist(fanficID, fanficName)
+                    onFanficBan(fanficID)
                 }
             }
         }
     }
 
     private suspend fun loadData() {
-        _state.value = state.value.copy(loading = true)
+        _state.update {
+            it.copy(loading = true)
+        }
         when(
             val result = infoRepo.getInfo(fanficID)
         ) {
             is ApiResult.Error -> {
-                _state.value = state.value.copy(
-                    loading = false,
-                    error = true,
-                    errorMessage = result.exception.message
-                )
+                _state.update {
+                    it.copy(
+                        loading = false,
+                        error = true,
+                        errorMessage = result.exception.message
+                    )
+                }
                 result.exception.printStackTrace()
             }
             is ApiResult.Success -> {
-                _state.value = state.value.copy(
-                    loading = false,
-                    error = false,
-                    liked = result.value.liked,
-                    subscribed = result.value.subscribed,
-                    readed = result.value.readed
-                )
+                _state.update {
+                    it.copy(
+                        loading = false,
+                        error = false,
+                        liked = result.value.liked,
+                        subscribed = result.value.subscribed,
+                        readed = result.value.readed
+                    )
+                }
                 initialized = true
             }
         }

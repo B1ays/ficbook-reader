@@ -95,12 +95,13 @@ class DefaultFanficsListComponent(
         this.output.invoke(output)
     }
 
-    override fun getQuickActionsComponent(fanficID: String): FanficQuickActionsComponent {
+    override fun getQuickActionsComponent(fanficID: String, fanficName: String): FanficQuickActionsComponent {
         return _quickActionComponents.getOrPut(key = fanficID) {
-            println("New component created for $fanficID")
             DefaultFanficQuickActionsComponent(
                 componentContext = childContext(key = "QuickActions-$fanficID"),
-                fanficID = fanficID
+                fanficID = fanficID,
+                fanficName = fanficName,
+                onFanficBan = ::onFanficBan
             )
         }
     }
@@ -164,6 +165,14 @@ class DefaultFanficsListComponent(
             SnackbarHost.showMessage(
                 message = "Секция ${section.name} установлена как лента",
                 infoType = SnackbarMessageType.INFO
+            )
+        }
+    }
+
+    private fun onFanficBan(fanficID: String) {
+        _state.update { oldState ->
+            oldState.copy(
+                list = oldState.list.filter { it.id != fanficID }
             )
         }
     }

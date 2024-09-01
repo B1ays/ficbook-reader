@@ -106,7 +106,10 @@ fun FanficsListContent(
                 FanficQuickActions(
                     contextMenuState = contextMenuState,
                     componentFactory = {
-                        component.getQuickActionsComponent(fanficID = fanfic.id)
+                        component.getQuickActionsComponent(
+                            fanficID = fanfic.id,
+                            fanficName = fanfic.title
+                        )
                     }
                 )
 
@@ -271,10 +274,8 @@ fun FanficQuickActions(
     contextMenuState: ContextMenuState,
     componentFactory: () -> FanficQuickActionsComponent
 ) {
-    ContextMenu(
-        state = contextMenuState
-    ) {
-        val component = componentFactory()
+    ContextMenu(state = contextMenuState) {
+        val component = remember(componentFactory)
         val state by component.state.subscribeAsState()
 
         LaunchedEffect(Unit) {
@@ -285,9 +286,7 @@ fun FanficQuickActions(
 
         if(!state.loading && !state.error) {
             DropdownMenuItem(
-                text = {
-                    Text(text = stringResource(Res.string.like))
-                },
+                text = { Text(text = stringResource(Res.string.like)) },
                 leadingIcon = {
                     val icon = if(state.liked) {
                         painterResource(Res.drawable.ic_like_filled)
@@ -307,9 +306,7 @@ fun FanficQuickActions(
                 },
             )
             DropdownMenuItem(
-                text = {
-                    Text(text = stringResource(Res.string.subscription))
-                },
+                text = { Text(text = stringResource(Res.string.subscription)) },
                 leadingIcon = {
                     val icon = if(state.subscribed) {
                         painterResource(Res.drawable.ic_star_filled)
@@ -329,9 +326,7 @@ fun FanficQuickActions(
                 },
             )
             DropdownMenuItem(
-                text = {
-                    Text(text = stringResource(Res.string.readed))
-                },
+                text = { Text(text = stringResource(Res.string.readed)) },
                 leadingIcon = {
                     val icon = if(state.readed) {
                         painterResource(Res.drawable.ic_book_filled)
@@ -347,6 +342,21 @@ fun FanficQuickActions(
                 onClick = {
                     component.sendIntent(
                         FanficQuickActionsComponent.Intent.Read
+                    )
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(text = stringResource(Res.string.action_ban)) },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_ban),
+                        contentDescription = stringResource(Res.string.content_description_icon_ban),
+                        modifier = Modifier.size(20.dp),
+                    )
+                },
+                onClick = {
+                    component.sendIntent(
+                        FanficQuickActionsComponent.Intent.Ban
                     )
                 },
             )
