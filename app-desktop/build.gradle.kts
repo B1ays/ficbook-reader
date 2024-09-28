@@ -1,6 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
@@ -67,7 +66,6 @@ compose.desktop {
         buildTypes.release.proguard {
             configurationFiles.from(project.file("proguard-rules.pro"))
 
-            //obfuscate.set(true)
             optimize.set(true)
             joinOutputJars.set(true)
         }

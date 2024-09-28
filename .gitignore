@@ -31,3 +31,4 @@ venv
 /keystore.jks
 /keystore.properties
 /proxy.properties
+/app-desktop/default.realm.management/

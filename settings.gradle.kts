@@ -23,6 +23,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ficbook-reader"
+
 include(":shared")
 include(":compose-ui")
 include(":app-android")
@@ -34,18 +35,6 @@ include("features:mpfilepicker")
 include("features:copyImageFeature")
 include("features:fanficDownloader")
 
-/*includeBuild("./haze") {
-    name = "haze-root"
-    dependencySubstitution {
-        substitute(
-            module("dev.chrisbanes.haze:haze")
-        ).using(project(":haze"))
-        *//*substitute(
-            module("dev.chrisbanes.haze:haze-materials")
-        ).using(project(":haze-materials"))*//*
-    }
-}*/
-
 includeBuild("../epub4j-kotlin") {
     name = "epub4j"
     dependencySubstitution {
@@ -54,12 +43,3 @@ includeBuild("../epub4j-kotlin") {
         ).using(project(":epub4j-core"))
     }
 }
-/*
-includeBuild("../constraintlayout-compose-multiplatform") {
-    name = "constraintlayout-compose-multiplatform"
-    dependencySubstitution {
-        substitute(
-            module("tech.annexflow.compose:compose")
-        ).using(project(":compose"))
-    }
-}*/
