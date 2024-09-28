@@ -85,10 +85,10 @@ data class PopularSections(
                 "Гет", "popular-fanfics-376846/het"
             ),
             slash = SectionWithQuery(
-                "Слэш","popular-fanfics-376846/slash-fics-783456238"
+                "Слэш","popular-fanfics-376846/slash-fics-ngf3487tnsfb"
             ),
             femslash = SectionWithQuery(
-                "Фемслэш", "popular-fanfics-376846/femslash-fanfics-54353433"
+                "Фемслэш", "popular-fanfics-376846/femslash-fanfics-kojhi9jhhmkhgi9t98"
             ),
             article = SectionWithQuery(
                 "Статьи", "popular-fanfics-376846/article"
