@@ -4,6 +4,7 @@ package ru.blays.ficbook.api.data
 
 import kotlinx.serialization.Serializable
 
+@ConsistentCopyVisibility
 @Serializable
 data class Section internal constructor (
     val name: String,

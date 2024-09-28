@@ -3,6 +3,7 @@ package ru.blays.ficbook.reader.shared.data.repo.implementation
 import io.realm.kotlin.Realm
 import ru.blays.ficbook.api.api.ChaptersApi
 import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.api.result.ResponseResult
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.realm.entity.ChapterEntity
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IChaptersRepo
@@ -13,6 +14,13 @@ class ChaptersRepo(
 ): IChaptersRepo {
     override suspend fun getChapterText(href: String): ApiResult<String> {
         return api.getChapterText(href)
+    }
+
+    override suspend fun getChapterHtml(fanficID: String, id: String): ResponseResult<String> {
+        return api.getChapterHtml(fanficID, id)
+    }
+    override suspend fun getChapterHtml(href: String): ResponseResult<String> {
+        return api.getChapterHtml(href)
     }
 
     override suspend fun markAsReaded(

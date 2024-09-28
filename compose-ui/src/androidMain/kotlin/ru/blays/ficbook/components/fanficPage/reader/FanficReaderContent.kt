@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -90,7 +92,7 @@ private class Reader(
     private val openNextChapter: () -> Unit,
     private val openSettings: () -> Unit
 ) {
-    val pagerState: PagerState2<String> = PagerStateImpl2(
+    val pagerState: PagerState2<AnnotatedString> = PagerStateImpl2(
         initialPages = emptyList(),
         initialPageIndex = 0,
         initialPageOffsetFraction = 0f
@@ -110,6 +112,9 @@ private class Reader(
     ) {
         val currentState by state
         val text = currentState.text
+        val annotatedString = remember(text) {
+            AnnotatedString.fromHtml(text)
+        }
         val settings = currentState.settings
 
         val slotState by settingsSlot
@@ -137,7 +142,7 @@ private class Reader(
                     ) {
                         ReaderContent(
                             modifier = Modifier,
-                            text = text,
+                            text = annotatedString,
                             settings = settings,
                             onCenterZoneClick = onCenterZoneClick
                         )
@@ -175,7 +180,7 @@ private class Reader(
     @Composable
     private fun ReaderContent(
         modifier: Modifier = Modifier,
-        text: String,
+        text: AnnotatedString,
         settings: MainReaderComponent.Settings,
         onCenterZoneClick: () -> Unit
     ) {
@@ -279,7 +284,7 @@ private class Reader(
                 }
             }
 
-            DisposableEffect(state.value.chapterIndex) {
+            /*DisposableEffect(state.value.chapterIndex) {
                 val pages = pagerState.pages
                 scope.launch {
                     while(pagerState.pageCount == 0) {
@@ -296,7 +301,7 @@ private class Reader(
                     val absoluteCharIndex = pages.findCharIndexForPageIndex(pagerState.currentPage)
                     onDispose(absoluteCharIndex)
                 }
-            }
+            }*/
         }
     }
 

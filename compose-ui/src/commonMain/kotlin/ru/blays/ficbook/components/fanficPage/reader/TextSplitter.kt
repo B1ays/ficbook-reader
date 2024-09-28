@@ -1,15 +1,14 @@
 package ru.blays.ficbook.components.fanficPage.reader
 
 import androidx.compose.runtime.*
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.TextMeasurer
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.text.*
 import androidx.compose.ui.unit.Constraints
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
 import kotlin.math.floor
 
 @Composable
@@ -32,11 +31,9 @@ fun rememberTextPages(
                 style = config.style,
                 constraints = config.constraints
             )
-            val maxHeight = config.constraints.maxHeight
 
             newPages += calculatePages(
-                measureResult = measureResult,
-                maxHeight = maxHeight,
+                layoutResult = measureResult,
                 text = text
             )
 
@@ -79,11 +76,9 @@ fun rememberTwoPanelTextPages(
                 style = config.style,
                 constraints = resultConstraints
             )
-            val maxHeight = resultConstraints.maxHeight
 
             newPages += calculatePages(
-                measureResult = measureResult,
-                maxHeight = maxHeight,
+                layoutResult = measureResult,
                 text = text
             )
 
@@ -119,36 +114,103 @@ suspend fun splitTextToPages(
         style = config.style,
         constraints = config.constraints
     )
-    val maxHeight = config.constraints.maxHeight
 
     val result = calculatePages(
-        measureResult = measureResult,
-        maxHeight = maxHeight,
+        layoutResult = measureResult,
+        text = text
+    )
+    return@coroutineScope result
+}
+
+suspend fun splitTextToPages(
+    text: AnnotatedString,
+    config: TextSplitterConfig.SinglePanelConfig,
+    textMeasurer: TextMeasurer
+): List<AnnotatedString> = coroutineScope {
+    val measureResult = textMeasurer.measure(
+        text = text,
+        style = config.style,
+        constraints = config.constraints
+    )
+
+    val result = calculatePages(
+        layoutResult = measureResult,
         text = text
     )
     return@coroutineScope result
 }
 
 private suspend fun calculatePages(
-    measureResult: TextLayoutResult,
-    maxHeight: Int,
+    layoutResult: TextLayoutResult,
     text: String
 ): List<String> = coroutineScope {
     val textLastIndex = text.lastIndex
     return@coroutineScope if(textLastIndex > 0) {
-        val linesInHeight = floor(
-            maxHeight / measureResult.multiParagraph.getLineHeight(0).toDouble()
-        ).toInt()
+        val constraints = layoutResult.layoutInput.constraints
+        val lineHeight = layoutResult.multiParagraph.getLineHeight(0).toDouble()
+        val linesInHeight = floor(constraints.maxHeight / lineHeight)
+        val pagesCount = ceil(layoutResult.lineCount / linesInHeight).toInt()
+        val pageHeight = lineHeight * linesInHeight
+        val pages: MutableList<String> = mutableListOf()
 
-        val lines = (0 until measureResult.lineCount).map {
-            val lineStart = measureResult.getLineStart(it)
-            val lineEnd = (measureResult.getLineEnd(it)-1).coerceIn(0, textLastIndex)
-            text.substring(lineStart .. lineEnd)
+        for(pageIndex in 0 until pagesCount) {
+            val rect = Rect(
+                left = 0F,
+                right = constraints.maxWidth.toFloat(),
+                top = (pageHeight * pageIndex).toFloat(),
+                bottom = (pageHeight * (pageIndex + 1)).toFloat()
+            )
+
+            val range = layoutResult.multiParagraph.getRangeForRect(
+                rect,
+                TextGranularity.Word,
+                TextInclusionStrategy.AnyOverlap
+            )
+
+            if(range == TextRange.Zero) break
+
+            pages.add(text.substring(range.start, range.end))
         }
 
-        lines.chunked(linesInHeight).map {
-            it.fold("") { acc, line -> acc + line }
+        pages
+    } else {
+        emptyList()
+    }
+}
+
+private suspend fun calculatePages(
+    layoutResult: TextLayoutResult,
+    text: AnnotatedString
+): List<AnnotatedString> = coroutineScope {
+    val textLastIndex = text.lastIndex
+    return@coroutineScope if(textLastIndex > 0) {
+        val constraints = layoutResult.layoutInput.constraints
+        val lineHeight = layoutResult.multiParagraph.getLineHeight(0).toDouble()
+        val linesInHeight = floor(constraints.maxHeight / lineHeight)
+        val pagesCount = ceil(layoutResult.lineCount / linesInHeight).toInt()
+        val pageHeight = lineHeight * linesInHeight
+        val pages: MutableList<AnnotatedString> = mutableListOf()
+
+        for(pageIndex in 0 until pagesCount) {
+            val rect = Rect(
+                left = 0F,
+                right = constraints.maxWidth.toFloat(),
+                top = (pageHeight * pageIndex).toFloat(),
+                bottom = (pageHeight * (pageIndex + 1)).toFloat()
+            )
+
+            val range = layoutResult.multiParagraph.getRangeForRect(
+                rect,
+                TextGranularity.Word,
+                TextInclusionStrategy.AnyOverlap
+            )
+
+            if(range == TextRange.Zero) break
+
+            pages.add(text.subSequence(range))
         }
+
+        pages
     } else {
         emptyList()
     }

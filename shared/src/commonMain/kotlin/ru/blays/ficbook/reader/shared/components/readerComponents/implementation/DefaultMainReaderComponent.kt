@@ -16,7 +16,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.blays.ficbook.api.result.ApiResult
+import ru.blays.ficbook.api.result.ResponseResult
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 import ru.blays.ficbook.reader.shared.data.repo.declaration.IChaptersRepo
@@ -129,9 +129,9 @@ class DefaultMainReaderComponent(
             }
             val chapter = chapters.chapters[index]
             when(
-                val textResult = chaptersRepository.getChapterText(chapter.href)
+                val chapterResult = chaptersRepository.getChapterHtml(chapter.href)
             ) {
-                is ApiResult.Error -> {
+                is ResponseResult.Error -> {
                     _state.update {
                         it.copy(
                             loading = false,
@@ -139,11 +139,11 @@ class DefaultMainReaderComponent(
                         )
                     }
                 }
-                is ApiResult.Success -> {
+                is ResponseResult.Success -> {
                     val text = if(typografEnabled) {
-                        typograf(textResult.value)
+                        typograf(chapterResult.value)
                     } else {
-                        textResult.value
+                        chapterResult.value
                     }
                     _state.update {
                         it.copy(
