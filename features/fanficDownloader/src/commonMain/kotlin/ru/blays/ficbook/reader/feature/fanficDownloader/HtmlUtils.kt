@@ -32,6 +32,7 @@ internal fun generateTitlePage(
     direction: String,
     authors: List<String>,
     fandoms: List<String>,
+    pairings: List<String>,
     rating: String,
     chaptersCount: Int,
     status: String,
@@ -55,6 +56,7 @@ internal fun generateTitlePage(
         "    <b>Направленность:</b> $direction <br/>\n" +
         "    <b>Авторы:</b> ${authors.joinToString()} <br/>\n" +
         "    <b>Фэндом:</b> ${fandoms.joinToString()} <br/>\n" +
+        "    <b>Пейринги и персонажи:</b> ${pairings.joinToString()} <br/>\n" +
         "    <b>Рейтинг:</b> $rating <br/>\n" +
         "    <b>Кол-во частей:</b> $chaptersCount <br/>\n" +
         "    <b>Статус:</b> $status <br/>\n" +

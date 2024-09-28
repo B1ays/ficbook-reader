@@ -10,7 +10,10 @@ import org.koin.mp.KoinPlatform
 import ru.blays.ficbook.api.UrlProcessor.getUrlForHref
 import ru.blays.ficbook.api.api.ChaptersApi
 import ru.blays.ficbook.api.api.FanficPageApi
+import ru.blays.ficbook.api.dataModels.FandomModel
 import ru.blays.ficbook.api.dataModels.FanficChapter
+import ru.blays.ficbook.api.dataModels.FanficTag
+import ru.blays.ficbook.api.dataModels.PairingModel
 import ru.blays.ficbook.api.result.ResponseResult
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
@@ -104,11 +107,12 @@ private suspend fun downloadFanficInEpub(
         href = getUrlForHref("readfic/${fanfic.id}"),
         direction = fanfic.status.direction.direction,
         authors = fanfic.authors.map { it.user.name },
-        fandoms = fanfic.fandoms.map { it.name },
+        fandoms = fanfic.fandoms.map(FandomModel::name),
+        pairings = fanfic.pairings.map(PairingModel::character),
         rating = fanfic.status.rating.rating,
         chaptersCount = chaptersHtml.size,
         status = fanfic.status.status.status,
-        tags = fanfic.tags.map { it.name },
+        tags = fanfic.tags.map(FanficTag::name),
         description = fanfic.description,
         publicationRules = fanfic.publicationRules,
         authorComment = fanfic.authorComment
@@ -147,7 +151,7 @@ private suspend fun downloadFanficInEpub(
     return try {
         writer.write(book, outputStream)
         true
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     } finally {
         outputStream.close()
@@ -171,11 +175,12 @@ private suspend fun downloadFanficInTxt(
         link = getUrlForHref("readfic/${fanfic.id}"),
         direction = fanfic.status.direction.direction,
         authors = fanfic.authors.map { it.user.name },
-        fandoms = fanfic.fandoms.map { it.name },
+        fandoms = fanfic.fandoms.map(FandomModel::name),
+        pairings = fanfic.pairings.map(PairingModel::character),
         rating = fanfic.status.rating.rating,
         chaptersCount = fanfic.chapters.size,
         status = fanfic.status.status.status,
-        tags = fanfic.tags.map { it.name },
+        tags = fanfic.tags.map(FanficTag::name),
         description = fanfic.description,
         publicationRules = fanfic.publicationRules,
         authorComment = fanfic.authorComment

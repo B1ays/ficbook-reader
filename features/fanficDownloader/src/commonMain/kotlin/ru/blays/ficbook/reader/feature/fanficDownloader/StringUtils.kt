@@ -6,6 +6,7 @@ internal fun generateDescription(
     direction: String,
     authors: List<String>,
     fandoms: List<String>,
+    pairings: List<String>,
     rating: String,
     chaptersCount: Int,
     status: String,
@@ -19,6 +20,7 @@ internal fun generateDescription(
         "    Направленность: $direction" + "\n\n" +
         "    Авторы: ${authors.joinToString()}" + "\n\n" +
         "    Фэндом: ${fandoms.joinToString()}" + "\n\n" +
+        "    Пейринги и персонажи: ${pairings.joinToString()}" + "\n\n" +
         "    Рейтинг: $rating" + "\n\n" +
         "    Кол-во частей: $chaptersCount" + "\n\n" +
         "    Статус: $status" + "\n\n" +

@@ -26,7 +26,10 @@ import org.koin.mp.KoinPlatform.getKoin
 import ru.blays.ficbook.api.UrlProcessor.getUrlForHref
 import ru.blays.ficbook.api.api.ChaptersApi
 import ru.blays.ficbook.api.api.FanficPageApi
+import ru.blays.ficbook.api.dataModels.FandomModel
 import ru.blays.ficbook.api.dataModels.FanficChapter
+import ru.blays.ficbook.api.dataModels.FanficTag
+import ru.blays.ficbook.api.dataModels.PairingModel
 import ru.blays.ficbook.api.result.ResponseResult
 import ru.blays.ficbook.features.fanficDownloader.R
 import kotlin.time.Duration.Companion.seconds
@@ -179,11 +182,12 @@ class DownloadWorker(
             href = getUrlForHref("readfic/${fanfic.id}"),
             direction = fanfic.status.direction.direction,
             authors = fanfic.authors.map { it.user.name },
-            fandoms = fanfic.fandoms.map { it.name },
+            fandoms = fanfic.fandoms.map(FandomModel::name),
+            pairings = fanfic.pairings.map(PairingModel::character),
             rating = fanfic.status.rating.rating,
             chaptersCount = chaptersHtmls.size,
             status = fanfic.status.status.status,
-            tags = fanfic.tags.map { it.name },
+            tags = fanfic.tags.map(FanficTag::name),
             description = fanfic.description,
             publicationRules = fanfic.publicationRules,
             authorComment = fanfic.authorComment
@@ -259,11 +263,12 @@ class DownloadWorker(
             link = getUrlForHref("readfic/${fanfic.id}"),
             direction = fanfic.status.direction.direction,
             authors = fanfic.authors.map { it.user.name },
-            fandoms = fanfic.fandoms.map { it.name },
+            fandoms = fanfic.fandoms.map(FandomModel::name),
+            pairings = fanfic.pairings.map(PairingModel::character),
             rating = fanfic.status.rating.rating,
             chaptersCount = fanfic.chapters.size,
             status = fanfic.status.status.status,
-            tags = fanfic.tags.map { it.name },
+            tags = fanfic.tags.map(FanficTag::name),
             description = fanfic.description,
             publicationRules = fanfic.publicationRules,
             authorComment = fanfic.authorComment
@@ -409,7 +414,7 @@ class DownloadWorker(
             NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 applicationContext.getString(R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_LOW
             )
         )
     }
