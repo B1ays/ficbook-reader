@@ -2,6 +2,7 @@
 -dontwarn org.xmlpull.v1.**
 -dontwarn org.kxml2.io.**
 -dontwarn android.content.res.**
+-dontwarn androidx.test.platform.app.InstrumentationRegistry
 
 -keep class org.xmlpull.** { *; }
 -keepclassmembers class org.xmlpull.** { *; }
