@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.collapse
 import androidx.compose.ui.semantics.dismiss
@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.offset
 import androidx.compose.ui.util.*
 import kotlinx.coroutines.launch
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue.*
-import ru.blays.ficbook.utils.thenIf
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -94,7 +93,6 @@ import kotlin.math.roundToInt
  *   the child of the scroll, and not on the scroll itself.
  */
 @Composable
-@ExperimentalMaterial3Api
 fun EnhancedBottomSheetScaffold(
     sheetContent: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
@@ -106,7 +104,7 @@ fun EnhancedBottomSheetScaffold(
     sheetContentColor: Color = contentColorFor(sheetContainerColor),
     sheetTonalElevation: Dp = 0.dp,
     sheetShadowElevation: Dp = BottomSheetDefaults.Elevation,
-    sheetDragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
+    sheetDragHandle: (@Composable () -> Unit)? = { BottomSheetDefaults.DragHandle() },
     sheetSwipeEnabled: Boolean = true,
     fullscreenSheet: Boolean = false,
     topBar: @Composable (() -> Unit)? = null,
@@ -128,10 +126,11 @@ fun EnhancedBottomSheetScaffold(
         sheetState = scaffoldState.bottomSheetState,
         containerColor = containerColor,
         contentColor = contentColor,
-        bottomSheet = {
+        bottomSheet = { layoutHeight ->
             StandardBottomSheet(
                 state = scaffoldState.bottomSheetState,
                 peekHeight = sheetPeekHeight,
+                layoutHeight = layoutHeight,
                 sheetMaxWidth = sheetMaxWidth,
                 sheetSwipeEnabled = sheetSwipeEnabled,
                 fullscreen = fullscreenSheet,
@@ -207,6 +206,7 @@ fun rememberStandardBottomSheetState(
 private fun StandardBottomSheet(
     state: SheetState,
     peekHeight: Dp,
+    layoutHeight: Int,
     sheetMaxWidth: Dp,
     sheetSwipeEnabled: Boolean,
     fullscreen: Boolean,
@@ -240,9 +240,11 @@ private fun StandardBottomSheet(
         modifier = Modifier
             .widthIn(max = sheetMaxWidth)
             .fillMaxWidth()
-            .thenIf(!fullscreen) {
-                requiredHeightIn(peekHeight)
-            }
+            .requiredHeightIn(
+                min = if(fullscreen) {
+                    with(density) { layoutHeight.toDp() }
+                } else peekHeight
+            )
             .then(nestedScroll)
             .draggableAnchors(
                 state.anchoredDraggableState,
@@ -346,7 +348,7 @@ private fun BottomSheetScaffoldLayout(
     modifier: Modifier,
     topBar: @Composable (() -> Unit)?,
     body: @Composable () -> Unit,
-    bottomSheet: @Composable () -> Unit,
+    bottomSheet: @Composable (layoutHeight: Int) -> Unit,
     snackbarHost: @Composable () -> Unit,
     floatingActionButton: @Composable () -> Unit,
     floatingActionButtonPosition: FabPosition,
@@ -356,26 +358,40 @@ private fun BottomSheetScaffoldLayout(
     contentColor: Color,
 ) {
     val contentWindowInsets = contentWindowInsets
-    Layout(
-        modifier = modifier,
-        contents = listOf<@Composable () -> Unit>(
-            topBar ?: {},
-            {
+
+    SubcomposeLayout(
+        modifier = modifier
+    ) { constraints ->
+        val layoutWidth = constraints.maxWidth
+        val layoutHeight = constraints.maxHeight
+
+        val topBarMeasurables = subcompose(
+            slotId = "topBar",
+            content = topBar ?: {
                 Surface(
                     color = containerColor,
                     contentColor = contentColor,
                     content = body
                 )
-            },
-            bottomSheet,
-            snackbarHost,
-            floatingActionButton
+            }
         )
-    ) { (topBarMeasurables, bodyMeasurables, bottomSheetMeasurables, snackbarHostMeasurables, floatingActionButton),
-            constraints,
-        ->
-        val layoutWidth = constraints.maxWidth
-        val layoutHeight = constraints.maxHeight
+        val bodyMeasurables = subcompose(
+            slotId = "body",
+            content = body
+        )
+        val bottomSheetMeasurables = subcompose(
+            slotId = "bottomSheet",
+            content = { bottomSheet(layoutHeight) }
+        )
+        val snackbarHostMeasurables = subcompose(
+            slotId = "snackbarHost",
+            content = snackbarHost
+        )
+        val floatingActionButton = subcompose(
+            slotId = "floatingActionButton",
+            content = floatingActionButton
+        )
+
         val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
 
         val sheetPlaceables = bottomSheetMeasurables.fastMap { it.measure(looseConstraints) }

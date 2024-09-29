@@ -179,15 +179,19 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                 .asPaddingValues()
                 .calculateBottomPadding()
 
+            val sheetDraggable by remember {
+                derivedStateOf { fanfic.chapters !is FanficChapterStable.SingleChapterModel }
+            }
+
             EnhancedBottomSheetScaffold(
                 scaffoldState = bottomSheetScaffoldState,
-                sheetPeekHeight = 110.dp + navigationBarHeight,
+                sheetPeekHeight = if(sheetDraggable) 110.dp + navigationBarHeight else 88.dp,
                 containerColor = Color.Transparent,
                 fullscreenSheet = true,
                 sheetContainerColor = sheetBackgroundAtProgress,
                 sheetShadowElevation = 0.dp,
                 sheetShape = sheetShape,
-                sheetSwipeEnabled = fanfic.chapters !is FanficChapterStable.SingleChapterModel,
+                sheetSwipeEnabled = sheetDraggable,
                 modifier = hazeModifier,
                 sheetContent = {
                     BackHandler(true) {
@@ -244,16 +248,20 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     }
                 },
                 sheetDragHandle = {
-                    transition.AnimatedContent(
-                        transitionSpec = {
-                            slideInVertically { height -> -height } + fadeIn() togetherWith
+                    if (sheetDraggable) {
+                        transition.AnimatedContent(
+                            transitionSpec = {
+                                slideInVertically { height -> -height } + fadeIn() togetherWith
                                     slideOutVertically { height -> -height } + fadeOut()
+                            }
+                        ) { value ->
+                            when(value) {
+                                SheetValue.Expanded -> Spacer(modifier = Modifier.statusBarsPadding())
+                                else -> BottomSheetDefaults.DragHandle()
+                            }
                         }
-                    ) { value ->
-                        when (value) {
-                            SheetValue.Expanded -> Spacer(modifier = Modifier.statusBarsPadding())
-                            else -> BottomSheetDefaults.DragHandle()
-                        }
+                    } else {
+                        VerticalSpacer(22.dp)
                     }
                 },
                 topBar = {
