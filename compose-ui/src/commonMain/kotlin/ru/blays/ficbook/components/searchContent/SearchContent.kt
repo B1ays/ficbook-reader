@@ -350,13 +350,14 @@ private fun SearchMenuRoot(
             state = pagerState,
             userScrollEnabled = false
         ) { page ->
-            when(page) {
+            when (page) {
                 0 -> {
                     SearchParamsSelector(
                         component = component,
                         onDismissRequest = onDismissRequest
                     )
                 }
+
                 1 -> {
                     SavedSearches(
                         component = component.savedSearchesComponent,
@@ -376,6 +377,7 @@ fun SearchParamsSelector(
 ) {
     val state by component.state.subscribeAsState()
     val scrollState = rememberScrollState()
+    val fandomsState by component.searchFandomsComponent.state.subscribeAsState()
 
     Column(
         modifier = modifier
@@ -412,25 +414,35 @@ fun SearchParamsSelector(
                 modifier = Modifier.fillMaxWidth(),
             )
             VerticalCategorySpacer()
-            FandomFilter(
-                value = state.fandomsFilter,
-                onValueChange = component::setFandomsFilter
+            CheckboxWithTitle(
+                checked = state.searchOriginals,
+                title = stringResource(Res.string.search_originals),
+                onClick = component::setSearchOriginals
+            )
+            VerticalCategorySpacer()
+            CheckboxWithTitle(
+                checked = state.searchFanfics,
+                title = stringResource(Res.string.search_fanfics),
+                onClick = component::setSearchFanfics
             )
             VerticalCategorySpacer()
             AnimatedVisibility(
-                visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_ALL ||
-                        state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
+                visible = state.searchFanfics,
                 enter = expandVertically(spring()),
                 exit = shrinkVertically(spring())
             ) {
-                FandomsSelector(
-                    component = component.searchFandomsComponent,
-                    canIncludeFandoms = state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE
-                )
+                FandomsSelector(component = component.searchFandomsComponent)
                 VerticalCategorySpacer()
             }
+
+            val isPairingsSelectorVisible by remember {
+                derivedStateOf {
+                    state.searchFanfics && fandomsState.selectedFandoms.isNotEmpty()
+                }
+            }
+
             AnimatedVisibility(
-                visible = state.fandomsFilter == SearchParams.FANDOM_FILTER_CONCRETE,
+                visible = isPairingsSelectorVisible,
                 enter = expandVertically(spring()),
                 exit = shrinkVertically(spring())
             ) {
@@ -459,16 +471,6 @@ fun SearchParamsSelector(
                 value = state.withDirection,
                 onSelect = component::setDirection
             )
-            TranslateSelector(
-                value = state.translate,
-                onSelect = component::setTranslate
-            )
-            VerticalCategorySpacer()
-            CheckboxWithTitle(
-                checked = state.onlyPremium,
-                title = stringResource(Res.string.search_selector_hot_works),
-                onClick = component::setOnlyPremium
-            )
             VerticalCategorySpacer()
             LikesRangeSelector(
                 value = state.likesRange,
@@ -483,6 +485,18 @@ fun SearchParamsSelector(
             CommentsCountSelector(
                 value = state.minComments,
                 onSelect = component::setMinComments
+            )
+            VerticalCategorySpacer()
+            CheckboxWithTitle(
+                checked = state.onlyTranslations,
+                title = stringResource(Res.string.only_translations),
+                onClick = component::setOnlyTranslations
+            )
+            VerticalCategorySpacer()
+            CheckboxWithTitle(
+                checked = state.onlyPremium,
+                title = stringResource(Res.string.search_selector_hot_works),
+                onClick = component::setOnlyPremium
             )
             VerticalCategorySpacer()
             CheckboxWithTitle(
@@ -511,7 +525,7 @@ fun SearchParamsSelector(
 private fun SavedSearches(
     modifier: Modifier = Modifier,
     component: SearchSaveComponent,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val state by component.state.subscribeAsState()
     Column {
@@ -549,7 +563,7 @@ private fun SavedSearchItem(
     shortcut: SearchParamsEntityShortcut,
     onSelect: () -> Unit,
     onDelete: () -> Unit,
-    onUpdate: (name: String, description: String, updateParams: Boolean) -> Unit
+    onUpdate: (name: String, description: String, updateParams: Boolean) -> Unit,
 ) {
     var editing by rememberSaveable { mutableStateOf(false) }
 
@@ -559,7 +573,9 @@ private fun SavedSearchItem(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-       onClick = if (editing) {{}} else onSelect
+        onClick = if (editing) {
+            {}
+        } else onSelect
     ) {
         Row(
             modifier = Modifier
@@ -579,7 +595,7 @@ private fun SavedSearchItem(
                         fadeIn() togetherWith fadeOut()
                     }
                 ) {
-                    if(it) {
+                    if (it) {
                         OutlinedTextField(
                             value = name,
                             onValueChange = { newValue -> name = newValue },
@@ -608,7 +624,7 @@ private fun SavedSearchItem(
                         fadeIn() togetherWith fadeOut()
                     }
                 ) {
-                    if(it) {
+                    if (it) {
                         OutlinedTextField(
                             value = description,
                             onValueChange = { newValue -> description = newValue },
@@ -620,7 +636,7 @@ private fun SavedSearchItem(
                             modifier = Modifier.fillMaxWidth(),
                         )
                     } else {
-                        if(shortcut.description.isNotEmpty()) {
+                        if (shortcut.description.isNotEmpty()) {
                             Text(
                                 text = shortcut.description,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -701,41 +717,8 @@ private fun SavedSearchItem(
 }
 
 @Composable
-private fun FandomFilter(
-    value: String,
-    onValueChange: (String) -> Unit
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
-    ) {
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_FILTER_ALL,
-            title = stringResource(Res.string.fandom_filter_all),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_FILTER_ALL)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_FILTER_ORIGINALS,
-            title = stringResource(Res.string.fandom_filter_originals),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_FILTER_ORIGINALS)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.FANDOM_FILTER_CONCRETE,
-            title = stringResource(Res.string.fandom_filter_concrete_fandom),
-            onClick = {
-                onValueChange(SearchParams.FANDOM_FILTER_CONCRETE)
-            }
-        )
-    }
-}
-
-@Composable
 private fun FandomsSelector(
     component: SearchFandomsComponent,
-    canIncludeFandoms: Boolean
 ) {
     val state by component.state.subscribeAsState()
 
@@ -754,45 +737,42 @@ private fun FandomsSelector(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        if (canIncludeFandoms) {
-            OutlinedCardWithCornerButton(
-                modifier = Modifier.animateContentSize(spring()),
-                outlineColor = MaterialTheme.colorScheme.outline,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                iconColor = MaterialTheme.colorScheme.surface,
-                label = stringResource(Res.string.search_action_add_fandom),
-                icon = painterResource(Res.drawable.ic_plus),
-                onClick = {
-                    selectIncludedFandomDialogVisible = true
+        OutlinedCardWithCornerButton(
+            modifier = Modifier.animateContentSize(spring()),
+            outlineColor = MaterialTheme.colorScheme.outline,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            iconColor = MaterialTheme.colorScheme.surface,
+            label = stringResource(Res.string.search_action_add_fandom),
+            icon = painterResource(Res.drawable.ic_plus),
+            onClick = {
+                selectIncludedFandomDialogVisible = true
+            }
+        ) {
+            if (state.selectedFandoms.isNotEmpty()) {
+                state.selectedFandoms.forEach { fandom ->
+                    ItemChip(
+                        modifier = Modifier
+                            .padding(horizontal = DefaultPadding.CardHorizontalPadding)
+                            .animateContentSize(),
+                        title = fandom.title,
+                        subtitle = fandom.description,
+                        expanded = chipExpanded,
+                        onRemove = {
+                            component.selectFandom(
+                                select = false,
+                                fandom = fandom
+                            )
+                        },
+                        onClick = {
+                            chipExpanded = !chipExpanded
+                        }
+                    )
                 }
-            ) {
-                if (state.selectedFandoms.isNotEmpty()) {
-                    state.selectedFandoms.forEach { fandom ->
-                        ItemChip(
-                            modifier = Modifier
-                                .padding(horizontal = DefaultPadding.CardHorizontalPadding)
-                                .animateContentSize(),
-                            title = fandom.title,
-                            subtitle = fandom.description,
-                            expanded = chipExpanded,
-                            onRemove = {
-                                component.selectFandom(
-                                    select = false,
-                                    fandom = fandom
-                                )
-                            },
-                            onClick = {
-                                chipExpanded = !chipExpanded
-                            }
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(6.dp))
-                } else {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
+                Spacer(modifier = Modifier.height(6.dp))
+            } else {
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
-
         OutlinedCardWithCornerButton(
             modifier = Modifier.animateContentSize(spring()),
             outlineColor = MaterialTheme.colorScheme.outline,
@@ -1136,7 +1116,7 @@ private fun PairingSelector(component: SearchPairingsComponent) {
 
 @Composable
 private fun TagsSelector(
-    component: SearchTagsComponent
+    component: SearchTagsComponent,
 ) {
     val state by component.state.subscribeAsState()
 
@@ -1283,7 +1263,7 @@ fun OutlinedCardWithCornerButton(
     label: String,
     icon: Painter,
     onClick: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     OutlinedCard(
         modifier = modifier
@@ -1342,7 +1322,7 @@ fun OutlinedCardWithCornerButton(
 @Composable
 private fun StatusSelector(
     value: List<Int>,
-    onSelect: (List<Int>) -> Unit
+    onSelect: (List<Int>) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -1400,7 +1380,7 @@ private fun StatusSelector(
 @Composable
 private fun RatingSelector(
     value: List<Int>,
-    onSelect: (List<Int>) -> Unit
+    onSelect: (List<Int>) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -1484,7 +1464,7 @@ private fun RatingSelector(
 @Composable
 private fun DirectionSelector(
     value: List<Int>,
-    onSelect: (List<Int>) -> Unit
+    onSelect: (List<Int>) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -1590,51 +1570,10 @@ private fun DirectionSelector(
     }
 }
 
-
-@Composable
-private fun TranslateSelector(
-    value: Int,
-    onSelect: (Int) -> Unit
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
-    ) {
-        Text(
-            text = stringResource(Res.string.search_selector_translate),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.TRANSLATE_DOESNT_MATTER,
-            title = stringResource(Res.string.translate_doesnt_matter),
-            onClick = {
-                onSelect(SearchParams.TRANSLATE_DOESNT_MATTER)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.TRANSLATE_YES,
-            title = stringResource(Res.string.translate_yes),
-            onClick = {
-                onSelect(SearchParams.TRANSLATE_YES)
-            }
-        )
-        RadioButtonWithTitle(
-            selected = value == SearchParams.TRANSLATE_NO,
-            title = stringResource(Res.string.translate_no),
-            onClick = {
-                onSelect(SearchParams.TRANSLATE_NO)
-            }
-        )
-    }
-}
-
-
 @Composable
 fun PagesRangeSelector(
     value: IntRangeSimple,
-    onSelect: (IntRangeSimple) -> Unit
+    onSelect: (IntRangeSimple) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -1657,7 +1596,7 @@ fun PagesRangeSelector(
 @Composable
 fun LikesRangeSelector(
     value: IntRangeSimple,
-    onSelect: (IntRangeSimple) -> Unit
+    onSelect: (IntRangeSimple) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -1680,7 +1619,7 @@ fun LikesRangeSelector(
 @Composable
 fun RewardsCountSelector(
     value: Int,
-    onSelect: (Int) -> Unit
+    onSelect: (Int) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -1711,7 +1650,7 @@ fun RewardsCountSelector(
 @Composable
 fun CommentsCountSelector(
     value: Int,
-    onSelect: (Int) -> Unit
+    onSelect: (Int) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -1742,7 +1681,7 @@ fun CommentsCountSelector(
 @Composable
 fun SortTypeSelector(
     value: Int,
-    onSelect: (Int) -> Unit
+    onSelect: (Int) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(spaceBetweenItems)
@@ -1810,7 +1749,7 @@ fun SortTypeSelector(
 @Composable
 fun RangeSelector(
     value: IntRangeSimple,
-    onSelect: (IntRangeSimple) -> Unit
+    onSelect: (IntRangeSimple) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -1860,7 +1799,7 @@ fun RangeSelector(
 private fun FindFandomDialog(
     component: SearchFandomsComponent,
     onDismiss: () -> Unit,
-    onSelected: (SearchedFandomModel) -> Unit
+    onSelected: (SearchedFandomModel) -> Unit,
 ) {
     val state by component.state.subscribeAsState()
     DialogPlatform(
@@ -1926,7 +1865,7 @@ private fun FindFandomDialog(
 private fun FindTagDialog(
     component: SearchTagsComponent,
     onDismiss: () -> Unit,
-    onSelected: (SearchedTagModel) -> Unit
+    onSelected: (SearchedTagModel) -> Unit,
 ) {
     val state by component.state.subscribeAsState()
     DialogPlatform(
@@ -1991,7 +1930,7 @@ private fun FindTagDialog(
 @Composable
 fun SelectCharacterDialog(
     component: SearchPairingsComponent,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val state by component.state.subscribeAsState()
     var searchedName by remember { mutableStateOf("") }
@@ -1999,13 +1938,12 @@ fun SelectCharacterDialog(
     val filteredList = remember(searchedName) {
         if (searchedName.isEmpty()) {
             state.searchedCharacters
-        }
-        else {
+        } else {
             state.searchedCharacters.map { group ->
                 group.copy(
                     characters = group.characters.filter { character ->
                         character.name.contains(searchedName, ignoreCase = true) ||
-                        character.aliases.any { it.contains(searchedName, ignoreCase = true) }
+                                character.aliases.any { it.contains(searchedName, ignoreCase = true) }
                     }
                 )
             }
@@ -2049,7 +1987,7 @@ fun SelectCharacterDialog(
                     var previousGroupEnd = 0
                     filteredList.map { group ->
                         val groupEnd = previousGroupEnd + group.characters.lastIndex
-                        val range = previousGroupEnd .. groupEnd
+                        val range = previousGroupEnd..groupEnd
                         previousGroupEnd = groupEnd
                         return@map range
                     }
@@ -2108,7 +2046,7 @@ fun SelectCharacterDialog(
 @Composable
 private fun SearchedFandomItem(
     fandom: SearchedFandomModel,
-    onSelected: (SearchedFandomModel) -> Unit
+    onSelected: (SearchedFandomModel) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -2138,7 +2076,7 @@ private fun SearchedFandomItem(
 @Composable
 private fun SearchedTagItem(
     tag: SearchedTagModel,
-    onSelected: (SearchedTagModel) -> Unit
+    onSelected: (SearchedTagModel) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -2180,7 +2118,7 @@ private fun SearchedTagItem(
 @Composable
 private fun SearchedCharacterItem(
     character: SearchedCharacterModel,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -2213,7 +2151,7 @@ private fun SearchedCharacterItem(
 private fun CharacterItem(
     character: SearchedPairingModel.Character,
     defaultModifiers: Array<String>,
-    onModifierChange: (modifier: String) -> Unit
+    onModifierChange: (modifier: String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -2415,7 +2353,7 @@ private fun RadioButtonWithTitle(
     modifier: Modifier = Modifier,
     selected: Boolean,
     title: String,
-    onClick: (Boolean) -> Unit
+    onClick: (Boolean) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -2448,7 +2386,7 @@ private fun CheckboxWithTitle(
     modifier: Modifier = Modifier,
     checked: Boolean,
     title: String,
-    onClick: (Boolean) -> Unit
+    onClick: (Boolean) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -2480,7 +2418,7 @@ private fun CheckboxWithTitle(
 @Composable
 private fun BottomButtonContent(
     component: SearchSaveComponent,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
 ) {
     var saveMenuExpanded by rememberSaveable { mutableStateOf(false) }
     var name by rememberSaveable { mutableStateOf("") }
@@ -2526,7 +2464,7 @@ private fun BottomButtonContent(
     ) {
         Button(
             onClick = {
-                if(saveMenuExpanded) {
+                if (saveMenuExpanded) {
                     component.save(name, description)
                     saveMenuExpanded = false
                 } else {
@@ -2534,7 +2472,7 @@ private fun BottomButtonContent(
                 }
             },
             shape = CardShape.CardMid,
-            enabled = if(saveMenuExpanded) name.isNotEmpty() else true,
+            enabled = if (saveMenuExpanded) name.isNotEmpty() else true,
             modifier = Modifier
                 .height(50.dp)
                 .weight(1F)
@@ -2543,7 +2481,7 @@ private fun BottomButtonContent(
                 targetState = saveMenuExpanded,
                 transitionSpec = {
                     fadeIn() + scaleIn() togetherWith
-                        fadeOut() + scaleOut()
+                            fadeOut() + scaleOut()
                 },
                 contentAlignment = Alignment.Center
             ) { expanded ->
@@ -2575,7 +2513,7 @@ private fun BottomButtonContent(
                 targetState = saveMenuExpanded,
                 transitionSpec = {
                     fadeIn() + scaleIn() togetherWith
-                        fadeOut() + scaleOut()
+                            fadeOut() + scaleOut()
                 },
                 contentAlignment = Alignment.Center
             ) { expanded ->

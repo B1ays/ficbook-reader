@@ -5,13 +5,13 @@ import ru.blays.ficbook.reader.shared.data.serializers.LongRangeSerializer
 
 @Serializable
 data class SearchParams(
-    val fandomsFilter: String,
-    val fandomsGroup: Int,
+    val searchOriginals: Boolean,
+    val searchFanfics: Boolean,
     val pagesCountRange: IntRangeSimple,
     val withStatus: List<Int>,
     val withRating: List<Int>,
     val withDirection: List<Int>,
-    val translate: Int,
+    val onlyTranslations: Boolean,
     val onlyPremium: Boolean,
     val likesRange: IntRangeSimple,
     val minRewards: Int,
@@ -23,28 +23,6 @@ data class SearchParams(
     val sort: Int
 ) {
     companion object {
-        /**
-        * Fandom filter flags
-        **/
-        const val FANDOM_FILTER_ALL = "any"
-        const val FANDOM_FILTER_ORIGINALS = "originals"
-        @Deprecated("Deleted from site", level = DeprecationLevel.ERROR)
-        const val FANDOM_FILTER_CATEGORY = "group"
-        const val FANDOM_FILTER_CONCRETE = "fandom"
-
-        /**
-        * Fandoms group flags
-        **/
-        const val FANDOM_GROUP_ANIME_AND_MANGA = 1
-        const val FANDOM_GROUP_BOOKS = 2
-        const val FANDOM_GROUP_CARTOONS = 3
-        const val FANDOM_GROUP_GAMES = 4
-        const val FANDOM_GROUP_MOVIES = 5
-        const val FANDOM_GROUP_OTHER = 6
-        const val FANDOM_GROUP_RPF = 9
-        const val FANDOM_GROUP_COMICS = 10
-        const val FANDOM_GROUP_MUSICALS = 11
-
         /**
          * Status flags
          **/
@@ -60,13 +38,6 @@ data class SearchParams(
         const val RATING_R = 7
         const val RATING_NC17 = 8
         const val RATING_NC21 = 9
-
-        /**
-         * Translate flags
-         **/
-        const val TRANSLATE_DOESNT_MATTER = 1
-        const val TRANSLATE_YES = 2
-        const val TRANSLATE_NO = 3
 
         /**
         * Direction flags
@@ -96,9 +67,9 @@ data class SearchParams(
         const val SORT_BY_REWARDS_COUNT = 8
         const val SORT_20_RANDOM = 5
 
-        val default get() = SearchParams(
-            fandomsFilter = FANDOM_FILTER_ALL,
-            fandomsGroup = FANDOM_GROUP_ANIME_AND_MANGA,
+        val Default = SearchParams(
+            searchOriginals = true,
+            searchFanfics = true,
             pagesCountRange = IntRangeSimple.EMPTY,
             withStatus = emptyList(),
             withRating = listOf(
@@ -117,7 +88,7 @@ data class SearchParams(
                 DIRECTION_MIXED,
                 DIRECTION_ARTICLE,
             ),
-            translate = TRANSLATE_DOESNT_MATTER,
+            onlyTranslations = false,
             onlyPremium = false,
             likesRange = IntRangeSimple.EMPTY,
             minRewards = 0,

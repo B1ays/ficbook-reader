@@ -19,8 +19,8 @@ class SearchParamsEntity(): RealmObject {
     var description: String = ""
 
     // Search params
-    var fandomsFilter: String = ""
-    var fandomsGroup: Int = 1
+    var searchOriginals: Boolean = true
+    var searchFanfics: Boolean = true
     var includedFandoms: RealmSet<FandomEntity> = realmSetOf()
     var excludedFandoms: RealmSet<FandomEntity> = realmSetOf()
     var excludeOtherFandoms: Boolean = false
@@ -32,7 +32,7 @@ class SearchParamsEntity(): RealmObject {
     var withStatus: RealmList<Int> = realmListOf()
     var withRating: RealmList<Int> = realmListOf()
     var withDirection: RealmList<Int> = realmListOf()
-    var translate: Int = 1
+    var onlyTranslations: Boolean = false
     var onlyPremium: Boolean = false
     var likesRange: IntRangeEntity? = null
     var minRewards: Int = 0
@@ -45,9 +45,8 @@ class SearchParamsEntity(): RealmObject {
     constructor(
         name: String = "",
         description: String = "",
-
-        fandomsFilter: String = "",
-        fandomsGroup: Int = 1,
+        searchOriginals: Boolean = true,
+        searchFanfics: Boolean = true,
         includedFandoms: RealmSet<FandomEntity> = realmSetOf(),
         excludedFandoms: RealmSet<FandomEntity> = realmSetOf(),
         excludeOtherFandoms: Boolean = false,
@@ -59,7 +58,7 @@ class SearchParamsEntity(): RealmObject {
         withStatus: RealmList<Int> = realmListOf(),
         withRating: RealmList<Int> = realmListOf(),
         withDirection: RealmList<Int> = realmListOf(),
-        translate: Int = 1,
+        onlyTranslations: Boolean = false,
         onlyPremium: Boolean = false,
         likesRange: IntRangeEntity = IntRangeEntity(),
         minRewards: Int = 0,
@@ -70,9 +69,8 @@ class SearchParamsEntity(): RealmObject {
     ): this() {
         this.name = name
         this.description = description
-
-        this.fandomsFilter = fandomsFilter
-        this.fandomsGroup = fandomsGroup
+        this.searchOriginals = searchOriginals
+        this.searchFanfics = searchFanfics
         this.includedFandoms = includedFandoms
         this.excludedFandoms = excludedFandoms
         this.excludeOtherFandoms = excludeOtherFandoms
@@ -84,7 +82,7 @@ class SearchParamsEntity(): RealmObject {
         this.withStatus = withStatus
         this.withRating = withRating
         this.withDirection = withDirection
-        this.translate = translate
+        this.onlyTranslations = onlyTranslations
         this.onlyPremium = onlyPremium
         this.likesRange = likesRange
         this.minRewards = minRewards
@@ -108,8 +106,8 @@ class SearchParamsEntity(): RealmObject {
         this.description = description
 
         // Search params
-        this.fandomsFilter = searchParams.fandomsFilter
-        this.fandomsGroup = searchParams.fandomsGroup
+        this.searchOriginals = searchParams.searchOriginals
+        this.searchFanfics = searchParams.searchFanfics
         this.includedFandoms = includedFandoms.mapTo(realmSetOf()) {
             FandomEntity(
                 id = it.id,
@@ -159,7 +157,7 @@ class SearchParamsEntity(): RealmObject {
         this.withStatus = searchParams.withStatus.toRealmList()
         this.withRating = searchParams.withRating.toRealmList()
         this.withDirection = searchParams.withDirection.toRealmList()
-        this.translate = searchParams.translate
+        this.onlyTranslations = searchParams.onlyTranslations
         this.onlyPremium = searchParams.onlyPremium
         this.likesRange = searchParams.likesRange.let {
             IntRangeEntity(

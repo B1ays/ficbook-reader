@@ -190,20 +190,8 @@
     <string name="search_action_add_your">Добавить свой</string>
     <string name="search_action_save_search">Сохранить поиск</string>
 
-    <string name="fandom_filter_all">Все</string>
-    <string name="fandom_filter_originals">Ориджиналы</string>
-    <string name="fandom_filter_all_in_group">Все фанфики в группе фэндомов</string>
-    <string name="fandom_filter_concrete_fandom">Фанфики по конкретным фэндомам</string>
-
-    <string name="fandom_group_anime_and_manga">Аниме и манга</string>
-    <string name="fandom_group_books">Книги</string>
-    <string name="fandom_group_cartoons">Мультфильмы</string>
-    <string name="fandom_group_games">Игры</string>
-    <string name="fandom_group_movies">Фильмы и сериалы</string>
-    <string name="fandom_group_other">Другие</string>
-    <string name="fandom_group_rpf">Известные люди (RPF)</string>
-    <string name="fandom_group_comics">Комиксы</string>
-    <string name="fandom_group_musicals">Мюзиклы</string>
+    <string name="search_originals">Искать ориджиналы</string>
+    <string name="search_fanfics">Искать фанфики</string>
 
     <string name="status_in_progress">В процессе</string>
     <string name="status_complete">Завершён</string>
@@ -223,9 +211,7 @@
     <string name="direction_mixed">Смешанная</string>
     <string name="direction_article">Статья</string>
 
-    <string name="translate_doesnt_matter">Всё равно</string>
-    <string name="translate_yes">Перевод с иностранного языка</string>
-    <string name="translate_no">Оригинальный текст</string>
+    <string name="only_translations">Только переводы</string>
     
     <string name="sort_by_likes">по оценкам читателей</string>
     <string name="sort_by_comments">по количеству отзывов</string>

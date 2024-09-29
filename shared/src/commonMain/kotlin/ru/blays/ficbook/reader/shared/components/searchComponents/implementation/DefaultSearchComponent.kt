@@ -37,7 +37,7 @@ class DefaultSearchComponent(
 
     private val _state = SaveableMutableValue(
         serializer = SearchParams.serializer(),
-        initialValue = SearchParams.default
+        initialValue = SearchParams.Default
     )
 
     override val state get() = _state
@@ -59,15 +59,19 @@ class DefaultSearchComponent(
     }
 
     override fun clear() {
-        _state.update { SearchParams.default }
+        _state.update { SearchParams.Default }
     }
 
-    override fun setFandomsFilter(value: String) {
-        _state.update { it.copy(fandomsFilter = value) }
+    override fun setSearchOriginals(value: Boolean) {
+        _state.update {
+            it.copy(searchOriginals = value)
+        }
     }
 
-    override fun setFandomsGroup(value: Int) {
-        _state.update { it.copy(fandomsGroup = value) }
+    override fun setSearchFanfics(value: Boolean) {
+        _state.update {
+            it.copy(searchFanfics = value)
+        }
     }
 
     override fun setPagesCountRange(value: IntRangeSimple) {
@@ -94,9 +98,9 @@ class DefaultSearchComponent(
         }
     }
 
-    override fun setTranslate(value: Int) {
+    override fun setOnlyTranslations(value: Boolean) {
         _state.update {
-            it.copy(translate = value)
+            it.copy(onlyTranslations = value)
         }
     }
 
@@ -151,22 +155,18 @@ class DefaultSearchComponent(
     private fun buildSection(): SectionWithQuery {
         val queryParams = mutableListOf<Pair<String, String>>()
 
-        _state.value.run {
-            queryParams.add("fandom_filter" to fandomsFilter)
+        state.value.run {
+            if(searchOriginals) {
+                queryParams.add("work_types[]" to "originals")
+            }
+            if(searchFanfics) {
+                queryParams.add("work_types[]" to "fandom")
 
-            val fandomsState = searchFandomsComponent.state.value
-            when(fandomsFilter) {
-                SearchParams.FANDOM_FILTER_ALL -> {
-                    fandomsState.excludedFandoms.forEach { fandom ->
-                        queryParams.add("fandom_exclude_ids[]" to fandom.id)
-                    }
-                }
-                SearchParams.FANDOM_FILTER_CONCRETE -> {
+                val fandomsState = searchFandomsComponent.state.value
+
+                if(fandomsState.selectedFandoms.isNotEmpty()) {
                     fandomsState.selectedFandoms.forEach { fandom ->
                         queryParams.add("fandom_ids[]" to fandom.id)
-                    }
-                    fandomsState.excludedFandoms.forEach { fandom ->
-                        queryParams.add("fandom_exclude_ids[]" to fandom.id)
                     }
 
                     val pairingsState = _searchPairingsComponent.state.value
@@ -200,12 +200,24 @@ class DefaultSearchComponent(
                         }
                     }
                 }
+                if(fandomsState.excludedFandoms.isNotEmpty()) {
+                    fandomsState.excludedFandoms.forEach { fandom ->
+                        queryParams.add("fandom_exclude_ids[]" to fandom.id)
+                    }
+                    queryParams.add("fandoms_search_exclude_options" to "2")
+                } else {
+                    queryParams.add("fandoms_search_exclude_options" to "1")
+                }
+                queryParams.add("fandoms_search_options" to "2")
+
             }
 
-            queryParams.add("pages_min" to "${pagesCountRange.start.let { if(it == 0) "" else it }}")
-            queryParams.add("pages_max" to "${pagesCountRange.end.let { if(it == 0) "" else it }}")
+            queryParams.add("pages_min" to pagesCountRange.start.takeIf { it != 0 }?.toString().orEmpty())
+            queryParams.add("pages_max" to pagesCountRange.end.takeIf { it != 0 }?.toString().orEmpty())
 
-            queryParams.add("transl" to "$translate")
+            if(onlyTranslations) {
+                queryParams.add("translations_only" to "1")
+            }
 
             withStatus.forEach { status ->
                 queryParams.add("statuses[]" to "$status")
@@ -230,19 +242,19 @@ class DefaultSearchComponent(
             }
             queryParams.add("tags_search_options" to "${tagsState.behavior}")
 
-            queryParams.add("likes_min" to "${likesRange.start.let { if(it == 0) "" else it }}")
-            queryParams.add("likes_max" to "${likesRange.end.let { if(it == 0) "" else it }}")
+            queryParams.add("likes_min" to likesRange.start.takeIf { it != 0 }?.toString().orEmpty())
+            queryParams.add("likes_max" to likesRange.end.takeIf { it != 0 }?.toString().orEmpty())
 
             queryParams.add("rewards_min" to "$minRewards")
             queryParams.add("comments_min" to "$minComments")
 
             queryParams.add("title" to title)
 
-            queryParams.add("filter_readed" to if(filterReaded) "1" else "0")
+            queryParams.add("include_unread" to if(filterReaded) "1" else "0")
 
             queryParams.add("sort" to "$sort")
 
-            queryParams.add("find" to "Найти!")
+            queryParams.add("find" to "#result")
         }
 
         val section = SectionWithQuery(
@@ -255,15 +267,15 @@ class DefaultSearchComponent(
 
     private fun onSavedSearchSelected(searchParamsEntity: SearchParamsEntity) {
         val searchParams = SearchParams(
-            fandomsFilter = searchParamsEntity.fandomsFilter,
-            fandomsGroup = searchParamsEntity.fandomsGroup,
+            searchOriginals = searchParamsEntity.searchOriginals,
+            searchFanfics = searchParamsEntity.searchFanfics,
             pagesCountRange = searchParamsEntity.pagesCountRange?.let {
                 IntRangeSimple(it.start , it.end)
             } ?: IntRangeSimple.EMPTY,
             withStatus = searchParamsEntity.withStatus,
             withRating = searchParamsEntity.withRating,
             withDirection = searchParamsEntity.withDirection,
-            translate = searchParamsEntity.translate,
+            onlyTranslations = searchParamsEntity.onlyTranslations,
             onlyPremium = searchParamsEntity.onlyPremium,
             likesRange = searchParamsEntity.likesRange?.let {
                 IntRangeSimple(it.start, it.end)

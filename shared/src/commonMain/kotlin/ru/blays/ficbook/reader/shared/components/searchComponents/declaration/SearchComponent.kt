@@ -20,13 +20,13 @@ interface SearchComponent {
     /**
     * Fun's for change search params
     **/
-    fun setFandomsFilter(value: String)
-    fun setFandomsGroup(value: Int)
+    fun setSearchOriginals(value: Boolean)
+    fun setSearchFanfics(value: Boolean)
     fun setPagesCountRange(value: IntRangeSimple)
     fun setStatus(value: List<Int>)
     fun setRating(value: List<Int>)
     fun setDirection(value: List<Int>)
-    fun setTranslate(value: Int)
+    fun setOnlyTranslations(value: Boolean)
     fun setOnlyPremium(value: Boolean)
     fun setLikesRange(value: IntRangeSimple)
     fun setMinRewards(value: Int)

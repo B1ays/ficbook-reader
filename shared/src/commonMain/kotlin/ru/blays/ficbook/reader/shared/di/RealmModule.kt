@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 internal val realmModule = module {
     single<Realm> {
         val configuration = RealmConfiguration.Builder(entities)
-            .schemaVersion(3)
+            .schemaVersion(4)
             .build()
 
         Realm.open(configuration)
