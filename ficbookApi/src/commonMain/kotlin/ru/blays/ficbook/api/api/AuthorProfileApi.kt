@@ -117,7 +117,7 @@ internal class AuthorProfileApiImpl(
     }
 
     override suspend fun getBlogPage(userId: String, blogId: String): ApiResult<BlogPostPageModel> = coroutineScope {
-        return@coroutineScope try{
+        return@coroutineScope try {
             val response = client.get {
                 ficbookUrl {
                     addPathSegment("authors")

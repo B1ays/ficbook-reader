@@ -122,8 +122,6 @@ internal class AuthorInfoParser {
 
         val sections = column.select("section > section")
 
-        println("Sections:\n${sections.joinToString("\nSection:") { it.html() }}")
-
         val about: String = sections.find {
             it.select("[class^='text-t1']:contains(О себе)").isNotEmpty()
         }.let {
@@ -158,7 +156,6 @@ internal class AuthorInfoParser {
         )
     }
 }
-
 
 internal class AuthorBlogPostsParser {
     suspend fun parse(data: Document): List<BlogPostCardModel> {
@@ -201,17 +198,17 @@ internal class AuthorBlogPostsParser {
 
 internal class AuthorBlogPostParser {
     suspend fun parse(data: Document): BlogPostPageModel {
-        val container = data.select(
-            Evaluator.Class("d-flex flex-column gap-md")
-        )
-        val title = container.select("h1.mb-10").text().trim()
-        val date = container.select("div[class=\"small-text text-muted mb-10\"]").text()
-        val text = container.select("div[class=\"text-preline mb-15\"]")
+        val container = data.select("section#content" )
+        println(container.html())
+        val title = container.select(".mb-10").text().trim()
+        val date = container.select("div[class*=mb-10]").text()
+        val text = container.select("div[class*=mb-15]")
             .wholeText
             .trim()
         val likes = container.select("like-button")
             .attr(":like-count")
-            .toIntOrNull() ?: 0
+            .toIntOrNull()
+            ?: 0
 
         return BlogPostPageModel(
             title = title,
@@ -221,7 +218,6 @@ internal class AuthorBlogPostParser {
         )
     }
 }
-
 
 internal class AuthorPresentsParser {
     suspend fun parse(data: Document): List<AuthorPresentModel> {
