@@ -6,20 +6,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 
 @Composable
 fun ReaderTopBarContent(
-    component: MainReaderComponent,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
+    state: MainReaderComponent.State
 ) {
-    val state by component.state.subscribeAsState()
     Row(
         modifier = modifier
             .fillMaxWidth()

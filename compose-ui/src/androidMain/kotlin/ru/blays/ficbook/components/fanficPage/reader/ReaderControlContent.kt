@@ -5,7 +5,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -27,9 +26,9 @@ import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ic_book_outlined
 import ficbook_reader.compose_ui.generated.resources.ic_clock
 import ficbook_reader.compose_ui.generated.resources.ic_settings
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import ru.blays.ficbook.components.fanficPage.reader2.ReaderState
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.VoteReaderComponent
 import ru.blays.ficbook.ui_components.FanficComponents.CircleChip
@@ -39,45 +38,33 @@ import ru.blays.ficbook.values.DefaultPadding
 @Suppress("AnimateAsStateLabel")
 @Composable
 fun ReaderControl(
-    voteComponent: VoteReaderComponent,
-    pagerState: PagerState,
-    readerState: MainReaderComponent.State,
-    eventSource: Flow<Boolean>,
     modifier: Modifier = Modifier,
-    openNextChapter: () -> Unit,
-    openPreviousChapter: () -> Unit,
+    voteComponent: VoteReaderComponent,
+    readerState: ReaderState,
+    state: MainReaderComponent.State,
+    expanded: MutableState<Boolean>,
     openSettings: () -> Unit
 ) {
     val voteState by voteComponent.state.subscribeAsState()
 
-    val hasPreviousPage = pagerState.canScrollBackward
-    val hasNextPage = pagerState.canScrollForward
-    val hasNextChapter = readerState.chapterIndex < readerState.chaptersCount-1
-    val hasPreviousChapter = readerState.chapterIndex > 0
+    val hasNextChapter = state.chapterIndex < state.chaptersCount-1
+    val hasPreviousChapter = state.chapterIndex > 0
 
-    val previousButtonActive = hasPreviousChapter && !hasPreviousPage
-    val nextButtonActive = hasNextChapter && !hasNextPage
+    val previousButtonActive = hasPreviousChapter && !readerState.hasPreviousPage
+    val nextButtonActive = hasNextChapter && !readerState.hasNextPage
 
     val scope = rememberCoroutineScope()
 
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by expanded
 
     val shape = CardDefaults.shape
 
-    LaunchedEffect(previousButtonActive, nextButtonActive, hasNextPage) {
+    LaunchedEffect(previousButtonActive, nextButtonActive, readerState.hasNextPage) {
         if(
-            !readerState.settings.autoOpenNextChapter &&
-            (previousButtonActive ||
-                    nextButtonActive ||
-                    !hasNextChapter && !hasNextPage)
+            !state.settings.autoOpenNextChapter &&
+            (previousButtonActive || nextButtonActive || !hasNextChapter && !readerState.hasNextPage)
         ) {
             expanded = true
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        eventSource.collect { newValue ->
-            expanded = newValue
         }
     }
 
@@ -90,7 +77,7 @@ fun ReaderControl(
     ) {
         Column {
             AnimatedVisibility(
-                visible = !hasNextChapter && !hasNextPage,
+                visible = !hasNextChapter && !readerState.hasNextPage,
                 enter = fadeIn(spring()),
                 exit = fadeOut(spring()),
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -245,17 +232,17 @@ fun ReaderControl(
                     modifier = Modifier.weight(1F / 5F).padding(6.dp),
                     icon = Icons.AutoMirrored.Rounded.ArrowBack,
                     enabled = previousButtonActive,
-                    onClick = openPreviousChapter
+                    onClick = readerState::previousPage
                 )
                 Slider(
                     modifier = Modifier.weight(3F / 5F).padding(horizontal = 3.dp),
-                    value = pagerState.currentPage.toFloat(),
+                    value = readerState.pageIndex.toFloat(),
                     onValueChange = {
                         scope.launch {
-                            pagerState.scrollToPage(it.toInt())
+                            readerState.scrollToPage(it.toInt())
                         }
                     },
-                    valueRange = 0F..(pagerState.pageCount - 1)
+                    valueRange = 0F .. (readerState.pagesCount - 1)
                         .coerceAtLeast(1)
                         .toFloat()
                 )
@@ -263,7 +250,7 @@ fun ReaderControl(
                     modifier = Modifier.weight(1F / 5F).padding(6.dp),
                     icon = Icons.AutoMirrored.Rounded.ArrowForward,
                     enabled = nextButtonActive,
-                    onClick = openNextChapter
+                    onClick = readerState::nextPage
                 )
             }
         }
