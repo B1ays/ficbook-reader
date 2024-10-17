@@ -64,7 +64,7 @@ import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.ui_components.Text.TextWithInlineImages
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.primaryColorAtAlpha
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
@@ -91,7 +91,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
     val fanfic = state.fanfic
     val isLoading = state.isLoading
 
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
 
     val scope = rememberCoroutineScope()
 
@@ -140,18 +140,15 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
             } else {
                 null
             }
-            var hazeModifier: Modifier = remember { Modifier }
+            var modifier: Modifier = Modifier
 
             if (
                 coverPainter != null &&
-                glassEffectConfig.blurEnabled
+                blurEnabled
             ) {
                 val hazeState = remember { HazeState() }
 
-                hazeModifier = Modifier.hazeChild(
-                    state = hazeState,
-                    style = glassEffectConfig.style
-                )
+                modifier = Modifier.hazeChild(state = hazeState)
 
                 Image(
                     painter = coverPainter,
@@ -192,7 +189,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                 sheetShadowElevation = 0.dp,
                 sheetShape = sheetShape,
                 sheetSwipeEnabled = sheetDraggable,
-                modifier = hazeModifier,
+                modifier = modifier,
                 sheetContent = {
                     BackHandler(true) {
                         when (bottomSheetState.currentValue) {
@@ -311,7 +308,7 @@ private fun LandscapeContent(
     val fanfic = state.fanfic
     val isLoading = state.isLoading
 
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
 
     if (fanfic != null && !isLoading) {
         val coverPainter: AsyncImagePainter? = if (fanfic.coverUrl.isNotEmpty()) {
@@ -363,18 +360,12 @@ private fun LandscapeContent(
             BoxWithConstraints(
                 modifier = Modifier.fillMaxSize()
             ) {
-                var scaffoldModifier: Modifier = remember { Modifier }
+                var scaffoldModifier: Modifier = Modifier
 
-                if (
-                    coverPainter != null &&
-                    glassEffectConfig.blurEnabled
-                ) {
+                if (coverPainter != null && blurEnabled) {
                     val hazeState = remember { HazeState() }
 
-                    scaffoldModifier = Modifier.hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
+                    scaffoldModifier = Modifier.hazeChild(state = hazeState)
 
                     Image(
                         painter = coverPainter,
@@ -855,7 +846,7 @@ private fun FanficInfo(fanfic: FanficPageModelStable) {
                 )
             }
         }
-        if (status.likes != 0) {
+        if(status.likes != 0) {
             CircleChip(
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 minSize = 27.dp

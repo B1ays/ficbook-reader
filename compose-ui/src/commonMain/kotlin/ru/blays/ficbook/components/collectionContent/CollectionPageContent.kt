@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import ru.blays.ficbook.components.fanficsList.FanficsListContent
-import ru.blays.ficbook.ui_components.dialogComponents.DialogPlatform
 import ru.blays.ficbook.components.settingsContent.SettingsSwitchWithTitle
 import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionPageComponent
 import ru.blays.ficbook.reader.shared.components.collectionComponents.implementation.EditCollectionComponent
@@ -35,9 +34,10 @@ import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.EnhancedBottomSh
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.SheetValue
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberBottomSheetScaffoldState
 import ru.blays.ficbook.ui_components.CustomBottomSheetScaffold.rememberSheetState
+import ru.blays.ficbook.ui_components.dialogComponents.DialogPlatform
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -61,7 +61,7 @@ private fun LandscapeContent(component: CollectionPageComponent) {
     val state by component.state.subscribeAsState()
     var sortParamsOpened by rememberSaveable { mutableStateOf(false) }
 
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     val hazeState = remember { HazeState() }
 
     Scaffold(
@@ -69,14 +69,11 @@ private fun LandscapeContent(component: CollectionPageComponent) {
         topBar = {
             Column(
                 modifier = Modifier
-                    .thenIf(glassEffectConfig.blurEnabled) {
-                        hazeChild(
-                            state = hazeState,
-                            style = glassEffectConfig.style
-                        )
+                    .thenIf(blurEnabled) {
+                        hazeChild(state = hazeState)
                     }
                     .background(
-                        color = if (glassEffectConfig.blurEnabled) {
+                        color = if(blurEnabled) {
                             Color.Transparent
                         } else {
                             MaterialTheme.colorScheme.surface
@@ -100,7 +97,7 @@ private fun LandscapeContent(component: CollectionPageComponent) {
                     },
                     collapsingTitle = CollapsingTitle.small(state.collectionPage?.name ?: ""),
                     containerColor = Color.Transparent,
-                    collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                    collapsedElevation = if (blurEnabled) 0.dp else 4.dp,
                     insets = WindowInsets.statusBars,
                 )
                 state.collectionPage?.let { Header(it) }
@@ -126,7 +123,7 @@ private fun LandscapeContent(component: CollectionPageComponent) {
             FanficsListContent(
                 component = component.fanficsListComponent,
                 contentPadding = padding,
-                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+                modifier = Modifier.thenIf(blurEnabled) {
                     haze(state = hazeState)
                 }
             )
@@ -165,7 +162,7 @@ private fun PortraitContent(component: CollectionPageComponent) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
     val coroutineScope = rememberCoroutineScope()
 
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     val hazeState = remember { HazeState() }
 
     EnhancedBottomSheetScaffold(
@@ -182,14 +179,11 @@ private fun PortraitContent(component: CollectionPageComponent) {
         topBar = {
             Column(
                 modifier = Modifier
-                    .thenIf(glassEffectConfig.blurEnabled) {
-                        hazeChild(
-                            state = hazeState,
-                            style = glassEffectConfig.style
-                        )
+                    .thenIf(blurEnabled) {
+                        hazeChild(state = hazeState)
                     }
                     .background(
-                        color = if (glassEffectConfig.blurEnabled) {
+                        color = if (blurEnabled) {
                             Color.Transparent
                         } else {
                             MaterialTheme.colorScheme.surface
@@ -213,7 +207,7 @@ private fun PortraitContent(component: CollectionPageComponent) {
                     },
                     collapsingTitle = CollapsingTitle.small(state.collectionPage?.name ?: ""),
                     containerColor = Color.Transparent,
-                    collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                    collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                     insets = WindowInsets.statusBars
                 )
                 state.collectionPage?.let { Header(it) }
@@ -258,7 +252,7 @@ private fun PortraitContent(component: CollectionPageComponent) {
         FanficsListContent(
             component = component.fanficsListComponent,
             contentPadding = padding,
-            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+            modifier = Modifier.thenIf(blurEnabled) {
                 haze(state = hazeState)
             },
         )

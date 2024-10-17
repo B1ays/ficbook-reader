@@ -43,7 +43,7 @@ import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
 import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.CornerSmoothing
 import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.SquircleShape
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -116,9 +116,9 @@ private fun PortraitContent(
     val scope = rememberCoroutineScope()
 
     val hazeState = remember { HazeState() }
-    val blurConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
 
-    val containerColor = if(blurConfig.blurEnabled) {
+    val containerColor = if(blurEnabled) {
         Color.Transparent
     } else {
         MaterialTheme.colorScheme.surface
@@ -134,11 +134,8 @@ private fun PortraitContent(
         Scaffold(
             topBar = {
                 Column(
-                    modifier = Modifier.thenIf(blurConfig.blurEnabled) {
-                        hazeChild(
-                            state = hazeState,
-                            style = blurConfig.style
-                        )
+                    modifier = Modifier.thenIf(blurEnabled) {
+                        hazeChild(state = hazeState)
                     }
                 ) {
                     CollapsingToolbar(
@@ -185,7 +182,7 @@ private fun PortraitContent(
                         collapsingTitle = CollapsingTitle.large(stringResource(Res.string.app_name)),
                         insets = WindowInsets.statusBars,
                         containerColor = containerColor,
-                        collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
+                        collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                     )
                     PagerChips(
                         tabs = tabs,
@@ -199,7 +196,7 @@ private fun PortraitContent(
                 component = component,
                 pagerState = pagerState,
                 contentPadding = padding,
-                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+                modifier = Modifier.thenIf(blurEnabled) {
                     haze(hazeState)
                 },
             )

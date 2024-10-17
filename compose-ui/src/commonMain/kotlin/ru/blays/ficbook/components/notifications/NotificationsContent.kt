@@ -31,7 +31,7 @@ import ru.blays.ficbook.reader.shared.components.notificationComponents.Notifica
 import ru.blays.ficbook.reader.shared.components.notificationComponents.NotificationConfirmDialogComponent
 import ru.blays.ficbook.reader.shared.data.dto.NotificationModelStable
 import ru.blays.ficbook.reader.shared.data.dto.NotificationType
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.surfaceColorAtAlpha
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
@@ -181,17 +181,14 @@ fun PortraitContent(
 ) {
     val state by component.state.subscribeAsState()
 
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     val hazeState = remember { HazeState() }
 
     Scaffold(
         topBar = {
             Column(
-                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 }
             ) {
                 CollapsingToolbar(
@@ -264,12 +261,12 @@ fun PortraitContent(
                     },
                     collapsingTitle = null,
                     insets = WindowInsets.statusBars,
-                    containerColor = if(glassEffectConfig.blurEnabled) {
+                    containerColor = if(blurEnabled) {
                         Color.Transparent
                     } else {
                         MaterialTheme.colorScheme.surface
                     },
-                    collapsedElevation = if(glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                    collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                 )
                 Actions(
                     onReadAll = {
@@ -284,7 +281,7 @@ fun PortraitContent(
                     },
                     modifier = Modifier
                         .background(
-                            color = if(glassEffectConfig.blurEnabled) {
+                            color = if(blurEnabled) {
                                 Color.Transparent
                             } else {
                                 MaterialTheme.colorScheme.surface
@@ -295,7 +292,7 @@ fun PortraitContent(
                 HorizontalDivider(
                     modifier = Modifier
                         .background(
-                            color = if(glassEffectConfig.blurEnabled) {
+                            color = if(blurEnabled) {
                                 Color.Transparent
                             } else {
                                 MaterialTheme.colorScheme.surface
@@ -310,7 +307,7 @@ fun PortraitContent(
         LazyColumn(
             state = lazyListState,
             contentPadding = padding,
-            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+            modifier = Modifier.thenIf(blurEnabled) {
                 haze(state = hazeState,)
             }
         ) {

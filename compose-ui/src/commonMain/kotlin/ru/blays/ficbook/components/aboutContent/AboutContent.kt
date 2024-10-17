@@ -28,7 +28,7 @@ import ru.blays.ficbook.reader.shared.platformUtils.openInBrowser
 import ru.blays.ficbook.ui_components.LazyItems.itemWithHeader
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
@@ -38,7 +38,7 @@ import ru.hh.toolbar.custom_toolbar.CollapsingToolbar
 @Composable
 fun AboutContent(onBack: () -> Unit) {
     val hazeState = remember { HazeState() }
-    val blurConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
 
     Scaffold(
         topBar = {
@@ -54,18 +54,15 @@ fun AboutContent(onBack: () -> Unit) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_about)),
-                containerColor = if(blurConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
-                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = blurConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 },
             )
         }

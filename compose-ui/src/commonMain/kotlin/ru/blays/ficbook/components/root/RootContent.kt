@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import dev.chrisbanes.haze.HazeDefaults
+import dev.chrisbanes.haze.LocalHazeStyle
 import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ok
 import org.jetbrains.compose.resources.stringResource
@@ -29,8 +30,7 @@ import ru.blays.ficbook.reader.shared.components.RootComponent.RootComponent
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.DefaultSnackbarVisuals
 import ru.blays.ficbook.reader.shared.components.snackbarStateHost.SnackbarHost.snackbarHostState
 import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
-import ru.blays.ficbook.utils.BlurConfig
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.defaultPredictiveAnimation
 
 @OptIn(ExperimentalDecomposeApi::class)
@@ -71,10 +71,8 @@ fun RootContent(component: RootComponent) {
         }
     ) {
         CompositionLocalProvider(
-            LocalGlassEffectConfig provides BlurConfig(
-                blurEnabled = blurSupported && glassEffectConfig.enabled,
-                style = hazeStyle
-            )
+            LocalHazeStyle provides hazeStyle,
+            LocalBlurState provides (glassEffectConfig.enabled && blurSupported)
         ) {
             Children(
                 stack = component.childStack,

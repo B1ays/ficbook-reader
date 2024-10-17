@@ -54,7 +54,7 @@ import ru.blays.ficbook.ui_components.Tabs.CustomTabRow
 import ru.blays.ficbook.ui_components.dialogComponents.DialogPlatform
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
@@ -79,7 +79,7 @@ private fun LandscapeContent(component: SearchComponent) {
 
     val lazyListState = rememberLazyListState()
 
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     val hazeState = remember { HazeState() }
 
     BackHandler(true) {
@@ -131,18 +131,15 @@ private fun LandscapeContent(component: SearchComponent) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_search)),
-                containerColor = if (glassEffectConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
-                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 }
             )
         },
@@ -158,9 +155,7 @@ private fun LandscapeContent(component: SearchComponent) {
                             color = DrawerDefaults.standardContainerColor,
                             shape = DrawerDefaults.shape
                         )
-                        .padding(
-                            top = padding.calculateTopPadding()
-                        ),
+                        .padding(top = padding.calculateTopPadding()),
                 ) {
                     SearchMenuRoot(
                         component = component,
@@ -176,7 +171,7 @@ private fun LandscapeContent(component: SearchComponent) {
             },
             scrimColor = Color.Transparent,
             drawerState = drawerState,
-            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+            modifier = Modifier.thenIf(blurEnabled) {
                 haze(state = hazeState)
             }
         ) {
@@ -200,7 +195,7 @@ private fun PortraitContent(component: SearchComponent) {
 
     val lazyListState = rememberLazyListState()
 
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     val hazeState = remember { HazeState() }
 
     BackHandler(true) {
@@ -263,18 +258,15 @@ private fun PortraitContent(component: SearchComponent) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.large(stringResource(Res.string.search)),
-                containerColor = if (glassEffectConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if (blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
-                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 },
             )
         },
@@ -286,7 +278,7 @@ private fun PortraitContent(component: SearchComponent) {
             component = component.fanficsListComponent,
             lazyListState = lazyListState,
             contentPadding = padding,
-            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+            modifier = Modifier.thenIf(blurEnabled) {
                 haze(state = hazeState)
             },
         )

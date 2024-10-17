@@ -31,7 +31,7 @@ import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.
 import ru.blays.ficbook.reader.shared.platformUtils.blurSupported
 import ru.blays.ficbook.theme.defaultAccentColors
 import ru.blays.ficbook.ui_components.LazyItems.itemWithHeader
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
 import ru.blays.ficbook.values.DefaultPadding
@@ -51,7 +51,7 @@ fun SettingsMainContent(component: SettingsMainComponent) {
         }
     } else 1F
 
-    val blurConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     val hazeState = remember { HazeState() }
 
     Scaffold(
@@ -74,18 +74,15 @@ fun SettingsMainContent(component: SettingsMainComponent) {
                 collapsingTitle = CollapsingTitle.small(
                     stringResource(Res.string.toolbar_title_settings)
                 ),
-                containerColor = if(blurConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
-                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = blurConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 },
             )
         }
@@ -100,10 +97,8 @@ fun SettingsMainContent(component: SettingsMainComponent) {
                 modifier = Modifier
                     .fillMaxWidth(widthFill)
                     .fillMaxHeight()
-                    .thenIf(blurConfig.blurEnabled) {
-                        haze(
-                            state = hazeState
-                        )
+                    .thenIf(blurEnabled) {
+                        haze(state = hazeState)
                     },
                 contentPadding = padding,
                 horizontalAlignment = Alignment.CenterHorizontally

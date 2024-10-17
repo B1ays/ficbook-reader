@@ -49,7 +49,7 @@ import ru.blays.ficbook.ui_components.Text.HyperlinkText
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.drawWithLayer
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
@@ -526,7 +526,7 @@ fun CommentsScreenContent(
     hideAvatar: Boolean = false,
 ) {
     val hazeState = remember { HazeState() }
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -544,18 +544,15 @@ fun CommentsScreenContent(
                     }
                 },
                 collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_comments)),
-                containerColor = if (glassEffectConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
-                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 }
             )
         }
@@ -564,7 +561,7 @@ fun CommentsScreenContent(
             component = component,
             hideAvatar = hideAvatar,
             contentPadding = padding,
-            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+            modifier = Modifier.thenIf(blurEnabled) {
                 haze(state = hazeState)
             },
         )
@@ -574,7 +571,7 @@ fun CommentsScreenContent(
 @Composable
 fun PartCommentsContent(component: ExtendedCommentsComponent) {
     val hazeState = remember { HazeState() }
-    val glassEffectConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -592,41 +589,35 @@ fun PartCommentsContent(component: ExtendedCommentsComponent) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.large(stringResource(Res.string.toolbar_title_chapter_comments)),
-                containerColor = if (glassEffectConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if (glassEffectConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
-                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 },
             )
         },
         bottomBar = {
             WriteCommentContent(
                 component = component.writeCommentComponent,
-                containerColor = if (glassEffectConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = glassEffectConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 }
             )
         }
     ) { padding ->
         CommentsContent(
             component = component,
-            modifier = Modifier.thenIf(glassEffectConfig.blurEnabled) {
+            modifier = Modifier.thenIf(blurEnabled) {
                 haze(state = hazeState)
             },
             contentPadding = padding,

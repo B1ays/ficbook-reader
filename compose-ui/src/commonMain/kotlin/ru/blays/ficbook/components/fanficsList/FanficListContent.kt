@@ -38,7 +38,7 @@ import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
 import ru.blays.ficbook.ui_components.FAB.ScrollToStartFAB
 import ru.blays.ficbook.ui_components.FanficComponents.FanficCard2
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
 import ru.blays.ficbook.values.defaultScrollbarPadding
@@ -177,8 +177,10 @@ fun FanficsListScreenContent(
     val state by component.state.subscribeAsState()
     val lazyListState = rememberLazyListState()
     val scrollBehavior = rememberToolbarScrollBehavior()
+
     val hazeState = remember { HazeState() }
-    val blurConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
+
     Scaffold(
         topBar = {
             CollapsingToolbar(
@@ -236,17 +238,14 @@ fun FanficsListScreenContent(
                 collapsingTitle = CollapsingTitle.small(state.section.name),
                 scrollBehavior = scrollBehavior,
                 insets = WindowInsets.statusBars,
-                containerColor = if(blurConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
-                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = blurConfig.style
-                    )
+                collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState,)
                 }
             )
         },
@@ -259,11 +258,8 @@ fun FanficsListScreenContent(
             contentPadding = padding,
             modifier = Modifier
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .thenIf(blurConfig.blurEnabled) {
-                    haze(
-                        state = hazeState,
-                        style = blurConfig.style
-                    )
+                .thenIf(blurEnabled) {
+                    haze(state = hazeState)
                 }
         )
     }

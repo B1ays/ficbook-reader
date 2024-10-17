@@ -33,7 +33,7 @@ import ru.blays.ficbook.ui_components.CustomShape.SquircleShape.SquircleShape
 import ru.blays.ficbook.ui_components.dialogComponents.DialogPlatform
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
 import ru.hh.toolbar.custom_toolbar.CollapsingTitle
@@ -178,18 +178,15 @@ private fun Page(component: SuperfilterTabComponent) {
     val dialogInstance = component.addValueDialog.subscribeAsState().value.child?.instance
 
     val hazeState = remember { HazeState() }
-    val blurConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
 
     dialogInstance?.let {
         AddValueDialog(
-            modifier = Modifier.thenIf(blurConfig.blurEnabled) {
-                clip(CardDefaults.shape) then hazeChild(
-                    state = hazeState,
-                    style = blurConfig.style
-                )
+            modifier = Modifier.thenIf(blurEnabled) {
+                clip(CardDefaults.shape) then hazeChild(state = hazeState)
             },
             component = it,
-            containerColor = if(blurConfig.blurEnabled) {
+            containerColor = if(blurEnabled) {
                 Color.Transparent
             } else {
                 MaterialTheme.colorScheme.surfaceVariant
@@ -201,7 +198,7 @@ private fun Page(component: SuperfilterTabComponent) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .thenIf(blurConfig.blurEnabled) {
+                .thenIf(blurEnabled) {
                     haze(state = hazeState)
                 },
             contentAlignment = Alignment.Center
@@ -227,7 +224,7 @@ private fun Page(component: SuperfilterTabComponent) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .thenIf(blurConfig.blurEnabled) {
+                .thenIf(blurEnabled) {
                     haze(state = hazeState)
                 }
         ) {

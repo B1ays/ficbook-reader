@@ -28,16 +28,16 @@ import dev.chrisbanes.haze.hazeChild
 import ficbook_reader.compose_ui.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.blays.ficbook.ui_components.dialogComponents.DialogPlatform
 import ru.blays.ficbook.components.settingsContent.SettingsSwitchWithTitle
 import ru.blays.ficbook.reader.shared.components.collectionComponents.declaration.CollectionsListComponent
 import ru.blays.ficbook.reader.shared.data.dto.CollectionCardModelStable
 import ru.blays.ficbook.ui_components.ContextMenu.ContextMenu
 import ru.blays.ficbook.ui_components.ContextMenu.contextMenuAnchor
 import ru.blays.ficbook.ui_components.ContextMenu.rememberContextMenuState
+import ru.blays.ficbook.ui_components.dialogComponents.DialogPlatform
 import ru.blays.ficbook.ui_components.spacers.HorizontalSpacer
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.primaryColorAtAlpha
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
@@ -109,7 +109,7 @@ fun CollectionsContent(
 
 @Composable
 fun CollectionsScreenContent(component: CollectionsListComponent) {
-    val blurConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     val hazeState = remember(::HazeState)
 
     Scaffold(
@@ -130,18 +130,15 @@ fun CollectionsScreenContent(component: CollectionsListComponent) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.small(stringResource(Res.string.author_profile_tab_collections)),
-                containerColor = if(blurConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
-                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = blurConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 },
             )
         }
@@ -149,7 +146,7 @@ fun CollectionsScreenContent(component: CollectionsListComponent) {
         CollectionsContent(
             component = component,
             contentPadding = padding,
-            modifier = Modifier.thenIf(blurConfig.blurEnabled) {
+            modifier = Modifier.thenIf(blurEnabled) {
                 haze(hazeState)
             },
         )

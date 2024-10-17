@@ -24,7 +24,7 @@ import ru.blays.ficbook.platformUtils.scaleContent
 import ru.blays.ficbook.reader.shared.components.settingsComponents.declaration.SettingsProxyComponent
 import ru.blays.ficbook.reader.shared.preferences.json.ProxyConfig
 import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
-import ru.blays.ficbook.utils.LocalGlassEffectConfig
+import ru.blays.ficbook.utils.LocalBlurState
 import ru.blays.ficbook.utils.isNotBlankOrEmpty
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.CardShape
@@ -48,7 +48,7 @@ fun SettingsProxyContent(component: SettingsProxyComponent) {
         }
     } else 1F
 
-    val blurConfig = LocalGlassEffectConfig.current
+    val blurEnabled = LocalBlurState.current
     val hazeState = remember { HazeState() }
 
     var useCustomProxy by remember { mutableStateOf(state.usedCustom) }
@@ -71,18 +71,15 @@ fun SettingsProxyContent(component: SettingsProxyComponent) {
                     }
                 },
                 collapsingTitle = CollapsingTitle.small(stringResource(Res.string.proxy_title)),
-                containerColor = if(blurConfig.blurEnabled) {
+                containerColor = if(blurEnabled) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surface
                 },
-                collapsedElevation = if(blurConfig.blurEnabled) 0.dp else 4.dp,
+                collapsedElevation = if(blurEnabled) 0.dp else 4.dp,
                 insets = WindowInsets.statusBars,
-                modifier = Modifier.thenIf(blurConfig.blurEnabled) {
-                    hazeChild(
-                        state = hazeState,
-                        style = blurConfig.style
-                    )
+                modifier = Modifier.thenIf(blurEnabled) {
+                    hazeChild(state = hazeState)
                 },
             )
         }
