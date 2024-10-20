@@ -151,7 +151,6 @@ class DefaultFanficPageComponent(
                 )
             }
             is FanficPageInfoComponent.Output.OpenAssociatedCollections -> {
-                println("Open associated collections for ${output.fanficID}")
                 navigation.push(
                     FanficPageComponent.Config.AssociatedCollections(
                         fanficID = output.fanficID

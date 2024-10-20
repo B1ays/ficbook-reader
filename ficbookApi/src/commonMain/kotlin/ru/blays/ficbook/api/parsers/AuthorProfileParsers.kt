@@ -199,7 +199,6 @@ internal class AuthorBlogPostsParser {
 internal class AuthorBlogPostParser {
     suspend fun parse(data: Document): BlogPostPageModel {
         val container = data.select("section#content" )
-        println(container.html())
         val title = container.select(".mb-10").text().trim()
         val date = container.select("div[class*=mb-10]").text()
         val text = container.select("div[class*=mb-15]")

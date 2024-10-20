@@ -36,7 +36,6 @@ internal class SuperfilterDirectionsTabComponent(
         when(intent) {
             is SuperfilterTabComponent.Intent.Remove -> {
                 scope.launch {
-                    println("Try to remove direction: ${intent.value}")
                     filtersRepo.removeDirectionFromBlacklist(intent.value)
                 }
             }

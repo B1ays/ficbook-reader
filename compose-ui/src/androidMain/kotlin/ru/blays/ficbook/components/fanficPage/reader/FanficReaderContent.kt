@@ -300,7 +300,6 @@ private class Reader(
                 onDispose {
                     val absoluteCharIndex = pages.findCharIndexForPageIndex(pagerState.currentPage)
                     onDispose(absoluteCharIndex)
-                    println("Chapter disposed. Absolute char index: $absoluteCharIndex")
                 }
             }
         }

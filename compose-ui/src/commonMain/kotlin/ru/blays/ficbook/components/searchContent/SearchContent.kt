@@ -1751,7 +1751,6 @@ fun RangeSelector(
         OutlinedTextField(
             value = if (value.start == 0) "" else "${value.start}",
             onValueChange = {
-                println(it)
                 onSelect(
                     value.copy(
                         start = it.toIntOrNull() ?: 0

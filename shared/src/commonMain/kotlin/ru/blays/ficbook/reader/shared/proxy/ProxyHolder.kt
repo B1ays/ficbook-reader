@@ -96,12 +96,9 @@ class ProxyHolder private constructor() : ProxySelector(), IProxyHolder {
     }
 
     override fun select(uri: URI?): List<Proxy> {
-        println("Select proxy for uri: $uri")
         return if (currentProxyList != null) {
-            println("Use custom proxy")
             requireNotNull(currentProxyList)
         } else {
-            println("No proxy")
             noProxyList
         }
     }

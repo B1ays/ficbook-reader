@@ -69,10 +69,7 @@ class DefaultFanficPageActionsComponent(
         this.output(output)
     }
 
-    override fun setFanficID(id: String) {
-        println("set fanficId to: $id")
-        this.fanficID = id
-    }
+    override fun setFanficID(id: String) { fanficID = id }
 
     override fun setValue(value: FanficPageActionsComponent.State) {
         _state.update { value }

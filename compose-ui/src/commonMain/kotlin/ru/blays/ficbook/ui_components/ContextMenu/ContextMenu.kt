@@ -33,18 +33,11 @@ class ContextMenuState {
 
     fun setPosition(position: Offset) {
         _position = position
-        //println("Position: $position")
     }
 
-    fun show() {
-        _visible = true
-        println("Show")
-    }
+    fun show() { _visible = true }
 
-    fun hide() {
-        _visible = false
-        println("Hide")
-    }
+    fun hide() { _visible = false }
 }
 
 @Composable

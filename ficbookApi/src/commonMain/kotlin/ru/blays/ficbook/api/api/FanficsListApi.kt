@@ -42,7 +42,6 @@ internal class FanficsListApiImpl(
 
             val fanfics = elements.map { fanficCardParser.parse(it) }
 
-            println(pageButtons)
             ApiResult.success(
                 ListResult(
                     list = fanfics,

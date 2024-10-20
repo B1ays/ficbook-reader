@@ -48,8 +48,6 @@ class MainActivity: ComponentActivity() {
 
         enableEdgeToEdge()
 
-        println("MainActivity: created")
-
         setContent {
             AppTheme(rootComponent!!.themeComponent) {
                 CompositionLocalProvider(

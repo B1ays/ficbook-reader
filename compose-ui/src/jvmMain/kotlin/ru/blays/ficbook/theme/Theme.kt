@@ -52,9 +52,10 @@ actual fun AppTheme(
     }
 
     val colorScheme: ColorScheme = rememberDynamicColorScheme(
-        seedColor = primaryColor,
+        primary = primaryColor,
         isDark = darkTheme,
-        style = PaletteStyle.TonalSpot
+        style = PaletteStyle.TonalSpot,
+        isAmoled = false
     ).run {
         if(isAmoledTheme && darkTheme) copy(
             background = Color.Black,
