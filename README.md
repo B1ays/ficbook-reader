@@ -31,10 +31,7 @@
 > *Installer - версия с установщиком
 
 ## 🖼️Скриншоты
-### Android
-![promo banner](https://github.com/B1ays/ficbook-reader/blob/ebe0cd86d1c18a09099ee23acc99fe3995c0e0b1/promo/promo_android.png "promo banner")
-### Desktop
-![promo banner](https://github.com/B1ays/ficbook-reader/blob/ebe0cd86d1c18a09099ee23acc99fe3995c0e0b1/promo/promo_desktop.png "promo banner")
+![promo banner](https://github.com/B1ays/ficbook-reader/blob/e54edda9bb12e24664942cddc7de1af4809936fd/promo/Collage.png "collage")
 
 ## Требования
 > Android
