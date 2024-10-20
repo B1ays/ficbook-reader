@@ -88,7 +88,7 @@ enum class FanficCompletionStatus(val status: String) {
     companion object {
         fun getForName(name: String): FanficCompletionStatus {
             return FanficCompletionStatus.entries
-                .firstOrNull { it.status == name }
+                .firstOrNull { it.status.equals(name, true) }
                 ?: UNKNOWN
         }
     }

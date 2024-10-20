@@ -177,7 +177,9 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                 .calculateBottomPadding()
 
             val sheetDraggable by remember {
-                derivedStateOf { fanfic.chapters !is FanficChapterStable.SingleChapterModel }
+                derivedStateOf {
+                    fanfic.chapters !is FanficChapterStable.SingleChapterModel
+                }
             }
 
             EnhancedBottomSheetScaffold(
@@ -914,7 +916,9 @@ private fun BottomSheetContentClosed(
     onReadClicked: () -> Unit
 ) {
     val state by component.state.subscribeAsState()
+
     var menuExpanded by rememberSaveable { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .padding(DefaultPadding.CardDefaultPadding)

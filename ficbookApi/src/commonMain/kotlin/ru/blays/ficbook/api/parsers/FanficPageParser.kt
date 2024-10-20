@@ -15,85 +15,61 @@ import java.net.URLDecoder
 internal class FanficPageParser {
     private val chapterTextParser = ChapterParser()
 
+    private val outputSettings: Document.OutputSettings = Document.OutputSettings().apply {
+        prettyPrint(false)
+        escapeMode(Entities.EscapeMode.extended)
+    }
+
     suspend fun parse(data: Document): FanficPageModel = coroutineScope {
-        val outputSettings: Document.OutputSettings = Document.OutputSettings()
-        outputSettings.prettyPrint(false)
-        outputSettings.escapeMode(Entities.EscapeMode.extended)
         data.outputSettings(outputSettings)
 
-        val fanficMainInfo = data.select(".fanfic-main-info").first()
-        val bottomAction = data.select(
-            Evaluator.Class("mb-15 text-center")
-        )
-        val mb5 = data.select(Evaluator.Class("mb-5"))
+        val chapterInfo = data.select(".chapter-info").first()
+
+        val bottomAction = data.select(".hat-actions-container")
+
+        val mb10 = data.select(Evaluator.Class("mb-10"))
 
         val id = data.select("[data-fanfic-id]")
             .firstOrNull()
             ?.attr("data-fanfic-id")
             ?: ""
 
-        val likes = fanficMainInfo
-            ?.select(
-                Evaluator.Class("badge-with-icon badge-secondary badge-like")
-            )
+        val likes = chapterInfo
+            ?.select(Evaluator.Class("badge-with-icon badge-secondary badge-like"))
             ?.select(".badge-text")
             ?.text()
             ?.toIntOrNull()
             ?: 0
 
-        val trophies = fanficMainInfo?.select(
-            Evaluator.Class("badge-with-icon badge-secondary badge-reward")
-        )
-            ?.select(".badge-text")
-            ?.text()
-            ?.toIntOrNull()
-            ?: 0
+        val rating = chapterInfo
+            ?.select("div[class*='badge-rating']")
+            ?.let { FanficRating.getForName(it.text()) }
+            ?: FanficRating.UNKNOWN
 
-        val rating = fanficMainInfo?.run {
-            val divs = select("div:not(.fanfic-main-info)")
+        val direction = chapterInfo
+            ?.select("div[class*='direction']")
+            ?.let { FanficDirection.getForName(it.text()) }
+            ?: FanficDirection.UNKNOWN
 
-            for (div in divs) {
-                if (div.outerHtml().contains("badge-rating")) {
-                    return@run FanficRating.getForName(div.text())
-                }
-            }
-            return@run null
-        } ?: FanficRating.UNKNOWN
+        val status = chapterInfo
+            ?.select("div[class*='status']")
+            ?.let { FanficCompletionStatus.getForName(it.text()) }
+            ?: FanficCompletionStatus.UNKNOWN
 
-        val direction = fanficMainInfo?.run {
-            val divs = select("div:not(.fanfic-main-info)")
-
-            for (div in divs) {
-                if (div.outerHtml().contains("direction")) {
-                    return@run FanficDirection.getForName(div.text())
-                }
-            }
-            return@run null
-        } ?: FanficDirection.UNKNOWN
-
-        val status = fanficMainInfo?.run {
-            val divs = select("div:not(.fanfic-main-info)")
-
-            for (div in divs) {
-                if (div.outerHtml().contains("status")) {
-                    return@run FanficCompletionStatus.getForName(div.text())
-                }
-            }
-            return@run null
-        } ?: FanficCompletionStatus.UNKNOWN
-
-        val isHot = fanficMainInfo
-            ?.hasClass("fanfic-hat-premium-notice")
+        val isHot = chapterInfo
+            ?.select(".fanfic-hat-premium-notice")
+            ?.isNotEmpty()
             ?: false
 
-        val name = fanficMainInfo?.run {
-            val name = select("[itemprop='name']").text()
-            val headline = select("[itemprop='headline']").text()
-            return@run name.ifEmpty { headline }
-        } ?: ""
+        val name = chapterInfo
+            ?.run {
+                val name = select("[itemprop='name']").text()
+                name.ifEmpty { select("[itemprop='headline']").text() }
+            }
+            ?: ""
 
-        val fandoms: List<FandomModel> = fanficMainInfo
-            ?.select(".mb-10")
+        val fandoms: List<FandomModel> = chapterInfo
+            ?.select("div")
             ?.run {
                 forEach { element ->
                     if (element.html().contains("ic_book")) {
@@ -128,9 +104,8 @@ internal class FanficPageParser {
                 )
             }
 
-        val pairings = data.select(
-            Evaluator.Class("description word-break")
-        )
+        val pairings = data
+            .select(Evaluator.Class("description word-break"))
             .select("a")
             .filter { element ->
                 element.className().contains("pairing-link")
@@ -149,7 +124,7 @@ internal class FanficPageParser {
                 )
             }
 
-        val description = mb5
+        val description = mb10
             .select("div:contains(Описание:)")
             .wholeText
             .trim(' ', '\n')
@@ -158,7 +133,7 @@ internal class FanficPageParser {
                 replacement = ""
             )
 
-        val dedication = mb5
+        val dedication = mb10
             .select("div:contains(Посвящение:)")
             .takeIf(Elements::isNotEmpty)
             ?.wholeText
@@ -168,7 +143,7 @@ internal class FanficPageParser {
                 replacement = ""
             )
 
-        val authorComment = mb5
+        val authorComment = mb10
             .select("div:contains(Примечания:)")
             .takeIf(Elements::isNotEmpty)
             ?.wholeText
@@ -178,7 +153,7 @@ internal class FanficPageParser {
                 replacement = ""
             )
 
-        val publicationRules = mb5
+        val publicationRules = mb10
             .select("div:contains(Публикация на других ресурсах:)")
             .wholeText
             .trim(' ', '\n')
@@ -193,9 +168,7 @@ internal class FanficPageParser {
             .attr("src-desktop")
             .let(::CoverUrl)
 
-        val tags = mb5
-            .select(".tags")
-            .select("a")
+        val tags = mb10.select(".tags > a")
 
         val genres = tags.map {
             FanficTag(
@@ -205,14 +178,12 @@ internal class FanficPageParser {
         }
 
         val parts = data
-            .select(Evaluator.Class("article mb-15"))
+            .select("article.article")
             .select(".part")
 
-        val fanficChapters = if(parts.isNotEmpty()) {
+        val fanficChapters = if (parts.isNotEmpty()) {
             val chapters = parts.map { element ->
-                val partInfo = element.select(
-                    Evaluator.Class("part-info")
-                )
+                val partInfo = element.select(".part-info")
 
                 val href = element
                     .select("a")
@@ -222,7 +193,7 @@ internal class FanficPageParser {
                     .substringBefore('#')
 
                 val chapterName = element
-                    .select(Evaluator.Class("part-title word-break"))
+                    .select("h3")
                     .text()
 
                 val date = partInfo.select("span").text()
@@ -284,8 +255,7 @@ internal class FanficPageParser {
             .toIntOrNull()
             ?: 0
 
-
-        val pagesCount: Int = mb5.run {
+        val pagesCount: Int = mb10.run {
             val sizeElements = select("div:contains(Размер:)")
             if (sizeElements.isNotEmpty()) {
                 val sizeInfoParts = sizeElements.text().split(", ")
@@ -296,37 +266,40 @@ internal class FanficPageParser {
                             regex = notNumberRegex,
                             replacement = ""
                         )
-                        .toIntOrNull()
-                        ?: 0
+                            .toIntOrNull()
+                            ?: 0
                     }
+
                     2 -> {
                         val rawString = sizeInfoParts[0]
                         return@run rawString.replace(
                             regex = notNumberRegex,
                             replacement = ""
                         )
-                        .toIntOrNull()
-                        ?: 0
+                            .toIntOrNull()
+                            ?: 0
                     }
+
                     else -> 0
                 }
             } else 0
         }
 
         val rewardAnswer = data
-            .select(
-                Evaluator.Class("fanfic-reward-container rounded-block")
-            )
             .select("fanfic-reward-list")
             .attr(":initial-fic-rewards-list")
 
-        val rewardsSerialized: List<RewardResponseItem> = try {
-            json.decodeFromString(rewardAnswer)
-        } catch (e: Exception) {
+        val rewardsRaw: List<RewardResponseItem> = if (rewardAnswer.isNotEmpty()) {
+            try {
+                json.decodeFromString(rewardAnswer)
+            } catch (e: Exception) {
+                emptyList()
+            }
+        } else {
             emptyList()
         }
 
-        val rewards = rewardsSerialized.map {
+        val rewards = rewardsRaw.map {
             RewardModel(
                 message = it.userText,
                 fromUser = it.username,
@@ -343,7 +316,7 @@ internal class FanficPageParser {
                 status = status,
                 hot = isHot,
                 likes = likes,
-                trophies = trophies
+                trophies = 0
             ),
             authors = authors,
             fandoms = fandoms,
