@@ -284,7 +284,7 @@ private class Reader(
                 }
             }
 
-            /*DisposableEffect(state.value.chapterIndex) {
+            DisposableEffect(state.value.chapterIndex) {
                 val pages = pagerState.pages
                 scope.launch {
                     while(pagerState.pageCount == 0) {
@@ -300,8 +300,9 @@ private class Reader(
                 onDispose {
                     val absoluteCharIndex = pages.findCharIndexForPageIndex(pagerState.currentPage)
                     onDispose(absoluteCharIndex)
+                    println("Chapter disposed. Absolute char index: $absoluteCharIndex")
                 }
-            }*/
+            }
         }
     }
 
@@ -388,7 +389,7 @@ private class Reader(
     }
 
     @JvmName("findPageIndexForCharIndexSinglePanel")
-    private fun List<String>.findPageIndexForCharIndex(index: Int): Int {
+    private fun List<AnnotatedString>.findPageIndexForCharIndex(index: Int): Int {
         var currentIndex = 0
         for ((i, e) in withIndex()) {
             val pageLength = e.length
@@ -401,7 +402,7 @@ private class Reader(
     }
 
     @JvmName("findCharIndexForPageIndexSinglePanel")
-    private fun List<String>.findCharIndexForPageIndex(index: Int): Int {
+    private fun List<AnnotatedString>.findCharIndexForPageIndex(index: Int): Int {
         var currentIndex = 0
         for (i in 0 until index) {
             currentIndex += get(i).length
