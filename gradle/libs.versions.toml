@@ -2,8 +2,8 @@
 # Project
 applicationId = "ru.blays.ficbook.reader"
 projectVersion = "1.0.9"
-versionCode = "23"
-versionNameSuffix = "-RC2"
+versionCode = "24"
+versionNameSuffix = "-RC3"
 kotlin = "2.0.21"
 agp = "8.7.1"
 jvmTarget = "18"
