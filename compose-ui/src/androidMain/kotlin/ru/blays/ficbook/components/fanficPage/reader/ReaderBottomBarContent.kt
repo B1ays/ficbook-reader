@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,12 +18,13 @@ import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ic_battery
 
 import org.jetbrains.compose.resources.painterResource
+import ru.blays.ficbook.components.fanficPage.reader2.ReaderState
 import ru.blays.ficbook.platformUtils.rememberBatteryObserver
 import ru.blays.ficbook.platformUtils.rememberTimeObserver
 
 @Composable
 fun ReaderBottomContent(
-    pagerState: PagerState,
+    readerState: ReaderState?,
     modifier: Modifier
 ) {
     val time by rememberTimeObserver()
@@ -33,9 +33,9 @@ fun ReaderBottomContent(
     LazyVerticalGrid(
         columns = GridCells.Fixed(4),
         verticalArrangement = Arrangement.Center,
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.background, //TODO "surfaceContainerLowest"
                 shape = RoundedCornerShape(
@@ -44,44 +44,46 @@ fun ReaderBottomContent(
                 )
             ),
     ) {
-        item {
-            Text(
-                text = "${pagerState.currentPage percentageOf pagerState.pageCount}%",
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center
-            )
-        }
-        item {
-            Text(
-                text = "${(pagerState.currentPage)+1}/${pagerState.pageCount}",
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center
-            )
-        }
-        item {
-            Text(
-                text = time,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center
-            )
-        }
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_battery),
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                )
-                Spacer(modifier = Modifier.width(3.dp))
+        if(readerState != null) {
+            item {
                 Text(
-                    text = "$batteryCapacity%",
+                    text = "${readerState.pageIndex percentageOf readerState.pagesCount}%",
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
             }
+            item {
+                Text(
+                    text = "${(readerState.pagesCount) + 1}/${readerState.pagesCount}",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+            }
+            item {
+                Text(
+                    text = time,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+            }
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_battery),
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Text(
+                        text = "$batteryCapacity%",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
+                }
 
+            }
         }
     }
 }

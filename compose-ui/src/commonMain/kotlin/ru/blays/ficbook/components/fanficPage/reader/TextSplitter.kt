@@ -1,12 +1,14 @@
 package ru.blays.ficbook.components.fanficPage.reader
 
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.text.*
 import androidx.compose.ui.unit.Constraints
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -46,6 +48,64 @@ fun rememberTextPages(
     }
 
     return pages
+}
+
+@Composable
+fun rememberTextPages(
+    text: AnnotatedString,
+    config: TextSplitterConfig.SinglePanelConfig
+): List<AnnotatedString> {
+    val textMeasurer = rememberTextMeasurer()
+    /*val state = remember {
+        mutableStateListOf(
+            *(
+                run {
+                    val measureResult = textMeasurer.measure(
+                        text = text,
+                        style = config.style,
+                        constraints = config.constraints
+                    )
+
+                    calculatePages(
+                        layoutResult = measureResult,
+                        text = text
+                    )
+                }.toTypedArray()
+            )
+        )
+    }
+
+    LaunchedEffect(text, config) {
+        val measureResult = textMeasurer.measure(
+            text = text,
+            style = config.style,
+            constraints = config.constraints
+        )
+
+        state.clear()
+        state.addAll(
+            calculatePages(
+                layoutResult = measureResult,
+                text = text
+            )
+        )
+    }*/
+
+    return remember {
+        derivedStateOf {
+            println("rememberTextPages: calculate new pages")
+            val measureResult = textMeasurer.measure(
+                text = text,
+                style = config.style,
+                constraints = config.constraints
+            )
+
+            calculatePages(
+                layoutResult = measureResult,
+                text = text
+            )
+        }
+    }.value
 }
 
 @Composable
@@ -104,48 +164,46 @@ fun rememberTwoPanelTextPages(
     return pages
 }
 
-suspend fun splitTextToPages(
+fun splitTextToPages(
     text: String,
     config: TextSplitterConfig.SinglePanelConfig,
     textMeasurer: TextMeasurer
-): List<String> = coroutineScope {
+): List<String> {
     val measureResult = textMeasurer.measure(
         text = text,
         style = config.style,
         constraints = config.constraints
     )
 
-    val result = calculatePages(
+    return calculatePages(
         layoutResult = measureResult,
         text = text
     )
-    return@coroutineScope result
 }
 
-suspend fun splitTextToPages(
+fun splitTextToPages(
     text: AnnotatedString,
     config: TextSplitterConfig.SinglePanelConfig,
     textMeasurer: TextMeasurer
-): List<AnnotatedString> = coroutineScope {
+): List<AnnotatedString> {
     val measureResult = textMeasurer.measure(
         text = text,
         style = config.style,
         constraints = config.constraints
     )
 
-    val result = calculatePages(
+    return calculatePages(
         layoutResult = measureResult,
         text = text
     )
-    return@coroutineScope result
 }
 
-private suspend fun calculatePages(
+private fun calculatePages(
     layoutResult: TextLayoutResult,
     text: String
-): List<String> = coroutineScope {
+): List<String> {
     val textLastIndex = text.lastIndex
-    return@coroutineScope if(textLastIndex > 0) {
+    return if(textLastIndex > 0) {
         val constraints = layoutResult.layoutInput.constraints
         val lineHeight = layoutResult.multiParagraph.getLineHeight(0).toDouble()
         val linesInHeight = floor(constraints.maxHeight / lineHeight)
@@ -178,12 +236,12 @@ private suspend fun calculatePages(
     }
 }
 
-private suspend fun calculatePages(
+private fun calculatePages(
     layoutResult: TextLayoutResult,
     text: AnnotatedString
-): List<AnnotatedString> = coroutineScope {
+): List<AnnotatedString> {
     val textLastIndex = text.lastIndex
-    return@coroutineScope if(textLastIndex > 0) {
+    return if(textLastIndex > 0) {
         val constraints = layoutResult.layoutInput.constraints
         val lineHeight = layoutResult.multiParagraph.getLineHeight(0).toDouble()
         val linesInHeight = floor(constraints.maxHeight / lineHeight)
@@ -229,4 +287,22 @@ sealed class TextSplitterConfig {
 
     abstract val style: TextStyle
     abstract val constraints: Constraints
+}
+
+private fun stateListSaver(): Saver<SnapshotStateList<AnnotatedString>, Any> {
+    val asSaver: Saver<AnnotatedString, Any> = AnnotatedString.Saver as Saver<AnnotatedString, Any>
+    return listSaver(
+        save = { stateList ->
+            buildList<Any> {
+                stateList.forEach {
+                    with(asSaver) { save(it) }
+                }
+            }
+        },
+        restore = {
+            mutableStateListOf<AnnotatedString>().apply {
+                addAll(it.mapNotNull(asSaver::restore))
+            }
+        }
+    )
 }
