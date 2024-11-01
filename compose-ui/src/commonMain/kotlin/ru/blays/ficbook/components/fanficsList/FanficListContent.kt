@@ -39,6 +39,7 @@ import ru.blays.ficbook.ui_components.FAB.ScrollToStartFAB
 import ru.blays.ficbook.ui_components.FanficComponents.FanficCard2
 import ru.blays.ficbook.ui_components.Scrollbar.VerticalScrollbar
 import ru.blays.ficbook.utils.LocalBlurState
+import ru.blays.ficbook.utils.plus
 import ru.blays.ficbook.utils.thenIf
 import ru.blays.ficbook.values.DefaultPadding
 import ru.blays.ficbook.values.defaultScrollbarPadding
@@ -62,13 +63,12 @@ fun FanficsListContent(
     val canScrollForward = lazyListState.canScrollForward
     val canScrollBackward = lazyListState.canScrollBackward
 
-    val padding = contentPadding ?: DefaultPadding.Zero
+    val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues()
+    val padding = navigationBarPadding + contentPadding
 
     LaunchedEffect(canScrollForward) {
         if(!canScrollForward && canScrollBackward) {
-            component.sendIntent(
-                FanficsListComponent.Intent.LoadNextPage
-            )
+            component.sendIntent(FanficsListComponent.Intent.LoadNextPage)
         }
     }
 

@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
@@ -227,6 +226,7 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
                     val chapters = fanfic.chapters
                     if (chapters is FanficChapterStable.SeparateChaptersModel) {
                         BottomSheetContentOpened(
+                            contentPadding = PaddingValues(bottom = navigationBarHeight),
                             reversed = state.reverseOrderEnabled,
                             chapters = chapters,
                             onChapterClicked = { index ->
@@ -301,7 +301,6 @@ private fun PortraitContent(component: FanficPageInfoComponent) {
     }
 }
 
-
 @Composable
 private fun LandscapeContent(
     component: FanficPageInfoComponent
@@ -340,6 +339,7 @@ private fun LandscapeContent(
                 val chapters = fanfic.chapters
                 if (chapters is FanficChapterStable.SeparateChaptersModel) {
                     BottomSheetContentOpened(
+                        contentPadding = DefaultPadding.Zero,
                         reversed = state.reverseOrderEnabled,
                         modifier = Modifier.padding(end = 4.dp),
                         chapters = chapters,
@@ -419,7 +419,7 @@ private fun LandscapeContent(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalCoilApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FanficHeader(
     fanficPage: FanficPageModelStable,
@@ -1043,8 +1043,9 @@ private fun BottomSheetContentClosed(
 @Composable
 private
 fun BottomSheetContentOpened(
-    reversed: Boolean,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues,
+    reversed: Boolean,
     chapters: FanficChapterStable.SeparateChaptersModel,
     onCommentClicked: (chapterID: String) -> Unit,
     onChapterClicked: (index: Int) -> Unit
@@ -1060,7 +1061,8 @@ fun BottomSheetContentOpened(
     Box {
         LazyColumn(
             modifier = modifier.fillMaxWidth(),
-            state = lazyListState
+            state = lazyListState,
+            contentPadding = contentPadding
         ) {
             itemsIndexed(reversedList) { index, item ->
                 ChapterItem(
