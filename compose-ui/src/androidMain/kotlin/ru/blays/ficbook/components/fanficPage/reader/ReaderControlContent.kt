@@ -18,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -26,9 +25,7 @@ import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ic_book_outlined
 import ficbook_reader.compose_ui.generated.resources.ic_clock
 import ficbook_reader.compose_ui.generated.resources.ic_settings
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import ru.blays.ficbook.components.fanficPage.reader2.ReaderState
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.VoteReaderComponent
 import ru.blays.ficbook.ui_components.FanficComponents.CircleChip
@@ -43,37 +40,37 @@ fun ReaderControl(
     readerState: ReaderState,
     state: MainReaderComponent.State,
     expanded: MutableState<Boolean>,
-    openSettings: () -> Unit
+    onNextChapter: () -> Unit,
+    onPreviousChapter: () -> Unit,
+    onOpenSettings: () -> Unit
 ) {
     val voteState by voteComponent.state.subscribeAsState()
 
-    val hasNextChapter = state.chapterIndex < state.chaptersCount-1
-    val hasPreviousChapter = state.chapterIndex > 0
+    val hasNextChapter = state.chapterIndex < (state.chaptersCount - 1)
 
-    val previousButtonActive = hasPreviousChapter && !readerState.hasPreviousPage
+    val previousButtonActive = (state.chapterIndex > 0) && !readerState.hasPreviousPage
     val nextButtonActive = hasNextChapter && !readerState.hasNextPage
 
-    val scope = rememberCoroutineScope()
-
+    @Suppress("NAME_SHADOWING")
     var expanded by expanded
 
     val shape = CardDefaults.shape
 
     LaunchedEffect(previousButtonActive, nextButtonActive, readerState.hasNextPage) {
         if(
-            !state.settings.autoOpenNextChapter &&
-            (previousButtonActive || nextButtonActive || !hasNextChapter && !readerState.hasNextPage)
+            !state.settings.autoOpenNextChapter && (previousButtonActive || nextButtonActive)
         ) {
             expanded = true
         }
     }
 
     AnimatedVisibility(
+        modifier = modifier,
         visible = expanded,
-        enter = slideInVertically(spring()) { it/2 }
-                + expandVertically(spring()),
-        exit = slideOutVertically(spring()) { it/2 }
-                + shrinkVertically(spring()),
+        enter = slideInVertically(spring()) { it }
+            + expandVertically(spring()),
+        exit = slideOutVertically(spring()) { it }
+            + shrinkVertically(spring()),
     ) {
         Column {
             AnimatedVisibility(
@@ -191,7 +188,7 @@ fun ReaderControl(
                         shape = CircleShape
                     )
                     .clip(CircleShape)
-                    .clickable(onClick = openSettings)
+                    .clickable(onClick = onOpenSettings)
             ) {
                 Row(
                     modifier = Modifier.padding(4.dp).align(Alignment.Center),
@@ -213,7 +210,7 @@ fun ReaderControl(
             }
             Spacer(modifier = Modifier.requiredHeight(15.dp))
             Row(
-                modifier = modifier
+                modifier = Modifier
                     .padding(
                         horizontal = 14.dp,
                         vertical = 10.dp
@@ -229,28 +226,30 @@ fun ReaderControl(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 ChangeChapterButton(
-                    modifier = Modifier.weight(1F / 5F).padding(6.dp),
+                    modifier = Modifier
+                        .weight(1F / 5F)
+                        .padding(6.dp),
                     icon = Icons.AutoMirrored.Rounded.ArrowBack,
                     enabled = previousButtonActive,
-                    onClick = readerState::previousPage
+                    onClick = onPreviousChapter
                 )
+                val pagesLastIndex = readerState.pagesCount - 1
                 Slider(
-                    modifier = Modifier.weight(3F / 5F).padding(horizontal = 3.dp),
+                    modifier = Modifier
+                        .weight(3F / 5F)
+                        .padding(horizontal = 3.dp),
                     value = readerState.pageIndex.toFloat(),
-                    onValueChange = {
-                        scope.launch {
-                            readerState.scrollToPage(it.toInt())
-                        }
-                    },
-                    valueRange = 0F .. (readerState.pagesCount - 1)
-                        .coerceAtLeast(1)
-                        .toFloat()
+                    onValueChange = { readerState.scrollToPage(it.toInt()) },
+                    steps = pagesLastIndex - 1,
+                    valueRange = 0F .. pagesLastIndex.toFloat().coerceAtLeast(1F)
                 )
                 ChangeChapterButton(
-                    modifier = Modifier.weight(1F / 5F).padding(6.dp),
+                    modifier = Modifier
+                        .weight(1F / 5F)
+                        .padding(6.dp),
                     icon = Icons.AutoMirrored.Rounded.ArrowForward,
                     enabled = nextButtonActive,
-                    onClick = readerState::nextPage
+                    onClick = onNextChapter
                 )
             }
         }
@@ -267,11 +266,11 @@ private fun ChangeChapterButton(
 ) {
     val containerColor by animateColorAsState(
         targetValue = if(enabled) {
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.primary
         } else {
-            val primaryContainer = MaterialTheme.colorScheme.primaryContainer.toArgb()
+            val primary = MaterialTheme.colorScheme.primary.toArgb()
             val surfaceColor = Color.Gray.toArgb()
-            val blendedArgb = ColorUtils.blendARGB(primaryContainer, surfaceColor, 0.6f)
+            val blendedArgb = ColorUtils.blendARGB(primary, surfaceColor, 0.6f)
             Color(blendedArgb)
         }
     )
@@ -279,35 +278,24 @@ private fun ChangeChapterButton(
 
     Row(
         modifier = modifier
-            .layout { measurable, constraints ->
-                val size = constraints.maxWidth.coerceAtMost(200)
-                val placeable = measurable.measure(
-                    constraints.copy(
-                        minWidth = size,
-                        maxWidth = size,
-                        minHeight = size,
-                        maxHeight = size
-                    )
-                )
-                layout(size, size) {
-                    placeable.place(0, 0)
-                }
-            }
-            .clickable(
-                onClick = onClick,
-                enabled = enabled
-            )
+            .widthIn(max = 80.dp)
+            .aspectRatio(1F)
             .background(
                 color = containerColor,
                 shape = shape
             )
-            .clip(shape),
+            .clip(shape)
+            .clickable(
+                onClick = onClick,
+                enabled = enabled
+            ),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.size(24.dp)
         )
     }

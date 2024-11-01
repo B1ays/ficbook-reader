@@ -8,4 +8,4 @@ import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.Ma
 @Composable
 expect fun FanficReaderContent(component: MainReaderComponent)
 
-infix fun Int.percentageOf(value: Int): Int = ((this*100F)/value.toFloat()).toInt()
+infix fun Int.percentageOf(value: Int): Int = ((this.toFloat() / value) * 100F).toInt()

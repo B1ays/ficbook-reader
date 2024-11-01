@@ -2,7 +2,6 @@ package ru.blays.ficbook.components.fanficPage.reader
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,19 +20,15 @@ fun ReaderTopBarContent(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.background, //TODO "surfaceContainerLowest"
-                shape = RoundedCornerShape(
-                    bottomStart = 20.dp,
-                    bottomEnd = 20.dp
-                )
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(12.dp))
         Text(
-            text = "${state.chapterIndex+1}/${state.chaptersCount}",
-            color = MaterialTheme.colorScheme.onBackground
+            text = "${state.chapterIndex + 1}/${state.chaptersCount}",
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.width(5.dp))
         Text(
@@ -41,7 +36,7 @@ fun ReaderTopBarContent(
             text = state.chapterName,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.width(12.dp))
     }

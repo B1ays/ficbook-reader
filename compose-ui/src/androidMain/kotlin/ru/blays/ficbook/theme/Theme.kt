@@ -1,16 +1,12 @@
-@file:Suppress("AnimateAsStateLabel")
-
 package ru.blays.ficbook.theme
 
 import android.app.Activity
 import android.os.Build
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -44,7 +40,6 @@ actual fun AppTheme(
         2 -> false
         else -> isSystemInDarkTheme
     }
-
 
     val primaryColor = remember(colorAccentIndex) {
         defaultAccentColors.getOrElse(colorAccentIndex) {
@@ -83,42 +78,42 @@ actual fun AppTheme(
     }
 
     val animatedColorScheme = ColorScheme(
-        primary = animateColorAsState(colorScheme.primary, animationSpec).value,
-        onPrimary = animateColorAsState(colorScheme.onPrimary, animationSpec).value,
-        primaryContainer = animateColorAsState(colorScheme.primaryContainer, animationSpec).value,
-        onPrimaryContainer = animateColorAsState(colorScheme.onPrimaryContainer, animationSpec).value,
-        inversePrimary = animateColorAsState(colorScheme.inversePrimary, animationSpec).value,
-        secondary = animateColorAsState(colorScheme.secondary, animationSpec).value,
-        onSecondary = animateColorAsState(colorScheme.onSecondary, animationSpec).value,
-        secondaryContainer = animateColorAsState(colorScheme.secondaryContainer, animationSpec).value,
-        onSecondaryContainer = animateColorAsState(colorScheme.onSecondaryContainer, animationSpec).value,
-        tertiary = animateColorAsState(colorScheme.tertiary, animationSpec).value,
-        onTertiary = animateColorAsState(colorScheme.onTertiary, animationSpec).value,
-        tertiaryContainer = animateColorAsState(colorScheme.tertiaryContainer, animationSpec).value,
-        onTertiaryContainer = animateColorAsState(colorScheme.onTertiaryContainer, animationSpec).value,
-        background = animateColorAsState(colorScheme.background, animationSpec).value,
-        onBackground = animateColorAsState(colorScheme.onBackground, animationSpec).value,
-        surface = animateColorAsState(colorScheme.surface, animationSpec).value,
-        onSurface = animateColorAsState(colorScheme.onSurface, animationSpec).value,
-        surfaceVariant = animateColorAsState(colorScheme.surfaceVariant, animationSpec).value,
-        onSurfaceVariant = animateColorAsState(colorScheme.onSurfaceVariant, animationSpec).value,
-        surfaceTint = animateColorAsState(colorScheme.surfaceTint, animationSpec).value,
-        inverseSurface = animateColorAsState(colorScheme.inverseSurface, animationSpec).value,
-        inverseOnSurface = animateColorAsState(colorScheme.inverseOnSurface, animationSpec).value,
-        error = animateColorAsState(colorScheme.error, animationSpec).value,
-        onError = animateColorAsState(colorScheme.onError, animationSpec).value,
-        errorContainer = animateColorAsState(colorScheme.errorContainer, animationSpec).value,
-        onErrorContainer = animateColorAsState(colorScheme.onErrorContainer, animationSpec).value,
-        outline = animateColorAsState(colorScheme.outline, animationSpec).value,
-        outlineVariant = animateColorAsState(colorScheme.outlineVariant, animationSpec).value,
-        scrim = animateColorAsState(colorScheme.scrim, animationSpec).value,
-        surfaceBright = animateColorAsState(colorScheme.surfaceBright, animationSpec).value,
-        surfaceDim = animateColorAsState(colorScheme.surfaceDim, animationSpec).value,
-        surfaceContainer = animateColorAsState(colorScheme.surfaceContainer, animationSpec).value,
-        surfaceContainerHigh = animateColorAsState(colorScheme.surfaceContainerHigh, animationSpec).value,
-        surfaceContainerHighest = animateColorAsState(colorScheme.surfaceContainerHighest, animationSpec).value,
-        surfaceContainerLow = animateColorAsState(colorScheme.surfaceContainerLow, animationSpec).value,
-        surfaceContainerLowest = animateColorAsState(colorScheme.surfaceContainerLowest, animationSpec).value,
+        primary = colorScheme.primary.animate(animationSpec),
+        onPrimary = colorScheme.onPrimary.animate(animationSpec),
+        primaryContainer = colorScheme.primaryContainer.animate(animationSpec),
+        onPrimaryContainer = colorScheme.onPrimaryContainer.animate(animationSpec),
+        inversePrimary = colorScheme.inversePrimary.animate(animationSpec),
+        secondary = colorScheme.secondary.animate(animationSpec),
+        onSecondary = colorScheme.onSecondary.animate(animationSpec),
+        secondaryContainer = colorScheme.secondaryContainer.animate(animationSpec),
+        onSecondaryContainer = colorScheme.onSecondaryContainer.animate(animationSpec),
+        tertiary = colorScheme.tertiary.animate(animationSpec),
+        onTertiary = colorScheme.onTertiary.animate(animationSpec),
+        tertiaryContainer = colorScheme.tertiaryContainer.animate(animationSpec),
+        onTertiaryContainer = colorScheme.onTertiaryContainer.animate(animationSpec),
+        background = colorScheme.background.animate(animationSpec),
+        onBackground = colorScheme.onBackground.animate(animationSpec),
+        surface = colorScheme.surface.animate(animationSpec),
+        onSurface = colorScheme.onSurface.animate(animationSpec),
+        surfaceVariant = colorScheme.surfaceVariant.animate(animationSpec),
+        onSurfaceVariant = colorScheme.onSurfaceVariant.animate(animationSpec),
+        surfaceTint = colorScheme.surfaceTint.animate(animationSpec),
+        inverseSurface = colorScheme.inverseSurface.animate(animationSpec),
+        inverseOnSurface = colorScheme.inverseOnSurface.animate(animationSpec),
+        error = colorScheme.error.animate(animationSpec),
+        onError = colorScheme.onError.animate(animationSpec),
+        errorContainer = colorScheme.errorContainer.animate(animationSpec),
+        onErrorContainer = colorScheme.onErrorContainer.animate(animationSpec),
+        outline = colorScheme.outline.animate(animationSpec),
+        outlineVariant = colorScheme.outlineVariant.animate(animationSpec),
+        scrim = colorScheme.scrim.animate(animationSpec),
+        surfaceBright = colorScheme.surfaceBright.animate(animationSpec),
+        surfaceDim = colorScheme.surfaceDim.animate(animationSpec),
+        surfaceContainer = colorScheme.surfaceContainer.animate(animationSpec),
+        surfaceContainerHigh = colorScheme.surfaceContainerHigh.animate(animationSpec),
+        surfaceContainerHighest = colorScheme.surfaceContainerHighest.animate(animationSpec),
+        surfaceContainerLow = colorScheme.surfaceContainerLow.animate(animationSpec),
+        surfaceContainerLowest = colorScheme.surfaceContainerLowest.animate(animationSpec)
     )
 
     val view = LocalView.current
@@ -146,7 +141,7 @@ actual fun AppTheme(
         content = {
             CompositionLocalProvider(
                 LocalRippleConfiguration provides rippleConfiguration,
-                LocalDynamicMaterialThemeSeed provides primaryColor,
+                LocalDynamicMaterialThemeSeed provides animatedColorScheme.primary,
                 content = content
             )
         },
@@ -161,27 +156,58 @@ actual fun ReaderTheme(
     lightColor: Color,
     content: @Composable () -> Unit
 ) {
-    val parentColorScheme = colorScheme
+    val seedColor = LocalDynamicMaterialThemeSeed.current
 
-    val colorScheme = when {
-        darkTheme -> darkColorScheme(
-            background = darkColor,
-            onBackground = lightColor
-        )
-        else -> lightColorScheme(
-            background = lightColor,
-            onBackground = darkColor
-        )
+    val colorScheme = dynamicColorScheme(
+        primary = seedColor,
+        isAmoled = false,
+        isDark = darkTheme,
+    ) {
+        if(darkTheme) {
+            it.copy(
+                background = darkColor,
+                onBackground = lightColor
+            )
+        } else {
+            it.copy(
+                background = lightColor,
+                onBackground = darkColor
+            )
+        }
     }
 
     val view = LocalView.current
     if (!view.isInEditMode) {
-        DisposableEffect(key1 = Unit) {
+        DisposableEffect(darkTheme) {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
+            val windowsInsetsController = WindowCompat.getInsetsController(window, view)
+
+            val oldColor = window.statusBarColor
+            window.statusBarColor = colorScheme.surface.toArgb()
+
+            val oldContrastEnforced: Boolean
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                oldContrastEnforced = window.isStatusBarContrastEnforced
+                window.isNavigationBarContrastEnforced = false
+                window.isStatusBarContrastEnforced = false
+            } else {
+                oldContrastEnforced = false
+            }
+
+            val oldAppearance = windowsInsetsController.isAppearanceLightStatusBars
+            windowsInsetsController.isAppearanceLightStatusBars = !darkTheme
+            windowsInsetsController.isAppearanceLightNavigationBars = !darkTheme
 
             onDispose {
-                window.statusBarColor = parentColorScheme.background.toArgb()
+                window.statusBarColor = oldColor
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    window.isNavigationBarContrastEnforced = oldContrastEnforced
+                    window.isStatusBarContrastEnforced = oldContrastEnforced
+                }
+
+                windowsInsetsController.isAppearanceLightStatusBars = oldAppearance
+                windowsInsetsController.isAppearanceLightNavigationBars = oldAppearance
             }
         }
     }

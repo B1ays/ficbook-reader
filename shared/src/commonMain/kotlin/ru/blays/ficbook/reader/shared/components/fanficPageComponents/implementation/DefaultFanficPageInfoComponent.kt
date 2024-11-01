@@ -95,6 +95,7 @@ class DefaultFanficPageInfoComponent(
                 }
             }
             is FanficPageInfoComponent.Intent.ChangeChaptersOrder -> setChaptersOrder(intent.reverse)
+            is FanficPageInfoComponent.Intent.UpdateChapters -> updateChapters(intent.chapters)
         }
     }
 
@@ -164,6 +165,17 @@ class DefaultFanficPageInfoComponent(
                     }
                 }
             }
+        }
+    }
+
+    private fun updateChapters(chapters: FanficChapterStable) {
+        val state = state.value
+        val fanfic = state.fanfic
+        val newFanfic = fanfic?.copy(
+            chapters = chapters
+        )
+        _state.update {
+            it.copy(fanfic = newFanfic)
         }
     }
 

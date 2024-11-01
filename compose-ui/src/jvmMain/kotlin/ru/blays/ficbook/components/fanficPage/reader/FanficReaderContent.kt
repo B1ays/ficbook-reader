@@ -34,12 +34,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.slot.ChildSlot
-import ficbook_reader.compose_ui.generated.resources.*
 import com.godaddy.android.colorpicker.ClassicColorPicker
 import com.godaddy.android.colorpicker.HsvColor
-import org.jetbrains.compose.resources.painterResource
+import ficbook_reader.compose_ui.generated.resources.Res
+import ficbook_reader.compose_ui.generated.resources.ic_dropper
+import ficbook_reader.compose_ui.generated.resources.ic_settings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.VoteReaderComponent
@@ -76,7 +78,7 @@ actual fun FanficReaderContent(component: MainReaderComponent) {
                     IconButton(
                         onClick = {
                             component.sendIntent(
-                                MainReaderComponent.Intent.OpenOrCloseSettings
+                                MainReaderComponent.Intent.ChangeDialogVisible
                             )
                         }
                     ) {

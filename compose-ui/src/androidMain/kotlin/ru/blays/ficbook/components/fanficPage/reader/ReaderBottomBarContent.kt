@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,9 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ficbook_reader.compose_ui.generated.resources.Res
 import ficbook_reader.compose_ui.generated.resources.ic_battery
-
 import org.jetbrains.compose.resources.painterResource
-import ru.blays.ficbook.components.fanficPage.reader2.ReaderState
 import ru.blays.ficbook.platformUtils.rememberBatteryObserver
 import ru.blays.ficbook.platformUtils.rememberTimeObserver
 
@@ -37,32 +34,31 @@ fun ReaderBottomContent(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.background, //TODO "surfaceContainerLowest"
-                shape = RoundedCornerShape(
-                    topStart = 20.dp,
-                    topEnd = 20.dp
-                )
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
             ),
     ) {
         if(readerState != null) {
             item {
+                val percent = (
+                    (readerState.pageIndex + 1) percentageOf readerState.pagesCount
+                ).coerceIn(0, 100)
                 Text(
-                    text = "${readerState.pageIndex percentageOf readerState.pagesCount}%",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    text = "$percent%",
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
             }
             item {
                 Text(
-                    text = "${(readerState.pagesCount) + 1}/${readerState.pagesCount}",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    text = "${readerState.pageIndex + 1}/${readerState.pagesCount}",
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
             }
             item {
                 Text(
                     text = time,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
             }
@@ -73,16 +69,16 @@ fun ReaderBottomContent(
                     Icon(
                         painter = painterResource(Res.drawable.ic_battery),
                         contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(14.dp),
                     )
-                    Spacer(modifier = Modifier.width(3.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "$batteryCapacity%",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
                 }
-
             }
         }
     }

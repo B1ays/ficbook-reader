@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.toArgb
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
 import kotlinx.serialization.Serializable
+import ru.blays.ficbook.reader.shared.data.dto.FanficChapterStable
 
 interface MainReaderComponent {
     val state: Value<State>
@@ -18,7 +19,7 @@ interface MainReaderComponent {
     fun onOutput(output: Output)
 
     sealed class Intent {
-        data object OpenOrCloseSettings: Intent()
+        data object ChangeDialogVisible: Intent()
         data class ChangeChapter(val chapterIndex: Int): Intent()
         data class SaveProgress(
             val chapterIndex: Int,
@@ -27,6 +28,7 @@ interface MainReaderComponent {
     }
 
     sealed class Output {
+        internal data class Close(val chapters: FanficChapterStable): Output()
         data object NavigateBack: Output()
     }
 

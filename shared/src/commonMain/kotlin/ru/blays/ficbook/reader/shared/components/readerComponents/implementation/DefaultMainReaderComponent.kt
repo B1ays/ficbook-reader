@@ -7,12 +7,13 @@ import com.arkivanov.decompose.router.slot.activate
 import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.update
+import com.arkivanov.essenty.backhandler.BackCallback
 import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.arkivanov.essenty.lifecycle.doOnStart
 import com.russhwolf.settings.boolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -27,13 +28,17 @@ import ru.blays.ficbook.reader.shared.stateHandle.SaveableMutableValue
 
 class DefaultMainReaderComponent(
     componentContext: ComponentContext,
-    private val chapters: FanficChapterStable,
+    private var chapters: FanficChapterStable,
     initialChapterIndex: Int,
     private val fanficID: String,
-    private val output: (output: MainReaderComponent.Output) -> Unit
+    private val onOutput: (output: MainReaderComponent.Output) -> Unit
 ) : MainReaderComponent, ComponentContext by componentContext, KoinComponent {
     private val chaptersRepository: IChaptersRepo by inject()
     private val settingsJsonRepository: ISettingsJsonRepository by inject()
+
+    private val dialogNavigation = SlotNavigation<MainReaderComponent.SettingsDialogConfig>()
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private var readerSettings by settingsJsonRepository.getDelegate(
         serializer = MainReaderComponent.Settings.serializer(),
@@ -53,9 +58,13 @@ class DefaultMainReaderComponent(
             initialChapterIndex = initialChapterIndex
         )
     )
-    override val state get() = _state
 
-    private val dialogNavigation = SlotNavigation<MainReaderComponent.SettingsDialogConfig>()
+    private val backCallback = BackCallback {
+        onOutput(MainReaderComponent.Output.Close(chapters))
+    }
+
+    override val state
+        get() = _state
 
     override val dialog = childSlot(
         source = dialogNavigation,
@@ -68,28 +77,27 @@ class DefaultMainReaderComponent(
             onSettingsChanged = ::onSettingsChanged
         )
     }
+
     override val voteComponent = DefaultVoteReaderComponent(
         componentContext = childContext("voteComponent"),
         chapters = chapters,
         fanficID = fanficID,
         lastChapter = {
-            when(chapters) {
+            when(val currentChapters = chapters) {
                 is FanficChapterStable.SeparateChaptersModel -> {
-                    chapters.chapters.lastIndex == state.value.chapterIndex
+                    currentChapters.chapters.lastIndex == state.value.chapterIndex
                 }
                 else -> false
             }
         }
     )
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     override fun sendIntent(intent: MainReaderComponent.Intent) {
         when (intent) {
-            is MainReaderComponent.Intent.ChangeChapter -> {
+            is MainReaderComponent.Intent.ChangeChapter -> coroutineScope.launch {
                 openChapter(intent.chapterIndex)
             }
-            is MainReaderComponent.Intent.OpenOrCloseSettings -> {
+            is MainReaderComponent.Intent.ChangeDialogVisible -> {
                 if (dialog.value.child == null) {
                     dialogNavigation.activate(
                         MainReaderComponent.SettingsDialogConfig(state.value.settings)
@@ -98,10 +106,8 @@ class DefaultMainReaderComponent(
                     dialogNavigation.dismiss()
                 }
             }
-            is MainReaderComponent.Intent.SaveProgress -> {
+            is MainReaderComponent.Intent.SaveProgress -> coroutineScope.launch {
                 saveReadProgress(
-                    chapter = chapters,
-                    fanficID = fanficID,
                     chapterIndex = intent.chapterIndex,
                     charIndex = intent.charIndex
                 )
@@ -110,7 +116,12 @@ class DefaultMainReaderComponent(
     }
 
     override fun onOutput(output: MainReaderComponent.Output) {
-        this.output(output)
+        when(output) {
+            is MainReaderComponent.Output.Close -> onOutput.invoke(output)
+            MainReaderComponent.Output.NavigateBack -> onOutput.invoke(
+                MainReaderComponent.Output.Close(chapters)
+            )
+        }
     }
 
     private fun onSettingsChanged(settings: MainReaderComponent.Settings) {
@@ -122,8 +133,9 @@ class DefaultMainReaderComponent(
         readerSettings = settings
     }
 
-    private fun openChapter(index: Int) = coroutineScope.launch {
-        if(chapters is FanficChapterStable.SeparateChaptersModel && index in chapters.chapters.indices) {
+    private suspend fun openChapter(index: Int) {
+        val chapters = chapters
+        if(chapters is FanficChapterStable.SeparateChaptersModel) {
             _state.update {
                 it.copy(loading = true)
             }
@@ -182,7 +194,7 @@ class DefaultMainReaderComponent(
                 MainReaderComponent.State(
                     chapterIndex = 0,
                     initialCharIndex = 0,
-                    chapterName = "Глава 1",
+                    chapterName = "",
                     text = if(typografEnabled) {
                         typograf(chapters.text)
                     } else {
@@ -196,18 +208,27 @@ class DefaultMainReaderComponent(
         }
     }
 
-    private fun saveReadProgress(
-        chapter: FanficChapterStable,
-        fanficID: String,
+    private suspend fun saveReadProgress(
         chapterIndex: Int,
         charIndex: Int
-    ) = coroutineScope.launch {
-        if(chapter is FanficChapterStable.SeparateChaptersModel) {
-            chaptersRepository.saveReadProgress(
-                chapter = chapter.chapters[chapterIndex],
+    ) {
+        val chapters = chapters
+        if(chapters is FanficChapterStable.SeparateChaptersModel) {
+            val success = chaptersRepository.saveReadProgress(
+                chapter = chapters.chapters[chapterIndex],
                 fanficID = fanficID,
                 charIndex = charIndex
             )
+            if(success) {
+                val newChapters = chapters.chapters.toMutableList().apply {
+                    val oldChapter = this[chapterIndex]
+                    this[chapterIndex] = oldChapter.copy(
+                        lastWatchedCharIndex = charIndex,
+                        readed = true
+                    )
+                }
+                this.chapters = chapters.copy(chapters = newChapters)
+            }
         }
     }
 
@@ -250,13 +271,16 @@ class DefaultMainReaderComponent(
 
     init {
         lifecycle.doOnStart(true) {
+            backHandler.register(backCallback)
             val state = state.value
             if(state.text.isEmpty() && !state.error) {
-                openChapter(initialChapterIndex)
+                coroutineScope.launch {
+                    openChapter(initialChapterIndex)
+                }
             }
         }
         lifecycle.doOnDestroy {
-            coroutineScope.cancel()
+            backHandler.unregister(backCallback)
         }
     }
 

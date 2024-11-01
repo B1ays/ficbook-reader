@@ -28,6 +28,7 @@ import org.jetbrains.compose.resources.painterResource
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.MainReaderComponent
 import ru.blays.ficbook.reader.shared.components.readerComponents.declaration.SettingsReaderComponent
 import ru.blays.ficbook.ui_components.CustomButton.CustomIconButton
+import ru.blays.ficbook.ui_components.spacers.VerticalSpacer
 import ru.blays.ficbook.values.DefaultPadding
 
 @Suppress("DEPRECATION")
@@ -39,7 +40,7 @@ fun ReaderSettingPopup(
 ) {
     val scrollState = rememberScrollState()
     AlertDialog(
-        onDismissRequest = closeDialog,
+        onDismissRequest = {}
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(0.9F)
@@ -56,7 +57,7 @@ fun ReaderSettingPopup(
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 4.dp),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.surfaceContainerLowest
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -164,7 +165,7 @@ fun ReaderSettingPopup(
                     CustomIconButton(
                         shape = CircleShape,
                         contentColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.background,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         minSize = 30.dp,
                         onClick = {
                             component.sendIntent(
@@ -185,7 +186,7 @@ fun ReaderSettingPopup(
                     CustomIconButton(
                         shape = CircleShape,
                         contentColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.background,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         minSize = 30.dp,
                         onClick = {
                             component.sendIntent(
@@ -213,7 +214,7 @@ fun ReaderSettingPopup(
                     CustomIconButton(
                         shape = CircleShape,
                         contentColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.background,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         minSize = 30.dp,
                         onClick = {
                             component.sendIntent(
@@ -234,7 +235,7 @@ fun ReaderSettingPopup(
                     CustomIconButton(
                         shape = CircleShape,
                         contentColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.background,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         minSize = 30.dp,
                         onClick = {
                             component.sendIntent(
@@ -308,6 +309,17 @@ fun ReaderSettingPopup(
                         )
                     }
                 )
+                VerticalSpacer(12.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(
+                        onClick = closeDialog
+                    ) {
+                        Text(text = "Закрыть")
+                    }
+                }
             }
         }
     }
