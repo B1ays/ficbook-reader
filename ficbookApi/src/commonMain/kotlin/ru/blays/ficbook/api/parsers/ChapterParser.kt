@@ -5,7 +5,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Evaluator
 
 internal class ChapterParser {
-    val outputSettings = Document.OutputSettings().apply {
+    private val outputSettings = Document.OutputSettings().apply {
         prettyPrint(false)
     }
 
@@ -25,7 +25,6 @@ internal class ChapterParser {
     suspend fun parseHtml(data: Document): String = coroutineScope {
         data.outputSettings(outputSettings)
 
-        data.outputSettings()
         val topHtml = data.select(
             Evaluator.Class("part-comment-top mx-10 mx-xs-5")
         )

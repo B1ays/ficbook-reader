@@ -181,7 +181,7 @@ internal class FanficPageParser {
             .select("article.article")
             .select(".part")
 
-        val fanficChapters = if (parts.isNotEmpty()) {
+        val fanficChapters = if(parts.isNotEmpty()) {
             val chapters = parts.map { element ->
                 val partInfo = element.select(".part-info")
 
@@ -226,12 +226,27 @@ internal class FanficPageParser {
                 .select(".part-date")
                 .text()
 
-            val text = chapterTextParser.parseText(data)
+            val topHtml = data
+                .select(Evaluator.Class("part-comment-top mx-10 mx-xs-5"))
+                .html()
+                .replace("\n", "<br/>")
+
+            val textHtml = data
+                .select(Evaluator.Class("js-part-text part_text clearfix js-public-beta-text js-bookmark-area"))
+                .html()
+                .replace("\n", "<br/>")
+
+            val bottomHtml = data
+                .select(Evaluator.Class("part-comment-bottom mx-10 mx-xs-5"))
+                .html()
+                .replace("\n", "<br/>")
+
+            val html = "$topHtml\n$textHtml\n$bottomHtml"
 
             FanficChapter.SingleChapterModel(
                 chapterID = chapterID,
                 date = date,
-                text = text
+                text = html
             )
         }
 
@@ -266,8 +281,8 @@ internal class FanficPageParser {
                             regex = notNumberRegex,
                             replacement = ""
                         )
-                            .toIntOrNull()
-                            ?: 0
+                        .toIntOrNull()
+                        ?: 0
                     }
 
                     2 -> {
@@ -276,8 +291,8 @@ internal class FanficPageParser {
                             regex = notNumberRegex,
                             replacement = ""
                         )
-                            .toIntOrNull()
-                            ?: 0
+                        .toIntOrNull()
+                        ?: 0
                     }
 
                     else -> 0
