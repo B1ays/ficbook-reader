@@ -234,13 +234,14 @@ fun ReaderControl(
                     onClick = onPreviousChapter
                 )
                 val pagesLastIndex = readerState.pagesCount - 1
+                val sliderSteps = (pagesLastIndex - 1).coerceAtLeast(0)
                 Slider(
                     modifier = Modifier
                         .weight(3F / 5F)
                         .padding(horizontal = 3.dp),
                     value = readerState.pageIndex.toFloat(),
                     onValueChange = { readerState.scrollToPage(it.toInt()) },
-                    steps = pagesLastIndex - 1,
+                    steps = sliderSteps,
                     valueRange = 0F .. pagesLastIndex.toFloat().coerceAtLeast(1F)
                 )
                 ChangeChapterButton(
