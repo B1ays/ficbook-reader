@@ -8,11 +8,9 @@ import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.decompose.value.update
+import com.arkivanov.essenty.lifecycle.doOnCreate
 import com.arkivanov.essenty.lifecycle.doOnDestroy
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ru.blays.ficbook.api.result.ApiResult
@@ -25,8 +23,8 @@ import ru.blays.ficbook.reader.shared.data.repo.declaration.IFanficPageRepo
 
 class DefaultFanficPageActionsComponent(
     componentContext: ComponentContext,
-    private val output: (output: FanficPageActionsComponent.Output) -> Unit
-): InternalFanficPageActionsComponent, ComponentContext by componentContext, KoinComponent {
+    private val output: (output: FanficPageActionsComponent.Output) -> Unit,
+) : InternalFanficPageActionsComponent, ComponentContext by componentContext, KoinComponent {
     private val repository: IFanficPageRepo by inject()
 
     private val navigation = SlotNavigation<FanficPageActionsComponent.ChildConfig>()
@@ -49,7 +47,7 @@ class DefaultFanficPageActionsComponent(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun sendIntent(intent: FanficPageActionsComponent.Intent) {
-        when(intent) {
+        when (intent) {
             is FanficPageActionsComponent.Intent.Follow -> follow(intent.follow)
             is FanficPageActionsComponent.Intent.Mark -> mark(intent.mark)
             is FanficPageActionsComponent.Intent.OpenAvailableCollections -> {
@@ -59,6 +57,7 @@ class DefaultFanficPageActionsComponent(
                     )
                 )
             }
+
             is FanficPageActionsComponent.Intent.CloseAvailableCollections -> {
                 navigation.dismiss()
             }
@@ -69,7 +68,9 @@ class DefaultFanficPageActionsComponent(
         this.output(output)
     }
 
-    override fun setFanficID(id: String) { fanficID = id }
+    override fun setFanficID(id: String) {
+        fanficID = id
+    }
 
     override fun setValue(value: FanficPageActionsComponent.State) {
         _state.update { value }
@@ -105,7 +106,7 @@ class DefaultFanficPageActionsComponent(
 
     private fun childSlotFactory(
         config: FanficPageActionsComponent.ChildConfig,
-        childContext: ComponentContext
+        childContext: ComponentContext,
     ): FanficPageCollectionsComponent {
         return DefaultFanficPageCollectionsComponent(
             componentContext = childContext,
@@ -122,8 +123,10 @@ class DefaultFanficPageActionsComponent(
 
 class DefaultFanficPageCollectionsComponent(
     componentContext: ComponentContext,
-    private val fanficId: String
-): FanficPageCollectionsComponent, ComponentContext by componentContext, KoinComponent {
+    private val fanficId: String,
+) : FanficPageCollectionsComponent,
+    KoinComponent,
+    ComponentContext by componentContext {
     private val repository: ICollectionsRepo by inject()
 
     private val _state = MutableValue(
@@ -135,13 +138,14 @@ class DefaultFanficPageCollectionsComponent(
         )
     )
 
-    override val state get() = _state
+    private val scope = CoroutineScope(Dispatchers.IO)
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    override val state
+        get() = _state
 
     override fun sendIntent(intent: FanficPageCollectionsComponent.Intent) {
-        when(intent) {
-            is FanficPageCollectionsComponent.Intent.AddToCollection -> {
+        when (intent) {
+            is FanficPageCollectionsComponent.Intent.AddToCollection -> scope.launch {
                 addToCollection(
                     add = intent.add,
                     collection = intent.collection
@@ -150,81 +154,81 @@ class DefaultFanficPageCollectionsComponent(
         }
     }
 
-    private fun addToCollection(
+    private suspend fun addToCollection(
         add: Boolean,
-        collection: AvailableCollectionsModel.Data.Collection
-    ) {
-        coroutineScope.launch {
-            val collectionID = collection.id.toString()
-            val success = repository.addToCollection(
-                add = add,
-                collectionID = collectionID,
-                fanficID = fanficId
-            )
-            if(success) {
-                val availableCollections = state.value.availableCollections!!
-                val collections = availableCollections.data.collections
-                val newCollections = collections.map { collection ->
-                    if(collection.id.toString() == collectionID) {
-                        collection.copy(
-                            isInThisCollection = if(add) {
-                                AvailableCollectionsModel.Data.Collection.IN_COLLECTION
-                            } else {
-                                AvailableCollectionsModel.Data.Collection.NOT_IN_COLLECTION
-                            },
-                            count = if(add) collection.count + 1 else collection.count - 1
-                        )
-                    } else {
-                        collection
-                    }
+        collection: AvailableCollectionsModel.Data.Collection,
+    ) = coroutineScope {
+        val collectionID = collection.id.toString()
+        val success = repository.addToCollection(
+            add = add,
+            collectionID = collectionID,
+            fanficID = fanficId
+        )
+        if(success) {
+            val availableCollections = state.value.availableCollections!!
+            val collections = availableCollections.data.collections
+            val newCollections = collections.map { collection ->
+                if (collection.id.toString() == collectionID) {
+                    collection.copy(
+                        isInThisCollection = if (add) {
+                            AvailableCollectionsModel.Data.Collection.IN_COLLECTION
+                        } else {
+                            AvailableCollectionsModel.Data.Collection.NOT_IN_COLLECTION
+                        },
+                        count = if (add) collection.count + 1 else collection.count - 1
+                    )
+                } else {
+                    collection
                 }
+            }
+            _state.update {
+                it.copy(
+                    availableCollections = availableCollections.copy(
+                        data = availableCollections.data.copy(
+                            collections = newCollections
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    private suspend fun loadAvailableCollections() = coroutineScope {
+        _state.update {
+            it.copy(loading = true)
+        }
+        when (
+            val result = repository.getAvailableCollections(fanficId)
+        ) {
+            is ApiResult.Error -> {
                 _state.update {
                     it.copy(
-                        availableCollections = availableCollections.copy(
-                            data = availableCollections.data.copy(
-                                collections = newCollections
-                            )
-                        )
+                        loading = false,
+                        error = true,
+                        errorMessage = result.exception.message
+                    )
+                }
+            }
+            is ApiResult.Success -> {
+                _state.update {
+                    it.copy(
+                        availableCollections = result.value,
+                        loading = false,
+                        error = false,
                     )
                 }
             }
         }
     }
 
-    private fun loadAvailableCollections() {
-        coroutineScope.launch {
-            _state.update {
-                it.copy(loading = true)
-            }
-            when(
-                val result = repository.getAvailableCollections(fanficId)
-            ) {
-                is ApiResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            loading = false,
-                            error = true,
-                            errorMessage = result.exception.message
-                        )
-                    }
-                }
-                is ApiResult.Success -> {
-                    _state.update {
-                        it.copy(
-                            availableCollections = result.value,
-                            loading = false,
-                            error = false,
-                        )
-                    }
-                }
+    init {
+        lifecycle.doOnCreate {
+            scope.launch {
+                loadAvailableCollections()
             }
         }
-    }
-
-    init {
-        loadAvailableCollections()
         lifecycle.doOnDestroy {
-            coroutineScope.cancel()
+            scope.cancel()
         }
     }
 }
