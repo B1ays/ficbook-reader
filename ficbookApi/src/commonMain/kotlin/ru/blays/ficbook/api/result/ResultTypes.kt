@@ -7,7 +7,15 @@ sealed class ApiResult<T: Any> {
     fun getOrNull(): T? = if(this is Success) value else null
     fun getOrElse(defaultValue: T): T = if(this is Success) value else defaultValue
 
-    fun getOrThrow(exception: Throwable = IllegalStateException("Result is Error")): T = if(this is Success) value else throw exception
+    fun getOrThrow(exception: Throwable = IllegalStateException("Result is Error")): T =
+        if(this is Success) value else throw exception
+
+    inline fun <reified R: Any> map(transform: (T) -> R): ApiResult<R> {
+        return when(this) {
+            is Success -> success(transform(value))
+            is Error -> failure(exception)
+        }
+    }
 
     companion object {
         fun <T: Any> success(value: T): ApiResult<T> = Success(value)

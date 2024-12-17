@@ -3,26 +3,32 @@ package ru.blays.ficbook.api.parsers
 import kotlinx.coroutines.coroutineScope
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import org.jsoup.select.Evaluator
 
 internal suspend fun checkPageButtonsExists(document: Document): PageButtonsStatus = coroutineScope {
-    val pageNav = document.select(
-        Evaluator.Class("pagenav my-15")
-    )
+    val pagination = document.select("nav.pagination")
 
-    if (pageNav.isEmpty()) {
+    if(pagination.isEmpty()) {
         return@coroutineScope PageButtonsStatus(
             hasNext = false,
             hasPrevious = false
         )
     }
 
-    val backwardButton = pageNav.select("[class=\"page-arrow page-arrow-prev\"]")
-    val forwardButton = pageNav.select("[class=\"page-arrow page-arrow-next\"]")
+    val arrows = pagination.select("[class*=arrow]")
+
+    if(arrows.size < 2) {
+        return@coroutineScope PageButtonsStatus(
+            hasNext = false,
+            hasPrevious = false
+        )
+    }
+
+    val backwardButtonActive = !arrows[0].className().contains("disabled")
+    val forwardButtonActive = !arrows[1].className().contains("disabled")
 
     return@coroutineScope PageButtonsStatus(
-        hasNext = !backwardButton.hasClass("disabled"),
-        hasPrevious = !forwardButton.hasClass("disabled")
+        hasNext = forwardButtonActive,
+        hasPrevious = backwardButtonActive
     )
 }
 

@@ -13,25 +13,15 @@ class AuthorProfileRepo(
     override suspend fun getByHref(
         href: String
     ): ApiResult<AuthorProfileModelStable> {
-        return when(
-            val result = api.getByHref(href)
-        ) {
-            is ApiResult.Error -> ApiResult.failure(result.exception)
-            is ApiResult.Success -> ApiResult.success(result.value.toStableModel())
-        }
+        val result = api.getByHref(href)
+        return result.map { it.toStableModel() }
     }
 
     override suspend fun getByID(
         id: String
     ): ApiResult<AuthorProfileModelStable> {
-        return when(
-            val result = api.getByID(id)
-        ) {
-            is ApiResult.Error -> ApiResult.failure(result.exception)
-            is ApiResult.Success -> ApiResult.success(
-                value = result.value.toStableModel()
-            )
-        }
+        val result = api.getByID(id)
+        return result.map { it.toStableModel() }
     }
 
     override suspend fun changeFollow(follow: Boolean, id: String): ApiResult<Boolean> {
@@ -42,41 +32,29 @@ class AuthorProfileRepo(
         id: String,
         page: Int
     ): ApiResult<ListResult<BlogPostCardModelStable>> {
-        return when(
-            val result = api.getBlogPosts(id, page)
-        ) {
-            is ApiResult.Error -> ApiResult.failure(result.exception)
-            is ApiResult.Success -> ApiResult.success(
-                ListResult(
-                    list = result.value.list.map(BlogPostCardModel::toStableModel),
-                    hasNextPage = result.value.hasNextPage
-                )
+        val result = api.getBlogPosts(id, page)
+        return result.map {
+            ListResult(
+                list = it.list.map(BlogPostCardModel::toStableModel),
+                hasNextPage = it.hasNextPage
             )
         }
     }
 
     override suspend fun getBlogPage(userID: String, postID: String): ApiResult<BlogPostModelStable> {
-        return when(
-            val result = api.getBlogPage(userID, postID)
-        ) {
-            is ApiResult.Error -> ApiResult.failure(result.exception)
-            is ApiResult.Success -> ApiResult.success(result.value.toStableModel())
-        }
+        val result = api.getBlogPage(userID, postID)
+        return result.map { it.toStableModel() }
     }
 
     override suspend fun getPresents(
         id: String,
         page: Int
     ): ApiResult<ListResult<AuthorPresentModelStable>> {
-        return when(
-            val result = api.getAuthorPresents(id, page)
-        ) {
-            is ApiResult.Error -> ApiResult.failure(result.exception)
-            is ApiResult.Success -> ApiResult.success(
-                ListResult(
-                    list = result.value.list.map(AuthorPresentModel::toStableModel),
-                    hasNextPage = result.value.hasNextPage
-                )
+        val result = api.getAuthorPresents(id, page)
+        return result.map {
+            ListResult(
+                list = it.list.map(AuthorPresentModel::toStableModel),
+                hasNextPage = it.hasNextPage
             )
         }
     }
@@ -85,15 +63,11 @@ class AuthorProfileRepo(
         id: String,
         page: Int
     ): ApiResult<ListResult<AuthorFanficPresentModelStable>> {
-        return when(
-            val result = api.getFanficsPresents(id, page)
-        ) {
-            is ApiResult.Error -> ApiResult.failure(result.exception)
-            is ApiResult.Success -> ApiResult.success(
-                ListResult(
-                    list = result.value.list.map(AuthorFanficPresentModel::toStableModel),
-                    hasNextPage = result.value.hasNextPage
-                )
+        val result = api.getFanficsPresents(id, page)
+        return result.map {
+            ListResult(
+                list = it.list.map(AuthorFanficPresentModel::toStableModel),
+                hasNextPage = it.hasNextPage
             )
         }
     }
@@ -102,15 +76,11 @@ class AuthorProfileRepo(
         id: String,
         page: Int
     ): ApiResult<ListResult<AuthorCommentPresentModelStable>> {
-        return when(
-            val result = api.getCommentsPresents(id, page)
-        ) {
-            is ApiResult.Error -> ApiResult.failure(result.exception)
-            is ApiResult.Success -> ApiResult.success(
-                ListResult(
-                    list = result.value.list.map(AuthorCommentPresentModel::toStableModel),
-                    hasNextPage = result.value.hasNextPage
-                )
+        val result = api.getCommentsPresents(id, page)
+        return result.map {
+            ListResult(
+                list = it.list.map(AuthorCommentPresentModel::toStableModel),
+                hasNextPage = it.hasNextPage
             )
         }
     }

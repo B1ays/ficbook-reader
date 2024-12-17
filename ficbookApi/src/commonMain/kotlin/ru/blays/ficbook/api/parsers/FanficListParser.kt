@@ -11,7 +11,7 @@ import java.net.URLDecoder
 
 internal class FanficsListParser {
     suspend fun parse(data: Document): Elements = coroutineScope {
-        return@coroutineScope data.select(".js-toggle-description")
+        return@coroutineScope data.select("article[class*=fanfic]")
     }
 }
 

@@ -262,6 +262,7 @@ class DefaultSearchComponent(
             queryParameters = queryParams,
             path = SEARCH_HREF
         )
+
         return section
     }
 

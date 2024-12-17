@@ -61,6 +61,24 @@ data class SectionWithQuery(
         queryParameters = emptyList(),
         path = href
     )
+
+    override fun toString(): String {
+        return buildString {
+            append(path)
+            if(path.endsWith('/')) {
+                deleteCharAt(length)
+            }
+            if(queryParameters?.isNotEmpty() == true) {
+                append('?')
+            }
+            queryParameters?.forEachIndexed { index, (name, value) ->
+                if(index != 0) append('&')
+                append(name)
+                append('=')
+                append(value)
+            }
+        }
+    }
 }
 
 data class PopularSections(
