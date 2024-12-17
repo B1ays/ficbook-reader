@@ -30,7 +30,6 @@ import androidx.compose.ui.util.fastMap
 import coil3.compose.AsyncImage
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
@@ -553,7 +552,7 @@ private fun BlogPostsList(component: AuthorBlogPostsComponent) {
             ) {
                 items(posts) { post ->
                     BlogPostCard(
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(),
                         post = post,
                         onPostClicked = {
                             component.onOutput(
