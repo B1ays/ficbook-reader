@@ -6,6 +6,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import ru.blays.ficbook.reader.shared.data.cookieStorage.DynamicCookieJar
 import ru.blays.ficbook.reader.shared.platformUtils.getCacheDir
+import ru.blays.ficbook.reader.shared.platformUtils.getPlatformInterceptors
 import ru.blays.ficbook.reader.shared.proxy.IProxyHolder
 import ru.blays.ficbook.reader.shared.proxy.ProxyHolder
 
@@ -14,22 +15,24 @@ val okHttpModule = module {
     singleOf(::ProxyHolder) bind IProxyHolder::class
     single {
         val proxyHolder: ProxyHolder = get()
-        OkHttpClient.Builder()
-            .cache(
+        val platformInterceptors = getPlatformInterceptors()
+        OkHttpClient.Builder().apply {
+            cache(
                 cache = Cache(
                     directory = getCacheDir(),
                     maxSize = 15 * 1024 * 1024
                 )
             )
-            .addNetworkInterceptor(
+            addNetworkInterceptor(
                 interceptor = UserAgentInterceptor(
                     userAgent = USER_AGENT
                 )
             )
-            .proxySelector(proxyHolder)
-            .proxyAuthenticator(proxyHolder.authenticator)
-            .cookieJar(get())
-            .build()
+            platformInterceptors.forEach(::addInterceptor)
+            proxySelector(proxyHolder)
+            proxyAuthenticator(proxyHolder.authenticator)
+            cookieJar(get())
+        }.build()
     }
 }
 

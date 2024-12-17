@@ -23,7 +23,13 @@ kotlin {
             JvmTarget.fromTarget(libs.versions.jvmTarget.get())
         )
     }
-    androidTarget()
+    androidTarget {
+        dependencies {
+            // Chucker
+            releaseImplementation(libs.chucker.noOp)
+            debugImplementation(libs.chucker.debug)
+        }
+    }
 
     sourceSets {
         commonMain {
